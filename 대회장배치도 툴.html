@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<!-- ═══════════════════════════════════════════════════════════════════
+  🏟️ 대회장 배치도 스튜디오
+  ───────────────────────────────────────────────────────────────────
+  카카오 지도 위에 대회장 영역·텐트·구역·아이콘을 배치하고
+  A4/A3/입간판 크기로 캡처하는 단일 파일 웹 툴.
+
+  [실행 방법]
+   1. 카카오 개발자 콘솔: Web 도메인(http://localhost:8000) 등록 + 카카오맵 사용 ON
+   2. 서버실행.bat 실행 → 브라우저에서 http://localhost:8000 접속
+
+  [단축키]
+   Esc          선택 도구로 복귀 / 그리기·측정 취소
+   Ctrl+Z / Y   실행취소 / 다시실행
+   Ctrl+C / V   텐트 복사 / 붙여넣기
+   Ctrl+클릭    다중 선택 (지도·목록)   Shift+클릭  목록 범위 선택
+   Alt+드래그   텐트 복사해서 끌기
+   방향키       선택 텐트 0.5m 이동 (Shift=2m)
+   Q / E        선택 텐트 회전         Delete      삭제
+   Backspace    선 그리는 중 마지막 점 취소
+
+  [코드 구성]  <script> 내부 순서
+   1. 전역 상태 & 공용 유틸       2. 상태 저장/복원/실행취소
+   3. 초기화                      4. 도구 상태 / 지도 유형 / 검색
+   5. 대회장 영역 그리기          6. 주석(선·화살표·구역·글씨·아이콘·측정)
+   7. 그룹 관리                   8. 텐트 (생성·선택·이동·회전·정렬)
+   9. 우측 속성 패널             10. 키보드
+  11. 배치 목록 표 & 캡쳐용 뷰  12. 캡처(A4/A3/입간판) & CSV
+═══════════════════════════════════════════════════════════════════ -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대회장 배치도 스튜디오</title>
+<style>
+  :root {
+    --ink:#1b2733; --ink2:#2c3e50; --panel:#ffffff; --line:#e2e8f0; --bg:#eef1f5;
+    --blue:#3d7eff; --green:#22a45d; --red:#e5484d; --orange:#f5871f; --gray:#8494a7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: 'Malgun Gothic', 'Segoe UI', sans-serif; background: var(--bg); color: #222;
+    display: flex; flex-direction: column; overflow: hidden; }
+  input, select, button { font-size: 12px; padding: 5px 7px; border: 1px solid #cdd6e0; border-radius: 6px; background:#fff; }
+  button { cursor: pointer; border: none; color: #fff; background: var(--blue); transition: filter .12s; }
+  button:hover { filter: brightness(1.1); }
+  button.gray { background: var(--gray); } button.red { background: var(--red); }
+  button.green { background: var(--green); } button.dark { background: #45566b; }
+  button.active { background: var(--orange); }
+  button.mini { padding: 3px 7px; font-size: 11px; border-radius: 4px; }
+
+  /* ── 상단 바 ── */
+  #topbar { background: var(--ink); color: #fff; padding: 6px 12px; display: flex; align-items: center;
+    gap: 8px; flex-wrap: wrap; box-shadow: 0 1px 6px rgba(0,0,0,.3); z-index: 60; }
+  #topbar .logo { font-weight: 900; font-size: 14px; letter-spacing: .5px; margin-right: 4px;
+    color: #fff; white-space: nowrap; }
+  #topbar .logo span { color: #7db4ff; }
+  .divider { width: 1px; height: 22px; background: #3a4a5c; }
+  .seg { display: flex; border-radius: 7px; overflow: hidden; }
+  .seg button { border-radius: 0; background: #33445a; font-size: 11px; padding: 5px 10px; }
+  .seg button.active { background: var(--orange); }
+  .hint { font-size: 11px; color: #ffe9a8; margin-left: auto; }
+
+  /* ── 메인 ── */
+  #main { flex: 1; display: flex; min-height: 0; }
+  #toolRail { width: 52px; background: var(--ink2); display: flex; flex-direction: column;
+    align-items: center; padding: 10px 0; gap: 5px; z-index: 55; }
+  .tool-btn { width: 38px; height: 38px; border-radius: 9px; background: transparent; color: #c4d2e0;
+    font-size: 16px; display: flex; align-items: center; justify-content: center; }
+  .tool-btn:hover { background: #3d5068; filter: none; }
+  .tool-btn.active { background: var(--orange); color: #fff; }
+  .rail-gap { height: 10px; }
+
+  #centerCol { flex: 1; min-width: 0; overflow-y: auto; }
+  #captureArea { background: var(--bg); }
+  #mapWrap { position: relative; max-width: min(100%, 80vh); margin: 0 auto; }
+  #map { width: 100%; aspect-ratio: 1 / 1; } /* 정사각형 지도 */
+  /* 캡쳐용: 지도와 목록을 같은 폭으로, 여백 없이 */
+  body.capmode #captureArea { max-width: min(100%, 90vh); margin: 0 auto; background: #fff; }
+  body.capmode #mapWrap { max-width: 100%; }
+  body.capmode #listSection { padding: 10px 12px 14px; }
+  #titleOverlay { position: absolute; top: 10px; left: 10px; z-index: 50; background: rgba(255,255,255,.93);
+    border-radius: 8px; padding: 8px 14px; box-shadow: 0 2px 8px rgba(0,0,0,.25); pointer-events: none; }
+  #titleOverlay .t { font-size: 17px; font-weight: 900; color: var(--ink); }
+  #titleOverlay .d { font-size: 12px; color: #556; }
+  #legend { position: absolute; bottom: 30px; left: 10px; z-index: 50; background: rgba(255,255,255,.95);
+    border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.25); font-size: 12px;
+    max-width: 240px; display: none; }
+  #legend h4 { font-size: 12px; margin-bottom: 4px; color: var(--ink2); }
+  #legend .row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+  #legend .chip { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+
+  /* ── 목록 ── */
+  #listSection { padding: 12px 16px 20px; }
+  #listHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    flex-wrap: wrap; gap: 8px; }
+  #listHeader h3 { font-size: 14px; color: var(--ink2); }
+  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08); border-radius: 8px; overflow: hidden; }
+  th, td { border: 1px solid #dfe6ee; padding: 5px 6px; text-align: center; }
+  th { background: var(--ink2); color: #fff; font-weight: 600; }
+  td input[type=text] { width: 105px; }
+  td input[type=number] { width: 52px; }
+  tr.group-row td { background: #dce7f2; text-align: left; padding: 6px 10px; }
+  tr.tent-row { cursor: pointer; }
+  tr.tent-row:hover td { background: #f2f7fc; }
+  tr.selected-row td { background: #fff3d6 !important; }
+  .summary { margin-top: 8px; font-size: 12px; color: #444; display: flex; gap: 18px; flex-wrap: wrap; }
+  .summary b { color: var(--ink2); }
+  body.capmode .summary { display: none; }
+  /* 캡쳐용 목록: 신문 칼럼처럼 자동으로 빈틈 없이 채움 */
+  #captureList { display: none; column-width: 205px; column-gap: 12px; }
+  .cap-card { background: #fff; border: 1px solid #c9d2dc; border-radius: 12px; padding: 10px 12px 12px;
+    display: inline-block; width: 100%; break-inside: avoid; margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1); }
+  .cap-rows2 { column-count: 2; column-gap: 10px; }
+  .cap-row { break-inside: avoid; }
+  .cap-head { display: inline-block; padding: 5px 18px; border-radius: 18px; font-weight: 900;
+    font-size: 15px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .cap-row { display: flex; align-items: flex-start; gap: 6px; margin: 5px 0; font-size: 13px; font-weight: 700; }
+  .cap-badge { min-width: 22px; height: 22px; border-radius: 11px; padding: 0 4px; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 11px; font-weight: 900;
+    border: 1.5px solid rgba(0,0,0,.3); flex: none; }
+  .cap-tilde { font-weight: 900; color: #555; flex: none; padding-top: 3px; }
+  .cap-name { flex: 1; min-width: 0; line-height: 1.3; word-break: keep-all; overflow-wrap: anywhere; padding-top: 3px; }
+  /* 고급 마감 */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #b9c4d0; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #9aa8b8; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  .rp-section { background: #fbfcfe; box-shadow: 0 1px 3px rgba(15,30,50,.06); }
+  .rp-section h4 { text-transform: uppercase; }
+  .tool-btn.active { box-shadow: 0 0 0 2px rgba(255,255,255,.25), 0 2px 10px rgba(245,135,31,.55); }
+  button { font-weight: 600; }
+  button:active { transform: translateY(1px); }
+  table { box-shadow: 0 2px 10px rgba(15,30,50,.08); }
+  tr.group-row td { background: linear-gradient(180deg, #e3edf7, #d8e5f2); }
+
+  /* ── 우측 패널 ── */
+  #rightPanel { width: 272px; background: var(--panel); border-left: 1px solid var(--line);
+    overflow-y: auto; padding: 12px; flex: none; }
+  .rp-section { margin-bottom: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+  .rp-section h4 { font-size: 11px; color: #64748b; letter-spacing: .8px; margin-bottom: 8px; }
+  .rp-row { display: flex; align-items: center; gap: 6px; margin: 6px 0; font-size: 12px; flex-wrap: wrap; }
+  .rp-row label { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; }
+  .rp-row input[type=number] { width: 58px; }
+  .rp-row input[type=text] { width: 100%; }
+  .rp-full { width: 100%; }
+  .rp-note { font-size: 11px; color: #8896a6; line-height: 1.6; }
+
+  #errorBox { display: none; background: #fdecea; color: #b71c1c; padding: 14px 18px; font-size: 14px; line-height: 1.7; }
+  #searchResults { display: none; position: absolute; top: 100%; left: 0; z-index: 100; background: #fff;
+    color: #222; border: 1px solid #ccc; border-radius: 6px; width: 300px; max-height: 240px;
+    overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
+  .result-item { padding: 7px 10px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #eee; text-align: left; }
+  .result-item:hover { background: #eef5fb; }
+
+  .tent-badge { min-width: 19px; height: 19px; padding: 0 4px; border-radius: 10px; background: rgba(255,255,255,.92);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900;
+    color: #111; border: 2px solid #333; box-shadow: 0 1px 4px rgba(0,0,0,.5);
+    cursor: move; user-select: none; white-space: nowrap;
+    transform: scale(var(--badgeScale, 1)); transform-origin: center; }
+  .anno-text { font-weight: 900; white-space: nowrap; cursor: move; user-select: none;
+    text-shadow: -1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff, -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff, 0 0 6px #fff; }
+  .zone-label { font-weight: 900; font-size: 13px; white-space: nowrap; cursor: move; user-select: none;
+    background: rgba(255,255,255,.85); padding: 1px 7px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  .vertex { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 3px solid #2ecc71;
+    cursor: grab; box-shadow: 0 1px 4px rgba(0,0,0,.4); }
+  .vertex:hover { background: #2ecc71; }
+  .vertex.first { border-color: #e67e22; }
+  .vertex.line-v { border-color: #3498db; }
+  .edge-label { background: rgba(0,0,0,.65); color: #fff; font-size: 11px; padding: 1px 5px;
+    border-radius: 3px; white-space: nowrap; pointer-events: none; }
+  .rot-handle { width: 24px; height: 24px; border-radius: 50%; background: #f39c12; color: #fff;
+    font-size: 15px; font-weight: bold; display: flex; align-items: center; justify-content: center;
+    cursor: grab; box-shadow: 0 1px 5px rgba(0,0,0,.5); user-select: none; }
+  .rot-handle:hover { background: #e67e22; }
+</style>
+</head>
+<body>
+
+<!-- ═══ 상단 바 ═══ -->
+<div id="topbar">
+  <span class="logo">🏟️ 배치도<span>스튜디오</span></span>
+  <input type="text" id="docTitle" placeholder="대회명" style="width:180px" oninput="updateTitleOverlay();scheduleSave()">
+  <input type="date" id="docDate" oninput="updateTitleOverlay();scheduleSave()">
+  <span class="divider"></span>
+  <button class="dark mini" onclick="undo()" title="Ctrl+Z">↶</button>
+  <button class="dark mini" onclick="redo()" title="Ctrl+Y">↷</button>
+  <span class="divider"></span>
+  <button class="green mini" onclick="saveJSON()">💾 저장</button>
+  <button class="green mini" onclick="document.getElementById('loadFile').click()">📂 열기</button>
+  <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadJSON(this)">
+  <button class="red mini" onclick="resetAll()">🗑 초기화</button>
+  <span class="divider"></span>
+  <button class="mini" onclick="captureSized('a4')" title="A4 인쇄용으로 지도+배치목록 캡처 (세로 210×297)">📸 A4</button>
+  <button class="mini" onclick="captureSized('a3')" title="A3 인쇄용으로 지도+배치목록 캡처 (세로 297×420)">📸 A3</button>
+  <button class="mini" onclick="captureSized('sign')" title="입간판용 캡처 (가로900×세로1800)">📸 입간판</button>
+  <button class="gray mini" onclick="downloadCSV()" title="배치 목록을 엑셀용 CSV로 다운로드">CSV</button>
+  <button class="gray mini" onclick="toggleLegend()" title="지도 위에 그룹·구역 색상표 표시/숨김">범례</button>
+  <span class="divider"></span>
+  <span style="position:relative">
+    <input type="text" id="searchKeyword" placeholder="🔍 장소 검색" style="width:150px" title="장소명이나 주소로 지도 이동" onkeydown="if(event.key==='Enter')searchPlace()">
+    <div id="searchResults"></div>
+  </span>
+  <span class="seg">
+    <button id="mt-ROADMAP" onclick="setMapType('ROADMAP')" title="일반 지도 보기">일반</button>
+    <button id="mt-SKYVIEW" onclick="setMapType('SKYVIEW')" title="위성 사진 보기">위성</button>
+    <button id="mt-HYBRID" onclick="setMapType('HYBRID')" title="위성 사진 + 지명 표시">하이브리드</button>
+  </span>
+  <span class="hint" id="hintText"></span>
+</div>
+
+<div id="errorBox"></div>
+
+<!-- ═══ 메인 ═══ -->
+<div id="main">
+
+  <!-- 좌측 도구 레일 -->
+  <div id="toolRail">
+    <button id="toolSelect" class="tool-btn active" onclick="selectToolMode()" title="선택/이동 (Esc)">🖱️</button>
+    <div class="rail-gap"></div>
+    <button id="drawBtn" class="tool-btn" onclick="toggleDrawMode()" title="대회장 영역 그리기">📐</button>
+    <div class="rail-gap"></div>
+    <button id="am-solid" class="tool-btn" onclick="setAnnoMode('solid')" title="실선">─</button>
+    <button id="am-dash" class="tool-btn" onclick="setAnnoMode('dash')" title="점선">┄</button>
+    <button id="am-arrow" class="tool-btn" onclick="setAnnoMode('arrow')" title="화살표">➜</button>
+    <button id="am-zone" class="tool-btn" onclick="setAnnoMode('zone')" title="구역 색칠">▨</button>
+    <button id="am-text" class="tool-btn" onclick="setAnnoMode('text')" title="글씨">🅣</button>
+    <button id="am-icon" class="tool-btn" onclick="setAnnoMode('icon')" title="아이콘 스탬프 (우측 패널에서 아이콘 선택)">📍</button>
+    <button id="am-measure" class="tool-btn" onclick="setAnnoMode('measure')" title="거리 측정 (클릭으로 구간 측정, 우클릭 종료)">📏</button>
+    <button id="am-erase" class="tool-btn" onclick="setAnnoMode('erase')" title="지우개">🗑️</button>
+  </div>
+
+  <!-- 중앙: 지도 + 목록 (캡처 대상) -->
+  <div id="centerCol">
+    <div id="captureArea">
+      <div id="mapWrap">
+        <div id="map"></div>
+        <div id="titleOverlay" style="display:none"><div class="t"></div><div class="d"></div></div>
+        <div id="legend"></div>
+      </div>
+      <div id="listSection">
+        <div id="listHeader">
+          <h3>📋 배치 목록</h3>
+          <span>
+            <button id="viewManage" class="active mini" onclick="setListView('manage')" title="편집 가능한 상세 표">관리용</button>
+            <button id="viewCapture" class="gray mini" onclick="setListView('capture')" title="인쇄·캡처용 요약 카드 (번호 범위 자동 묶음)">캡쳐용</button>
+            <button class="green mini" onclick="addGroup()" title="새 그룹 추가">＋ 그룹</button>
+          </span>
+        </div>
+        <div id="captureList"></div>
+        <table id="manageTable">
+          <thead>
+            <tr>
+              <th style="width:48px">번호</th><th>이름</th><th>그룹</th><th style="width:42px">모양</th>
+              <th>가로(m)</th><th>세로(m)</th><th>면적(㎡)</th><th>회전(°)</th><th>색상</th>
+              <th style="width:66px">순서</th><th style="width:200px">관리</th>
+            </tr>
+          </thead>
+          <tbody id="tentTable"></tbody>
+        </table>
+        <div class="summary">
+          <span>텐트 수: <b id="sumCount">0</b>개</span>
+          <span>텐트 총면적: <b id="sumArea">0</b> ㎡</span>
+          <span>대회장 면적: <b id="sumVenue">-</b></span>
+          <span>사용률: <b id="sumRatio">-</b></span>
+          <span style="color:#98a4b3">행 클릭=선택 · Ctrl/Shift+클릭=다중 선택 · 자동 저장됨</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 우측 속성 패널 -->
+  <div id="rightPanel">
+    <div class="rp-section">
+      <h4>⛺ 텐트 추가</h4>
+      <div class="rp-row"><input type="text" id="tentName" placeholder="이름 (예: 본부석)" class="rp-full" title="텐트 이름 (표와 툴팁에 표시됩니다)"></div>
+      <div class="rp-row">
+        <select id="tentShape" style="width:74px" title="텐트 모양 선택"><option value="rect">⬛ 사각</option><option value="circle">⚫ 원형</option></select>
+        <label title="가로 길이 (미터) · 원형은 지름">가로 <input type="number" id="tentW" value="6" min="0.5" step="0.5"></label>
+        <label title="세로 길이 (미터)">세로 <input type="number" id="tentH" value="3" min="0.5" step="0.5"></label>
+      </div>
+      <div class="rp-row">
+        <input type="color" id="tentColor" value="#e74c3c" style="padding:2px;width:36px;height:28px" title="텐트 색상">
+        <select id="tentGroup" style="flex:1" title="소속 그룹"></select>
+        <button class="mini" onclick="addTent()" title="지도 중앙에 텐트 추가">＋ 추가</button>
+      </div>
+      <div class="rp-note">Alt+드래그=복사 · Ctrl+클릭=다중선택<br>Ctrl+C/V=복사·붙여넣기 · Q/E=회전 · Del=삭제</div>
+    </div>
+
+    <div class="rp-section">
+      <h4>🎯 선택 항목</h4>
+      <div id="selInfo"><div class="rp-note">지도나 목록에서 항목을 클릭하세요.</div></div>
+    </div>
+
+    <div class="rp-section" id="iconPalette">
+      <h4>📍 아이콘 스탬프 (마라톤)</h4>
+      <div class="rp-row" style="flex-wrap:wrap;gap:4px" id="iconBtns"></div>
+      <div class="rp-note">아이콘 선택 후 지도를 클릭해 배치 (연속 배치, Esc 종료)<br>배치된 아이콘: 드래그=이동 · 더블클릭=변경 · Del=삭제</div>
+    </div>
+
+    <div class="rp-section">
+      <h4>✏️ 그리기 설정</h4>
+      <div class="rp-row">
+        <label title="선·화살표·구역·글씨의 색상">색 <input type="color" id="annoColor" value="#ffef00" style="padding:2px;width:36px;height:28px"></label>
+        <label title="선 굵기(px) / 글씨 크기">굵기/크기 <input type="number" id="annoSize" value="4" min="1" max="60"></label>
+      </div>
+      <div class="rp-row">
+        <button class="mini gray" onclick="finishLine()" title="그리는 중인 선·구역 마치기">완료</button>
+        <button class="mini red" onclick="deleteSelectedAnno()" title="선택된 선·글씨·구역 삭제">선택 삭제</button>
+        <button class="mini red" onclick="clearAnnos()" title="모든 선·화살표·구역·글씨 삭제">전체 지우기</button>
+      </div>
+      <div class="rp-note">선·구역: 클릭으로 점 추가, 우클릭=마침<br>Backspace=점 취소 · 클릭=선택 후 수정</div>
+    </div>
+
+    <div class="rp-section">
+      <h4>📐 대회장 영역</h4>
+      <div id="areaInfo" style="font-size:12px;font-weight:bold;color:var(--ink2);margin-bottom:6px" title="그린 대회장 영역의 면적·둘레 (자동 계산)">대회장 면적: -</div>
+      <div class="rp-row">
+        <button class="mini gray" onclick="undoPoint()" title="마지막에 찍은 꼭짓점 취소">↩ 점 취소</button>
+        <button class="mini gray" onclick="finishDraw()" title="영역 그리기 마치고 면적 계산">완료</button>
+        <button class="mini red" onclick="clearVenue()" title="대회장 영역 전체 삭제">삭제</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=c45e1e08eea53db5a726efa6edae142b&libraries=services&autoload=false"></script>
+<script>
+/* ═══════════════ 1. 전역 상태 & 공용 유틸 ═══════════════
+   tents  : 배치된 텐트 목록 (폴리곤 + 번호 배지)
+   groups : 텐트 그룹 (번호 방식: 1,2,3 / A,B,C)
+   annos  : 지도 주석 — line(선)·arrow(화살표)·zone(구역)·text(글씨/아이콘)
+   venue  : 대회장 영역 폴리곤 (면적·둘레 자동 계산)
+   sel    : 현재 선택된 텐트들 (다중 선택 지원)                     */
+let map, places;
+let tents = [];
+let nextId = 1;
+let groups = [{ id: 1, name: '기본 그룹', style: 'num' }];
+let nextGroupId = 2;
+let sel = [];
+let rotHandle = null;
+let clipboard = [];
+let curMapType = 'HYBRID';
+let suppressUntil = 0, lastCtrl = false, lastAlt = false, loading = false;
+let undoStack = [], redoStack = [], lastUndoTag = '', lastUndoTime = 0, saveTimer = null;
+let lastRowIndex = -1, rowOrder = [];
+
+const M_PER_LAT = 110574;
+const LS_KEY = 'venueLayoutTool_v2';
+function mPerLng(lat){ return 111320 * Math.cos(lat * Math.PI / 180); }
+function suppressClick(){ suppressUntil = Date.now() + 400; }
+function clientToLatLng(cx, cy){
+  const rect = document.getElementById('map').getBoundingClientRect();
+  return map.getProjection().coordsFromContainerPoint(new kakao.maps.Point(cx - rect.left, cy - rect.top));
+}
+function distM(p, q){
+  const kx = mPerLng(p.getLat());
+  const dx = (q.getLng() - p.getLng()) * kx;
+  const dy = (q.getLat() - p.getLat()) * M_PER_LAT;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+function offsetLatLng(p, xM, yM){
+  return new kakao.maps.LatLng(p.getLat() + yM / M_PER_LAT, p.getLng() + xM / mPerLng(p.getLat()));
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function alphaLabel(n){
+  let s = ''; n++;
+  while(n > 0){ n--; s = String.fromCharCode(65 + (n % 26)) + s; n = Math.floor(n / 26); }
+  return s;
+}
+function hint(t){ document.getElementById('hintText').textContent = t; }
+document.addEventListener('mousedown', function(e){ lastCtrl = e.ctrlKey || e.metaKey; lastAlt = e.altKey; }, true);
+
+/* ═══════════════ 2. 상태 저장 / 복원 / 실행취소 ═══════════════
+   serialize() → JSON 문자열 (자동저장·파일저장·실행취소에 공용)
+   loadState() → JSON을 받아 지도 위 모든 객체를 다시 생성
+   pushUndo()  → 변경 직전 상태를 스택에 저장 (같은 tag는 1.2초 묶음) */
+function serialize(withView){
+  return JSON.stringify({
+    v: 2,
+    title: document.getElementById('docTitle').value,
+    date: document.getElementById('docDate').value,
+    view: (withView && map) ? { lat: map.getCenter().getLat(), lng: map.getCenter().getLng(), level: map.getLevel(), mapType: curMapType } : null,
+    groups: groups.map(function(g){ return { id: g.id, name: g.name, style: g.style }; }),
+    nextGroupId: nextGroupId, nextId: nextId,
+    tents: tents.map(function(t){ return { id: t.id, name: t.name, w: t.w, h: t.h, rot: t.rot, color: t.color,
+      groupId: t.groupId, shape: t.shape, bandId: t.bandId || null, lat: t.center.getLat(), lng: t.center.getLng() }; }),
+    venue: { done: venue.done, points: venue.points.map(function(p){ return [p.getLat(), p.getLng()]; }) },
+    annos: annos.map(function(a){
+      if(a.type === 'text') return { type:'text', lat: a.overlay.getPosition().getLat(), lng: a.overlay.getPosition().getLng(),
+        text: a.div.textContent, color: a.color, size: a.size };
+      const pts = a.points.map(function(p){ return [p.getLat(), p.getLng()]; });
+      if(a.type === 'zone') return { type:'zone', points: pts, color: a.color, name: a.name };
+      if(a.type === 'arrow') return { type:'arrow', points: pts, color: a.color, weight: a.weight };
+      return { type:'line', points: pts, color: a.color, weight: a.weight, style: a.style };
+    })
+  });
+}
+function teardownAll(){
+  deselect(); deselectAnno();
+  if(curLine){ if(curLine.polyline) curLine.polyline.setMap(null); if(curLine.preview) curLine.preview.setMap(null); if(curLine.polygon) curLine.polygon.setMap(null); curLine = null; }
+  tents.forEach(function(t){ t.polygon.setMap(null); t.label.setMap(null); });
+  tents = [];
+  venueTeardown();
+  annos.forEach(annoTeardown);
+  annos = [];
+  drawMode = false; annoMode = null;
+  updateToolActive();
+}
+function annoTeardown(a){
+  if(a.type === 'text'){ a.overlay.setMap(null); return; }
+  if(a.polyline) a.polyline.setMap(null);
+  if(a.polygon) a.polygon.setMap(null);
+  if(a.hit) a.hit.setMap(null);
+  if(a.head) a.head.setMap(null);
+  if(a.labelOv) a.labelOv.setMap(null);
+  (a.vertexOvs || []).forEach(function(o){ o.setMap(null); });
+}
+function loadState(s, withView){
+  loading = true;
+  try{
+    teardownAll();
+    document.getElementById('docTitle').value = s.title || '';
+    document.getElementById('docDate').value = s.date || '';
+    updateTitleOverlay();
+    groups = (s.groups && s.groups.length) ? s.groups : [{ id: 1, name: '기본 그룹', style: 'num' }];
+    nextGroupId = s.nextGroupId || (Math.max.apply(null, groups.map(function(g){ return g.id; })) + 1);
+    nextId = s.nextId || 1;
+    (s.tents || []).forEach(function(d){
+      const t = createTentObject(d.name, d.w, d.h, d.color, d.groupId, new kakao.maps.LatLng(d.lat, d.lng), d.shape || 'rect', d.id);
+      t.rot = d.rot || 0;
+      t.bandId = d.bandId || null;
+      redrawTent(t);
+      tents.push(t);
+    });
+    if(s.tents && s.tents.length) nextId = Math.max(nextId, Math.max.apply(null, s.tents.map(function(t){ return t.id; })) + 1);
+    if(s.venue && s.venue.points && s.venue.points.length){
+      venue.points = s.venue.points.map(function(p){ return new kakao.maps.LatLng(p[0], p[1]); });
+      venue.done = !!s.venue.done;
+      venue.points.forEach(function(_, i){ createVertexMarker(i); });
+      updateVenueShapes();
+    }
+    (s.annos || []).forEach(function(d){
+      if(d.type === 'text'){ createTextObj(new kakao.maps.LatLng(d.lat, d.lng), d.text, d.color, d.size); return; }
+      const pts = d.points.map(function(p){ return new kakao.maps.LatLng(p[0], p[1]); });
+      if(d.type === 'zone') createZoneObj(pts, d.color, d.name);
+      else if(d.type === 'arrow') createArrowObj(pts, d.color, d.weight);
+      else createLineObj(pts, d.color, d.weight, d.style);
+    });
+    if(withView && s.view){
+      map.setCenter(new kakao.maps.LatLng(s.view.lat, s.view.lng));
+      map.setLevel(s.view.level);
+      setMapType(s.view.mapType || 'HYBRID');
+    }
+    refreshGroupSelect();
+    refreshTable();
+  } finally { loading = false; }
+}
+function pushUndo(tag){
+  if(loading) return;
+  const now = Date.now();
+  if(tag && tag === lastUndoTag && now - lastUndoTime < 1200){ lastUndoTime = now; scheduleSave(); return; }
+  lastUndoTag = tag || ''; lastUndoTime = now;
+  undoStack.push(serialize(false));
+  if(undoStack.length > 60) undoStack.shift();
+  redoStack.length = 0;
+  scheduleSave();
+}
+function undo(){
+  if(!undoStack.length) return;
+  redoStack.push(serialize(false));
+  loadState(JSON.parse(undoStack.pop()), false);
+  lastUndoTag = ''; scheduleSave();
+}
+function redo(){
+  if(!redoStack.length) return;
+  undoStack.push(serialize(false));
+  loadState(JSON.parse(redoStack.pop()), false);
+  lastUndoTag = ''; scheduleSave();
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){
+    try{ localStorage.setItem(LS_KEY, serialize(true)); }catch(e){}
+  }, 600);
+}
+function saveJSON(){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([serialize(true)], { type: 'application/json' }));
+  a.download = (document.getElementById('docTitle').value || '대회장_배치도') + '.json';
+  a.click();
+}
+function loadJSON(input){
+  const file = input.files[0];
+  if(!file) return;
+  const r = new FileReader();
+  r.onload = function(){
+    try{
+      pushUndo();
+      loadState(JSON.parse(r.result), true);
+      scheduleSave();
+    }catch(e){ alert('파일을 읽을 수 없습니다: ' + e.message); }
+  };
+  r.readAsText(file);
+  input.value = '';
+}
+function resetAll(){
+  if(!confirm('모든 내용을 지우고 처음부터 시작할까요?')) return;
+  pushUndo();
+  loadState({ v:2, groups:[{id:1,name:'기본 그룹',style:'num'}], nextGroupId:2, nextId:1, tents:[], venue:{done:false,points:[]}, annos:[], title:'', date:'' }, false);
+  localStorage.removeItem(LS_KEY);
+}
+function updateTitleOverlay(){
+  const t = document.getElementById('docTitle').value;
+  const d = document.getElementById('docDate').value;
+  const ov = document.getElementById('titleOverlay');
+  if(t || d){
+    ov.style.display = 'block';
+    ov.querySelector('.t').textContent = t;
+    ov.querySelector('.d').textContent = d;
+  } else ov.style.display = 'none';
+}
+
+/* ═══════════════ 3. 초기화 ═══════════════ */
+function initApp(){
+  kakao.maps.load(function(){
+    map = new kakao.maps.Map(document.getElementById('map'), {
+      center: new kakao.maps.LatLng(37.5665, 126.9780), level: 2
+    });
+    setMapType('HYBRID');
+    places = new kakao.maps.services.Places();
+
+    kakao.maps.event.addListener(map, 'click', function(e){
+      if(Date.now() < suppressUntil) return;
+      if(curvePick){ hint('👉 선/화살표 위를 정확히 클릭하세요 (Esc 취소)'); return; }
+      if(drawMode){ addVenuePoint(e.latLng); return; }
+      if(annoMode === 'solid' || annoMode === 'dash' || annoMode === 'arrow' || annoMode === 'zone'){ addLinePoint(e.latLng); return; }
+      if(annoMode === 'text'){ addTextAnno(e.latLng); return; }
+      if(annoMode === 'icon'){
+        pushUndo();
+        const size = Math.max(18, (parseInt(document.getElementById('annoSize').value) || 4) * 5);
+        createTextObj(e.latLng, stampIcon, '#000000', size);
+        scheduleSave();
+        return;
+      }
+      if(annoMode === 'measure'){ measureClick(e.latLng); return; }
+      deselect(); deselectAnno();
+    });
+    kakao.maps.event.addListener(map, 'rightclick', function(){
+      if(drawMode){ undoPoint(); return; }
+      if(annoMode === 'measure'){ clearMeasure(); setAnnoMode(null); return; }
+      if(annoMode && annoMode !== 'text' && annoMode !== 'erase' && annoMode !== 'icon') finishLine();
+    });
+    kakao.maps.event.addListener(map, 'mousemove', function(e){
+      if(drawMode && venue.points.length > 0) updatePreview(e.latLng);
+      if(curLine && curLine.points.length > 0) updateLinePreview(e.latLng);
+      if(annoMode === 'measure' && mPoints.length){
+        if(!mPreview) mPreview = new kakao.maps.Polyline({ map: map, strokeWeight: 2, strokeColor: '#00e5ff', strokeStyle: 'shortdash', strokeOpacity: 0.7, zIndex: 50 });
+        mPreview.setPath([mPoints[mPoints.length-1], e.latLng]);
+        hint('📏 누적 거리: ' + measureTotal(e.latLng).toFixed(1) + ' m │ 클릭=계속 · 우클릭/Esc=종료');
+      }
+    });
+    document.addEventListener('keydown', onKeyDown);
+    document.getElementById('annoColor').addEventListener('input', applyAnnoStyle);
+    document.getElementById('annoSize').addEventListener('input', applyAnnoStyle);
+    window.addEventListener('resize', function(){ if(map) map.relayout(); });
+    kakao.maps.event.addListener(map, 'zoom_changed', updateBadgeScale);
+    updateBadgeScale();
+
+    try{
+      const saved = localStorage.getItem(LS_KEY);
+      if(saved) loadState(JSON.parse(saved), true);
+    }catch(e){}
+    initIconPalette();
+    refreshGroupSelect();
+    refreshTable();
+  });
+}
+window.addEventListener('load', function(){
+  if(typeof kakao === 'undefined' || !kakao.maps){
+    const box = document.getElementById('errorBox');
+    box.style.display = 'block';
+    box.innerHTML = '<b>⚠️ 카카오 지도를 불러오지 못했습니다.</b><br>' +
+      '1) <a href="https://developers.kakao.com" target="_blank">developers.kakao.com</a> → 앱 설정 → 플랫폼 → <b>Web 도메인 등록</b> (예: http://localhost:8000)<br>' +
+      '2) 제품 설정 → 카카오맵 → <b>사용 설정 ON</b><br>' +
+      '3) <b>서버실행.bat</b>으로 실행해 http://localhost:8000 으로 접속하세요.';
+    return;
+  }
+  initApp();
+});
+
+/* 지도를 축소하면 번호 배지도 같이 작아져 텐트를 가리지 않음.
+   많이 축소되면(텐트가 점처럼 보이면) 배지가 텐트 색으로 변해 마커 역할을 함 */
+function updateBadgeScale(){
+  if(!map) return;
+  const lv = map.getLevel();
+  // 확대(1레벨 이하): 흰 배지가 텐트 위에 작게 표시
+  // 축소(2레벨 이상): 텐트가 점처럼 작아지므로, 배지가 텐트 색 마커로 변해 텐트를 대신 표시
+  const s = lv <= 1 ? 1 : 0.8;
+  document.getElementById('mapWrap').style.setProperty('--badgeScale', s);
+  const far = lv >= 2;
+  tents.forEach(function(t){
+    if(!t.badgeDiv) return;
+    if(far){
+      t.badgeDiv.style.background = t.color;
+      t.badgeDiv.style.color = textColorFor(t.color);
+      t.badgeDiv.style.borderColor = '#fff';
+    } else {
+      t.badgeDiv.style.background = 'rgba(255,255,255,.92)';
+      t.badgeDiv.style.color = '#111';
+      t.badgeDiv.style.borderColor = t.color;
+    }
+  });
+}
+
+/* ═══════════════ 4. 도구 상태 / 지도 유형 / 검색 ═══════════════ */
+function selectToolMode(){
+  if(drawMode) toggleDrawMode();
+  setAnnoMode(null);
+  updateToolActive();
+}
+function updateToolActive(){
+  document.getElementById('drawBtn').classList.toggle('active', drawMode);
+  ['solid','dash','arrow','zone','text','icon','measure','erase'].forEach(function(m){
+    const el = document.getElementById('am-' + m);
+    if(el) el.classList.toggle('active', m === annoMode);
+  });
+  document.getElementById('toolSelect').classList.toggle('active', !drawMode && !annoMode);
+}
+
+/* ================= 지도 유형 / 검색 ================= */
+function setMapType(type){
+  curMapType = type;
+  map.setMapTypeId(kakao.maps.MapTypeId[type]);
+  ['ROADMAP','SKYVIEW','HYBRID'].forEach(function(t){
+    document.getElementById('mt-' + t).classList.toggle('active', t === type);
+  });
+  scheduleSave();
+}
+function searchPlace(){
+  const kw = document.getElementById('searchKeyword').value.trim();
+  if(!kw) return;
+  if(!map || !places){ alert('지도가 아직 로딩 중입니다.'); return; }
+  places.keywordSearch(kw, function(data, status){
+    if(status === kakao.maps.services.Status.OK && data.length){
+      showResults(data);
+    } else if(status === kakao.maps.services.Status.ZERO_RESULT){
+      new kakao.maps.services.Geocoder().addressSearch(kw, function(res, st){
+        if(st === kakao.maps.services.Status.OK && res.length) showResults(res.map(function(r){ return { place_name: r.address_name, y: r.y, x: r.x }; }));
+        else alert('검색 결과가 없습니다.');
+      });
+    } else {
+      alert('검색 실패 (상태: ' + status + ')\n카카오 개발자 콘솔의 [카카오맵] 사용 설정과 도메인 등록을 확인하세요.');
+    }
+  });
+}
+function showResults(data){
+  const box = document.getElementById('searchResults');
+  if(data.length === 1){ goTo(data[0].y, data[0].x); box.style.display = 'none'; return; }
+  box.innerHTML = '';
+  data.slice(0, 8).forEach(function(d){
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.textContent = d.place_name + (d.address_name ? ' (' + d.address_name + ')' : '');
+    div.onclick = function(){ goTo(d.y, d.x); box.style.display = 'none'; };
+    box.appendChild(div);
+  });
+  box.style.display = 'block';
+}
+function goTo(y, x){ map.setCenter(new kakao.maps.LatLng(y, x)); map.setLevel(2); }
+
+/* ═══════════════ 5. 대회장 영역 그리기 ═══════════════
+   클릭으로 꼭짓점 추가 → 첫 점 클릭 또는 [완료]로 마침
+   완료 후에도 꼭짓점 드래그로 수정 가능, 면적·둘레·변 길이 자동 표시 */
+let drawMode = false;
+let venue = { points: [], markers: [], edgeLabels: [], polygon: null, polyline: null, previewLine: null, done: false };
+let venueArea = 0;
+
+function toggleDrawMode(){
+  drawMode = !drawMode;
+  if(drawMode) setAnnoMode(null, true);
+  updateToolActive();
+  if(drawMode){
+    pushUndo();
+    venueTeardown(); refreshVenueInfo();
+    deselect(); deselectAnno();
+    hint('클릭: 꼭짓점 │ 우클릭: 되돌리기 │ 첫 점(주황) 클릭=완료');
+  } else { hint(''); removePreview(); }
+}
+function addVenuePoint(latLng){
+  venue.points.push(latLng);
+  createVertexMarker(venue.points.length - 1);
+  updateVenueShapes();
+}
+function createVertexMarker(i){
+  const div = document.createElement('div');
+  div.className = 'vertex' + (i === 0 ? ' first' : '');
+  div.title = i === 0 ? '첫 점 (클릭하면 영역 완료)' : '드래그로 위치 수정';
+  div.addEventListener('mousedown', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    if(drawMode && i === 0 && venue.points.length >= 3){ finishDraw(); return; }
+    pushUndo('vdrag');
+    startVertexDrag(i);
+  });
+  venue.markers.push(new kakao.maps.CustomOverlay({
+    map: map, position: venue.points[i], content: div, xAnchor: 0.5, yAnchor: 0.5, zIndex: 30
+  }));
+}
+function startVertexDrag(i){
+  map.setDraggable(false);
+  function mm(ev){
+    ev.preventDefault();
+    const ll = clientToLatLng(ev.clientX, ev.clientY);
+    venue.points[i] = ll;
+    venue.markers[i].setPosition(ll);
+    updateVenueShapes();
+  }
+  function mu(){
+    document.removeEventListener('mousemove', mm);
+    document.removeEventListener('mouseup', mu);
+    map.setDraggable(true);
+    updateVenueShapes();
+    scheduleSave();
+  }
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup', mu);
+}
+function undoPoint(){
+  if(!venue.points.length || venue.done) return;
+  venue.points.pop();
+  const m = venue.markers.pop();
+  if(m) m.setMap(null);
+  removePreview();
+  updateVenueShapes();
+}
+function updatePreview(cursorLatLng){
+  if(!venue.previewLine){
+    venue.previewLine = new kakao.maps.Polyline({
+      map: map, strokeWeight: 2, strokeColor: '#2ecc71', strokeStyle: 'shortdash', strokeOpacity: 0.8
+    });
+  }
+  venue.previewLine.setPath([venue.points[venue.points.length - 1], cursorLatLng]);
+}
+function removePreview(){
+  if(venue.previewLine){ venue.previewLine.setMap(null); venue.previewLine = null; }
+}
+function updateVenueShapes(){
+  if(venue.polygon){ venue.polygon.setMap(null); venue.polygon = null; }
+  if(venue.polyline){ venue.polyline.setMap(null); venue.polyline = null; }
+  venue.edgeLabels.forEach(function(l){ l.setMap(null); });
+  venue.edgeLabels = [];
+  const pts = venue.points;
+  if(pts.length >= 3){
+    venue.polygon = new kakao.maps.Polygon({
+      map: map, path: pts, strokeWeight: 3, strokeColor: '#2ecc71',
+      strokeStyle: venue.done ? 'solid' : 'shortdash',
+      fillColor: '#2ecc71', fillOpacity: 0.15, zIndex: 1
+    });
+  } else if(pts.length === 2){
+    venue.polyline = new kakao.maps.Polyline({
+      map: map, path: pts, strokeWeight: 3, strokeColor: '#2ecc71', strokeStyle: 'shortdash'
+    });
+  }
+  const segCount = venue.done ? pts.length : pts.length - 1;
+  for(let i = 0; i < segCount; i++){
+    const p = pts[i], q = pts[(i+1) % pts.length];
+    const mid = new kakao.maps.LatLng((p.getLat()+q.getLat())/2, (p.getLng()+q.getLng())/2);
+    const d = distM(p, q);
+    venue.edgeLabels.push(new kakao.maps.CustomOverlay({
+      map: map, position: mid, xAnchor: 0.5, yAnchor: 0.5, zIndex: 25,
+      content: '<div class="edge-label">' + (d >= 100 ? d.toFixed(0) : d.toFixed(1)) + ' m</div>'
+    }));
+  }
+  refreshVenueInfo();
+  refreshTable();
+}
+function refreshVenueInfo(){
+  const pts = venue.points;
+  if(pts.length >= 3){
+    venueArea = polygonAreaM2(pts);
+    const segCount = venue.done ? pts.length : pts.length - 1;
+    let per = 0;
+    for(let i = 0; i < segCount; i++) per += distM(pts[i], pts[(i+1) % pts.length]);
+    document.getElementById('areaInfo').innerHTML =
+      (venue.done ? '면적: ' : '면적(그리는 중): ') +
+      venueArea.toLocaleString(undefined,{maximumFractionDigits:0}) + ' ㎡<br>약 ' +
+      Math.round(venueArea/3.3058).toLocaleString() + '평 · 둘레 ' + per.toFixed(0) + ' m';
+  } else {
+    venueArea = 0;
+    document.getElementById('areaInfo').textContent = '대회장 면적: -';
+  }
+}
+function finishDraw(){
+  if(venue.points.length < 3){ alert('꼭짓점을 3개 이상 찍어주세요.'); return; }
+  venue.done = true;
+  drawMode = false;
+  updateToolActive();
+  hint('완료! 꼭짓점을 드래그하면 수정됩니다.');
+  removePreview();
+  updateVenueShapes();
+  pushUndo(); scheduleSave();
+}
+function venueTeardown(){
+  venue.points = [];
+  venue.done = false;
+  venue.markers.forEach(function(m){ m.setMap(null); }); venue.markers = [];
+  venue.edgeLabels.forEach(function(l){ l.setMap(null); }); venue.edgeLabels = [];
+  if(venue.polygon){ venue.polygon.setMap(null); venue.polygon = null; }
+  if(venue.polyline){ venue.polyline.setMap(null); venue.polyline = null; }
+  removePreview();
+  venueArea = 0;
+}
+function clearVenue(){
+  pushUndo();
+  venueTeardown();
+  refreshVenueInfo();
+  refreshTable();
+}
+function polygonAreaM2(pts){
+  const lat0 = pts[0].getLat();
+  const kx = mPerLng(lat0), ky = M_PER_LAT;
+  let sum = 0;
+  for(let i = 0; i < pts.length; i++){
+    const p = pts[i], q = pts[(i+1) % pts.length];
+    sum += p.getLng()*kx * q.getLat()*ky - q.getLng()*kx * p.getLat()*ky;
+  }
+  return Math.abs(sum)/2;
+}
+
+/* ═══════════════ 6. 주석 (선·화살표·구역·글씨·아이콘·거리측정) ═══════════════
+   annoMode: 'solid'|'dash'|'arrow'|'zone'|'text'|'icon'|'measure'|'erase'|null
+   모든 주석은 클릭으로 선택 → 색·크기 즉시 수정, 파란 점으로 모양 수정 */
+let annoMode = null;
+let annos = [];
+let curLine = null;
+let annoSelected = null;
+
+let stampIcon = '📍';
+const MARATHON_ICONS = [
+  ['🏁','출발/도착'], ['🚩','반환점'], ['💧','급수대'], ['🚻','화장실'], ['🚑','의무실'],
+  ['⛑️','안전요원'], ['🅿️','주차장'], ['🎤','무대/방송'], ['🔊','스피커'], ['🍜','먹거리'],
+  ['🎪','대형천막'], ['📦','물품보관'], ['🥇','메달수여'], ['📷','포토존'], ['🗑️','쓰레기장'], ['🚌','셔틀버스']
+];
+function initIconPalette(){
+  const box = document.getElementById('iconBtns');
+  MARATHON_ICONS.forEach(function(it){
+    const b = document.createElement('button');
+    b.className = 'mini gray';
+    b.style.fontSize = '15px';
+    b.style.padding = '3px 5px';
+    b.textContent = it[0];
+    b.title = it[1] + ' — 클릭 후 지도에 배치';
+    b.onclick = function(){
+      // 배치된 아이콘/글씨가 선택된 상태면 그 아이콘을 교체
+      if(annoSelected && annoSelected.type === 'text'){
+        pushUndo();
+        annoSelected.div.textContent = it[0];
+        scheduleSave();
+        hint('선택한 아이콘이 ' + it[0] + '(' + it[1] + ')(으)로 변경되었습니다');
+        return;
+      }
+      stampIcon = it[0];
+      setAnnoMode('icon', true);
+      hint(it[1] + '(' + it[0] + ') 배치: 지도를 클릭하세요 (Esc 종료)');
+    };
+    box.appendChild(b);
+  });
+}
+/* 거리 측정 */
+let mPoints = [], mLine = null, mPreview = null;
+function clearMeasure(){
+  mPoints = [];
+  if(mLine){ mLine.setMap(null); mLine = null; }
+  if(mPreview){ mPreview.setMap(null); mPreview = null; }
+}
+function measureClick(latLng){
+  mPoints.push(latLng);
+  if(mLine) mLine.setMap(null);
+  if(mPoints.length >= 2){
+    mLine = new kakao.maps.Polyline({
+      map: map, path: mPoints, strokeWeight: 3, strokeColor: '#00e5ff', strokeStyle: 'dash', strokeOpacity: 1, zIndex: 50
+    });
+  }
+  hint('📏 누적 거리: ' + measureTotal(null).toFixed(1) + ' m │ 클릭=계속 · 우클릭/Esc=종료');
+}
+function measureTotal(cursor){
+  let d = 0;
+  for(let i = 0; i < mPoints.length - 1; i++) d += distM(mPoints[i], mPoints[i+1]);
+  if(cursor && mPoints.length) d += distM(mPoints[mPoints.length-1], cursor);
+  return d;
+}
+
+function setAnnoMode(mode, skipToggle){
+  if(!skipToggle && annoMode === mode) mode = null;
+  finishLine();
+  if(annoMode === 'measure' && mode !== 'measure') clearMeasure();
+  annoMode = mode;
+  if(mode){
+    drawMode = false;
+    removePreview();
+    deselect(); deselectAnno();
+  }
+  updateToolActive();
+  const hints = {
+    solid: '클릭: 점 추가 │ Backspace: 점 취소 │ 우클릭/[완료]: 마침',
+    dash: '클릭: 점 추가 │ Backspace: 점 취소 │ 우클릭/[완료]: 마침',
+    arrow: '시작점 클릭 → 끝점 클릭 (자동 완성)',
+    zone: '구역 꼭짓점을 클릭 │ 우클릭/[완료]: 마침 → 이름 입력',
+    text: '글씨를 넣을 위치를 클릭하세요',
+    icon: '아이콘(' + stampIcon + ') 배치: 지도를 클릭하세요. 우측 패널에서 다른 아이콘 선택 가능 (Esc 종료)',
+    measure: '📏 거리 측정: 지도를 클릭해 구간을 이어가세요 (우클릭/Esc=종료)',
+    erase: '지울 선·화살표·구역·글씨·아이콘을 클릭하세요'
+  };
+  hint(mode ? hints[mode] : '');
+}
+function addLinePoint(latLng){
+  if(!curLine) curLine = { points: [], polyline: null, polygon: null, preview: null,
+    kind: annoMode, style: annoMode === 'dash' ? 'dash' : 'solid' };
+  curLine.points.push(latLng);
+  drawCurLine();
+  if(curLine.kind === 'arrow' && curLine.points.length === 2) finishLine();
+}
+function drawCurLine(){
+  if(curLine.polyline){ curLine.polyline.setMap(null); curLine.polyline = null; }
+  if(curLine.polygon){ curLine.polygon.setMap(null); curLine.polygon = null; }
+  const color = document.getElementById('annoColor').value;
+  const weight = parseInt(document.getElementById('annoSize').value) || 4;
+  if(curLine.kind === 'zone' && curLine.points.length >= 3){
+    curLine.polygon = new kakao.maps.Polygon({
+      map: map, path: curLine.points, strokeWeight: 2, strokeColor: color,
+      strokeStyle: 'shortdash', fillColor: color, fillOpacity: 0.3, zIndex: 2
+    });
+  } else if(curLine.points.length >= 2){
+    curLine.polyline = new kakao.maps.Polyline({
+      map: map, path: curLine.points, strokeWeight: weight, strokeColor: color,
+      strokeStyle: curLine.style, strokeOpacity: 0.95, zIndex: 15
+    });
+  }
+}
+function updateLinePreview(cursorLatLng){
+  if(!curLine || !curLine.points.length) return;
+  if(!curLine.preview){
+    curLine.preview = new kakao.maps.Polyline({
+      map: map, strokeWeight: 2, strokeColor: document.getElementById('annoColor').value,
+      strokeStyle: 'shortdash', strokeOpacity: 0.7, zIndex: 15
+    });
+  }
+  curLine.preview.setPath([curLine.points[curLine.points.length - 1], cursorLatLng]);
+}
+function finishLine(){
+  if(!curLine) return;
+  const cl = curLine;
+  curLine = null;
+  if(cl.preview) cl.preview.setMap(null);
+  if(cl.polyline) cl.polyline.setMap(null);
+  if(cl.polygon) cl.polygon.setMap(null);
+  const color = document.getElementById('annoColor').value;
+  const weight = parseInt(document.getElementById('annoSize').value) || 4;
+  if(cl.kind === 'zone'){
+    if(cl.points.length < 3) return;
+    const name = prompt('구역 이름 (비워도 됩니다)', '') || '';
+    pushUndo();
+    createZoneObj(cl.points, color, name);
+    scheduleSave();
+  } else if(cl.kind === 'arrow'){
+    if(cl.points.length < 2) return;
+    pushUndo();
+    createArrowObj(cl.points, color, weight);
+    scheduleSave();
+  } else {
+    if(cl.points.length < 2) return;
+    pushUndo();
+    createLineObj(cl.points, color, weight, cl.style);
+    scheduleSave();
+  }
+}
+function attachHit(anno, zBase){
+  anno.hit = new kakao.maps.Polyline({
+    map: map, path: anno.points, strokeWeight: 18, strokeColor: '#ffffff', strokeOpacity: 0.01, zIndex: zBase + 1
+  });
+  function handler(){
+    if(curvePick && (anno.type === 'line' || anno.type === 'arrow')){
+      const cp = curvePick;
+      curvePick = null;
+      suppressClick();
+      alignToCurve(anno, cp.dir, cp.tents);
+      return;
+    }
+    if(annoMode === 'erase'){ pushUndo(); removeAnno(anno); return; }
+    if(annoMode) return;
+    selectAnno(anno);
+    suppressClick();
+  }
+  [anno.hit, anno.polyline, anno.polygon].forEach(function(obj){
+    if(!obj) return;
+    kakao.maps.event.addListener(obj, 'mousedown', handler);
+    kakao.maps.event.addListener(obj, 'click', handler);
+  });
+}
+function createLineObj(points, color, weight, style){
+  const anno = { type: 'line', points: points.slice(), color: color, weight: weight, style: style || 'solid', vertexOvs: [] };
+  anno.polyline = new kakao.maps.Polyline({
+    map: map, path: anno.points, strokeWeight: weight, strokeColor: color,
+    strokeStyle: anno.style, strokeOpacity: 0.95, zIndex: 15
+  });
+  attachHit(anno, 15);
+  annos.push(anno);
+  return anno;
+}
+function arrowHeadPath(points, weight){
+  const end = points[points.length - 1], prev = points[points.length - 2];
+  const kx = mPerLng(end.getLat());
+  let dx = (end.getLng() - prev.getLng()) * kx;
+  let dy = (end.getLat() - prev.getLat()) * M_PER_LAT;
+  const len = Math.sqrt(dx*dx + dy*dy) || 1;
+  dx /= len; dy /= len;
+  const L = Math.max(3, weight * 1.2);
+  const bx = -dx * L, by = -dy * L;
+  const px = -dy, py = dx;
+  return [
+    end,
+    offsetLatLng(end, bx + px * L * 0.55, by + py * L * 0.55),
+    offsetLatLng(end, bx - px * L * 0.55, by - py * L * 0.55)
+  ];
+}
+function createArrowObj(points, color, weight){
+  const anno = { type: 'arrow', points: points.slice(), color: color, weight: weight, vertexOvs: [] };
+  anno.polyline = new kakao.maps.Polyline({
+    map: map, path: anno.points, strokeWeight: weight, strokeColor: color, strokeOpacity: 0.95, zIndex: 15
+  });
+  anno.head = new kakao.maps.Polygon({
+    map: map, path: arrowHeadPath(anno.points, weight),
+    strokeWeight: 1, strokeColor: color, fillColor: color, fillOpacity: 0.95, zIndex: 15
+  });
+  attachHit(anno, 15);
+  annos.push(anno);
+  return anno;
+}
+function zoneCentroid(pts){
+  let lat = 0, lng = 0;
+  pts.forEach(function(p){ lat += p.getLat(); lng += p.getLng(); });
+  return new kakao.maps.LatLng(lat / pts.length, lng / pts.length);
+}
+function createZoneObj(points, color, name){
+  const anno = { type: 'zone', points: points.slice(), color: color, name: name || '', vertexOvs: [] };
+  anno.polygon = new kakao.maps.Polygon({
+    map: map, path: anno.points, strokeWeight: 2, strokeColor: color,
+    fillColor: color, fillOpacity: 0.3, zIndex: 2
+  });
+  const div = document.createElement('div');
+  div.className = 'zone-label';
+  div.textContent = anno.name;
+  div.style.display = anno.name ? '' : 'none';
+  anno.labelDiv = div;
+  anno.labelOv = new kakao.maps.CustomOverlay({
+    map: map, position: zoneCentroid(anno.points), content: div, xAnchor: 0.5, yAnchor: 0.5, zIndex: 20
+  });
+  div.addEventListener('mousedown', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    if(annoMode === 'erase'){ pushUndo(); removeAnno(anno); return; }
+    selectAnno(anno); suppressClick();
+    pushUndo('zdrag');
+    map.setDraggable(false);
+    let last = clientToLatLng(ev.clientX, ev.clientY);
+    function mm(e2){
+      e2.preventDefault();
+      const ll = clientToLatLng(e2.clientX, e2.clientY);
+      const dLat = ll.getLat() - last.getLat(), dLng = ll.getLng() - last.getLng();
+      last = ll;
+      anno.points = anno.points.map(function(p){ return new kakao.maps.LatLng(p.getLat() + dLat, p.getLng() + dLng); });
+      refreshAnnoGeom(anno);
+    }
+    function mu(){
+      document.removeEventListener('mousemove', mm);
+      document.removeEventListener('mouseup', mu);
+      map.setDraggable(true);
+      scheduleSave();
+    }
+    document.addEventListener('mousemove', mm);
+    document.addEventListener('mouseup', mu);
+  });
+  div.addEventListener('dblclick', function(ev){
+    ev.stopPropagation();
+    const nn = prompt('구역 이름', anno.name);
+    if(nn === null) return;
+    pushUndo();
+    anno.name = nn;
+    div.textContent = nn;
+    div.style.display = nn ? '' : 'none';
+    refreshLegend(); scheduleSave();
+  });
+  attachHit(anno, 2);
+  annos.push(anno);
+  refreshLegend();
+  return anno;
+}
+function createTextObj(latLng, text, color, size){
+  const div = document.createElement('div');
+  div.className = 'anno-text';
+  div.textContent = text;
+  div.style.color = color;
+  div.style.fontSize = size + 'px';
+  const ov = new kakao.maps.CustomOverlay({
+    map: map, position: latLng, content: div, xAnchor: 0.5, yAnchor: 0.5, zIndex: 45
+  });
+  const anno = { type: 'text', overlay: ov, div: div, color: color, size: size };
+  annos.push(anno);
+  div.addEventListener('mousedown', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    if(annoMode === 'erase'){ pushUndo(); removeAnno(anno); return; }
+    selectAnno(anno); suppressClick();
+    pushUndo('tdrag');
+    map.setDraggable(false);
+    function mm(e2){ e2.preventDefault(); ov.setPosition(clientToLatLng(e2.clientX, e2.clientY)); }
+    function mu(){
+      document.removeEventListener('mousemove', mm);
+      document.removeEventListener('mouseup', mu);
+      map.setDraggable(true); scheduleSave();
+    }
+    document.addEventListener('mousemove', mm);
+    document.addEventListener('mouseup', mu);
+  });
+  div.addEventListener('dblclick', function(ev){
+    ev.stopPropagation();
+    const nt = prompt('글씨 수정 (비우면 삭제)', div.textContent);
+    if(nt === null) return;
+    pushUndo();
+    if(nt === ''){ removeAnno(anno); return; }
+    div.textContent = nt; scheduleSave();
+  });
+  div.addEventListener('contextmenu', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    if(confirm('이 글씨를 삭제할까요?')){ pushUndo(); removeAnno(anno); }
+  });
+  return anno;
+}
+function addTextAnno(latLng){
+  const txt = prompt('표시할 글씨를 입력하세요');
+  if(!txt) return;
+  pushUndo();
+  const size = Math.max(11, (parseInt(document.getElementById('annoSize').value) || 4) * 5);
+  createTextObj(latLng, txt, document.getElementById('annoColor').value, size);
+  setAnnoMode(null);
+  scheduleSave();
+}
+function refreshAnnoGeom(a){
+  if(a.polyline) a.polyline.setPath(a.points);
+  if(a.polygon) a.polygon.setPath(a.points);
+  if(a.hit) a.hit.setPath(a.points);
+  if(a.head) a.head.setPath(arrowHeadPath(a.points, a.weight));
+  if(a.labelOv) a.labelOv.setPosition(zoneCentroid(a.points));
+  (a.vertexOvs || []).forEach(function(o, i){ o.setPosition(a.points[i]); });
+}
+function selectAnno(a){
+  if(annoSelected === a) return;
+  deselectAnno(); deselect();
+  annoSelected = a;
+  const colorEl = document.getElementById('annoColor');
+  const sizeEl = document.getElementById('annoSize');
+  if(a.type === 'text'){
+    a.div.style.outline = '2px dashed #e74c3c';
+    colorEl.value = a.color;
+    sizeEl.value = Math.max(1, Math.round(a.size / 5));
+    hint('글씨 선택됨: 색·크기 즉시 적용 │ 더블클릭=내용 수정 │ Delete=삭제');
+    updatePropPanel();
+    return;
+  }
+  colorEl.value = a.color;
+  if(a.type !== 'zone') sizeEl.value = a.weight;
+  if(a.polyline) a.polyline.setOptions({ strokeWeight: (a.weight || 2) + 3, strokeOpacity: 1 });
+  if(a.polygon) a.polygon.setOptions({ fillOpacity: 0.5, strokeWeight: 3 });
+  a.vertexOvs = a.points.map(function(p, i){
+    const d = document.createElement('div');
+    d.className = 'vertex line-v';
+    d.title = '드래그로 모양 수정';
+    d.addEventListener('mousedown', function(ev){
+      ev.preventDefault(); ev.stopPropagation();
+      pushUndo('avdrag');
+      startAnnoVertexDrag(a, i);
+    });
+    return new kakao.maps.CustomOverlay({ map: map, position: p, content: d, xAnchor: 0.5, yAnchor: 0.5, zIndex: 35 });
+  });
+  hint((a.type === 'zone' ? '구역' : a.type === 'arrow' ? '화살표' : '선') + ' 선택됨: 파란 점=모양 수정 │ Delete=삭제');
+  updatePropPanel();
+}
+function deselectAnno(){
+  if(!annoSelected) return;
+  const a = annoSelected;
+  if(a.type === 'text'){ a.div.style.outline = 'none'; }
+  else {
+    if(a.polyline) a.polyline.setOptions({ strokeWeight: a.weight, strokeOpacity: 0.95 });
+    if(a.polygon) a.polygon.setOptions({ fillOpacity: 0.3, strokeWeight: 2 });
+    (a.vertexOvs || []).forEach(function(o){ o.setMap(null); });
+    a.vertexOvs = [];
+  }
+  annoSelected = null;
+  hint('');
+  updatePropPanel();
+}
+function startAnnoVertexDrag(a, i){
+  map.setDraggable(false);
+  function mm(ev){
+    ev.preventDefault();
+    a.points[i] = clientToLatLng(ev.clientX, ev.clientY);
+    refreshAnnoGeom(a);
+  }
+  function mu(){
+    document.removeEventListener('mousemove', mm);
+    document.removeEventListener('mouseup', mu);
+    map.setDraggable(true); scheduleSave();
+  }
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup', mu);
+}
+function applyAnnoStyle(){
+  if(curLine){ drawCurLine(); if(curLine.preview) curLine.preview.setOptions({ strokeColor: document.getElementById('annoColor').value }); }
+  if(!annoSelected) return;
+  pushUndo('astyle');
+  const a = annoSelected;
+  const color = document.getElementById('annoColor').value;
+  const size = parseInt(document.getElementById('annoSize').value) || 4;
+  a.color = color;
+  if(a.type === 'text'){
+    a.size = Math.max(11, size * 5);
+    a.div.style.color = color;
+    a.div.style.fontSize = a.size + 'px';
+  } else if(a.type === 'zone'){
+    a.polygon.setOptions({ strokeColor: color, fillColor: color });
+    refreshLegend();
+  } else {
+    a.weight = size;
+    a.polyline.setOptions({ strokeColor: color, strokeWeight: size + 3 });
+    if(a.head){ a.head.setOptions({ strokeColor: color, fillColor: color }); a.head.setPath(arrowHeadPath(a.points, size)); }
+  }
+  scheduleSave();
+}
+function deleteSelectedAnno(){
+  if(!annoSelected){ alert('먼저 지도에서 선·화살표·구역·글씨를 클릭해 선택하세요.'); return; }
+  pushUndo();
+  const a = annoSelected;
+  deselectAnno();
+  removeAnno(a);
+}
+function removeAnno(a){
+  if(annoSelected === a) deselectAnno();
+  annoTeardown(a);
+  annos = annos.filter(function(x){ return x !== a; });
+  refreshLegend(); scheduleSave();
+}
+function clearAnnos(){
+  if(annos.length && !confirm('선·화살표·구역·글씨를 모두 지울까요?')) return;
+  pushUndo();
+  deselectAnno();
+  annos.forEach(annoTeardown);
+  annos = [];
+  finishLine();
+  refreshLegend(); scheduleSave();
+}
+
+/* ═══════════════ 7. 그룹 관리 ═══════════════ */
+function addGroup(){
+  const name = prompt('그룹 이름을 입력하세요', '그룹 ' + nextGroupId);
+  if(!name) return;
+  pushUndo();
+  groups.push({ id: nextGroupId++, name: name, style: 'num' });
+  refreshGroupSelect(); refreshTable();
+}
+function renameGroup(id, name){
+  const g = groups.find(function(g){ return g.id === id; });
+  if(g && name.trim()){ pushUndo(); g.name = name.trim(); }
+  refreshGroupSelect(); refreshTable();
+}
+function setGroupStyle(id, style){
+  const g = groups.find(function(g){ return g.id === id; });
+  if(g){ pushUndo(); g.style = style; refreshTable(); }
+}
+function deleteGroup(id){
+  if(groups.length === 1){ alert('그룹은 최소 1개 필요합니다.'); return; }
+  const inGroup = tents.filter(function(t){ return t.groupId === id; });
+  if(inGroup.length && !confirm('이 그룹의 텐트 ' + inGroup.length + '개는 첫 번째 그룹으로 이동됩니다. 삭제할까요?')) return;
+  pushUndo();
+  const firstOther = groups.find(function(g){ return g.id !== id; });
+  inGroup.forEach(function(t){ t.groupId = firstOther.id; });
+  groups = groups.filter(function(g){ return g.id !== id; });
+  refreshGroupSelect(); refreshTable();
+}
+function moveGroupOrder(id, dir){
+  const i = groups.findIndex(function(g){ return g.id === id; });
+  const j = i + dir;
+  if(j < 0 || j >= groups.length) return;
+  pushUndo();
+  const tmp = groups[i]; groups[i] = groups[j]; groups[j] = tmp;
+  refreshGroupSelect(); refreshTable();
+}
+function changeTentGroup(id, gid){
+  const t = tents.find(function(t){ return t.id === id; });
+  if(t){ pushUndo(); t.groupId = parseInt(gid); refreshTable(); }
+}
+function refreshGroupSelect(){
+  const selEl = document.getElementById('tentGroup');
+  const cur = selEl.value;
+  selEl.innerHTML = '';
+  groups.forEach(function(g){
+    const o = document.createElement('option');
+    o.value = g.id; o.textContent = g.name;
+    selEl.appendChild(o);
+  });
+  if(cur && groups.some(function(g){ return g.id == cur; })) selEl.value = cur;
+}
+
+/* ═══════════════ 8. 텐트 (생성·선택·이동·회전·정렬) ═══════════════
+   - 실제 크기(m) 기준 지리 도형 + 중앙 번호 배지
+   - Alt+드래그 복사, Ctrl+클릭 다중 선택, 곡선 정렬 지원 */
+function rectPath(center, w, h, rotDeg){
+  const th = rotDeg * Math.PI/180;
+  const lat = center.getLat(), lng = center.getLng();
+  const kx = mPerLng(lat), ky = M_PER_LAT;
+  const corners = [[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]];
+  return corners.map(function(c){
+    const x = c[0]*Math.cos(th) - c[1]*Math.sin(th);
+    const y = c[0]*Math.sin(th) + c[1]*Math.cos(th);
+    return new kakao.maps.LatLng(lat + y/ky, lng + x/kx);
+  });
+}
+function tentArea(t){ return t.shape === 'circle' ? Math.PI * Math.pow(t.w/2, 2) : t.w * t.h; }
+function createTentObject(name, w, h, color, groupId, center, shape, forceId){
+  const t = { id: forceId || nextId++, name: name, w: w, h: h, rot: 0, color: color,
+    groupId: groupId, center: center, shape: shape || 'rect', labelText: '', bandId: null };
+  if(t.shape === 'circle'){
+    t.polygon = new kakao.maps.Circle({
+      map: map, center: center, radius: w/2,
+      strokeWeight: 3, strokeColor: color, strokeOpacity: 1,
+      fillColor: color, fillOpacity: 0.55, zIndex: 5
+    });
+  } else {
+    t.polygon = new kakao.maps.Polygon({
+      map: map, path: rectPath(center, w, h, 0),
+      strokeWeight: 3, strokeColor: color, strokeOpacity: 1,
+      fillColor: color, fillOpacity: 0.55, zIndex: 5
+    });
+  }
+  const badge = document.createElement('div');
+  badge.className = 'tent-badge';
+  badge.style.borderColor = color;
+  badge.title = name;
+  badge.addEventListener('mousedown', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    handleTentMouseDown(t, clientToLatLng(ev.clientX, ev.clientY), ev.ctrlKey || ev.metaKey, ev.altKey);
+  });
+  t.badgeDiv = badge;
+  t.label = new kakao.maps.CustomOverlay({
+    map: map, position: center, content: badge, xAnchor: 0.5, yAnchor: 0.5, zIndex: 10
+  });
+  kakao.maps.event.addListener(t.polygon, 'mousedown', function(e){
+    if(annoMode) return;
+    handleTentMouseDown(t, e.latLng, lastCtrl, lastAlt);
+  });
+  return t;
+}
+function handleTentMouseDown(t, grabLatLng, ctrl, alt){
+  suppressClick();
+  if(alt){
+    pushUndo();
+    const c = createTentObject(t.name, t.w, t.h, t.color, t.groupId, t.center, t.shape);
+    c.rot = t.rot; redrawTent(c);
+    tents.splice(tents.indexOf(t) + 1, 0, c);
+    setSelection([c]);
+    refreshTable();
+    startTentDrag(c, grabLatLng);
+    return;
+  }
+  if(ctrl){
+    if(sel.includes(t)) setSelection(sel.filter(function(x){ return x !== t; }));
+    else setSelection(sel.concat([t]));
+    return;
+  }
+  if(!sel.includes(t)) setSelection([t]);
+  startTentDrag(t, grabLatLng);
+}
+function readForm(){
+  const w = parseFloat(document.getElementById('tentW').value);
+  const h = parseFloat(document.getElementById('tentH').value);
+  if(!(w > 0 && h > 0)){ alert('가로/세로 크기를 입력하세요.'); return null; }
+  return {
+    name: document.getElementById('tentName').value.trim() || ('텐트 ' + nextId),
+    w: w, h: h,
+    shape: document.getElementById('tentShape').value,
+    color: document.getElementById('tentColor').value,
+    groupId: parseInt(document.getElementById('tentGroup').value) || groups[0].id
+  };
+}
+function addTent(){
+  const f = readForm();
+  if(!f) return;
+  pushUndo();
+  const t = createTentObject(f.name, f.w, f.h, f.color, f.groupId, map.getCenter(), f.shape);
+  tents.push(t);
+  document.getElementById('tentName').value = '';
+  setSelection([t]);
+  refreshTable();
+}
+function insertTentBelow(id){
+  const i = tents.findIndex(function(t){ return t.id === id; });
+  if(i < 0) return;
+  const f = readForm();
+  if(!f) return;
+  pushUndo();
+  const t = createTentObject(f.name, f.w, f.h, f.color, tents[i].groupId, map.getCenter(), f.shape);
+  tents.splice(i + 1, 0, t);
+  document.getElementById('tentName').value = '';
+  setSelection([t]);
+  refreshTable();
+}
+function duplicateTent(id){
+  const i = tents.findIndex(function(t){ return t.id === id; });
+  if(i < 0) return;
+  pushUndo();
+  const s = tents[i];
+  const t = createTentObject(s.name, s.w, s.h, s.color, s.groupId, offsetLatLng(s.center, 2, -2), s.shape);
+  t.rot = s.rot; redrawTent(t);
+  tents.splice(i + 1, 0, t);
+  setSelection([t]);
+  refreshTable();
+}
+function moveTentOrder(id, dir){
+  const i = tents.findIndex(function(t){ return t.id === id; });
+  if(i < 0) return;
+  let j = i + dir;
+  while(j >= 0 && j < tents.length && tents[j].groupId !== tents[i].groupId) j += dir;
+  if(j < 0 || j >= tents.length) return;
+  pushUndo();
+  const tmp = tents[i]; tents[i] = tents[j]; tents[j] = tmp;
+  refreshTable();
+}
+function setSelection(list){
+  sel.forEach(function(t){ t.polygon.setOptions({ strokeWeight: 3, fillOpacity: 0.55 }); });
+  if(rotHandle){ rotHandle.setMap(null); rotHandle = null; }
+  sel = list.slice();
+  sel.forEach(function(t){ t.polygon.setOptions({ strokeWeight: 5, fillOpacity: 0.75 }); });
+  if(sel.length === 1 && sel[0].shape !== 'circle') showRotHandle(sel[0]);
+  refreshTable();
+  updatePropPanel();
+}
+function deselect(){ if(sel.length) setSelection([]); }
+function showRotHandle(t){
+  const div = document.createElement('div');
+  div.className = 'rot-handle';
+  div.textContent = '↻';
+  div.title = '드래그하면 회전합니다';
+  div.addEventListener('mousedown', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    pushUndo('rot');
+    startRotate(t);
+  });
+  rotHandle = new kakao.maps.CustomOverlay({
+    map: map, position: rotHandlePos(t), content: div, xAnchor: 0.5, yAnchor: 0.5, zIndex: 40
+  });
+}
+function rotHandlePos(t){
+  const th = t.rot * Math.PI/180;
+  const d = t.h/2 + 3;
+  return offsetLatLng(t.center, -d * Math.sin(th), d * Math.cos(th));
+}
+function startRotate(t){
+  map.setDraggable(false);
+  function mm(ev){
+    ev.preventDefault();
+    const ll = clientToLatLng(ev.clientX, ev.clientY);
+    const kx = mPerLng(t.center.getLat());
+    const px = (ll.getLng() - t.center.getLng()) * kx;
+    const py = (ll.getLat() - t.center.getLat()) * M_PER_LAT;
+    let deg = -Math.atan2(px, py) * 180/Math.PI;
+    deg = Math.round(deg / 5) * 5;
+    [0,90,180,270,360,-90,-180,-270].forEach(function(s){ if(Math.abs(deg - s) <= 5) deg = s; });
+    t.rot = ((deg % 360) + 360) % 360;
+    redrawTent(t);
+  }
+  function mu(){
+    document.removeEventListener('mousemove', mm);
+    document.removeEventListener('mouseup', mu);
+    map.setDraggable(true);
+    refreshTable(); updatePropPanel(); scheduleSave();
+  }
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup', mu);
+}
+function startTentDrag(t, grabLatLng){
+  pushUndo('drag');
+  const offs = sel.map(function(s){
+    return { t: s, dLat: s.center.getLat() - grabLatLng.getLat(), dLng: s.center.getLng() - grabLatLng.getLng() };
+  });
+  map.setDraggable(false);
+  function mm(ev){
+    ev.preventDefault();
+    const ll = clientToLatLng(ev.clientX, ev.clientY);
+    offs.forEach(function(o){
+      o.t.center = new kakao.maps.LatLng(ll.getLat() + o.dLat, ll.getLng() + o.dLng);
+      redrawTent(o.t);
+    });
+  }
+  function mu(){
+    document.removeEventListener('mousemove', mm);
+    document.removeEventListener('mouseup', mu);
+    map.setDraggable(true);
+    refreshTable(); scheduleSave();
+  }
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup', mu);
+}
+function redrawTent(t){
+  if(t.shape === 'circle'){
+    t.polygon.setPosition(t.center);
+    t.polygon.setRadius(t.w/2);
+  } else {
+    t.polygon.setPath(rectPath(t.center, t.w, t.h, t.rot));
+  }
+  t.label.setPosition(t.center);
+  if(sel.length === 1 && sel[0] === t && rotHandle) rotHandle.setPosition(rotHandlePos(t));
+}
+function removeTent(id){
+  const i = tents.findIndex(function(t){ return t.id === id; });
+  if(i < 0) return;
+  pushUndo();
+  const t = tents[i];
+  if(sel.includes(t)) setSelection(sel.filter(function(x){ return x !== t; }));
+  t.polygon.setMap(null);
+  t.label.setMap(null);
+  tents.splice(i, 1);
+  refreshTable();
+}
+function panToTent(id){
+  const t = tents.find(function(t){ return t.id === id; });
+  if(t){ map.panTo(t.center); setSelection([t]); }
+}
+function updateTent(id, field, value){
+  const t = tents.find(function(t){ return t.id === id; });
+  if(!t) return;
+  pushUndo();
+  if(field === 'name'){
+    t.name = value || t.name;
+  } else if(field === 'color'){
+    t.color = value;
+    t.polygon.setOptions({ strokeColor: value, fillColor: value });
+    if(t.badgeDiv) t.badgeDiv.style.borderColor = value;
+  } else {
+    const v = parseFloat(value);
+    if(isNaN(v)) return;
+    if(field === 'w' && v > 0) t.w = v;
+    if(field === 'h' && v > 0) t.h = v;
+    if(field === 'rot') t.rot = ((v % 360) + 360) % 360;
+    redrawTent(t);
+  }
+  refreshTable();
+}
+function colorAllSel(color){
+  pushUndo();
+  sel.forEach(function(t){
+    t.color = color;
+    t.polygon.setOptions({ strokeColor: color, fillColor: color });
+    if(t.badgeDiv) t.badgeDiv.style.borderColor = color;
+  });
+  refreshTable();
+}
+function groupAllSel(gid){
+  if(!gid) return;
+  pushUndo();
+  sel.forEach(function(t){ t.groupId = parseInt(gid); });
+  refreshTable();
+  updatePropPanel();
+}
+/* 캡쳐용 목록에서 번호 범위(예: 11~14 급수대)로 묶기 — 직접 선택한 것만 묶임 */
+function bindSel(){
+  if(sel.length < 2){ alert('묶을 텐트를 2개 이상 선택하세요.'); return; }
+  pushUndo();
+  const nb = Math.max.apply(null, [0].concat(tents.map(function(t){ return t.bandId || 0; }))) + 1;
+  sel.forEach(function(t){ t.bandId = nb; });
+  refreshTable();
+  hint('캡쳐용 목록에서 번호 범위로 묶였습니다 (' + sel.length + '개)');
+}
+function unbindSel(){
+  if(!sel.length) return;
+  pushUndo();
+  sel.forEach(function(t){ t.bandId = null; });
+  refreshTable();
+  hint('묶음이 해제되었습니다');
+}
+/* --- 곡선 정렬: 선/화살표를 따라 배치 --- */
+let curvePick = null; // {dir:'h'|'v'}
+function startCurveAlign(dir){
+  if(sel.length < 1){ alert('먼저 텐트를 선택하세요.'); return; }
+  curvePick = { dir: dir, tents: sel.slice() };
+  hint('👉 정렬 기준이 될 선/화살표를 지도에서 클릭하세요 (Esc 취소)');
+}
+function alignToCurve(anno, dir, list){
+  pushUndo();
+  const gapEl = document.getElementById('alignGap');
+  const gap = Math.max(0, parseFloat(gapEl ? gapEl.value : 1) || 0);
+  // 곡선을 미터 좌표로 변환
+  const p0 = anno.points[0];
+  const lat0 = p0.getLat(), lng0 = p0.getLng();
+  const kx = mPerLng(lat0), ky = M_PER_LAT;
+  const mpts = anno.points.map(function(p){
+    return { x: (p.getLng() - lng0) * kx, y: (p.getLat() - lat0) * ky };
+  });
+  const segs = [];
+  let totalLen = 0;
+  for(let i = 0; i < mpts.length - 1; i++){
+    const dx = mpts[i+1].x - mpts[i].x, dy = mpts[i+1].y - mpts[i].y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    segs.push({ x: mpts[i].x, y: mpts[i].y, dx: dx/len, dy: dy/len, len: len, start: totalLen });
+    totalLen += len;
+  }
+  function pointAt(d){
+    let s = segs[segs.length - 1];
+    for(let i = 0; i < segs.length; i++){
+      if(d <= segs[i].start + segs[i].len){ s = segs[i]; break; }
+    }
+    const local = d - s.start;
+    return { x: s.x + s.dx * local, y: s.y + s.dy * local, dx: s.dx, dy: s.dy };
+  }
+  // 표(그룹) 순서대로 배치
+  const ordered = tents.filter(function(t){ return list.includes(t); });
+  function span(t){
+    if(t.shape === 'circle') return t.w;
+    return dir === 'h' ? t.w : t.h;
+  }
+  let cum = 0;
+  ordered.forEach(function(t){
+    const s = span(t);
+    const pos = pointAt(cum + s / 2);
+    cum += s + gap;
+    t.center = new kakao.maps.LatLng(lat0 + pos.y / ky, lng0 + pos.x / kx);
+    if(t.shape !== 'circle'){
+      let deg = Math.atan2(pos.dy, pos.dx) * 180 / Math.PI; // 곡선 진행 방향
+      if(dir === 'v') deg += 90;
+      t.rot = ((Math.round(deg) % 360) + 360) % 360;
+    }
+    redrawTent(t);
+  });
+  setSelection(ordered);
+  refreshTable();
+  scheduleSave();
+  hint('곡선 정렬 완료! (' + ordered.length + '개)');
+}
+function deleteSel(){
+  if(!sel.length) return;
+  pushUndo();
+  sel.slice().forEach(function(t){
+    t.polygon.setMap(null); t.label.setMap(null);
+    tents = tents.filter(function(x){ return x !== t; });
+  });
+  setSelection([]);
+  refreshTable();
+}
+function alignTents(dir){
+  if(sel.length < 2){ alert('텐트를 2개 이상 선택한 뒤 사용하세요. (Ctrl+클릭 또는 목록에서 Shift+클릭)'); return; }
+  pushUndo();
+  const gapEl = document.getElementById('alignGap');
+  const gap = Math.max(0, parseFloat(gapEl ? gapEl.value : 1) || 0);
+  const list = sel.slice();
+  function span(t){
+    if(t.shape === 'circle') return t.w;
+    return (t.rot % 180 >= 45 && t.rot % 180 < 135) ? (dir === 'h' ? t.h : t.w) : (dir === 'h' ? t.w : t.h);
+  }
+  // 기준(첫) 텐트는 그대로 두고, 나머지를 간격에 맞춰 일렬로 배치
+  if(dir === 'h'){
+    list.sort(function(a, b){ return a.center.getLng() - b.center.getLng(); });
+    const anchor = list[0];
+    let dist = 0; // 기준 텐트 중심으로부터의 거리(m)
+    list.forEach(function(t, i){
+      if(i === 0) return;
+      dist += span(list[i-1]) / 2 + gap + span(t) / 2;
+      t.center = offsetLatLng(anchor.center, dist, 0);
+      redrawTent(t);
+    });
+  } else {
+    list.sort(function(a, b){ return b.center.getLat() - a.center.getLat(); });
+    const anchor = list[0];
+    let dist = 0;
+    list.forEach(function(t, i){
+      if(i === 0) return;
+      dist += span(list[i-1]) / 2 + gap + span(t) / 2;
+      t.center = offsetLatLng(anchor.center, 0, -dist);
+      redrawTent(t);
+    });
+  }
+  refreshTable(); scheduleSave();
+}
+
+/* ═══════════════ 9. 우측 속성 패널 (선택 항목) ═══════════════ */
+function updatePropPanel(){
+  const box = document.getElementById('selInfo');
+  if(sel.length === 1){
+    const t = sel[0];
+    const isC = t.shape === 'circle';
+    let gsel = '<select onchange="changeTentGroup(' + t.id + ',this.value)" style="flex:1">';
+    groups.forEach(function(g){
+      gsel += '<option value="' + g.id + '"' + (g.id === t.groupId ? ' selected' : '') + '>' + escapeHtml(g.name) + '</option>';
+    });
+    gsel += '</select>';
+    box.innerHTML =
+      '<div class="rp-row"><input type="text" value="' + escapeHtml(t.name) + '" onchange="updateTent(' + t.id + ',\'name\',this.value)"></div>' +
+      '<div class="rp-row"><label>' + (isC ? '지름' : '가로') + ' <input type="number" step="0.5" value="' + t.w + '" onchange="updateTent(' + t.id + ',\'w\',this.value)"></label>' +
+      (isC ? '' : '<label>세로 <input type="number" step="0.5" value="' + t.h + '" onchange="updateTent(' + t.id + ',\'h\',this.value)"></label>') + '</div>' +
+      '<div class="rp-row">' + (isC ? '' : '<label>회전 <input type="number" step="5" value="' + t.rot + '" onchange="updateTent(' + t.id + ',\'rot\',this.value)"></label>') +
+      '<input type="color" value="' + t.color + '" onchange="updateTent(' + t.id + ',\'color\',this.value)" style="width:36px;height:28px;padding:2px"></div>' +
+      '<div class="rp-row">' + gsel + '</div>' +
+      '<div class="rp-row"><button class="mini dark" onclick="duplicateTent(' + t.id + ')">복제</button>' +
+      '<button class="mini gray" onclick="panToTent(' + t.id + ')">지도 이동</button>' +
+      '<button class="mini red" onclick="removeTent(' + t.id + ')">삭제</button></div>' +
+      '<div class="rp-note">번호 ' + t.labelText + ' · 면적 ' + tentArea(t).toFixed(1) + '㎡</div>';
+  } else if(sel.length > 1){
+    let gsel = '<select onchange="groupAllSel(this.value)" title="선택한 텐트 전체를 다른 그룹으로 이동" style="flex:1"><option value="">그룹 일괄 이동...</option>';
+    groups.forEach(function(g){
+      gsel += '<option value="' + g.id + '">' + escapeHtml(g.name) + '</option>';
+    });
+    gsel += '</select>';
+    box.innerHTML =
+      '<div class="rp-note" style="margin-bottom:6px"><b>' + sel.length + '개</b> 텐트 선택됨</div>' +
+      '<div class="rp-row"><label title="정렬 시 텐트 사이 간격 (미터)">간격 <input type="number" id="alignGap" value="1" min="0" step="0.5">m</label></div>' +
+      '<div class="rp-row"><button class="mini dark" onclick="alignTents(\'h\')" title="가로 일직선으로 나란히 배치">↔ 가로 정렬</button>' +
+      '<button class="mini dark" onclick="alignTents(\'v\')" title="세로 일직선으로 나란히 배치">↕ 세로 정렬</button></div>' +
+      '<div class="rp-row"><button class="mini dark" onclick="startCurveAlign(\'h\')" title="지도의 선/화살표를 클릭하면 그 곡선을 따라 가로 방향으로 배치·회전">〰 곡선 정렬(가로)</button>' +
+      '<button class="mini dark" onclick="startCurveAlign(\'v\')" title="곡선을 따라 세로 방향으로 배치·회전">〰 곡선 정렬(세로)</button></div>' +
+      '<div class="rp-row">' + gsel + '</div>' +
+      '<div class="rp-row"><label title="선택한 텐트 색을 한꺼번에 변경">색 일괄 <input type="color" onchange="colorAllSel(this.value)" style="width:36px;height:28px;padding:2px"></label>' +
+      '<button class="mini red" onclick="deleteSel()" title="선택한 텐트 모두 삭제">모두 삭제</button></div>' +
+      '<div class="rp-row"><button class="mini dark" onclick="bindSel()" title="캡쳐용 목록에서 선택한 텐트들을 번호 범위(예: 11~14)로 한 줄로 묶기">🔗 캡쳐용 묶기</button>' +
+      '<button class="mini gray" onclick="unbindSel()" title="묶음 해제 — 각각 따로 표시">묶기 해제</button></div>' +
+      '<div class="rp-note">곡선 정렬: 먼저 ─ 도구로 곡선을 그린 뒤,<br>버튼 클릭 → 지도에서 그 선을 클릭하세요.</div>';
+  } else if(annoSelected){
+    const a = annoSelected;
+    const typeName = a.type === 'text' ? '글씨' : a.type === 'zone' ? '구역' : a.type === 'arrow' ? '화살표' : '선';
+    box.innerHTML =
+      '<div class="rp-note" style="margin-bottom:6px"><b>' + typeName + '</b> 선택됨' +
+      (a.type === 'zone' && a.name ? ' · ' + escapeHtml(a.name) : '') + '</div>' +
+      '<div class="rp-note">색·크기는 아래 [그리기 설정]에서 변경 → 즉시 적용됩니다.</div>' +
+      '<div class="rp-row" style="margin-top:6px"><button class="mini red" onclick="deleteSelectedAnno()">삭제</button></div>';
+  } else {
+    box.innerHTML = '<div class="rp-note">지도나 목록에서 항목을 클릭하세요.<br>목록에서 Ctrl/Shift+클릭 = 다중 선택</div>';
+  }
+}
+
+/* ═══════════════ 10. 키보드 단축키 ═══════════════ */
+function onKeyDown(e){
+  const tag = document.activeElement ? document.activeElement.tagName : '';
+  const typing = (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA');
+  if(e.key === 'Escape'){
+    if(curvePick){ curvePick = null; hint('곡선 정렬 취소됨'); return; }
+    clearMeasure();
+    finishLine(); selectToolMode(); deselectAnno(); deselect(); return;
+  }
+  if(typing) return;
+  if((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')){ e.preventDefault(); undo(); return; }
+  if((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y')){ e.preventDefault(); redo(); return; }
+  if((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')){
+    if(sel.length){
+      clipboard = sel.map(function(t){ return { name: t.name, w: t.w, h: t.h, rot: t.rot, color: t.color,
+        groupId: t.groupId, shape: t.shape, lat: t.center.getLat(), lng: t.center.getLng() }; });
+      hint(sel.length + '개 복사됨 (Ctrl+V로 붙여넣기)');
+    }
+    return;
+  }
+  if((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V')){
+    if(clipboard.length){
+      pushUndo();
+      const created = clipboard.map(function(d){
+        const t = createTentObject(d.name, d.w, d.h, d.color, d.groupId,
+          offsetLatLng(new kakao.maps.LatLng(d.lat, d.lng), 3, -3), d.shape);
+        t.rot = d.rot; redrawTent(t);
+        tents.push(t);
+        return t;
+      });
+      setSelection(created);
+      refreshTable();
+    }
+    return;
+  }
+  if(e.key === 'Backspace' && curLine){
+    e.preventDefault();
+    curLine.points.pop();
+    if(!curLine.points.length){
+      if(curLine.polyline) curLine.polyline.setMap(null);
+      if(curLine.polygon) curLine.polygon.setMap(null);
+      if(curLine.preview) curLine.preview.setMap(null);
+      curLine = null;
+    } else drawCurLine();
+    return;
+  }
+  if(e.key === 'Delete' && annoSelected){ deleteSelectedAnno(); return; }
+  if(!sel.length) return;
+  const step = e.shiftKey ? 2 : 0.5;
+  let dx = 0, dy = 0, handled = true;
+  switch(e.key){
+    case 'ArrowUp': dy = step; break;
+    case 'ArrowDown': dy = -step; break;
+    case 'ArrowLeft': dx = -step; break;
+    case 'ArrowRight': dx = step; break;
+    case 'q': case 'Q': sel.forEach(function(t){ t.rot = ((t.rot - 5) % 360 + 360) % 360; redrawTent(t); }); break;
+    case 'e': case 'E': sel.forEach(function(t){ t.rot = ((t.rot + 5) % 360 + 360) % 360; redrawTent(t); }); break;
+    case 'Delete': deleteSel(); return;
+    default: handled = false;
+  }
+  if(!handled) return;
+  e.preventDefault();
+  pushUndo('key');
+  if(dx || dy) sel.forEach(function(t){ t.center = offsetLatLng(t.center, dx, dy); redrawTent(t); });
+  refreshTable(); scheduleSave();
+}
+
+/* ═══════════════ 11. 배치 목록 (관리용 표 / 캡쳐용 카드) ═══════════════
+   refreshTable()      : 그룹별 표 + 번호 자동 부여 + 요약 갱신
+   renderCaptureList() : 화면용 캡쳐 카드 (직접 [캡쳐용 묶기]한 것만 범위 표시) */
+function refreshTable(){
+  const tbody = document.getElementById('tentTable');
+  tbody.innerHTML = '';
+  rowOrder = [];
+  let total = 0;
+  groups.forEach(function(g){
+    const gTents = tents.filter(function(t){ return t.groupId === g.id; });
+    const trh = document.createElement('tr');
+    trh.className = 'group-row';
+    trh.innerHTML = '<td colspan="11">' +
+      '<button class="mini gray" onclick="moveGroupOrder(' + g.id + ',-1)" title="그룹 위로">▲</button> ' +
+      '<button class="mini gray" onclick="moveGroupOrder(' + g.id + ',1)" title="그룹 아래로">▼</button> ' +
+      '<input type="text" value="' + escapeHtml(g.name) + '" onchange="renameGroup(' + g.id + ',this.value)" style="font-weight:bold;width:140px"> ' +
+      '<label style="font-size:11px">번호 <select onchange="setGroupStyle(' + g.id + ',this.value)">' +
+        '<option value="num"' + (g.style === 'num' ? ' selected' : '') + '>1, 2, 3</option>' +
+        '<option value="alpha"' + (g.style === 'alpha' ? ' selected' : '') + '>A, B, C</option>' +
+      '</select></label> ' +
+      '<span style="font-size:11px;color:#555">(' + gTents.length + '개)</span> ' +
+      '<button class="mini red" onclick="deleteGroup(' + g.id + ')">그룹 삭제</button></td>';
+    tbody.appendChild(trh);
+
+    gTents.forEach(function(t, idx){
+      total += tentArea(t);
+      t.labelText = g.style === 'alpha' ? alphaLabel(idx) : String(idx + 1);
+      if(t.badgeDiv){
+        t.badgeDiv.textContent = t.labelText;
+        t.badgeDiv.title = t.name;
+        t.badgeDiv.style.borderColor = t.color;
+      }
+      let gsel = '<select onchange="changeTentGroup(' + t.id + ',this.value)">';
+      groups.forEach(function(g2){
+        gsel += '<option value="' + g2.id + '"' + (g2.id === t.groupId ? ' selected' : '') + '>' + escapeHtml(g2.name) + '</option>';
+      });
+      gsel += '</select>';
+      const isCircle = t.shape === 'circle';
+      const tr = document.createElement('tr');
+      tr.className = 'tent-row' + (sel.includes(t) ? ' selected-row' : '');
+      tr.innerHTML =
+        '<td><b>' + t.labelText + '</b></td>' +
+        '<td><input type="text" value="' + escapeHtml(t.name) + '" onchange="updateTent(' + t.id + ',\'name\',this.value)"></td>' +
+        '<td>' + gsel + '</td>' +
+        '<td>' + (isCircle ? '⚫' : '⬛') + '</td>' +
+        '<td><input type="number" step="0.5" value="' + t.w + '" onchange="updateTent(' + t.id + ',\'w\',this.value)"></td>' +
+        '<td>' + (isCircle ? '-' : '<input type="number" step="0.5" value="' + t.h + '" onchange="updateTent(' + t.id + ',\'h\',this.value)">') + '</td>' +
+        '<td>' + tentArea(t).toFixed(1) + '</td>' +
+        '<td>' + (isCircle ? '-' : '<input type="number" step="5" value="' + t.rot + '" onchange="updateTent(' + t.id + ',\'rot\',this.value)">') + '</td>' +
+        '<td><input type="color" value="' + t.color + '" onchange="updateTent(' + t.id + ',\'color\',this.value)" style="width:34px;height:24px;padding:1px;cursor:pointer"></td>' +
+        '<td><button class="mini gray" onclick="moveTentOrder(' + t.id + ',-1)">▲</button><button class="mini gray" onclick="moveTentOrder(' + t.id + ',1)">▼</button></td>' +
+        '<td><button class="mini green" onclick="insertTentBelow(' + t.id + ')">＋아래</button> ' +
+        '<button class="mini dark" onclick="duplicateTent(' + t.id + ')">복제</button> ' +
+        '<button class="mini gray" onclick="panToTent(' + t.id + ')">이동</button> ' +
+        '<button class="mini red" onclick="removeTent(' + t.id + ')">삭제</button></td>';
+      const rowIdx = rowOrder.length;
+      rowOrder.push(t);
+      tr.addEventListener('click', function(e){
+        const tg = e.target.tagName;
+        if(tg === 'INPUT' || tg === 'SELECT' || tg === 'BUTTON' || tg === 'OPTION') return;
+        if(e.shiftKey && lastRowIndex >= 0){
+          const a = Math.min(lastRowIndex, rowIdx), b = Math.max(lastRowIndex, rowIdx);
+          setSelection(rowOrder.slice(a, b + 1));
+        } else if(e.ctrlKey || e.metaKey){
+          if(sel.includes(t)) setSelection(sel.filter(function(x){ return x !== t; }));
+          else setSelection(sel.concat([t]));
+          lastRowIndex = rowIdx;
+        } else {
+          setSelection([t]);
+          lastRowIndex = rowIdx;
+        }
+      });
+      tbody.appendChild(tr);
+    });
+  });
+  document.getElementById('sumCount').textContent = tents.length;
+  document.getElementById('sumArea').textContent = total.toFixed(1);
+  document.getElementById('sumVenue').textContent = venueArea ? venueArea.toLocaleString(undefined,{maximumFractionDigits:0}) + ' ㎡' : '-';
+  document.getElementById('sumRatio').textContent = venueArea ? (total / venueArea * 100).toFixed(1) + ' %' : '-';
+  refreshLegend();
+  if(listView === 'capture') renderCaptureList();
+  updateBadgeScale();
+}
+
+/* --- 목록 보기 전환 (관리용 ↔ 캡쳐용) --- */
+let listView = 'manage';
+function setListView(v){
+  listView = v;
+  document.getElementById('manageTable').style.display = v === 'manage' ? '' : 'none';
+  document.getElementById('captureList').style.display = v === 'capture' ? 'block' : 'none';
+  document.getElementById('viewManage').className = (v === 'manage' ? 'active' : 'gray') + ' mini';
+  document.getElementById('viewCapture').className = (v === 'capture' ? 'active' : 'gray') + ' mini';
+  document.body.classList.toggle('capmode', v === 'capture');
+  if(map) map.relayout();
+  if(v === 'capture') renderCaptureList();
+}
+/* 직접 [캡쳐용 묶기]한 텐트들만 번호 범위로 합침 */
+function groupRuns(gTents){
+  const runs = [];
+  gTents.forEach(function(t){
+    const last = runs[runs.length - 1];
+    if(last && t.bandId != null && last.bandId === t.bandId){ last.end = t.labelText; }
+    else runs.push({ name: t.name, start: t.labelText, end: null, color: t.color, bandId: t.bandId });
+  });
+  return runs;
+}
+function textColorFor(hex){
+  const r = parseInt(hex.substr(1,2),16), g = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
+  return (0.299*r + 0.587*g + 0.114*b) > 150 ? '#222' : '#fff';
+}
+function renderCaptureList(){
+  const wrap = document.getElementById('captureList');
+  wrap.innerHTML = '';
+  groups.forEach(function(g){
+    const gTents = tents.filter(function(t){ return t.groupId === g.id; });
+    if(!gTents.length) return;
+    const gColor = gTents[0].color;
+    const runs = groupRuns(gTents);
+    const card = document.createElement('div');
+    card.className = 'cap-card';
+    let html = '<div class="cap-head" style="background:' + gColor + ';color:' + textColorFor(gColor) + '">' + escapeHtml(g.name) + '</div>';
+    let rowsHtml = '';
+    runs.forEach(function(r){
+      const tc = textColorFor(r.color);
+      rowsHtml += '<div class="cap-row">' +
+        '<span class="cap-badge" style="background:' + r.color + ';color:' + tc + '">' + r.start + '</span>' +
+        (r.end ? '<span class="cap-tilde">~</span><span class="cap-badge" style="background:' + r.color + ';color:' + tc + '">' + r.end + '</span>' : '') +
+        '<span class="cap-name">' + escapeHtml(r.name) + '</span></div>';
+    });
+    // 항목이 많으면 카드 안에서 2단으로 배치해 길게 늘어지지 않게
+    html += runs.length > 12 ? '<div class="cap-rows2">' + rowsHtml + '</div>' : rowsHtml;
+    card.innerHTML = html;
+    wrap.appendChild(card);
+  });
+  if(!wrap.children.length) wrap.innerHTML = '<span style="color:#889;font-size:13px">텐트를 추가하면 여기에 캡쳐용 목록이 표시됩니다.</span>';
+}
+function toggleLegend(){
+  const l = document.getElementById('legend');
+  l.style.display = l.style.display === 'block' ? 'none' : 'block';
+  refreshLegend();
+}
+function refreshLegend(){
+  const l = document.getElementById('legend');
+  if(l.style.display !== 'block') return;
+  let html = '<h4>범례</h4>';
+  groups.forEach(function(g){
+    const gTents = tents.filter(function(t){ return t.groupId === g.id; });
+    if(!gTents.length) return;
+    html += '<div class="row"><span class="chip" style="background:' + gTents[0].color + '"></span>' +
+      escapeHtml(g.name) + ' (' + gTents.length + '개)</div>';
+  });
+  const zones = annos.filter(function(a){ return a.type === 'zone' && a.name; });
+  if(zones.length){
+    html += '<h4 style="margin-top:6px">구역</h4>';
+    zones.forEach(function(z){
+      html += '<div class="row"><span class="chip" style="background:' + z.color + '"></span>' + escapeHtml(z.name) + '</div>';
+    });
+  }
+  l.innerHTML = html;
+}
+
+/* ═══════════════ 12. 캡처 (A4/A3/입간판) & CSV ═══════════════
+   지도 = 화면 공유로 캡처 (카카오 타일 보안 제한 우회)
+   목록 = 캔버스에 직접 그림 (한글·줄바꿈 문제 없음, 칼럼 자동 배치)
+   합성 = 용지 폭 100%를 채우고, 남는 세로 공간에 맞는 칼럼 수 자동 선택 */
+function rrect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function renderListCanvas(targetW, forceCols){
+  const W = Math.max(700, Math.round(targetW));
+  const FONT = '"Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+  const pad = Math.round(W * 0.018) + 6;
+  const gap = Math.round(W * 0.012) + 5;
+  const numCols = forceCols || Math.max(2, Math.min(5, Math.floor(W / 320)));
+  const colW = (W - pad * 2 - gap * (numCols - 1)) / numCols;
+  const base = Math.max(13, Math.min(22, colW / 13));
+  const rowLH = base * 1.62;
+  const headH = base * 2.1;
+  const cardPad = base * 0.75;
+  const r = base * 0.68;               // 배지 반지름
+  const meas = document.createElement('canvas').getContext('2d');
+
+  // 카드 데이터 + 높이 계산
+  const cards = [];
+  groups.forEach(function(g){
+    const gTents = tents.filter(function(t){ return t.groupId === g.id; });
+    if(!gTents.length) return;
+    const runs = groupRuns(gTents);
+    let h = cardPad + headH + base * 0.45;
+    runs.forEach(function(run){
+      const bw = run.end ? (r * 4 + base * 0.9) : (r * 2);
+      const avail = colW - cardPad * 2 - bw - base * 0.55;
+      // 1순위: 글자 크기를 줄여서라도 한 줄 유지 (단어가 중간에 잘리지 않게)
+      let f = base;
+      let lines = [run.name];
+      function fits(txt, size){
+        meas.font = '700 ' + size + 'px ' + FONT;
+        return meas.measureText(txt).width <= avail;
+      }
+      while(f > base * 0.58 && !fits(run.name, f)) f -= 0.5;
+      if(!fits(run.name, f)){
+        // 2순위: 띄어쓰기 위치에서만 두 줄로 분리
+        const mid = run.name.length / 2;
+        let cut = -1, bestDist = 1e9;
+        for(let ci = 1; ci < run.name.length - 1; ci++){
+          if(run.name[ci] === ' ' && Math.abs(ci - mid) < bestDist){ bestDist = Math.abs(ci - mid); cut = ci; }
+        }
+        if(cut < 0) cut = Math.ceil(run.name.length / 2); // 띄어쓰기가 없을 때만 어쩔 수 없이 분리
+        lines = [run.name.slice(0, cut).trim(), run.name.slice(cut).trim()];
+        f = base;
+        while(f > base * 0.55 && !(fits(lines[0], f) && fits(lines[1], f))) f -= 0.5;
+      }
+      run.lines = lines; run.font = f;
+      run.rowH = Math.max(rowLH, lines.length * (f * 1.35) + base * 0.35);
+      h += run.rowH;
+    });
+    h += cardPad;
+    cards.push({ g: g, color: gTents[0].color, runs: runs, h: h });
+  });
+
+  // 가장 짧은 칼럼에 카드 배치 (빈 공간 최소화)
+  const colHs = [], colCards = [];
+  for(let i = 0; i < numCols; i++){ colHs.push(0); colCards.push([]); }
+  cards.forEach(function(c){
+    let mi = 0;
+    for(let i = 1; i < numCols; i++) if(colHs[i] < colHs[mi]) mi = i;
+    colCards[mi].push(c);
+    colHs[mi] += c.h + gap;
+  });
+  const H = Math.max(120, pad * 2 + Math.max.apply(null, colHs.concat([0])) - gap + 4);
+
+  const S = 2; // 선명도용 내부 배율
+  const cv = document.createElement('canvas');
+  cv.width = W * S; cv.height = Math.round(H * S);
+  const ctx = cv.getContext('2d');
+  ctx.scale(S, S);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+  ctx.textBaseline = 'middle';
+
+  for(let ci = 0; ci < numCols; ci++){
+    let y = pad;
+    const x = pad + ci * (colW + gap);
+    colCards[ci].forEach(function(c){
+      // 카드
+      rrect(ctx, x, y, colW, c.h, 10);
+      ctx.fillStyle = '#ffffff'; ctx.fill();
+      ctx.strokeStyle = '#c9d2dc'; ctx.lineWidth = 1.2; ctx.stroke();
+      // 그룹명 라벨
+      ctx.font = '900 ' + (base * 1.02) + 'px ' + FONT;
+      const hw = ctx.measureText(c.g.name).width + base * 1.6;
+      rrect(ctx, x + cardPad, y + cardPad, hw, headH, headH / 2);
+      ctx.fillStyle = c.color; ctx.fill();
+      ctx.fillStyle = textColorFor(c.color);
+      ctx.fillText(c.g.name, x + cardPad + base * 0.8, y + cardPad + headH / 2 + 1);
+      // 항목들
+      let ry = y + cardPad + headH + base * 0.45;
+      c.runs.forEach(function(run){
+        const cy = ry + run.rowH / 2;
+        let bx = x + cardPad + r;
+        function badge(txt){
+          ctx.beginPath(); ctx.arc(bx, cy, r, 0, Math.PI * 2);
+          ctx.fillStyle = run.color; ctx.fill();
+          ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.fillStyle = textColorFor(run.color);
+          ctx.font = '900 ' + (r * (txt.length > 2 ? 0.72 : 0.95)) + 'px ' + FONT;
+          ctx.textAlign = 'center';
+          ctx.fillText(txt, bx, cy + 0.5);
+          ctx.textAlign = 'left';
+          bx += r;
+        }
+        badge(run.start);
+        if(run.end){
+          ctx.fillStyle = '#555';
+          ctx.font = '900 ' + (base * 0.8) + 'px ' + FONT;
+          ctx.fillText('~', bx + base * 0.15, cy);
+          bx += base * 0.75 + r;
+          badge(run.end);
+        }
+        const tx = bx + base * 0.5;
+        ctx.fillStyle = '#222';
+        ctx.font = '700 ' + run.font + 'px ' + FONT;
+        if(run.lines.length === 1){
+          ctx.fillText(run.lines[0], tx, cy);
+        } else {
+          ctx.fillText(run.lines[0], tx, cy - run.font * 0.68);
+          ctx.fillText(run.lines[1], tx, cy + run.font * 0.68);
+        }
+        ry += run.rowH;
+      });
+      y += c.h + gap;
+    });
+  }
+  return cv;
+}
+
+/* ================= 캡처 (A4/A3/입간판) ================= */
+/* 지도는 화면 공유 방식으로 찍어서 '빈 지도' 문제를 해결하고,
+   목록은 html2canvas로 찍은 뒤 하나의 캔버스로 합성 */
+const CAPTURE_SIZES = {
+  a4:   { w: 1240, h: 1754, name: 'A4' },       // 210×297 @150dpi
+  a3:   { w: 1754, h: 2480, name: 'A3' },       // 297×420 @150dpi
+  sign: { w: 1500, h: 3000, name: '입간판' }     // 900×1800 (1:2)
+};
+async function captureSized(kind){
+  const cfg = CAPTURE_SIZES[kind];
+  deselect(); deselectAnno(); finishLine(); clearMeasure();
+  document.getElementById('centerCol').scrollTop = 0;
+  hint('📸 캡처 준비... 화면 공유 창이 뜨면 [현재 탭](이 탭)을 선택하세요');
+  await new Promise(function(r){ setTimeout(r, 350); });
+
+  // 1) 지도: 화면 공유로 캡처 (타일 보안 제한 우회)
+  let mapCanvas = null;
+  try{
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: true, preferCurrentTab: true, selfBrowserSurface: 'include'
+    });
+    const video = document.createElement('video');
+    video.srcObject = stream;
+    await video.play();
+    await new Promise(function(r){ setTimeout(r, 250); });
+    const rect = document.getElementById('mapWrap').getBoundingClientRect();
+    const sx = video.videoWidth / document.documentElement.clientWidth;
+    const sy = video.videoHeight / document.documentElement.clientHeight;
+    mapCanvas = document.createElement('canvas');
+    mapCanvas.width = Math.round(rect.width * sx);
+    mapCanvas.height = Math.round(rect.height * sy);
+    mapCanvas.getContext('2d').drawImage(video,
+      Math.round(rect.left * sx), Math.round(rect.top * sy),
+      mapCanvas.width, mapCanvas.height,
+      0, 0, mapCanvas.width, mapCanvas.height);
+    stream.getTracks().forEach(function(t){ t.stop(); });
+  }catch(e){ mapCanvas = null; }
+
+  if(!mapCanvas && !tents.length){ captureFail(); return; }
+  if(!mapCanvas){
+    hint('⚠️ 지도 캡처가 취소되어 목록만 저장합니다. (화면 공유를 허용해야 지도가 포함됩니다)');
+  }
+
+  // 2)+3) 지정 크기에 폭을 가득 채워 합성 — 옆 여백 없음.
+  // 지도는 폭 100%로, 남은 세로 공간에 맞는 칼럼 수(2~6단)를 자동 선택해 목록을 채움
+  const W = cfg.w, H = cfg.h;
+  const out = document.createElement('canvas');
+  out.width = W; out.height = H;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+  let y = 0;
+  if(mapCanvas){
+    const mh = Math.min(H, Math.round(W * mapCanvas.height / mapCanvas.width));
+    ctx.drawImage(mapCanvas, 0, 0, mapCanvas.width, mapCanvas.height, 0, 0, W, mh);
+    y = mh;
+  }
+  const remaining = H - y;
+  if(remaining > 40 && tents.length){
+    let best = null;
+    for(let cols = 2; cols <= 6; cols++){
+      try{
+        const lc = renderListCanvas(1000, cols);
+        const sh = W * lc.height / lc.width;
+        if(sh <= remaining && (!best || sh > best.sh)) best = { lc: lc, sh: sh };
+        if(!best && cols === 6) best = { lc: lc, sh: sh };
+      }catch(e){}
+    }
+    if(best){
+      if(best.sh <= remaining){
+        ctx.drawImage(best.lc, 0, y, W, best.sh); // 폭 가득
+      } else {
+        const dw = W * remaining / best.sh;      // 그래도 크면 높이에 맞춰 축소
+        ctx.drawImage(best.lc, (W - dw) / 2, y, dw, remaining);
+      }
+    }
+  }
+
+  try{
+    const a = document.createElement('a');
+    a.href = out.toDataURL('image/png');
+    a.download = (document.getElementById('docTitle').value || '대회장_배치도') + '_' + cfg.name + '.png';
+    a.click();
+    hint('✅ ' + cfg.name + ' 캡처 저장 완료!');
+  }catch(err){ captureFail(); }
+}
+function captureFail(){
+  hint('');
+  alert('캡처에 실패했습니다.\n캡처 버튼을 누른 뒤 나타나는 화면 공유 창에서 [현재 탭]을 선택해주세요.\n안 되면 Windows 캡처 도구(Win+Shift+S)를 이용하세요.');
+}
+function downloadCSV(){
+  let csv = '﻿번호,그룹,이름,모양,가로(m),세로(m),면적(㎡),회전(°),위도,경도\n';
+  groups.forEach(function(g){
+    tents.filter(function(t){ return t.groupId === g.id; }).forEach(function(t){
+      csv += [t.labelText, '"'+g.name+'"', '"'+t.name+'"', t.shape === 'circle' ? '원형' : '사각형',
+              t.w, t.shape === 'circle' ? '-' : t.h, tentArea(t).toFixed(1), t.shape === 'circle' ? '-' : t.rot,
+              t.center.getLat().toFixed(6), t.center.getLng().toFixed(6)].join(',') + '\n';
+    });
+  });
+  csv += '\n대회장 면적(㎡),' + (venueArea ? venueArea.toFixed(0) : '-') + '\n';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = '대회장_배치표.csv';
+  a.click();
+}
+</script>
+</body>
+</html>
