@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>안내 팝업</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: rgba(0,0,0,0.5);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            box-sizing: border-box;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        .popup-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            width: 820px;
+            max-width: 92vw;
+            padding: 38px 28px 28px 28px;
+            z-index: 1000;
+            border: 1.5px solid #cbd5e1;
+            animation: popup-fadein 0.5s;
+        }
+        @media (max-width: 600px) {
+            .popup-container {
+                width: 98vw;
+                max-width: 98vw;
+                padding: 22px 8vw 18px 8vw;
+                min-width: 0;
+            }
+            .popup-title {
+                font-size: 1.1em;
+            }
+            .popup-close {
+                width: 100%;
+                font-size: 1em;
+                padding: 10px 0;
+            }
+        }
+        @media (max-width: 800px) {
+            .popup-container {
+                padding: 12px 2vw 12px 2vw;
+            }
+        }
+        @keyframes popup-fadein {
+            from { opacity: 0; transform: translate(-50%, -60%) scale(0.96);}
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1);}
+        }
+        .popup-title {
+            font-size: 1.45em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2563eb;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+        .popup-section {
+            margin-bottom: 20px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 14px 14px 10px 14px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            word-break: keep-all;
+        }
+        .popup-section b {
+            color: #0f172a;
+        }
+        .popup-section ul {
+            padding-left: 20px;
+            margin: 10px 0 0 0;
+        }
+        .popup-section li {
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+        .popup-close {
+            display: block;
+            margin: 0 auto;
+            margin-top: 22px;
+            padding: 10px 32px;
+            background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.08em;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+            transition: background 0.2s, transform 0.15s;
+        }
+        .popup-close:hover {
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 100%);
+            transform: scale(1.04);
+        }
+        .popup-highlight {
+            background: none;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+            font-weight: 500;
+        }
+        .popup-section.notice {
+            background: #fff7ed;
+            border-left: 5px solid #f87171;
+            box-shadow: 0 2px 8px rgba(248,113,113,0.07);
+        }
+        .popup-section.notice b {
+            color: #b91c1c;
+        }
+        .popup-section.notice ul {
+            margin-top: 12px;
+        }
+        .popup-section.notice li {
+            position: relative;
+            padding-left: 22px;
+            margin-bottom: 10px;
+            color: #b91c1c;
+            font-weight: 500;
+        }
+        .popup-section.notice li:before {
+            content: "!";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #fff;
+            background: #f87171;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-container" id="popup">
+        <div class="popup-title">참가자 물품 발송 안내</div>
+        <div class="popup-section">
+            모든 참가자 물품이 제작이 완료되었습니다.<br>
+            현재 참가자분들의 물품 포장 작업이 진행 중이며, 
+            <span class="popup-highlight">9월 15일(월)</span> 택배사에 전달 될 예정입니다.<br>
+            물품은 <span class="popup-highlight">9월 16일(화)</span> 부터 순차적으로 발송될 예정입니다.<br>
+            주소 변경은 <span class="popup-highlight">9월 9일(화) 17:00</span>까지 가능합니다.
+        </div>
+        <div class="popup-section">
+            <b>[택배 발송 물품]</b>
+            <ul>
+                <li>풀코스 : <span class="popup-highlight">디아도라 티셔츠</span>, 디아도라 짐색, 안내책자, 배번호, 기록 칩</li>
+                <li>하프코스 : <span class="popup-highlight">디아도라 티셔츠</span>, 심리스 팔토시, 안내책자, 배번호, 기록 칩</li>
+                <li>10km코스 : <span class="popup-highlight">디아도라 티셔츠</span>, 심리스 팔토시, 안내책자, 배번호, 기록 칩</li>
+                <li>5km코스 : <span class="popup-highlight">다아도라 티셔츠</span>, 안내책자, 배번호</li>
+            </ul>
+        </div>
+        <div class="popup-section notice">
+            <b>[주의사항]</b>
+            <ul>
+                <li>참가자 배 번호는 안내 책자 첫 페이지를 확인해 주세요.</li>
+                <li>배번호 발송 이후에는 
+                 어떠한 사유에도 <span style="text-decoration:underline;">배 번호 재발급은 불가</span>하오니, 분실 또는 폐기되지 않도록 주의 부탁드립니다.</li>
+            </ul>
+        </div>
+        <button class="popup-close" onclick="document.getElementById('popup').style.display='none'">닫기</button>
+    </div>
+</body>
+</html>

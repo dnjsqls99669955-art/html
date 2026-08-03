@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>오산마라톤 참가자 물품 발송 안내</title>
+<style>
+  :root{
+    --ink:#0f172a;
+    --brand:#2563eb;
+    --panel:#f8fafc;
+    --panel2:#f1f5f9;
+    --line:#cbd5e1;
+    --muted:#475569;
+    --warn-bg:#fff7ed;
+    --warn-line:#f87171;
+    --warn-ink:#b91c1c;
+  }
+
+  *{ box-sizing:border-box; }
+  html, body{
+    margin:0; padding:0; color:var(--ink);
+    font-family:'Segoe UI', Arial, sans-serif;
+    background:#ffffff;
+  }
+
+  .container{
+    width:clamp(600px, 100vw, 800px);
+    margin:32px auto 48px auto;
+    padding:0 8px;
+  }
+
+  .page-header{ text-align:center; margin-bottom:18px; }
+  .page-title{
+    font-size:1.6rem; font-weight:800; color:var(--brand);
+    letter-spacing:.01em; margin:0 0 6px 0;
+  }
+  .page-lead{ color:var(--muted); font-size:.9rem; line-height:1.5; margin:0; }
+
+  .info-banner{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:10px;
+    margin:18px 0 14px 0;
+  }
+  .card{
+    background:linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 12px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.04);
+  }
+  .card h3{
+    margin:0 0 6px 0; font-size:.95rem; color:#0f172a;
+  }
+  .kv{
+    display:grid; grid-template-columns: 110px 1fr; row-gap:4px;
+    font-size:.88rem; align-items:center;
+  }
+  .kv b{ color:#0f172a; }
+  .hl{ font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+
+  .rule{ height:1px; background:var(--line); margin:18px 0 12px 0; }
+
+  .section-title{
+    font-size:1.05rem; font-weight:800; margin:0 0 8px 0; color:#0f172a;
+  }
+
+  .goods-grid{
+    display:grid; gap:10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .goods-card{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px 10px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.03);
+    min-height:120px;
+    display:flex; flex-direction:column;
+  }
+  .goods-head{
+    font-weight:700; margin-bottom:6px; color:#0f172a;
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:.92rem;
+  }
+  .badge{
+    font-size:.68rem; font-weight:700; color:#1e3a8a;
+    background:#dbeafe; border:1px solid #f76666;
+    padding:1px 6px; border-radius:999px;
+    line-height:1.7;
+  }
+  .goods-list{
+    margin:0; padding-left:16px; line-height:1.45;
+    font-size:.86rem;
+  }
+
+  .notice{
+    background:var(--warn-bg);
+    border-left:4px solid var(--warn-line);
+    border-radius:8px;
+    padding:10px 12px;
+    box-shadow:0 2px 6px rgba(248,113,113,0.06);
+    margin-top:16px;
+  }
+  .notice h3{ margin:0 0 6px 0; color:var(--warn-ink); font-size:.95rem; }
+  .notice ul{ margin:0; padding-left:16px; font-size:.88rem; }
+  .notice li{ margin:4px 0; color:var(--warn-ink); }
+</style>
+</head>
+<body>
+  <main class="container">
+    <header class="page-header">
+      <h1 class="page-title">22회 오산 독산성 전국 하프오산마라톤 참가자 물품 발송 안내</h1>
+      <p class="page-lead">참가자 기념품이 준비 완료되어, 택배사를 통해 순차 발송될 예정입니다.</p>
+    </header>
+
+    <section class="info-banner">
+      <div class="card">
+        <h3>발송 일정</h3>
+        <div class="kv">
+          <div><b>택배사 전달</b></div>
+          <div><span class="hl">9월 25일(목)</span></div>
+          <div><b>발송 시작</b></div>
+          <div><span class="hl">10월 10일(금)</span><br><small>(연휴 기간으로 발송 일정이 늦어진 점 양해 부탁드립니다.)</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>주소 변경</h3>
+        <div class="kv">
+          <div><b>변경 가능 여부</b></div>
+          <div><span class="hl" style="color:#b91c1c;">주소 변경 불가</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="rule"></div>
+
+    <section>
+      <h2 class="section-title">코스별 기념품</h2>
+      <div class="goods-grid">
+        <article class="goods-card">
+          <div class="goods-head"><span>하프 & 10km 코스</span><span class="badge">HALF·10K</span></div>
+          <ul class="goods-list">
+            <li>디아도라 짐색</li>
+            <li>안내책자</li>
+            <li>배번호</li>
+            <li>기록칩</li>
+          </ul>
+        </article>
+        <article class="goods-card">
+          <div class="goods-head"><span>4.8km 코스</span><span class="badge">4.8K</span></div>
+          <ul class="goods-list">
+            <li>디아도라 마라톤 티셔츠</li>
+            <li>안내책자</li>
+            <li>배번호</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="notice" aria-labelledby="notice-title">
+      <h3 id="notice-title">[주의사항]</h3>
+      <ul>
+        <li>배송 일정은 물류 사정(연휴 포함)에 따라 일부 변동될 수 있습니다.</li>
+        <li>주소 변경은 불가하오니, 기존 등록 주소를 꼭 확인해주시기 바랍니다.</li>
+        <li>배번호는 재발급이 불가하오니 분실에 유의해주시기 바랍니다.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

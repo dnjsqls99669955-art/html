@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>환불·중복 신청/입금 안내</title>
+<style>
+  :root{
+    --ink:#0b1c5f;
+    --text:#0f172a;
+    --muted:#5b667a;
+    --line:#e6e8ef;
+    --panel:#ffffff;
+    --ribbon-mint-start:#b9d9a8; --ribbon-mint-end:#79be87;
+    --ribbon-sky-start:#a6d7ea;  --ribbon-sky-end:#5aa8c8;
+    --ribbon-coral-start:#f6b07f;--ribbon-coral-end:#e68768;
+    --runner-blue:#163a5a;
+    --runner-coral:#b34b37;
+    --chip-bg:#e8f1ff; --chip-border:#c7ddff;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; padding:0; background:#f9fafc; color:var(--text);
+    font-family:'맑은 고딕',system-ui,Segoe UI,Roboto,sans-serif;
+    line-height:1.65;}
+  .page-container{ max-width:960px; margin:0 auto; padding:24px; }
+  .popup{ position:relative; background:var(--panel); border-radius:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.12); overflow:hidden; isolation:isolate; }
+  .content{ position:relative; z-index:2; padding:44px 28px 28px; }
+  .badge-deadline{ display:inline-flex; align-items:center; gap:8px;
+    padding:8px 14px; border-radius:999px; font-size:14px; font-weight:800;
+    color:#fff; background:var(--ink); margin:0 auto 14px; text-align:center; }
+  .title{ margin:6px 0 6px; text-align:center;
+    font-size:clamp(26px,3.8vw,38px); line-height:1.18; color:var(--ink); font-weight:900; }
+  .subtitle{ text-align:center; color:var(--muted); font-size:15px; margin:-4px 0 22px; }
+  .panel{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px; margin:0 0 14px; }
+  .panel.gray{ background:#f7f9fc; border-left:6px solid #9ca3af; }
+  .panel.note{ background:#f1f6ff; border-left:6px solid #3b82f6; }
+  .panel.danger{ background:#fff5f5; border-left:6px solid #ef4444; color:#b91c1c; font-weight:800; }
+  .panel h2{ margin:0 0 10px; font-size:17px; color:#111827; }
+  .list{ margin:0; padding-left:20px; list-style:disc; }
+  .list li{ margin:6px 0; }
+  .list-none{ list-style:none; padding-left:20px; margin:6px 0; }
+  .cta{ display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap; }
+  .btn{ padding:12px 18px; border-radius:12px; font-weight:800; font-size:15px;
+    border:1px solid transparent; text-decoration:none; }
+  .btn-primary{ color:#fff; background:var(--ink); }
+</style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="popup">
+      <div class="content">
+        <p class="badge-deadline">환불 접수 마감: 2025년 9월 18일(목)</p>
+        <h1 class="title">환불 및 중복 신청·입금 안내</h1>
+
+        <section class="panel note">
+          <h2>신청·입금 순서</h2>
+          <ul class="list">
+            <li><strong>홈페이지에서 참가 신청을 완료한 뒤</strong> 입금해 주세요.</li>
+            <li>신청 전에 입금하신 금액은 <strong>신청으로 간주되지 않으며</strong> 확인·대조 과정에서 <strong>처리 지연</strong>이 발생할 수 있습니다.</li>
+            <li><strong>개인 신청</strong>의 경우, 입금자명에 <strong>성함+생년월일</strong>을 꼭 기재해 주세요.</li>
+            <li>(<strong>단체 신청</strong>의 경우, 입금자명에 <strong>단체명</strong>을 기재해 주세요.)</li>
+          </ul>
+        </section>
+
+        <section class="panel gray">
+          <h2>환불·코스 변경</h2>
+          <ul class="list">
+            <li><strong>환불 신청</strong>: 2025년 9월 18일(목)까지 <strong>환불 게시판</strong>에서 접수</li>
+            <li><strong>지급 시기</strong>: 환불 접수 마감 후 <strong>일괄 지급</strong> (지급 일정 별도 공지)</li>
+            <li><strong>코스 변경</strong>: 각 코스 <strong>선착순 마감 후 변경 불가</strong></li>
+          </ul>
+          <ul class="list-none">
+            <li style="color:#b91c1c; font-weight:bold;">
+              ※ 참가자와 예금주(카드소유주)가 다를 경우, 참가자 정보(성함, 생년월일, 연락처)를 작성해 주세요.
+            </li>
+          </ul>
+        </section>
+
+        <section class="panel gray">
+          <h2>DMZ 캠핑 환불 안내</h2>
+          <ul class="list">
+            <li><strong>환불 신청 기간</strong>: 2025년 9월 18일(목)까지 <strong>환불게시판</strong>에서 접수 가능합니다.</li>
+            <li><strong>환불 지급 기간</strong>: 신청 접수 후 <strong>2~3주 이내</strong> 순차적으로 지급됩니다.</li>
+            <li><strong>환불 수수료</strong>: 농협 외 타은행 계좌로 환불 시, <strong>은행 수수료가 차감</strong>되어 지급됩니다.</li>
+          </ul>
+          <ul class="list-none">
+            <li style="color:#b91c1c; font-weight:bold;">
+              ※ 신청 후 <strong>3일 이내 미입금 시 신청이 자동 취소</strong>됩니다.
+            </li>
+          </ul>
+        </section>
+
+        <section class="panel gray">
+          <h2>중복 신청/입금 처리</h2>
+          <ul class="list">
+            <li><strong>중복 신청 후 중복 입금 또는 타인 명의 입금</strong>이 있을 경우, <strong>환불 기간 내</strong> 홈페이지 <strong>환불 게시판</strong> 또는 사무국으로 연락해 주세요.</li>
+            <li>환불 기한 내 <strong>연락이 없을 경우</strong> 해당 건은 <strong>환불 없이 정상 접수</strong>로 처리되며, <strong>배번호·기념품 발송</strong> 이후에는 <strong>정정/환불 불가</strong>합니다.</li>
+          </ul>
+        </section>
+
+        <section class="panel danger">
+          <h2>최종 유의</h2>
+          <p>환불 기간이 지난 이후에는 <strong>사유를 불문하고 환불이 불가</strong>합니다. 동일 규정이 모든 참가자에게 공평하게 적용됩니다.</p>
+        </section>
+
+        <div class="cta">
+          <a class="btn btn-primary" href="https://dmzopenrun.kr/dmzrun/board/refund/" target="_blank" rel="noopener">환불 게시판 바로가기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>환불 신청 및 중복 신청·입금 안내 (팝업)</title>
+<style>
+  :root{
+    /* ===== DMZ OPEN 키비주얼 팔레트 ===== */
+    --ink:#0b1c5f;        /* 딥 네이비 (타이틀/버튼) */
+    --text:#0f172a;       /* 본문 */
+    --muted:#5b667a;      /* 서브텍스트 */
+    --line:#e6e8ef;       /* 경계선 */
+    --panel:#ffffff;      /* 카드 배경 */
+    --bg-dim:rgba(8,14,40,.55); /* 오버레이 딤 */
+
+    /* 리본(포스터 톤) */
+    --ribbon-mint-start:#b9d9a8; --ribbon-mint-end:#79be87;
+    --ribbon-sky-start:#a6d7ea;  --ribbon-sky-end:#5aa8c8;
+    --ribbon-coral-start:#f6b07f;--ribbon-coral-end:#e68768;
+
+    /* 러너 컬러 */
+    --runner-blue:#163a5a;  /* 짙은 블루 */
+    --runner-coral:#b34b37; /* 코랄 브라운 */
+
+    /* 강조 칩 */
+    --chip-bg:#e8f1ff; --chip-border:#c7ddff;
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+
+  /* 오버레이 */
+  .popup-overlay{
+    position:fixed; inset:0; background:var(--bg-dim);
+    display:flex; align-items:center; justify-content:center;
+    padding:24px; z-index:9999;
+    /* ▼ 추가: 팝업 높이가 화면보다 클 때 스크롤 가능 */
+    overflow:auto;
+    /* ▼ 추가: 상단에서부터 배치해 위/아래 잘림 방지 */
+    align-items:flex-start;
+  }
+
+  /* 팝업 카드 */
+  .popup{
+    position:relative; width:min(960px,100%);
+    background:var(--panel); color:var(--text);
+    border-radius:22px; box-shadow:0 30px 80px rgba(0,0,0,.25);
+    overflow:hidden; isolation:isolate;
+    /* ▼ 추가: 화면 가장자리와 간격 */
+    margin:24px auto;
+  }
+
+  /* ===== 키비주얼 장식 레이어 ===== */
+  .decoration{ position:absolute; inset:0; pointer-events:none; z-index:0; }
+  .ribbon{ position:absolute; opacity:.9; filter:drop-shadow(0 8px 16px rgba(0,0,0,.10)); }
+  .ribbon svg{ width:100%; height:auto; display:block; }
+  .ribbon.mint{ left:-8%; top:-10%; width:70%; max-width:620px; transform:rotate(-8deg); }
+  .ribbon.sky{ right:-14%; top:12%; width:80%; max-width:700px; transform:rotate(9deg); }
+  .ribbon.coral{ left:-4%; bottom:-8%; width:85%; max-width:760px; transform:rotate(-7deg); }
+
+  /* === 변경: 리본 투명도/환경별 보정 === */
+  .ribbon svg path{ opacity:.38; }                  /* 기본 더 옅게 */
+  @media (max-width:960px){ .ribbon svg path{ opacity:.46; } } /* 태블릿↓ 가독성↑ */
+  @media (prefers-color-scheme: dark){ .ribbon svg path{ opacity:.32; } } /* 다크모드 */
+
+  /* 러너 실루엣 */
+  .runner{
+    position:absolute; width:120px; height:auto; opacity:1;
+    z-index:3;
+    filter:
+      drop-shadow(0 0 10px rgba(255,255,255,.90))  /* 외곽 글로우 강화 */
+      drop-shadow(0 6px 12px rgba(0,0,0,.22));      /* 바닥 그림자 강화 */
+    transition: transform .25s ease, filter .25s ease;
+  }
+  .runner path{
+    stroke:#fff; stroke-width:1.2; vector-effect:non-scaling-stroke;
+    fill:currentColor;
+  }
+  .runner:hover{
+    transform:scale(1.03);
+    filter:
+      drop-shadow(0 0 12px rgba(255,255,255,.95))
+      drop-shadow(0 8px 16px rgba(0,0,0,.28));
+  }
+  .runner.blue{ left:9%; bottom:18%; color:var(--runner-blue); }
+  .runner.coral{ right:10%; bottom:16%; color:var(--runner-coral); }
+
+  /* 내용 영역 */
+  .content{ position:relative; z-index:2; padding:44px 28px 28px; }
+
+  .badge-deadline{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 14px; border-radius:999px; font-size:14px; font-weight:800;
+    color:#fff; background:var(--ink);
+    box-shadow:0 6px 12px rgba(11,28,95,.18);
+    margin:0 auto 14px; text-align:center;
+  }
+
+  .title{
+    margin:6px 0 6px; text-align:center;
+    font-size:clamp(26px,3.8vw,38px); line-height:1.18; color:var(--ink); font-weight:900;
+    letter-spacing:.2px;
+  }
+
+  /* 강조 칩 + 서브타이틀(강조) */
+  .chips{
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:6px 0 16px;
+  }
+  .chip{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 12px; border-radius:999px; font-size:14px; font-weight:800;
+    color:var(--ink); background:var(--chip-bg); border:1px solid var(--chip-border);
+  }
+  .subtitle{
+    text-align:center; color:var(--muted); font-size:15px; margin:-4px 0 22px;
+  }
+  .subtitle strong{ color:var(--ink); font-weight:900; }
+
+  .panel{
+    background: rgba(255,255,255,0.96);
+    border:1px solid var(--line);
+    border-radius:16px; padding:18px 18px; margin:0 0 14px;
+    backdrop-filter:saturate(140%) blur(4px);
+  }
+  .panel.gray{ background:#f7f9fc; border-left:6px solid #9ca3af; }
+  .panel.note{ background:#f1f6ff; border-left:6px solid #3b82f6; }
+  .panel.danger{
+    background:#fff5f5; border-left:6px solid #ef4444; color:#b91c1c; font-weight:800;
+    box-shadow:0 4px 14px rgba(239,68,68,.12);
+  }
+  .list{ margin:0; padding-left:18px; }
+  .list li{ margin:6px 0; }
+
+  .cta{
+    display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;
+  }
+  .btn{
+    appearance:none; border:0; cursor:pointer;
+    padding:12px 18px; border-radius:12px; font-weight:800; font-size:15px;
+    transition:.2s transform, .2s box-shadow, .2s opacity;
+  }
+  .btn-primary{
+    color:#fff; background:var(--ink);
+    box-shadow:0 10px 20px rgba(11,28,95,.18);
+  }
+  .btn-primary:hover{ transform:translateY(-1px); }
+  .btn-ghost{ background:#fff; color:var(--ink); border:1px solid var(--line); }
+
+  /* 닫기 버튼 */
+  .close{
+    position:absolute; top:12px; right:12px;
+    width:40px; height:40px; border-radius:50%;
+    background:#ffffffcc; border:1px solid var(--line);
+    display:grid; place-items:center; cursor:pointer; z-index:4;
+    transition:.15s transform;
+  }
+  .close:hover{ transform:scale(1.04); }
+  .close svg{ width:22px; height:22px; stroke:#111; }
+
+  /* 접근성 숨김 */
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+
+  /* 사용자 ‘감쇠 모션’ 선호 시 애니 최소화 */
+  @media (prefers-reduced-motion: reduce){
+    .runner{ transition:none; }
+    .runner:hover{ transform:none; }
+  }
+
+  /* 모바일: 러너·리본 레이아웃 및 하이라이트 */
+  @media (max-width:720px){
+    .runner{ width:100px; }
+    .runner.blue{ left:6%; bottom:15%; }
+    .runner.coral{ right:6%; bottom:13%; }
+    .runner::before{
+      content:'';
+      position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:160%; height:160%; border-radius:50%;
+      background:radial-gradient(circle, rgba(255,255,255,.65) 0%, rgba(255,255,255,0) 72%);
+      z-index:-1;
+    }
+  }
+  @media (max-width:520px){
+    .content{ padding:30px 16px 18px; }
+    .badge-deadline{ font-size:13px; }
+    .runner{ display:none; } /* 최협소: 정보 가독성 우선 */
+    .ribbon.mint{ width:95%; left:-20%; top:-14%; }
+    .ribbon.sky{ width:110%; right:-28%; top:10%; }
+    .ribbon.coral{ width:115%; left:-18%; bottom:-16%; }
+  }
+</style>
+</head>
+<body>
+  <!-- 오버레이 팝업 -->
+  <div class="popup-overlay" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+    <div class="popup">
+      <button class="close" type="button" aria-label="닫기" onclick="closePopup()">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
+      <!-- ===== 키비주얼 장식 (리본 + 러너) ===== -->
+      <div class="decoration" aria-hidden="true">
+        <!-- 리본: 민트 -->
+        <div class="ribbon mint">
+          <svg viewBox="0 0 1200 220" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="rg-mint" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="var(--ribbon-mint-start)"/>
+                <stop offset="100%" stop-color="var(--ribbon-mint-end)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,140 C180,60 300,200 500,140 S820,100 1000,140 1180,200 1200,140"
+                  fill="none" stroke="url(#rg-mint)" stroke-width="60" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <!-- 리본: 스카이 -->
+        <div class="ribbon sky">
+          <svg viewBox="0 0 1200 240" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="rg-sky" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="var(--ribbon-sky-start)"/>
+                <stop offset="100%" stop-color="var(--ribbon-sky-end)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,120 C150,20 340,220 520,120 S860,80 1040,120 1150,220 1200,120"
+                  fill="none" stroke="url(#rg-sky)" stroke-width="70" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <!-- 리본: 코랄 -->
+        <div class="ribbon coral">
+          <svg viewBox="0 0 1200 240" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="rg-coral" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="var(--ribbon-coral-start)"/>
+                <stop offset="100%" stop-color="var(--ribbon-coral-end)"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,160 C180,60 320,220 520,160 S860,120 1040,160 1160,240 1200,160"
+                  fill="none" stroke="url(#rg-coral)" stroke-width="64" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- 러너 실루엣: 블루 -->
+        <svg class="runner blue" viewBox="0 0 128 128" aria-hidden="true">
+          <path d="M69 18c6 0 11 5 11 11s-5 11-11 11-11-5-11-11 5-11 11-11Zm-14 30c7-2 15-1 21 3l15 10c5 3 7 10 4 15s-10 7-15 4l-10-6-7 13 16 12c5 3 6 10 3 15-3 5-10 6-15 3l-20-14c-6-4-7-12-3-18l8-13-10 2-7 9c-4 5-12 6-17 2-5-4-6-12-2-17l10-12c3-4 8-6 13-7l12-2Z"/>
+        </svg>
+        <!-- 러너 실루엣: 코랄 -->
+        <svg class="runner coral" viewBox="0 0 128 128" aria-hidden="true">
+          <path d="M76 18c6 0 11 5 11 11s-5 11-11 11-11-5-11-11 5-11 11-11Zm-26 32c7-3 16-2 22 2l12 8 12-1c6 0 11 5 11 11s-5 11-11 11h-18l-8 12 12 10c5 4 6 11 2 16s-11 6-16 2l-18-14c-6-4-7-12-3-18l7-10-9 1-8 8c-5 5-12 5-17 1s-5-12-1-17l10-11c4-4 8-7 13-9Z"/>
+        </svg>
+      </div>
+
+      <!-- ===== 내용 ===== -->
+      <div class="content">
+        <div class="badge-deadline">환불 접수 마감: 2025년 9월 18일(목) 17:00</div>
+        <h1 id="popup-title" class="title">환불 신청 및 중복 신청·입금 안내</h1>
+
+        <!-- 강조 칩(최우선 강조) -->
+<div class="chips" aria-hidden="true">
+  <span class="chip">DMZ OPEN <strong>평화레이스</strong> 환불은 <strong>별도 공지</strong></span>
+</div>
+        <!-- 부가 강조 문장 -->
+        <p class="subtitle"><strong>DMZ OPEN 평화레이스 환불은 별도 공지</strong>되며, 본 안내는 <strong>2025 DMZ OPEN 평화마라톤 및 평화누리캠핑장</strong> 기준입니다.</p>
+
+        <!-- 신규: 반드시 신청 후 입금 안내 -->
+        <section class="panel note" aria-label="신청 및 입금 순서 안내">
+          <h2 class="sr-only">신청 및 입금 순서 안내</h2>
+          <ul class="list">
+            <li><strong>반드시 홈페이지에서 참가 신청을 완료한 뒤 입금</strong>해 주세요.</li>
+            <li>신청 전에 먼저 입금하신 경우, <strong>신청으로 간주되지 않으며</strong> 확인·대조 과정에서 <strong>처리가 지연</strong>될 수 있습니다.</li>
+            <li><strong>단체 생성 후</strong> 입금 시 <strong>단체 명 기입 후 입금</strong> 바랍니다.</li>
+
+                      </ul>
+        </section>
+
+        <!-- 핵심 안내 -->
+        <section class="panel gray" aria-label="환불 및 코스 변경 안내">
+          <h2 class="sr-only">환불 및 코스 변경 안내</h2>
+          <ul class="list">
+            <li><strong>환불 접수 마감</strong>: 2025년 9월 18일(목) 17:00까지 홈페이지 <strong>환불 게시판</strong> 접수</li>
+            <li>마감 이후에는 <strong>환불 불가</strong>하오니 신중히 선택해 주십시오.</li>
+            <li>농협 외 타 은행 계좌로 환불 시 <strong>이체수수료 차감</strong></li>
+            <li><strong>환불금 지급</strong>: 환불신청 마감일 이후 <strong>일괄 지급</strong> <em>(환불 지급기한 별도 공지)</em></li>
+            <li><strong>코스 변경</strong>: <strong>선착순 마감 이후 변경 불가</strong></li>
+          </ul>
+        </section>
+
+        <!-- 중복 신청/입금 -->
+        <section class="panel gray" aria-label="중복 신청 및 입금 안내">
+          <h2 class="sr-only">중복 신청 및 입금 안내</h2>
+          중복 신청 후 <strong>중복 입금</strong> 또는 <strong>타인 명의 입금</strong>을 하신 경우,
+          <strong>반드시 환불 기간 내</strong>에 홈페이지 <strong>환불 게시판</strong> 또는 사무국으로 연락해 주시기 바랍니다.
+        </section>
+
+        <section class="panel gray" aria-label="정상 접수 전환 안내">
+          <h2 class="sr-only">정상 접수 전환 안내</h2>
+          환불기한 내 연락이 없을 경우, 중복 입금 건은 <strong>환불 없이 정상 접수</strong>로 처리됩니다.
+          이 경우 <strong>기념품과 배번호가 발송</strong>되며, 이후 어떠한 <strong>정정이나 환불도 불가</strong>합니다.
+        </section>
+
+        <!-- 최종 경고 -->
+        <section class="panel danger" aria-label="환불 불가 최종 안내">
+          <h2 class="sr-only">환불 불가 최종 안내</h2>
+          환불 기간이 지난 이후에는 <strong>어떠한 사유로도 환불이 불가</strong>합니다.
+          이는 모든 참가자에게 동일하게 적용되는 규정으로, 개인적인 사정이나 착오 역시 예외로 인정되지 않습니다.
+        </section>
+
+        <!-- CTA -->
+        <div class="cta">
+          <a class="btn btn-primary" href="https://dmzopenrun.kr/dmzrun/board/refund/" target="_blank" rel="noopener" role="button">
+            환불 게시판 바로가기
+          </a>
+          <button class="btn btn-ghost" type="button" onclick="closePopup()">확인</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function closePopup(){
+    const overlay = document.querySelector('.popup-overlay');
+    if(overlay){ overlay.remove(); }
+  }
+</script>
+</body>
+</html>

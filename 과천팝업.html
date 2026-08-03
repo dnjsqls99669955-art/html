@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>바로가기 링크</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+            font-family: 'Segoe UI', 'Malgun Gothic', Arial, sans-serif;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-width: 350px;
+            margin: 0 auto;
+        }
+
+        .link-list a {
+            display: block;
+            padding: 16px 0;
+            background: #6366f1;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.15rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+            transition: background 0.2s, transform 0.2s;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .link-list a:hover {
+            background: #4338ca;
+            transform: translateY(-2px) scale(1.03);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="link-list">
+        <a href="https://www.naver.com" target="_blank" rel="noopener" style="background:#03c75a;">
+            <img src="https://static.nid.naver.com/images/ui/profile/default.png" alt="네이버"
+                style="height:24px;vertical-align:middle;margin-right:10px;">
+            네이버 바로가기
+        </a>
+        <a href="https://www.daum.net" target="_blank" rel="noopener" style="background:#FFCC00; color:#222;">
+            <img src="https://t1.daumcdn.net/daumtop_chanel/op/20170315064553027.png" alt="다음"
+                style="height:24px;vertical-align:middle;margin-right:10px;">
+            다음 바로가기
+        </a>
+        <a href="https://www.dcinside.com" target="_blank" rel="noopener" style="background:#1C1C1C;">
+            <img src="https://www.dcinside.com/favicon.ico" alt="디시인사이드"
+                style="height:24px;vertical-align:middle;margin-right:10px;">
+            디시인사이드 바로가기
+        </a>
+        <a href="https://www.instagram.com" target="_blank" rel="noopener" style="background:#E4405F;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="인스타그램"
+                style="height:24px;vertical-align:middle;margin-right:10px;">
+            인스타그램 바로가기
+        </a>
+        <a href="https://www.google.co.kr" target="_blank" rel="noopener" style="background:#4285F4;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="구글"
+                style="height:24px;vertical-align:middle;margin-right:10px;">
+            구글 바로가기
+        </a>
+    </div>
+</body>
+
+</html>

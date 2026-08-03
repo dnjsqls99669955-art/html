@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <title>마라톤 참가 안내 카드형 공지</title>
+
+  <style>
+    :root {
+      --blue-main: #8a2c6d;
+      --blue-dark: #0fb44f;
+      --bg-soft: #f0f4ff;
+      --accent: #ffb400;
+      --red: #ff3e3e;
+    }
+
+    body {
+      margin: 0;
+      padding: 40px 0 80px;
+      background: linear-gradient(180deg, #eef3ff 0%, #ffffff 40%, #f8f9fc 100%);
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    }
+
+    .wrap {
+      max-width: 600px;
+      max-height: 600px;
+      min-width: 500px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* CARD */
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 26px 26px 22px;
+      margin-bottom: 26px;
+      box-shadow: 0 10px 25px rgba(0, 40, 110, 0.10);
+      border: 1px solid #e2e8ff;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--blue-main), #0f7aff);
+      border-radius: 6px;
+    }
+
+    .card-icon {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--blue-dark);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .card-body {
+      text-align: right;
+      font-size: 15px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .dash {
+      margin-top: 8px;
+      padding-left: 18px;
+    }
+
+    .dash li {
+      list-style: none;
+      position: relative;
+      padding-left: 10px;
+      margin: 4px 0;
+    }
+
+    .dash li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--blue-main);
+    }
+
+    .note {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: #fff8dc;
+      border: 1px solid #ffe089;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #5b4600;
+    }
+
+    .danger {
+      background: #ffe5e5;
+      border-color: #ffb6b6;
+      color: #7a1f1f;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- 1 -->
+    <div class="card">
+      <div class="card-icon">📄</div>
+      <div class="card-title">1. 참가신청 확인 및 정보 수정</div>
+      <div class="card-body">
+        홈페이지 상단 <strong>[참가신청] → [참가신청 조회]</strong> 메뉴에서 가능합니다.<br>
+        개인 및 단체 모두 로그인 후 신청 정보·수정·입금 여부 확인이 가능합니다.
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="card">
+      <div class="card-icon">👥</div>
+      <div class="card-title">2. 단체 참가 안내</div>
+      <div class="card-body">
+        단체 참가 신청은 <strong>2인 이상</strong>부터 가능합니다.<br>
+        대표자가 팀원 정보를 일괄 입력할 수 있으며,<br>
+        신청 후 정보수정 페이지에서 단체원 추가·수정이 가능합니다.<br><br>
+        <strong>대표자도 참가 시 본인 정보 반드시 명단에 등록해야 합니다.</strong>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="card">
+      <div class="card-icon">🔄</div>
+      <div class="card-title">3. 개인 → 단체 전환</div>
+      <div class="card-body">
+        개인 접수자는 단체로 전환 가능합니다.<br>
+        카카오톡 채널로 아래 정보를 전달해 주세요:<br>
+
+        <ul class="dash">
+          <li>이름</li>
+          <li>생년월일(6자리)</li>
+          <li>휴대폰번호</li>
+          <li>기존 코스</li>
+          <li>단체명</li>
+        </ul>
+
+        <div class="note">
+          • 반드시 <strong>단체명으로 일괄 입금</strong><br>
+          • 개별 입금 후 전환 시 단체 기준 적용 불가<br>
+          • 단체에서 다른 단체로의 전환 불가
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <div class="card-title">4. 참가비 입금 및 확인</div>
+      <div class="card-body">
+        입금 확인은 평일 기준 <strong>7~10일</strong> 소요되며 문자 안내가 발송됩니다.
+        <div class="note">
+          ※ 입금 시 <strong>입금자 생년월일(6자리)</strong> 필수<br>
+          ※ 미기재 시 확인 지연 → 카카오톡 문의
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="card">
+      <div class="card-icon">↩️</div>
+      <div class="card-title">5. 환불 안내</div>
+      <div class="card-body">
+        홈페이지 로그인 후 정보수정 페이지에서 환불 신청 가능합니다.<br>
+        환불은 대회 종료 후 취합하여 순차 처리됩니다.
+        <div class="note danger">
+          ※ 환불 기한 종료 / 접수 마감 이후 / 코스 변경 이후에는 환불 불가
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="card">
+      <div class="card-icon">🧾</div>
+      <div class="card-title">6. 현금영수증 및 세금계산서 발행</div>
+      <div class="card-body">
+        현금영수증은 홈페이지 <strong>[게시판 → 현금영수증 신청]</strong>에서 가능합니다.<br>
+        세금계산서 요청은 <strong>help@blueimg.co.kr</strong> 로 사업자등록증과 이메일을 보내주세요.<br>
+        (메일 제목: “00마라톤 세금계산서 발행 요청”)
+        <div class="note">
+          ※ 카드 결제 건 발급 불가<br>
+          ※ 입금자와 신청자 다를 경우 발급 제한 가능
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="card">
+      <div class="card-icon">🚫</div>
+      <div class="card-title">7. 현장 접수 불가</div>
+      <div class="card-body">
+        대회 당일 <strong>현장 접수는 운영되지 않습니다.</strong><br>
+        반드시 사전 접수 기간 내 온라인으로 완료해 주세요.
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">8. 연령별 신청 제한</div>
+      <div class="card-body">
+        참가자 안전을 위해 아래 연령 제한이 적용됩니다:
+        <ul class="dash">
+          <li><strong>풀 · 하프 코스</strong> : 미성년자 불가</li>
+          <li><strong>10km 코스</strong> : 14세 미만 불가</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="card">
+      <div class="card-icon">👶🚫</div>
+      <div class="card-title">9. 유모차 동반 불가</div>
+      <div class="card-body">
+        유모차 동반 참가자는 안전사고 예방을 위해 <strong>절대 불가</strong>합니다.
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="card">
+      <div class="card-icon">📦</div>
+      <div class="card-title">10. 배번호 및 기념품 수령</div>
+      <div class="card-body">
+        배번호·기념품은 대회 <strong>1~2주 전 택배 발송</strong>됩니다.<br>
+        배번호는 기록 측정 필수이며 재발급이 불가합니다.
+      </div>
+    </div>
+
+    <!-- 11 -->
+    <div class="card">
+      <div class="card-icon">🏅</div>
+      <div class="card-title">11. 메달 지급</div>
+      <div class="card-body">
+        모든 참가자에게 메달이 지급됩니다.<br>
+        종목별(하프·10km·5km) 별도 제작되며<br>
+        완주 후 코스별 기념품 배부처에서 수령 가능합니다.
+      </div>
+    </div>
+
+    <!-- 12 -->
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <div class="card-title">12. 기록증 안내</div>
+      <div class="card-body">
+        기록증은 완주 당일 자동으로 모바일 발송되며<br>
+        별도 신청 없이 등록된 번호로 전송됩니다.
+      </div>
+    </div>
+
+    <!-- 13 -->
+    <div class="card">
+      <div class="card-icon">🐶🚫</div>
+      <div class="card-title">13. 반려동물 동반 제한</div>
+      <div class="card-body">
+        대회장 내 안전·위생·혼잡 방지를 위해<br>
+        반려동물 동반 입장은 <strong>불가</strong>합니다.
+      </div>
+    </div>
+
+    <!-- 14 -->
+    <div class="card">
+      <div class="card-icon">🔥🚫</div>
+      <div class="card-title">14. 대회장 반입 금지 물품</div>
+      <div class="card-body">
+        아래 물품 반입·사용이 금지됩니다:
+        <ul class="dash">
+          <li>외부 음식물</li>
+          <li>주류(술)</li>
+          <li>버너·그릴 등 조리기구 및 캠핑장비</li>
+        </ul>
+
+        <div class="note danger">
+          특히 <strong>삼겹살·바비큐 등 현장 조리</strong> 및<br>
+          <strong>주류 섭취는 절대 금지</strong>됩니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- 추가 공지 -->
+    <div class="card">
+      <div class="card-icon">⚠️</div>
+      <div class="card-title">추가 공지 – 대회별 코스 & 환불규정 상이</div>
+      <div class="card-body">
+        <strong>각 대회마다 코스 구성·거리·환불 규정이 상이합니다.</strong><br>
+        참가 전 반드시 해당 대회 공식 안내 페이지를 확인해 주세요.
+        <div class="note">
+          동일 주최라도 대회별 기준은 다를 수 있습니다.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

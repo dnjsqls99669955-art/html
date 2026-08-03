@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>카카오 지도 여러 마커 + 이름 라벨</title>
+  <style>
+    #map { width:800px; height:700px; }
+    .lbl{
+      padding:2px 6px;
+      font-size:11px;
+      line-height:1.2;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"맑은 고딕",sans-serif;
+      background:#fff;
+      border:1px solid #333;
+      border-radius:4px;
+      box-shadow:0 1px 2px rgba(0,0,0,.2);
+      transform: translate(-50%, -6px);
+      white-space:nowrap;
+    }
+  </style>
+</head>
+<body>
+  <h2>카카오 지도 (마커 + 이름 라벨)</h2>
+  <div id="map"></div>
+
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=e08f0a90783f8f0ccf3bc700b25eeac0"></script>
+  <script>
+    // 좌표 + 이름 배열
+    var positions = [
+      { lat:36.54966, lng:128.72407, name:"직1문앞" },
+      { lat:36.55213, lng:128.72056, name:"운동장사거리" },
+      { lat:36.55258, lng:128.72196, name:"영호루" },
+      { lat:36.55228, lng:128.72300, name:"토끼굴입구" },
+      { lat:36.55824, lng:128.72086, name:"영호대교북단" },
+      { lat:36.55337, lng:128.73208, name:"영호대교삼거리교차로" },
+      { lat:36.55022, lng:128.72967, name:"현진2차내리막길" },
+      { lat:36.55048, lng:128.73243, name:"강남초사거리" },
+      { lat:36.54664, lng:128.69879, name:"안동병원삼거리" },
+      { lat:36.55084, lng:128.73634, name:"남광빌딩사거리" },
+      { lat:36.55401, lng:128.73591, name:"영가대교남단사거리4방향" },
+      { lat:36.55987, lng:128.73359, name:"영가대교북단사거리2방향" },
+      { lat:36.55171, lng:128.74164, name:"예미정삼거리" },
+      { lat:36.55008, lng:128.75034, name:"용정교남단삼거리2방향" },
+      { lat:36.54918, lng:128.75215, name:"로하스힐입구" },
+      { lat:36.54510, lng:128.75844, name:"안동고정문" },
+      { lat:36.55263, lng:128.75298, name:"용정교북단사거리2방향" },
+      { lat:36.55409, lng:128.75444, name:"한솔식자재마트사거리" },
+      { lat:36.55461, lng:128.75488, name:"건강보험공단사거리" },
+      { lat:36.55596, lng:128.75622, name:"백두숯불구이" },
+      { lat:36.56964, lng:128.77392, name:"골프장삼거리" },
+      { lat:36.57035, lng:128.77733, name:"문화관광단지삼거리" },
+      { lat:36.57615, lng:128.77850, name:"선착장삼거리" },
+      { lat:36.58023, lng:128.77459, name:"물포럼기념관삼거리" },
+      { lat:36.58882, lng:128.77031, name:"동악골와룡삼거리" },
+      { lat:36.54295, lng:128.74232, name:"정상교차로(양쪽)" },
+      { lat:36.53589, lng:128.79555, name:"포진교남단" },
+      { lat:36.53770, lng:128.79614, name:"포진교북단" },
+      { lat:36.63653, lng:128.81588, name:"구선교풀반환점" },
+      { lat:36.53915, lng:128.81019, name:"포진경로당삼거리" },
+      { lat:36.63753, lng:128.80828, name:"원두골삼거리" },
+      { lat:36.55630, lng:128.76003, name:"길주중삼거리" },
+      { lat:36.55803, lng:128.75631, name:"경동아파트앞삼거리" },
+      { lat:36.55810, lng:128.75453, name:"용상주공아파트앞비비큐" }
+    ];
+
+    // 지도 생성
+    var map = new kakao.maps.Map(document.getElementById('map'), {
+      center: new kakao.maps.LatLng(36.558,128.76),
+      level: 9
+    });
+
+    // bounds 계산
+    var bounds = new kakao.maps.LatLngBounds();
+    positions.forEach(function(p){ bounds.extend(new kakao.maps.LatLng(p.lat,p.lng)); });
+    map.setBounds(bounds);
+
+    // 마커 + 이름 라벨
+    positions.forEach(function(pos){
+      var latlng = new kakao.maps.LatLng(pos.lat, pos.lng);
+
+      new kakao.maps.Marker({ map: map, position: latlng });
+
+      var labelEl = document.createElement('div');
+      labelEl.className = 'lbl';
+      labelEl.textContent = pos.name;
+
+      new kakao.maps.CustomOverlay({
+        map: map,
+        position: latlng,
+        content: labelEl,
+        xAnchor: 0.5,
+        yAnchor: 1.4
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>제11회 시흥시 전국하프마라톤 주차 안내</title>
+<style>
+  :root {
+    --ink:#0b1c5f;
+    --text:#0f172a;
+    --muted:#5b667a;
+    --line:#e6e8ef;
+    --panel:#ffffff;
+    --accent-blue:#2563eb;
+    --accent-orange:#f97316;
+    --accent-sky:#38bdf8;
+    --accent-sky-light:#b9ecff;
+  }
+  * { box-sizing:border-box; }
+  html,body {
+    margin:0; padding:0; background:#f1f5f9; color:var(--text);
+    font-family:'Noto Sans KR', system-ui, Segoe UI, Roboto, sans-serif;
+    line-height:1.65;
+  }
+  .page-container { max-width:960px; margin:0 auto; padding:24px; }
+  .popup {
+    position:relative; background:var(--panel); border-radius:22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.12); overflow:hidden; isolation:isolate;
+  }
+  .decoration { position:absolute; inset:0; pointer-events:none; z-index:0; }
+  .wave { position:absolute; width:120%; height:auto; left:-10%; filter:drop-shadow(0 8px 16px rgba(0,0,0,.10)); }
+  .wave.top { top:-5%; }
+  .wave.bottom { bottom:-5%; }
+  .content { position:relative; z-index:1; padding:50px 28px 36px; text-align:center; }
+  .title { font-size:clamp(26px,3.6vw,36px); font-weight:900; color:var(--ink); margin:10px 0 16px; }
+  .subtitle { font-size:1.1rem; color:var(--accent-blue); margin-bottom:24px; }
+  p { font-size:1rem; margin:14px 0; }
+  .highlight { color:var(--accent-orange); font-weight:700; }
+  .footer { margin-top:32px; font-size:0.9rem; color:var(--muted); }
+  .btn {
+    display:inline-block; margin-top:24px; padding:12px 20px;
+    font-size:1rem; font-weight:700; color:#fff;
+    background:var(--accent-blue); border:none; border-radius:10px;
+    cursor:pointer; box-shadow:0 4px 10px rgba(37,99,235,.25);
+    transition:all .2s ease; text-decoration:none;
+  }
+  .btn:hover { background:#1e40af; transform:translateY(-2px); }
+</style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="popup">
+      <!-- 장식 -->
+      <div class="decoration" aria-hidden="true">
+        <svg class="wave top" viewBox="0 0 1200 200" preserveAspectRatio="none" style="opacity:.35;">
+          <path d="M0,60 C300,140 600,0 900,80 C1100,140 1200,40 1200,40 L1200,0 L0,0Z" fill="var(--accent-sky-light)" />
+        </svg>
+        <svg class="wave top" viewBox="0 0 1200 200" preserveAspectRatio="none" style="opacity:.55;">
+          <path d="M0,80 C300,160 600,0 900,80 C1100,130 1200,80 1200,80 L1200,0 L0,0Z" fill="var(--accent-sky)" />
+        </svg>
+        <svg class="wave bottom" viewBox="0 0 1200 200" preserveAspectRatio="none" style="opacity:.35;">
+          <path d="M0,130 C250,190 450,90 700,150 C950,210 1150,110 1200,160 L1200,200 L0,200Z" fill="var(--accent-sky-light)" />
+        </svg>
+        <svg class="wave bottom" viewBox="0 0 1200 200" preserveAspectRatio="none" style="opacity:.55;">
+          <path d="M0,120 C200,180 400,80 600,140 C800,200 1000,100 1200,150 L1200,200 L0,200Z" fill="var(--accent-sky)" />
+        </svg>
+      </div>
+
+      <!-- 내용 -->
+      <div class="content">
+        <h1 class="title">제11회 시흥시 전국하프마라톤<br>주차 안내</h1>
+        <p class="subtitle">2025. 10. 12.(일) 한국공학대학교 제2캠퍼스</p>
+        <p><span class="highlight">대회장 내 주차공간이 협소하여 주차가 불가합니다.</span></p>
+        <p>대중교통 또는 셔틀버스 이용을 권장합니다.</p>
+        <p>셔틀버스 운행 정보는 아래 버튼을 참고해 주시기 바랍니다.</p>
+
+        <!-- 외부 링크 버튼 -->
+        <a class="btn" href="https://www.shmarathon.kr/shmarathon/text/map" target="_blank" rel="noopener">
+          셔틀버스 운행 안내 보기
+        </a>
+
+        <div class="footer">© 시흥시 전국하프마라톤 사무국</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

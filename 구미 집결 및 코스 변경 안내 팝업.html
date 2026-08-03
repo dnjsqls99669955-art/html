@@ -1,0 +1,201 @@
+<!-- [코스 및 집결지 변경 안내] -->
+<section class="course-change-notice" role="region" aria-label="코스 및 집결지 변경 안내">
+  <style>
+    .course-change-notice{
+      --bg:#f7f9fc;
+      --card:#ffffff;
+      --ink:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --accent:#0d6efd;
+      --danger:#b91c1c;
+
+      font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      padding:22px 14px;
+    }
+    .course-change-notice .ccn-wrap{max-width:880px;margin:0 auto;}
+    .course-change-notice .ccn-card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow:0 10px 28px rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    .course-change-notice .ccn-top{
+      padding:18px 20px 14px;
+      background:linear-gradient(180deg,#ffffff,#fbfdff);
+      border-bottom:1px solid var(--line);
+    }
+    .course-change-notice .ccn-badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(13,110,253,.08);
+      color:#0b4db8;
+      font-weight:700;
+      font-size:13px;
+    }
+    .course-change-notice .ccn-title{
+      margin:10px 0 6px;
+      font-size:22px;
+      letter-spacing:-.4px;
+    }
+    .course-change-notice .ccn-sub{
+      margin:0;
+      color:var(--muted);
+      font-size:14.5px;
+      line-height:1.6;
+    }
+    .course-change-notice .ccn-body{
+      padding:18px 20px 8px;
+      line-height:1.9;
+      font-size:15.5px;
+    }
+    .course-change-notice .ccn-body p{margin:0 0 12px;}
+    .course-change-notice .ccn-em{font-weight:800;color:#0b4db8;}
+
+    /* 변경 전/후 박스 */
+    .course-change-notice .ccn-change-box{
+      margin:18px 0 6px;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid var(--line);
+    }
+    .course-change-notice .ccn-change-row{
+      display:grid;
+      grid-template-columns:120px 1fr;
+      gap:0;
+      padding:14px 16px;
+      align-items:center;
+    }
+    .course-change-notice .ccn-change-row + .ccn-change-row{
+      border-top:1px dashed var(--line);
+    }
+    .course-change-notice .ccn-label{
+      font-weight:800;
+      font-size:14px;
+      text-align:center;
+    }
+    .course-change-notice .before{
+      background:#f9fafb;
+    }
+    .course-change-notice .before .ccn-label{
+      color:#374151;
+    }
+    .course-change-notice .after{
+      background:rgba(13,110,253,.06);
+    }
+    .course-change-notice .after .ccn-label{
+      color:#0b4db8;
+    }
+    .course-change-notice .ccn-place{
+      font-size:15.5px;
+      font-weight:700;
+    }
+
+    .course-change-notice .ccn-points{
+      margin:14px 0 0;
+      padding:14px;
+      border:1px solid rgba(13,110,253,.22);
+      background:rgba(13,110,253,.06);
+      border-radius:12px;
+    }
+    .course-change-notice .ccn-points h4{
+      margin:0 0 8px;
+      font-size:15px;
+    }
+    .course-change-notice .ccn-points ul{
+      margin:0;
+      padding-left:18px;
+    }
+    .course-change-notice .ccn-points li{margin:6px 0;}
+
+    .course-change-notice .ccn-foot{
+      padding:14px 20px 18px;
+      border-top:1px dashed var(--line);
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .course-change-notice .ccn-note{
+      margin:0;
+      color:var(--muted);
+      font-size:13.5px;
+      line-height:1.6;
+    }
+    .course-change-notice .ccn-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 16px;
+      border-radius:12px;
+      background:linear-gradient(180deg,#2563eb,#1d4ed8);
+      color:#fff;
+      font-weight:700;
+      font-size:14px;
+      text-decoration:none;
+      white-space:nowrap;
+      box-shadow:0 6px 14px rgba(37,99,235,.25);
+    }
+    .course-change-notice .ccn-btn:hover{filter:brightness(1.05);}
+  </style>
+
+  <div class="ccn-wrap">
+    <div class="ccn-card">
+      <header class="ccn-top" style="text-align:center;">
+        <span class="ccn-badge" style="font-size:15px; padding:8px 18px; letter-spacing:2px; background:rgba(13,110,253,.13); color:#0d6efd; font-weight:900;">안내</span>
+        <h2 class="ccn-title" style="margin-top:16px;">코스 및 집결지 변경 안내</h2>
+        <p class="ccn-sub">
+          보다 안정적인 대회 운영과 원활한 현장 동선 확보를 위해 코스와 집결지를 일부 조정하여 운영합니다.
+        </p>
+      </header>
+
+      <div class="ccn-body">
+        <p>참가자 여러분께 안내드립니다.</p>
+
+        <p>
+          본 대회는 <span class="ccn-em">보다 안정적인 대회 운영</span>과
+          <span class="ccn-em">원활한 현장 동선 확보</span>를 위해,
+          기존에 안내드린 내용에서 코스와 집결지를 일부 조정하여 운영하게 되었습니다.
+        </p>
+
+        <!-- 변경 전 / 변경 후 -->
+        <div class="ccn-change-box">
+          <div class="ccn-change-row before">
+            <div class="ccn-label">변경 전</div>
+            <div class="ccn-place">구미 시민운동장</div>
+          </div>
+          <div class="ccn-change-row after">
+            <div class="ccn-label">변경 후</div>
+            <div class="ccn-place">낙동강체육공원 제4주차장</div>
+          </div>
+        </div>
+
+        <div class="ccn-points">
+          <h4>안내 사항</h4>
+          <ul>
+            <li>변경된 집결지를 기준으로 대회가 진행됩니다.</li>
+            <li>참가자 여러분께서는 변경된 위치를 사전에 반드시 확인해 주시기 바랍니다.</li>
+          </ul>
+        </div>
+
+        <p style="margin-top:14px;">원활한 대회 운영을 위한 협조를 부탁드립니다.</p>
+        <p style="margin:0;font-weight:800;">감사합니다.</p>
+      </div>
+
+      <footer class="ccn-foot">
+        <p class="ccn-note">
+          ※ 변경된 코스 및 집결지 정보는 홈페이지 내 <strong>대회 요강</strong>을 통해 반드시 확인해 주시기 바랍니다.
+        </p>
+        <a
+          class="ccn-btn"
+          href="https://www.gumimarathon.com/gumi/text/course1"
+        > 코스 안내</a>
+      </footer>
+    </div>
+  </div>
+</section>

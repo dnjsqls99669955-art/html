@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>셔틀버스 접수현황</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Pretendard','Noto Sans KR',sans-serif;
+    background:#dfe6ee;
+    color:#102b46;
+    padding:40px 0;
+}
+
+.page-frame{
+    width:100%;
+    max-width:1180px;
+    margin:0 auto 42px;
+    border-radius:26px;
+    overflow:hidden;
+    box-shadow:0 18px 45px rgba(16,47,79,.12);
+    background:#fff;
+}
+
+.section{
+    width:100%;
+    position:relative;
+    overflow:hidden;
+}
+
+.inner{
+    width:100%;
+    max-width:980px;
+    margin:0 auto;
+}
+
+/* ================= 메인 ================= */
+
+.hero{
+    min-height:720px;
+    background:#102f4f;
+    color:#fff;
+    position:relative;
+    display:flex;
+    align-items:center;
+}
+
+.hero::before,
+.hero::after{
+    content:"";
+    position:absolute;
+    border-radius:50%;
+    background:rgba(60,110,160,.28);
+}
+
+.hero::before{
+    width:520px;
+    height:520px;
+    top:-170px;
+    right:-120px;
+}
+
+.hero::after{
+    width:360px;
+    height:360px;
+    bottom:-120px;
+    right:-90px;
+}
+
+.hero-wrap{
+    position:relative;
+    z-index:2;
+    padding:40px 10px;
+}
+
+.top-label{
+    font-size:13px;
+    letter-spacing:6px;
+    color:#c8d5e2;
+    font-weight:700;
+}
+
+.top-label::before{
+    content:"";
+    display:inline-block;
+    width:22px;
+    height:4px;
+    background:#e53950;
+    margin-right:10px;
+    vertical-align:middle;
+}
+
+.bus-circle{
+    width:76px;
+    height:76px;
+    border-radius:50%;
+    background:rgba(255,255,255,.12);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:700;
+    margin-top:48px;
+}
+
+.hero-small{
+    margin-top:34px;
+    font-size:30px;
+    color:#d0dceb;
+    font-weight:500;
+    letter-spacing:-1px;
+}
+
+.hero-big{
+    margin-top:10px;
+    font-size:52px;
+    line-height:1.08;
+    font-weight:800;
+    letter-spacing:-3px;
+}
+
+.date-line{
+    margin-top:30px;
+    font-size:22px;
+    font-weight:700;
+}
+
+.date-line::before{
+    content:"";
+    display:inline-block;
+    width:42px;
+    height:4px;
+    background:#e53950;
+    margin-right:14px;
+    vertical-align:middle;
+}
+
+.view-btn{
+    margin-top:34px;
+    border:none;
+    background:#fff;
+    color:#102f4f;
+    padding:15px 28px;
+    border-radius:8px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.2s;
+    box-shadow:0 10px 25px rgba(0,0,0,.18);
+}
+
+.view-btn:hover{
+    background:#e53950;
+    color:#fff;
+}
+
+.hero-footer{
+    position:absolute;
+    left:0;
+    bottom:-70px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.hero-footer span{
+    display:inline-flex;
+    align-items:center;
+    padding:11px 16px;
+    border-radius:999px;
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.22);
+    color:#fff;
+    font-size:15px;
+    font-weight:800;
+    letter-spacing:-.2px;
+}
+
+.hero-footer span::before{
+    content:"";
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#e53950;
+    margin-right:8px;
+}
+
+/* ================= 숨김영역 ================= */
+
+#detailArea{
+    display:none;
+}
+
+/* ================= 셔틀현황 ================= */
+
+.schedule{
+    padding:58px 20px 48px;
+    background:#f2f5fa;
+}
+
+.schedule-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:28px;
+}
+
+.schedule-title h2{
+    font-size:30px;
+    font-weight:800;
+    letter-spacing:-1px;
+}
+
+.schedule-title p{
+    margin-top:12px;
+    font-size:12px;
+    letter-spacing:6px;
+    color:#71839b;
+    font-weight:700;
+}
+
+.date-badge{
+    background:#fff;
+    border:1px solid #d8e0ea;
+    border-radius:8px;
+    padding:12px 16px;
+    font-weight:700;
+    font-size:14px;
+}
+
+.card-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.shuttle-card{
+    background:#fff;
+    border:1px solid #dbe3ec;
+    border-left:5px solid #2c6b9f;
+    min-height:112px;
+    padding:16px 18px;
+    position:relative;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+
+.shuttle-card.closed{
+    border-left-color:#e53950;
+}
+
+.region{
+    display:inline-block;
+    background:#102f4f;
+    color:#fff;
+    padding:7px 18px;
+    border-radius:4px;
+    font-size:13px;
+    font-weight:700;
+}
+
+.status{
+    position:absolute;
+    top:16px;
+    right:16px;
+    background:#fde9ec;
+    color:#e53950;
+    padding:5px 8px;
+    border-radius:4px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.place{
+    margin-top:16px;
+    font-size:14px;
+    font-weight:700;
+    line-height:1.4;
+}
+
+.time{
+    margin-top:10px;
+    font-size:13px;
+    color:#6f8097;
+}
+
+.time strong{
+    font-size:23px;
+    margin-left:8px;
+    color:#102b46;
+}
+
+.schedule-bottom{
+    margin-top:22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.legend{
+    display:flex;
+    gap:24px;
+    font-size:13px;
+}
+
+.dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    display:inline-block;
+    margin-right:6px;
+    vertical-align:middle;
+}
+
+.red{
+    background:#e53950;
+}
+
+.blue{
+    background:#2c6b9f;
+}
+
+.note{
+    font-size:12px;
+    color:#74869d;
+    font-style:italic;
+}
+
+/* ================= 이용안내 ================= */
+
+.guide{
+    background:#fff;
+}
+
+.guide-wrap{
+    display:grid;
+    grid-template-columns:320px 1fr;
+    min-height:580px;
+}
+
+.guide-left{
+    background:#102f4f;
+    color:#fff;
+    padding:42px;
+    position:relative;
+    overflow:hidden;
+}
+
+.guide-left::after{
+    content:"";
+    position:absolute;
+    width:280px;
+    height:280px;
+    border-radius:50%;
+    background:rgba(60,110,160,.28);
+    left:-100px;
+    bottom:-120px;
+}
+
+.guide-left h2{
+    margin-top:30px;
+    font-size:34px;
+    line-height:1.25;
+    letter-spacing:-2px;
+    position:relative;
+    z-index:2;
+}
+
+.guide-left h2::after{
+    content:"";
+    display:block;
+    width:50px;
+    height:4px;
+    background:#e53950;
+    margin-top:20px;
+}
+
+.guide-text{
+    margin-top:30px;
+    font-size:16px;
+    line-height:1.7;
+    color:#c6d3e0;
+    position:relative;
+    z-index:2;
+}
+
+.guide-right{
+    padding:42px;
+}
+
+.info-label{
+    font-size:12px;
+    letter-spacing:6px;
+    color:#e53950;
+    font-weight:800;
+}
+
+.guide-right h3{
+    margin-top:8px;
+    margin-bottom:24px;
+    font-size:27px;
+}
+
+.guide-item{
+    display:grid;
+    grid-template-columns:50px 48px 1fr;
+    align-items:center;
+    padding:11px 0;
+    border-bottom:1px solid #dce4ed;
+}
+
+.guide-item:last-of-type{
+    border-bottom:none;
+}
+
+.num{
+    font-size:24px;
+    color:#96a8bf;
+    font-weight:800;
+    font-style:italic;
+}
+
+.circle-icon{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:#f1f4f8;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    font-weight:800;
+}
+
+.guide-item h4{
+    font-size:18px;
+}
+
+.guide-item p{
+    margin-top:6px;
+    color:#6a7b92;
+    line-height:1.5;
+    font-size:13px;
+}
+
+.warning{
+    margin-top:24px;
+    background:#fde9ec;
+    color:#e53950;
+    padding:14px 16px;
+    border-radius:5px;
+    font-weight:700;
+    font-size:13px;
+}
+
+@media(max-width:900px){
+
+    body{
+        padding:16px;
+    }
+
+    .page-frame{
+        border-radius:18px;
+    }
+
+    .hero{
+        min-height:650px;
+    }
+
+    .hero-big{
+        font-size:40px;
+    }
+
+    .hero-small{
+        font-size:25px;
+    }
+
+    .hero-footer{
+        position:relative;
+        bottom:auto;
+        left:auto;
+        margin-top:32px;
+    }
+
+    .card-grid{
+        grid-template-columns:1fr;
+    }
+
+    .schedule-header{
+        flex-direction:column;
+        gap:18px;
+    }
+
+    .schedule-bottom{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:12px;
+    }
+
+    .guide-wrap{
+        grid-template-columns:1fr;
+    }
+
+    .guide-right{
+        padding:34px 22px;
+    }
+
+    .guide-left{
+        padding:34px 22px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-frame">
+<section class="section hero">
+
+    <div class="inner hero-wrap">
+
+        <div class="top-label">
+            OFFICIAL NOTICE · 공식 안내
+        </div>
+
+        <div class="bus-circle">
+            SHUTTLE
+        </div>
+
+        <div class="hero-small">
+            개인 참가자 지역별
+        </div>
+
+        <div class="hero-big">
+            셔틀버스 접수현황
+        </div>
+
+        <div class="date-line">
+            5월 8일 기준
+        </div>
+
+        <button class="view-btn" onclick="showDetail()">
+            접수현황 보러가기
+        </button>
+
+        <div class="hero-footer">
+            <span>왕복 운영</span>
+            <span>개인 참가자 한정</span>
+            <span>선착순 마감</span>
+        </div>
+
+    </div>
+
+</section>
+</div>
+
+<script>
+function showDetail(){
+    const detail = document.getElementById('detailArea');
+
+    if(detail.style.display === 'block'){
+        detail.style.display = 'none';
+        return;
+    }
+
+    detail.style.display = 'block';
+
+    setTimeout(() => {
+        detail.scrollIntoView({
+            behavior:'smooth'
+        });
+    },100);
+}
+</script>
+
+</body>
+</html>

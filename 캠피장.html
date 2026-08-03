@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DMZ OPEN 캠핑 신청자 명단</title>
+<style>
+  /* ✅ DMZ CAMPING 전용 스코프 (전역 충돌 방지) */
+  .dmz-camping {
+    --ink:#1e293b;
+    --sub:#64748b;
+    --brand:#2563eb;
+    --panel:#f8fafc;
+    --border:#e2e8f0;
+    font-family:'Noto Sans KR',sans-serif;
+    color:var(--ink);
+    background:var(--panel);
+    line-height:1.6;
+    margin:0;
+    padding:0;
+  }
+
+  .dmz-camping .wrap {
+    max-width:920px;
+    margin:40px auto;
+    background:#fff;
+    border-radius:14px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.07);
+    overflow:hidden;
+  }
+
+  .dmz-camping header {
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    color:#fff;
+    text-align:center;
+    padding:30px 16px 22px;
+  }
+
+  .dmz-camping header h1 {
+    margin:0;
+    font-size:24px;
+    letter-spacing:-0.3px;
+  }
+
+  .dmz-camping .btn-area {
+    text-align:center;
+    padding:22px 16px 16px;
+    background:#f1f5f9;
+  }
+
+  .dmz-camping .btn-area a {
+    display:inline-block;
+    background:var(--brand);
+    color:#fff;
+    text-decoration:none;
+    font-weight:500;
+    padding:11px 24px;
+    border-radius:8px;
+    transition:0.2s;
+  }
+
+  .dmz-camping .btn-area a:hover { background:#1e40af; }
+
+  .dmz-camping .btn-desc {
+    margin-top:10px;
+    font-size:14px;
+    color:var(--sub);
+  }
+
+  .dmz-camping details {
+    border-top:2px solid var(--border);
+  }
+
+  .dmz-camping summary {
+    background:#f9fafb;
+    padding:12px 18px;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+    color:#1e40af;
+    position:relative;
+  }
+
+  .dmz-camping summary::after {
+    content:"▼";
+    position:absolute;
+    right:16px;
+    font-size:12px;
+    color:#94a3b8;
+    transition:0.2s;
+  }
+
+  .dmz-camping details[open] summary::after { transform:rotate(180deg); }
+
+  .dmz-camping table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:15px;
+  }
+
+  .dmz-camping th, .dmz-camping td {
+    border:1px solid var(--border);
+    padding:8px 10px;
+    text-align:left;
+  }
+
+  .dmz-camping th {
+    background:#f3f4f6;
+    font-weight:600;
+    color:#334155;
+  }
+
+  .dmz-camping tr:nth-child(even) td { background:#fafafa; }
+
+  .dmz-camping td.empty {
+    color:#cbd5e1;
+    text-align:center;
+  }
+
+  @media(max-width:640px){
+    .dmz-camping table, .dmz-camping thead, .dmz-camping tbody,
+    .dmz-camping th, .dmz-camping td, .dmz-camping tr { display:block; }
+    .dmz-camping th { display:none; }
+    .dmz-camping td { border:none; border-bottom:1px solid var(--border); padding:6px 12px; }
+    .dmz-camping tr { margin-bottom:10px; background:#fff; border-radius:6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="dmz-camping">
+  <div class="wrap">
+    <header>
+      <h1>DMZ OPEN 캠핑 신청자 명단</h1>
+    </header>
+
+    <div class="btn-area">
+      <a href="https://ggtour.or.kr/camping/00000/00004.web" target="_blank"> 평화누리캠핑장 바로가기</a>
+      <div class="btn-desc">부대시설 이용 및 위치 확인은 홈페이지를 통해 확인 가능합니다.</div>
+      <div class="btn-desc" style="margin-top:6px;">
+        업데이트: <span id="today-date"></span>
+      </div>
+    </div>
+    <script>
+      // 오늘 날짜를 yyyy-mm-dd 형식으로 표시
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('today-date').textContent = `${yyyy}-${mm}-${dd}`;
+    </script></div>
+
+    <!-- ✅ 글램핑존 -->
+    <details open>
+      <summary>글램핑존</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>글램핑존</td><td>1호</td><td>김*정</td></tr>
+        <tr><td>글램핑존</td><td>2호</td><td>홍*석</td></tr>
+        <tr><td>글램핑존</td><td>3호</td><td>배*미</td></tr>
+        <tr><td>글램핑존</td><td>4호</td><td>정*경</td></tr>
+        <tr><td>글램핑존</td><td>5호</td><td>임*희</td></tr>
+        <tr><td>글램핑존</td><td>6호</td><td>임*석</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 쉘터존 -->
+    <details>
+      <summary>쉘터존</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>쉘터존</td><td>1호</td><td>고*열</td></tr>
+        <tr><td>쉘터존</td><td>2호</td><td>박*록</td></tr>
+        <tr><td>쉘터존</td><td>3호</td><td>표*연</td></tr>
+        <tr><td>쉘터존</td><td>4호</td><td>강*정</td></tr>
+        <tr><td>쉘터존</td><td>5호</td><td>김*형</td></tr>
+        <tr><td>쉘터존</td><td>6호</td><td>황*하</td></tr>
+        <tr><td>쉘터존</td><td>7호</td><td class="empty">—</td></tr>
+        <tr><td>쉘터존</td><td>8호</td><td class="empty">—</td></tr>
+        <tr><td>쉘터존</td><td>9호</td><td class="empty">—</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 오토캠핑존 -->
+    <details>
+      <summary>오토캠핑존</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <!-- (1~28호 전체) -->
+        <tr><td>오토캠핑존</td><td>1호</td><td>한*호</td></tr>
+        <tr><td>오토캠핑존</td><td>2호</td><td>김*준</td></tr>
+        <tr><td>오토캠핑존</td><td>3호</td><td>최*성</td></tr>
+        <tr><td>오토캠핑존</td><td>4호</td><td>노*</td></tr>
+        <tr><td>오토캠핑존</td><td>5호</td><td>허*</td></tr>
+        <tr><td>오토캠핑존</td><td>6호</td><td>전*진</td></tr>
+        <tr><td>오토캠핑존</td><td>7호</td><td>김*운</td></tr>
+        <tr><td>오토캠핑존</td><td>8호</td><td>김*환</td></tr>
+        <tr><td>오토캠핑존</td><td>9호</td><td>임*경</td></tr>
+        <tr><td>오토캠핑존</td><td>10호</td><td>윤*상</td></tr>
+        <tr><td>오토캠핑존</td><td>11호</td><td>조*우</td></tr>
+        <tr><td>오토캠핑존</td><td>12호</td><td>김*균</td></tr>
+        <tr><td>오토캠핑존</td><td>13호</td><td>김*욱</td></tr>
+        <tr><td>오토캠핑존</td><td>14호</td><td>김*국</td></tr>
+        <tr><td>오토캠핑존</td><td>15호</td><td>이*린</td></tr>
+        <tr><td>오토캠핑존</td><td>16호</td><td>정*국</td></tr>
+        <tr><td>오토캠핑존</td><td>17호</td><td>예*근</td></tr>
+        <tr><td>오토캠핑존</td><td>18호</td><td>신*훈</td></tr>
+        <tr><td>오토캠핑존</td><td>19호</td><td>이*희</td></tr>
+        <tr><td>오토캠핑존</td><td>20호</td><td>윤*진</td></tr>
+        <tr><td>오토캠핑존</td><td>21호</td><td>진*민</td></tr>
+        <tr><td>오토캠핑존</td><td>22호</td><td>오*원</td></tr>
+        <tr><td>오토캠핑존</td><td>23호</td><td>최*철</td></tr>
+        <tr><td>오토캠핑존</td><td>24호</td><td>임*록</td></tr>
+        <tr><td>오토캠핑존</td><td>25호</td><td>박*민</td></tr>
+        <tr><td>오토캠핑존</td><td>26호</td><td>이*한</td></tr>
+        <tr><td>오토캠핑존</td><td>27호</td><td>이*민</td></tr>
+        <tr><td>오토캠핑존</td><td>28호</td><td class="empty">—</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 일반캠핑존 A -->
+    <details>
+      <summary>일반캠핑존 A</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>일반캠핑존 A</td><td>1호</td><td>김*욱</td></tr>
+        <tr><td>일반캠핑존 A</td><td>2호</td><td>이*진</td></tr>
+        <tr><td>일반캠핑존 A</td><td>3호</td><td>이*경</td></tr>
+        <tr><td>일반캠핑존 A</td><td>4호</td><td>이*진</td></tr>
+        <tr><td>일반캠핑존 A</td><td>5호</td><td>유*연</td></tr>
+        <tr><td>일반캠핑존 A</td><td>6호</td><td>정*기</td></tr>
+        <tr><td>일반캠핑존 A</td><td>7호</td><td>고*욱</td></tr>
+        <tr><td>일반캠핑존 A</td><td>8호</td><td>이*미</td></tr>
+        <tr><td>일반캠핑존 A</td><td>9호</td><td>전*준</td></tr>
+        <tr><td>일반캠핑존 A</td><td>10호</td><td>김*진</td></tr>
+        <tr><td>일반캠핑존 A</td><td>11호</td><td>오*원</td></tr>
+        <tr><td>일반캠핑존 A</td><td>12호</td><td>강*희</td></tr>
+        <tr><td>일반캠핑존 A</td><td>13호</td><td>김*웅</td></tr>
+        <tr><td>일반캠핑존 A</td><td>14호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 A</td><td>15호</td><td>김진웅</td></tr>
+        <tr><td>일반캠핑존 A</td><td>16호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 A</td><td>17호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 A</td><td>18호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 A</td><td>19호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 A</td><td>20호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 A</td><td>21호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 A</td><td>22호</td><td class="empty">—</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 일반캠핑존 B -->
+    <details>
+      <summary>일반캠핑존 B</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>일반캠핑존 B</td><td>1호</td><td>김*호</td></tr>
+        <tr><td>일반캠핑존 B</td><td>2호</td><td>이*영</td></tr>
+        <tr><td>일반캠핑존 B</td><td>3호</td><td>송*</td></tr>
+        <tr><td>일반캠핑존 B</td><td>4호</td><td>박*미</td></tr>
+        <tr><td>일반캠핑존 B</td><td>5호</td><td>김*현</td></tr>
+        <tr><td>일반캠핑존 B</td><td>6호</td><td>문*용</td></tr>
+        <tr><td>일반캠핑존 B</td><td>7호</td><td class="empty">—</td></tr>
+        <tr><td>일반캠핑존 B</td><td>8호</td><td class="empty">—</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 카라반존 D -->
+    <details>
+      <summary>카라반존 D</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>카라반존 D</td><td>1호</td><td>이*율</td></tr>
+        <tr><td>카라반존 D</td><td>2호</td><td>곽*원</td></tr>
+        <tr><td>카라반존 D</td><td>3호</td><td>이*복</td></tr>
+        <tr><td>카라반존 D</td><td>4호</td><td>윤*솔</td></tr>
+        <tr><td>카라반존 D</td><td>5호</td><td>이*길</td></tr>
+        <tr><td>카라반존 D</td><td>6호</td><td>정*선</td></tr>
+        <tr><td>카라반존 D</td><td>7호</td><td>이*미</td></tr>
+        <tr><td>카라반존 D</td><td>8호</td><td>인*진</td></tr>
+        <tr><td>카라반존 D</td><td>9호</td><td>이*선</td></tr>
+        <tr><td>카라반존 D</td><td>10호</td><td>김*정</td></tr>
+        <tr><td>카라반존 D</td><td>11호</td><td>임*미</td></tr>
+        <tr><td>카라반존 D</td><td>12호</td><td>최*기</td></tr>
+        <tr><td>카라반존 D</td><td>13호</td><td class="empty">—</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 카라반존 M -->
+    <details>
+      <summary>카라반존 M</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>카라반존 M</td><td>1호</td><td>윤*종</td></tr>
+        <tr><td>카라반존 M</td><td>2호</td><td>김*희</td></tr>
+        <tr><td>카라반존 M</td><td>3호</td><td>유*경</td></tr>
+        <tr><td>카라반존 M</td><td>4호</td><td>김*균</td></tr>
+        <tr><td>카라반존 M</td><td>5호</td><td>강*우</td></tr>
+        <tr><td>카라반존 M</td><td>6호</td><td>황*윤</td></tr>
+        <tr><td>카라반존 M</td><td>7호</td><td>주*은</td></tr>
+        <tr><td>카라반존 M</td><td>8호</td><td>문*빈</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 카라반존 Z -->
+    <details>
+      <summary>카라반존 Z</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>카라반존 Z</td><td>1호</td><td>여*동</td></tr>
+        <tr><td>카라반존 Z</td><td>2호</td><td>김*성</td></tr>
+        <tr><td>카라반존 Z</td><td>3호</td><td>이*혁</td></tr>
+        <tr><td>카라반존 Z</td><td>4호</td><td>전*현</td></tr>
+        <tr><td>카라반존 Z</td><td>5호</td><td>문*일</td></tr>
+        <tr><td>카라반존 Z</td><td>6호</td><td>이*희</td></tr>
+        <tr><td>카라반존 Z</td><td>7호</td><td>김*화</td></tr>
+        <tr><td>카라반존 Z</td><td>8호</td><td>최*원</td></tr>
+        <tr><td>카라반존 Z</td><td>9호</td><td>이*영</td></tr>
+        <tr><td>카라반존 Z</td><td>10호</td><td>김*래</td></tr>
+        <tr><td>카라반존 Z</td><td>11호</td><td>오*균</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 카라반존 Z(신규) -->
+    <details>
+      <summary>카라반존 Z(신규)</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>카라반존 Z(신규)</td><td>1호</td><td>권*완</td></tr>
+        <tr><td>카라반존 Z(신규)</td><td>2호</td><td>문*</td></tr>
+      </table>
+    </details>
+
+    <!-- ✅ 타프존 -->
+    <details>
+      <summary>타프존</summary>
+      <table>
+        <tr><th>시설정보</th><th>호실</th><th>이름</th></tr>
+        <tr><td>타프존</td><td>1호</td><td>김*오</td></tr>
+        <tr><td>타프존</td><td>2호</td><td class="empty">—</td></tr>
+        <tr><td>타프존</td><td>3호</td><td class="empty">—</td></tr>
+        <tr><td>타프존</td><td>4호</td><td class="empty">—</td></tr>
+        <tr><td>타프존</td><td>5호</td><td class="empty">—</td></tr>
+        <tr><td>타프존</td><td>6호</td><td class="empty">—</td></tr>
+      </table>
+    </details>
+
+  </div>
+</div>
+
+</body>
+</html>

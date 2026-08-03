@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>종목별 출발 협조 안내</title>
+<style>
+  :root{
+    --ink:#1e293b;   /* 기본 글자색 */
+    --muted:#64748b; /* 보조 텍스트 */
+    --bg:#ffffff;    /* 전체 배경 */
+    --panel:#ffffff; /* 카드 배경 */
+    --line:#e2e8f0;  /* 구분선 */
+    --brand:#2563eb; /* 메인 포인트 */
+    --accent:#f97316;/* 서브 포인트 */
+    --ok:#16a34a;    /* 긍정 */
+  }
+  *{box-sizing:border-box}
+  html,body{
+    margin:0; padding:0;
+    background:var(--bg); color:var(--ink);
+    font-family:"Noto Sans KR",system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    line-height:1.65;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:28px 18px}
+  .hero{
+    border:2px solid var(--brand);
+    border-radius:12px;
+    padding:22px 18px;
+    margin-bottom:20px;
+    background:#f9fafb;
+  }
+  h1{margin:0 0 8px; font-size:clamp(22px,3.5vw,32px); color:var(--brand)}
+  .subtitle{margin:0; color:var(--muted); font-size:clamp(14px,2.5vw,16px)}
+  .grid{display:grid; gap:14px; grid-template-columns:1fr; margin-top:18px}
+  @media (min-width:720px){ .grid{ grid-template-columns:1fr 1fr } }
+  .card{
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:10px; padding:16px;
+  }
+  .eyebrow{font-weight:700; font-size:14px; color:var(--brand)}
+  .pill{margin-left:8px; padding:2px 8px; border-radius:999px; background:var(--brand); color:#fff; font-size:12px}
+  .time{font-size:clamp(24px,4vw,32px); font-weight:900; margin:6px 0 2px; color:var(--ink)}
+  .crit{font-size:14px; color:var(--muted); margin:0 0 4px}
+  .ok{color:var(--ok); font-weight:700}
+  .note, .ask, .warn{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    margin-top:16px;
+    background:#f9fafb;
+  }
+  .note h2, .ask h2, .warn h2{margin:0 0 8px; font-size:18px; color:var(--brand)}
+  ul{margin:8px 0 0 18px; padding:0}
+  li{margin:6px 0}
+  .foot{margin-top:18px; font-size:14px; color:var(--muted)}
+</style>
+</head>
+<body>
+  <main class="wrap" role="main">
+    <section class="hero">
+      <h1>종목별 출발 협조 안내</h1>
+      <p class="subtitle">참가자 여러분의 안전한 경기 진행을 위해, <strong>10KM 코스</strong>는 <strong>2개 그룹</strong>으로 나누어 출발합니다.</p>
+    </section>
+
+    <section>
+      <div class="grid">
+        <article class="card">
+          <div class="eyebrow">1차 출발 <span class="pill">09:20</span></div>
+          <p class="time">09:20</p>
+          <p class="crit">개인기록 <strong class="ok">50분 이내</strong> 참가자</p>
+        </article>
+
+        <article class="card">
+          <div class="eyebrow">2차 출발 <span class="pill">09:25</span></div>
+          <p class="time">09:25</p>
+        <p class="crit">개인기록 <strong style="color:#f80000">50분 초과</strong> 참가자</p>
+        </article>
+      </div>
+
+      <div class="note">
+        <h2>출발 그룹 선택 안내</h2>
+        <ul>
+          <li>출발 그룹은 <strong>본인의 평소 기록</strong>을 기준으로 자유롭게 선택하실 수 있습니다.</li>
+          <li>주최 측은 개인기록을 검증하지 않습니다.</li>
+          <li>그룹별 출발 시간 미준수에 따른 패널티는 없습니다.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="ask">
+      <h2>당부 말씀</h2>
+      <ul>
+        <li>그룹 분리는 병목현상 완화와 안전사고 예방을 위한 조치입니다.</li>
+        <li>입상권 선수 배려 및 안전 확보를 위해 적극적인 협조 부탁드립니다.</li>
+      </ul>
+    </section>
+
+    <section class="warn">
+      <h2>안내</h2>
+      <p style="margin:0">여러분의 성숙한 참여가 대회를 더욱 안전하고 즐겁게 만듭니다. 감사합니다.</p>
+    </section>
+
+    <p class="foot">※ 문의는 현장 안내 스태프 또는 운영본부에 말씀해 주세요.</p>
+  </main>
+</body>
+</html>
