@@ -136,6 +136,16 @@
   table { box-shadow: 0 2px 10px rgba(15,30,50,.08); }
   tr.group-row td { background: linear-gradient(180deg, #e3edf7, #d8e5f2); }
 
+  /* ── 우클릭 빠른 추가 팝업 ── */
+  #quickAdd { display: none; position: fixed; z-index: 300; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px; width: 268px;
+    box-shadow: 0 10px 34px rgba(10,20,35,.35); }
+  #quickAdd h5 { font-size: 12px; color: #64748b; margin-bottom: 8px; letter-spacing: .5px; }
+  .qa-row { display: flex; align-items: center; gap: 6px; margin: 6px 0; font-size: 12px; }
+  .qa-row label { display: inline-flex; align-items: center; gap: 3px; }
+  body.dark #quickAdd { background: #222c39; border-color: #3a4756; }
+  body.dark #quickAdd h5 { color: #8ea3ba; }
+
   /* ── 다크 모드 ── */
   body.dark { --bg:#141a22; --panel:#1c242f; --line:#2b3644; color:#dce5ef; }
   body.dark input, body.dark select { background:#26303d; color:#dce5ef; border-color:#3a4756; }
@@ -229,11 +239,12 @@
   <button class="green mini" onclick="shareHTML()" title="현재 배치도가 담긴 HTML 파일을 만들어 다른 사람에게 공유">👥 공유</button>
   <input type="file" id="loadFile" accept=".json" style="display:none" onchange="loadJSON(this)">
   <button class="red mini" onclick="resetAll()">🗑 초기화</button>
-  <button class="dark mini" onclick="toggleTheme()" title="다크/라이트 모드 전환">🌓</button>
+  <button id="themeBtn" class="dark mini" onclick="toggleTheme()" title="다크모드 켜기/끄기">🌙 다크모드 OFF</button>
   <span class="divider"></span>
   <button class="mini" onclick="captureSized('a4')" title="A4 인쇄용으로 지도+배치목록 캡처 (세로 210×297)">📸 A4</button>
   <button class="mini" onclick="captureSized('a3')" title="A3 인쇄용으로 지도+배치목록 캡처 (세로 297×420)">📸 A3</button>
   <button class="mini" onclick="captureSized('sign')" title="입간판용 캡처 (가로900×세로1800)">📸 입간판</button>
+  <button class="mini" onclick="captureSized('a4', true)" title="A4 크기 PDF로 저장 (인쇄용)">📄 PDF</button>
   <button class="gray mini" onclick="downloadCSV()" title="배치 목록을 엑셀용 CSV로 다운로드">CSV</button>
   <button class="gray mini" onclick="toggleLegend()" title="지도 위에 그룹·구역 색상표 표시/숨김">범례</button>
   <span class="divider"></span>
@@ -250,6 +261,33 @@
 </div>
 
 <div id="errorBox"></div>
+
+<!-- 우클릭 텐트 추가 팝업 -->
+<div id="quickAdd">
+  <h5>⛺ 이 위치에 텐트 추가</h5>
+  <div class="qa-row"><input type="text" id="qaName" placeholder="이름 (예: 본부석)" style="width:100%"></div>
+  <div class="qa-row">
+    <select id="qaShape" style="width:72px"><option value="rect">⬛ 사각</option><option value="circle">⚫ 원형</option></select>
+    <label>가로 <input type="number" id="qaW" value="6" min="0.5" step="0.5" style="width:52px"></label>
+    <label>세로 <input type="number" id="qaH" value="3" min="0.5" step="0.5" style="width:52px"></label>
+  </div>
+  <div class="qa-row">
+    <input type="color" id="qaColor" value="#e74c3c" style="width:36px;height:28px;padding:2px">
+    <select id="qaGroup" style="flex:1"></select>
+  </div>
+  <div class="qa-row" style="border-top:1px dashed #cdd6e0;padding-top:6px">
+    <span style="font-size:11px;color:#8896a6">🪑 비품</span>
+    <label style="font-size:11px">T <input type="number" id="qaT" value="0" min="0" max="99" style="width:40px" title="테이블 개수"></label>
+    <label style="font-size:11px">C <input type="number" id="qaC" value="0" min="0" max="99" style="width:40px" title="의자 개수"></label>
+    <label style="font-size:11px">B <input type="number" id="qaB" value="0" min="0" max="99" style="width:40px" title="가림막 개수"></label>
+  </div>
+  <div class="qa-row">
+    <label style="font-size:11px"><input type="number" id="qaCount" value="1" min="1" max="50" style="width:48px"> 개 연속 추가</label>
+    <span style="flex:1"></span>
+    <button class="gray mini" onclick="closeQuickAdd()">취소</button>
+    <button class="mini" onclick="confirmQuickAdd()">추가</button>
+  </div>
+</div>
 
 <!-- ═══ 메인 ═══ -->
 <div id="main">
@@ -268,6 +306,8 @@
     <button id="am-icon" class="tool-btn" onclick="setAnnoMode('icon')" title="아이콘 스탬프 (우측 패널에서 아이콘 선택)">📍</button>
     <button id="am-measure" class="tool-btn" onclick="setAnnoMode('measure')" title="거리 측정 (클릭으로 구간 측정, 우클릭 종료)">📏</button>
     <button id="am-erase" class="tool-btn" onclick="setAnnoMode('erase')" title="지우개">🗑️</button>
+    <div class="rail-gap"></div>
+    <button id="snapBtn" class="tool-btn" onclick="toggleSnap()" title="격자 스냅 (1m 단위로 딱 맞춰 이동) — 켜기/끄기">⊞</button>
   </div>
 
   <!-- 중앙: 지도 + 목록 (캡처 대상) -->
@@ -283,7 +323,8 @@
           <h3>📋 배치 목록</h3>
           <span>
             <button id="viewManage" class="active mini" onclick="setListView('manage')" title="편집 가능한 상세 표">관리용</button>
-            <button id="viewCapture" class="gray mini" onclick="setListView('capture')" title="인쇄·캡처용 요약 카드 (번호 범위 자동 묶음)">캡쳐용</button>
+            <button id="viewCapture" class="gray mini" onclick="setListView('capture')" title="인쇄·캡처용 요약 카드">캡쳐용</button>
+            <button id="eqBtn" class="gray mini" onclick="toggleEq()" title="캡쳐용 목록에 비품 수량(T=테이블/C=의자/B=가림막) 표시 켜기·끄기">🪑 비품 OFF</button>
             <button class="green mini" onclick="addGroup()" title="새 그룹 추가">＋ 그룹</button>
           </span>
         </div>
@@ -293,6 +334,7 @@
             <tr>
               <th style="width:48px">번호</th><th>이름</th><th>그룹</th><th style="width:42px">모양</th>
               <th>가로(m)</th><th>세로(m)</th><th>면적(㎡)</th><th>회전(°)</th><th>색상</th>
+              <th style="width:150px" title="텐트별 비품 수량 — T:테이블 C:의자 B:가림막">🪑 T / C / B</th>
               <th style="width:66px">순서</th><th style="width:200px">관리</th>
             </tr>
           </thead>
@@ -303,6 +345,7 @@
           <span>텐트 총면적: <b id="sumArea">0</b> ㎡</span>
           <span>대회장 면적: <b id="sumVenue">-</b></span>
           <span>사용률: <b id="sumRatio">-</b></span>
+          <span>비품: <b id="sumEq">-</b></span>
           <span style="color:#98a4b3">행 클릭=선택 · Ctrl/Shift+클릭=다중 선택 · 자동 저장됨</span>
         </div>
       </div>
@@ -387,6 +430,36 @@ let lastRowIndex = -1, rowOrder = [];
 
 const M_PER_LAT = 110574;
 const LS_KEY = 'venueLayoutTool_v2';
+
+/* 비품(테이블 T / 의자 C / 가림막 B) — 개수 + 설치 방향 */
+let showEq = false;   // 캡쳐용 목록에 T/C/B 표시 여부
+let snapOn = false;   // 1m 격자 스냅
+const DIRS = { N: '북(위)', E: '동(오른쪽)', S: '남(아래)', W: '서(왼쪽)', C: '중앙' };
+function newEq(){ return { t: 0, td: 'C', c: 0, cd: 'C', b: 0, bd: 'N' }; }
+function eqText(t){
+  const e = t.eq || newEq();
+  if(!e.t && !e.c && !e.b) return '';
+  return 'T' + e.t + '/C' + e.c + '/B' + e.b;
+}
+function toggleEq(){ showEq = !showEq; applyEqBtn(); refreshTable(); scheduleSave(); }
+function applyEqBtn(){
+  const b = document.getElementById('eqBtn');
+  if(b){ b.textContent = showEq ? '🪑 비품 ON' : '🪑 비품 OFF'; b.className = (showEq ? 'active' : 'gray') + ' mini'; }
+}
+function toggleSnap(){ snapOn = !snapOn; applySnapBtn(); scheduleSave(); hint(snapOn ? '⊞ 격자 스냅 ON — 1m 단위로 정렬됩니다' : '격자 스냅 OFF'); }
+function applySnapBtn(){
+  const b = document.getElementById('snapBtn');
+  if(b) b.classList.toggle('active', snapOn);
+}
+/* 스냅: 기준점(대회장 첫 꼭짓점 또는 지도 중심) 기준 1m 격자에 맞춤 */
+function snapLatLng(ll){
+  if(!snapOn) return ll;
+  const org = (venue.points.length ? venue.points[0] : map.getCenter());
+  const kx = mPerLng(org.getLat());
+  const x = Math.round((ll.getLng() - org.getLng()) * kx);
+  const y = Math.round((ll.getLat() - org.getLat()) * M_PER_LAT);
+  return new kakao.maps.LatLng(org.getLat() + y / M_PER_LAT, org.getLng() + x / kx);
+}
 function mPerLng(lat){ return 111320 * Math.cos(lat * Math.PI / 180); }
 function suppressClick(){ suppressUntil = Date.now() + 400; }
 function clientToLatLng(cx, cy){
@@ -423,8 +496,10 @@ function serialize(withView){
     view: (withView && map) ? { lat: map.getCenter().getLat(), lng: map.getCenter().getLng(), level: map.getLevel(), mapType: curMapType } : null,
     groups: groups.map(function(g){ return { id: g.id, name: g.name, style: g.style }; }),
     nextGroupId: nextGroupId, nextId: nextId,
+    showEq: showEq, snapOn: snapOn,
     tents: tents.map(function(t){ return { id: t.id, name: t.name, w: t.w, h: t.h, rot: t.rot, color: t.color,
-      groupId: t.groupId, shape: t.shape, bandId: t.bandId || null, lat: t.center.getLat(), lng: t.center.getLng() }; }),
+      groupId: t.groupId, shape: t.shape, bandId: t.bandId || null, eq: t.eq,
+      lat: t.center.getLat(), lng: t.center.getLng() }; }),
     venue: { done: venue.done, points: venue.points.map(function(p){ return [p.getLat(), p.getLng()]; }) },
     annos: annos.map(function(a){
       if(a.type === 'text') return { type:'text', lat: a.overlay.getPosition().getLat(), lng: a.overlay.getPosition().getLng(),
@@ -471,9 +546,13 @@ function loadState(s, withView){
       const t = createTentObject(d.name, d.w, d.h, d.color, d.groupId, new kakao.maps.LatLng(d.lat, d.lng), d.shape || 'rect', d.id);
       t.rot = d.rot || 0;
       t.bandId = d.bandId || null;
+      if(d.eq) t.eq = Object.assign(newEq(), d.eq);
       redrawTent(t);
       tents.push(t);
     });
+    if(typeof s.showEq === 'boolean') showEq = s.showEq;
+    if(typeof s.snapOn === 'boolean') snapOn = s.snapOn;
+    applyEqBtn(); applySnapBtn();
     if(s.tents && s.tents.length) nextId = Math.max(nextId, Math.max.apply(null, s.tents.map(function(t){ return t.id; })) + 1);
     if(s.venue && s.venue.points && s.venue.points.length){
       venue.points = s.venue.points.map(function(p){ return new kakao.maps.LatLng(p[0], p[1]); });
@@ -571,7 +650,13 @@ async function shareHTML(){
 /* 다크 모드 */
 function toggleTheme(){
   document.body.classList.toggle('dark');
+  applyThemeBtn();
   try{ localStorage.setItem('layoutTheme', document.body.classList.contains('dark') ? 'dark' : 'light'); }catch(e){}
+}
+function applyThemeBtn(){
+  const on = document.body.classList.contains('dark');
+  const b = document.getElementById('themeBtn');
+  if(b){ b.textContent = on ? '☀️ 다크모드 ON' : '🌙 다크모드 OFF'; b.className = (on ? 'green' : 'dark') + ' mini'; }
 }
 function resetAll(){
   if(!confirm('모든 내용을 지우고 처음부터 시작할까요?')) return;
@@ -619,7 +704,7 @@ function initApp(){
       if(drawMode){ undoPoint(); return; }
       if(annoMode === 'measure'){ clearMeasure(); setAnnoMode(null); return; }
       if(annoMode && annoMode !== 'text' && annoMode !== 'erase' && annoMode !== 'icon'){ finishLine(); return; }
-      if(!annoMode && !curvePick) addTentAt(e.latLng); // 우클릭한 지점에 텐트 추가
+      if(!annoMode && !curvePick) openQuickAdd(e.latLng); // 우클릭한 지점에 텐트 추가 팝업
     });
     kakao.maps.event.addListener(map, 'mousemove', function(e){
       if(drawMode && venue.points.length > 0) updatePreview(e.latLng);
@@ -645,12 +730,14 @@ function initApp(){
       try{ loadState(window.__SHARED__, true); }catch(e){}
     }
     initIconPalette();
+    applyEqBtn(); applySnapBtn();
     refreshGroupSelect();
     refreshTable();
   });
 }
 window.addEventListener('load', function(){
   try{ if(localStorage.getItem('layoutTheme') === 'dark') document.body.classList.add('dark'); }catch(e){}
+  applyThemeBtn();
   if(typeof kakao === 'undefined' || !kakao.maps){
     const box = document.getElementById('errorBox');
     box.style.display = 'block';
@@ -1430,7 +1517,7 @@ function rectPath(center, w, h, rotDeg){
 function tentArea(t){ return t.shape === 'circle' ? Math.PI * Math.pow(t.w/2, 2) : t.w * t.h; }
 function createTentObject(name, w, h, color, groupId, center, shape, forceId){
   const t = { id: forceId || nextId++, name: name, w: w, h: h, rot: 0, color: color,
-    groupId: groupId, center: center, shape: shape || 'rect', labelText: '', bandId: null };
+    groupId: groupId, center: center, shape: shape || 'rect', labelText: '', bandId: null, eq: newEq() };
   if(t.shape === 'circle'){
     t.polygon = new kakao.maps.Circle({
       map: map, center: center, radius: w/2,
@@ -1494,6 +1581,79 @@ function readForm(){
     groupId: parseInt(document.getElementById('tentGroup').value) || groups[0].id
   };
 }
+/* --- 우클릭 빠른 추가 팝업 --- */
+let qaLatLng = null;
+function openQuickAdd(latLng){
+  qaLatLng = latLng;
+  // 현재 우측 패널 설정값을 기본값으로 채움
+  document.getElementById('qaName').value = '';
+  document.getElementById('qaShape').value = document.getElementById('tentShape').value;
+  document.getElementById('qaW').value = document.getElementById('tentW').value;
+  document.getElementById('qaH').value = document.getElementById('tentH').value;
+  document.getElementById('qaColor').value = document.getElementById('tentColor').value;
+  document.getElementById('qaCount').value = 1;
+  document.getElementById('qaT').value = 0;
+  document.getElementById('qaC').value = 0;
+  document.getElementById('qaB').value = 0;
+  const g = document.getElementById('qaGroup');
+  g.innerHTML = '';
+  groups.forEach(function(gr){
+    const o = document.createElement('option');
+    o.value = gr.id; o.textContent = gr.name;
+    g.appendChild(o);
+  });
+  g.value = document.getElementById('tentGroup').value || groups[0].id;
+
+  const box = document.getElementById('quickAdd');
+  box.style.display = 'block';
+  const pt = map.getProjection().containerPointFromCoords(latLng);
+  const rect = document.getElementById('map').getBoundingClientRect();
+  let x = rect.left + pt.x + 12, y = rect.top + pt.y + 12;
+  x = Math.min(x, window.innerWidth - box.offsetWidth - 10);
+  y = Math.min(y, window.innerHeight - box.offsetHeight - 10);
+  box.style.left = Math.max(10, x) + 'px';
+  box.style.top = Math.max(10, y) + 'px';
+  setTimeout(function(){ document.getElementById('qaName').focus(); }, 30);
+}
+function closeQuickAdd(){
+  document.getElementById('quickAdd').style.display = 'none';
+  qaLatLng = null;
+}
+function confirmQuickAdd(){
+  if(!qaLatLng) return;
+  const w = parseFloat(document.getElementById('qaW').value);
+  const h = parseFloat(document.getElementById('qaH').value);
+  if(!(w > 0 && h > 0)){ alert('가로/세로 크기를 입력하세요.'); return; }
+  const name = document.getElementById('qaName').value.trim();
+  const shape = document.getElementById('qaShape').value;
+  const color = document.getElementById('qaColor').value;
+  const gid = parseInt(document.getElementById('qaGroup').value) || groups[0].id;
+  const count = Math.max(1, Math.min(50, parseInt(document.getElementById('qaCount').value) || 1));
+  const eqT = Math.max(0, parseInt(document.getElementById('qaT').value) || 0);
+  const eqC = Math.max(0, parseInt(document.getElementById('qaC').value) || 0);
+  const eqB = Math.max(0, parseInt(document.getElementById('qaB').value) || 0);
+  pushUndo();
+  const created = [];
+  for(let i = 0; i < count; i++){
+    const c = i === 0 ? qaLatLng : offsetLatLng(qaLatLng, i * (w + 1), 0); // 가로로 1m 간격 나열
+    const t = createTentObject(name || ('텐트 ' + nextId), w, h, color, gid, c, shape);
+    t.eq.t = eqT; t.eq.c = eqC; t.eq.b = eqB;
+    tents.push(t);
+    created.push(t);
+  }
+  setSelection(created);
+  refreshTable();
+  closeQuickAdd();
+  hint(count > 1 ? count + '개 추가됨 (선택 상태 — 정렬·이동 가능)' : '');
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && qaLatLng) closeQuickAdd();
+  if(e.key === 'Enter' && qaLatLng){
+    const tag = document.activeElement ? document.activeElement.id : '';
+    if(tag && tag.indexOf('qa') === 0) confirmQuickAdd();
+  }
+});
+
 function addTent(){ addTentAt(map.getCenter()); }
 function addTentAt(latLng){
   const f = readForm();
@@ -1600,7 +1760,7 @@ function startTentDrag(t, grabLatLng){
     ev.preventDefault();
     const ll = clientToLatLng(ev.clientX, ev.clientY);
     offs.forEach(function(o){
-      o.t.center = new kakao.maps.LatLng(ll.getLat() + o.dLat, ll.getLng() + o.dLng);
+      o.t.center = snapLatLng(new kakao.maps.LatLng(ll.getLat() + o.dLat, ll.getLng() + o.dLng));
       redrawTent(o.t);
     });
   }
@@ -1793,6 +1953,45 @@ function alignTents(dir){
   refreshTable(); scheduleSave();
 }
 
+/* 비품 편집 UI (개수 + 설치 방향) */
+function eqEditorHTML(t){
+  const e = t.eq || (t.eq = newEq());
+  function dsel(field, val){
+    let s = '<select onchange="updateEq(' + t.id + ',\'' + field + '\',this.value)" style="width:66px">';
+    Object.keys(DIRS).forEach(function(k){
+      s += '<option value="' + k + '"' + (val === k ? ' selected' : '') + '>' + DIRS[k] + '</option>';
+    });
+    return s + '</select>';
+  }
+  function row(label, cf, cv, df, dv){
+    return '<div class="rp-row"><span style="width:64px">' + label + '</span>' +
+      '<input type="number" min="0" max="99" value="' + cv + '" onchange="updateEq(' + t.id + ',\'' + cf + '\',this.value)" style="width:46px">' +
+      '<span style="font-size:11px;color:#8896a6">개</span>' + dsel(df, dv) + '</div>';
+  }
+  return '<div style="border-top:1px dashed #cdd6e0;margin-top:8px;padding-top:6px">' +
+    '<div class="rp-note" style="margin-bottom:4px">🪑 비품 (캡쳐용 목록에 T/C/B로 표시)</div>' +
+    row('T 테이블', 't', e.t, 'td', e.td) +
+    row('C 의자', 'c', e.c, 'cd', e.cd) +
+    row('B 가림막', 'b', e.b, 'bd', e.bd) +
+    '<div class="rp-row"><button class="mini gray" onclick="applyEqToSel(' + t.id + ')" title="이 비품 구성을 선택된 다른 텐트들에도 적용">선택 텐트에 일괄 적용</button></div></div>';
+}
+function updateEq(id, field, value){
+  const t = tents.find(function(x){ return x.id === id; });
+  if(!t) return;
+  pushUndo('eq');
+  if(!t.eq) t.eq = newEq();
+  t.eq[field] = (field.length === 1) ? Math.max(0, parseInt(value) || 0) : value;
+  refreshTable();
+}
+function applyEqToSel(id){
+  const src = tents.find(function(x){ return x.id === id; });
+  if(!src || sel.length < 2){ alert('먼저 텐트를 2개 이상 선택하세요 (Ctrl+클릭).'); return; }
+  pushUndo();
+  sel.forEach(function(t){ t.eq = Object.assign(newEq(), src.eq); });
+  refreshTable();
+  hint(sel.length + '개 텐트에 비품 구성 적용됨');
+}
+
 /* ═══════════════ 9. 우측 속성 패널 (선택 항목) ═══════════════ */
 function updatePropPanel(){
   const box = document.getElementById('selInfo');
@@ -1814,7 +2013,8 @@ function updatePropPanel(){
       '<div class="rp-row"><button class="mini dark" onclick="duplicateTent(' + t.id + ')">복제</button>' +
       '<button class="mini gray" onclick="panToTent(' + t.id + ')">지도 이동</button>' +
       '<button class="mini red" onclick="removeTent(' + t.id + ')">삭제</button></div>' +
-      '<div class="rp-note">번호 ' + t.labelText + ' · 면적 ' + tentArea(t).toFixed(1) + '㎡</div>';
+      '<div class="rp-note">번호 ' + t.labelText + ' · 면적 ' + tentArea(t).toFixed(1) + '㎡</div>' +
+      eqEditorHTML(t);
   } else if(sel.length > 1){
     let gsel = '<select onchange="groupAllSel(this.value)" title="선택한 텐트 전체를 다른 그룹으로 이동" style="flex:1"><option value="">그룹 일괄 이동...</option>';
     groups.forEach(function(g){
@@ -1926,7 +2126,7 @@ function refreshTable(){
     const gTents = tents.filter(function(t){ return t.groupId === g.id; });
     const trh = document.createElement('tr');
     trh.className = 'group-row';
-    trh.innerHTML = '<td colspan="11">' +
+    trh.innerHTML = '<td colspan="12">' +
       '<button class="mini gray" onclick="moveGroupOrder(' + g.id + ',-1)" title="그룹 위로">▲</button> ' +
       '<button class="mini gray" onclick="moveGroupOrder(' + g.id + ',1)" title="그룹 아래로">▼</button> ' +
       '<input type="text" value="' + escapeHtml(g.name) + '" onchange="renameGroup(' + g.id + ',this.value)" style="font-weight:bold;width:140px"> ' +
@@ -1952,6 +2152,7 @@ function refreshTable(){
       });
       gsel += '</select>';
       const isCircle = t.shape === 'circle';
+      const eq = t.eq || (t.eq = newEq());
       const tr = document.createElement('tr');
       tr.className = 'tent-row' + (sel.includes(t) ? ' selected-row' : '');
       tr.innerHTML =
@@ -1964,6 +2165,10 @@ function refreshTable(){
         '<td>' + tentArea(t).toFixed(1) + '</td>' +
         '<td>' + (isCircle ? '-' : '<input type="number" step="5" value="' + t.rot + '" onchange="updateTent(' + t.id + ',\'rot\',this.value)">') + '</td>' +
         '<td><input type="color" value="' + t.color + '" onchange="updateTent(' + t.id + ',\'color\',this.value)" style="width:34px;height:24px;padding:1px;cursor:pointer"></td>' +
+        '<td style="white-space:nowrap">' +
+          '<input type="number" min="0" max="99" value="' + eq.t + '" onchange="updateEq(' + t.id + ',\'t\',this.value)" title="테이블 개수" style="width:38px">' +
+          '<input type="number" min="0" max="99" value="' + eq.c + '" onchange="updateEq(' + t.id + ',\'c\',this.value)" title="의자 개수" style="width:38px;margin:0 2px">' +
+          '<input type="number" min="0" max="99" value="' + eq.b + '" onchange="updateEq(' + t.id + ',\'b\',this.value)" title="가림막 개수" style="width:38px"></td>' +
         '<td><button class="mini gray" onclick="moveTentOrder(' + t.id + ',-1)">▲</button><button class="mini gray" onclick="moveTentOrder(' + t.id + ',1)">▼</button></td>' +
         '<td><button class="mini green" onclick="insertTentBelow(' + t.id + ')">＋아래</button> ' +
         '<button class="mini dark" onclick="duplicateTent(' + t.id + ')">복제</button> ' +
@@ -1993,6 +2198,9 @@ function refreshTable(){
   document.getElementById('sumArea').textContent = total.toFixed(1);
   document.getElementById('sumVenue').textContent = venueArea ? venueArea.toLocaleString(undefined,{maximumFractionDigits:0}) + ' ㎡' : '-';
   document.getElementById('sumRatio').textContent = venueArea ? (total / venueArea * 100).toFixed(1) + ' %' : '-';
+  let eT = 0, eC = 0, eB = 0;
+  tents.forEach(function(t){ const e = t.eq || newEq(); eT += e.t; eC += e.c; eB += e.b; });
+  document.getElementById('sumEq').textContent = (eT + eC + eB) ? ('테이블 ' + eT + ' · 의자 ' + eC + ' · 가림막 ' + eB) : '-';
   refreshLegend();
   if(listView === 'capture') renderCaptureList();
   updateBadgeScale();
@@ -2016,7 +2224,7 @@ function groupRuns(gTents){
   gTents.forEach(function(t){
     const last = runs[runs.length - 1];
     if(last && t.bandId != null && last.bandId === t.bandId){ last.end = t.labelText; }
-    else runs.push({ name: t.name, start: t.labelText, end: null, color: t.color, bandId: t.bandId });
+    else runs.push({ name: t.name, start: t.labelText, end: null, color: t.color, bandId: t.bandId, eq: eqText(t) });
   });
   return runs;
 }
@@ -2041,7 +2249,8 @@ function renderCaptureList(){
       rowsHtml += '<div class="cap-row">' +
         '<span class="cap-badge" style="background:' + r.color + ';color:' + tc + '">' + r.start + '</span>' +
         (r.end ? '<span class="cap-tilde">~</span><span class="cap-badge" style="background:' + r.color + ';color:' + tc + '">' + r.end + '</span>' : '') +
-        '<span class="cap-name">' + escapeHtml(r.name) + '</span></div>';
+        '<span class="cap-name">' + escapeHtml(r.name) +
+        (showEq && r.eq ? ' <b style="color:#5a6b80;font-size:.86em">' + r.eq + '</b>' : '') + '</span></div>';
     });
     // 항목이 많으면 카드 안에서 2단으로 배치해 길게 늘어지지 않게
     html += runs.length > 12 ? '<div class="cap-rows2">' + rowsHtml + '</div>' : rowsHtml;
@@ -2110,25 +2319,27 @@ function renderListCanvas(targetW, forceCols){
     const runs = groupRuns(gTents);
     let h = cardPad + headH + base * 0.45;
     runs.forEach(function(run){
+      run.disp = run.name + (showEq && run.eq ? '  ' + run.eq : '');
       const bw = run.end ? (r * 4 + base * 0.9) : (r * 2);
       const avail = colW - cardPad * 2 - bw - base * 0.55;
       // 1순위: 글자 크기를 줄여서라도 한 줄 유지 (단어가 중간에 잘리지 않게)
       let f = base;
-      let lines = [run.name];
+      const txt0 = run.disp;
+      let lines = [txt0];
       function fits(txt, size){
         meas.font = '700 ' + size + 'px ' + FONT;
         return meas.measureText(txt).width <= avail;
       }
-      while(f > base * 0.58 && !fits(run.name, f)) f -= 0.5;
-      if(!fits(run.name, f)){
+      while(f > base * 0.58 && !fits(txt0, f)) f -= 0.5;
+      if(!fits(txt0, f)){
         // 2순위: 띄어쓰기 위치에서만 두 줄로 분리
-        const mid = run.name.length / 2;
+        const mid = txt0.length / 2;
         let cut = -1, bestDist = 1e9;
-        for(let ci = 1; ci < run.name.length - 1; ci++){
-          if(run.name[ci] === ' ' && Math.abs(ci - mid) < bestDist){ bestDist = Math.abs(ci - mid); cut = ci; }
+        for(let ci = 1; ci < txt0.length - 1; ci++){
+          if(txt0[ci] === ' ' && Math.abs(ci - mid) < bestDist){ bestDist = Math.abs(ci - mid); cut = ci; }
         }
-        if(cut < 0) cut = Math.ceil(run.name.length / 2); // 띄어쓰기가 없을 때만 어쩔 수 없이 분리
-        lines = [run.name.slice(0, cut).trim(), run.name.slice(cut).trim()];
+        if(cut < 0) cut = Math.ceil(txt0.length / 2); // 띄어쓰기가 없을 때만 어쩔 수 없이 분리
+        lines = [txt0.slice(0, cut).trim(), txt0.slice(cut).trim()];
         f = base;
         while(f > base * 0.55 && !(fits(lines[0], f) && fits(lines[1], f))) f -= 0.5;
       }
@@ -2224,7 +2435,7 @@ const CAPTURE_SIZES = {
   a3:   { w: 1754, h: 2480, name: 'A3' },       // 297×420 @150dpi
   sign: { w: 1500, h: 3000, name: '입간판' }     // 900×1800 (1:2)
 };
-async function captureSized(kind){
+async function captureSized(kind, asPDF){
   const cfg = CAPTURE_SIZES[kind];
   deselect(); deselectAnno(); finishLine(); clearMeasure();
   document.getElementById('centerCol').scrollTop = 0;
@@ -2295,27 +2506,51 @@ async function captureSized(kind){
   }
 
   try{
+    const title = document.getElementById('docTitle').value || '대회장_배치도';
+    if(asPDF){ openPrintPDF(out.toDataURL('image/png'), title); hint('📄 인쇄 창에서 [PDF로 저장]을 선택하세요'); return; }
     const a = document.createElement('a');
     a.href = out.toDataURL('image/png');
-    a.download = (document.getElementById('docTitle').value || '대회장_배치도') + '_' + cfg.name + '.png';
+    a.download = title + '_' + cfg.name + '.png';
     a.click();
     hint('✅ ' + cfg.name + ' 캡처 저장 완료!');
   }catch(err){ captureFail(); }
+}
+/* PDF: A4 한 장에 꽉 차게 인쇄 창을 띄움 → [PDF로 저장] 선택
+   (HTML 태그 문자열을 쓰지 않고 DOM으로 직접 구성) */
+function openPrintPDF(dataURL, title){
+  const w = window.open('', '_blank');
+  if(!w){ alert('팝업이 차단되었습니다. 팝업을 허용해주세요.'); return; }
+  const d = w.document;
+  d.title = title;
+  const st = d.createElement('style');
+  st.textContent = '@page{size:A4 portrait;margin:0}' +
+    'html,body{margin:0;padding:0;background:#fff}' +
+    'img{width:100%;height:100vh;object-fit:contain;display:block}';
+  d.head.appendChild(st);
+  const img = d.createElement('img');
+  img.onload = function(){ setTimeout(function(){ w.focus(); w.print(); }, 250); };
+  img.src = dataURL;
+  d.body.appendChild(img);
 }
 function captureFail(){
   hint('');
   alert('캡처에 실패했습니다.\n캡처 버튼을 누른 뒤 나타나는 화면 공유 창에서 [현재 탭]을 선택해주세요.\n안 되면 Windows 캡처 도구(Win+Shift+S)를 이용하세요.');
 }
 function downloadCSV(){
-  let csv = '﻿번호,그룹,이름,모양,가로(m),세로(m),면적(㎡),회전(°),위도,경도\n';
+  let csv = '﻿번호,그룹,이름,모양,가로(m),세로(m),면적(㎡),회전(°),테이블,테이블방향,의자,의자방향,가림막,가림막방향,위도,경도\n';
+  let sumT = 0, sumC = 0, sumB = 0;
   groups.forEach(function(g){
     tents.filter(function(t){ return t.groupId === g.id; }).forEach(function(t){
+      const e = t.eq || newEq();
+      sumT += e.t; sumC += e.c; sumB += e.b;
       csv += [t.labelText, '"'+g.name+'"', '"'+t.name+'"', t.shape === 'circle' ? '원형' : '사각형',
               t.w, t.shape === 'circle' ? '-' : t.h, tentArea(t).toFixed(1), t.shape === 'circle' ? '-' : t.rot,
+              e.t, DIRS[e.td], e.c, DIRS[e.cd], e.b, DIRS[e.bd],
               t.center.getLat().toFixed(6), t.center.getLng().toFixed(6)].join(',') + '\n';
     });
   });
   csv += '\n대회장 면적(㎡),' + (venueArea ? venueArea.toFixed(0) : '-') + '\n';
+  csv += '비품 합계,테이블 ' + sumT + '개,의자 ' + sumC + '개,가림막 ' + sumB + '개\n';
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   a.download = '대회장_배치표.csv';
