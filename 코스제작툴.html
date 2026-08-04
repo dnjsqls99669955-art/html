@@ -6,9 +6,12 @@
 <title>마라톤 코스도 제작기 (카카오맵)</title>
 <style>
 :root{
-  --bg:#eef1f5; --panel:#fff; --line:#dfe4ea; --dark:#1f2937; --muted:#6b7280;
+  --bg:#eef2f7; --panel:#fff; --line:#e3e8ef; --dark:#111827; --muted:#6b7280;
   --brand:#1565c0; --brand2:#0d47a1; --ok:#2e7d32; --warn:#f57c00; --danger:#d32f2f;
-  --kakao:#fee500; --shadow:0 2px 10px rgba(15,23,42,.07);
+  --kakao:#fee500;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 8px 24px -8px rgba(16,24,40,.12);
+  --shadow-lg:0 24px 60px -12px rgba(16,24,40,.28);
+  --r:14px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;}
@@ -22,7 +25,7 @@ button,input,select,textarea{font-family:inherit;}
 #sideScroll{flex:1;overflow-y:auto;padding:14px;}
 .block{margin-bottom:18px;}
 .block>h3{font-size:.74rem;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;color:#374151;border-radius:9px;padding:9px 12px;font-size:.82rem;cursor:pointer;transition:.15s;font-weight:600;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;color:#374151;border-radius:10px;padding:9px 12px;font-size:.82rem;cursor:pointer;transition:.15s;font-weight:600;}
 .btn:hover{border-color:#b8c2cc;background:#f8fafc;}
 .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;}
 .btn.primary:hover{background:var(--brand2);}
@@ -83,6 +86,13 @@ label.f{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin
 #mapOverlayMsg h4{font-size:1rem;margin-bottom:10px;color:var(--dark);}
 #mapOverlayMsg code{background:#e8edf2;border-radius:4px;padding:2px 6px;}
 #moveBanner{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:60;background:#1565c0;color:#fff;padding:8px 16px;border-radius:20px;font-size:.8rem;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;}
+#editBar{position:absolute;top:10px;left:10px;right:10px;z-index:70;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 22px rgba(15,23,42,.18);padding:8px 10px;display:none;align-items:center;gap:8px;flex-wrap:wrap;}
+#editBar .ttl{font-weight:800;font-size:.82rem;color:#0d47a1;white-space:nowrap;}
+#editBar .edInfo{font-size:.74rem;color:#546e7a;font-variant-numeric:tabular-nums;white-space:nowrap;}
+#editBar .rng{width:150px;}
+#editBar .seg button{padding:5px 9px;font-size:.72rem;}
+#editBar .seg button.on{background:var(--brand);color:#fff;}
+#editHint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:65;background:rgba(31,41,55,.9);color:#fff;padding:6px 15px;border-radius:20px;font-size:.74rem;display:none;white-space:nowrap;max-width:92%;overflow:hidden;text-overflow:ellipsis;}
 #chartBox{position:relative;padding:10px 14px 14px;}
 #elev{width:100%;height:240px;display:block;cursor:crosshair;}
 #tip{position:absolute;pointer-events:none;background:rgba(31,41,55,.95);color:#fff;padding:8px 11px;border-radius:8px;font-size:.76rem;line-height:1.55;display:none;white-space:nowrap;z-index:10;}
@@ -103,6 +113,7 @@ tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
 .kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
 .kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
 .kstart{background:#2e7d32;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;}
+.kturn{background:#f57c00;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;cursor:pointer;}
 .kinfo{position:relative;background:#fff;border:1px solid #cfd8dc;border-radius:10px;padding:11px 28px 11px 13px;font-size:.82rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.28);white-space:nowrap;}
 .kinfo:after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0;}
 .kinfo .x{position:absolute;top:4px;right:7px;cursor:pointer;color:#90a4ae;font-size:14px;font-weight:700;}
@@ -123,10 +134,12 @@ tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
 .colorpick{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
 .colorpick button{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;}
 .colorpick button.on{box-shadow:0 0 0 3px rgba(21,101,192,.5);}
+#jsOk{font-size:.66rem;background:rgba(255,255,255,.22);border-radius:20px;padding:1px 7px;margin-left:4px;}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#1f2937;color:#fff;padding:11px 20px;border-radius:10px;font-size:.82rem;opacity:0;pointer-events:none;transition:.25s;z-index:7000;}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 .badge{font-size:.68rem;padding:2px 7px;border-radius:20px;font-weight:700;}
 .b-auto{background:#e8f5e9;color:#2e7d32;} .b-part{background:#fff3e0;color:#e65100;} .b-none{background:#eceff1;color:#455a64;}
+.b-turn{background:#fff3e0;color:#e65100;}
 input.cell{border:1px solid transparent;background:transparent;border-radius:6px;padding:4px 6px;width:100%;font-size:.82rem;min-width:90px;}
 input.cell:hover{border-color:#dfe4ea;background:#fafbfc;}
 input.cell:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 2px rgba(21,101,192,.15);}
@@ -139,7 +152,7 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
 .miniTag{font-size:.66rem;background:#eceff1;color:#546e7a;border-radius:5px;padding:1px 5px;margin-left:4px;}
 .gridScroll{overflow-x:auto;}
 .warnBox{background:#fff8e1;border:1px solid #ffe082;color:#8d6e00;border-radius:9px;padding:9px 11px;font-size:.75rem;line-height:1.6;margin-top:8px;}
-@media (max-width:900px){#app{flex-direction:column;height:auto;} #side{width:100%;min-width:0;max-height:46vh;} #map{height:420px;}}
+@media (max-width:900px){#app{flex-direction:column;height:auto;} #side{width:100%;min-width:0;max-height:46vh;} #map{height:420px;} #posterBar{gap:6px;}}
 </style>
 </head>
 <body>
@@ -150,7 +163,6 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
       <p>카카오맵 기반 · 참가자용/관리자용 코스도 생성</p>
     </div>
     <div id="sideScroll">
-
       <div class="block">
         <h3>1. 카카오맵 설정</h3>
         <input type="text" id="kakaoKey" value="c45e1e08eea53db5a726efa6edae142b" placeholder="카카오 JavaScript 키">
@@ -159,7 +171,6 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
           <span id="kakaoState" style="font-size:.73rem;color:var(--muted);align-self:center"></span>
         </div>
       </div>
-
       <div class="block">
         <h3>2. 코스 구성 <button class="btn sm" id="addSlotBtn" style="margin-left:auto">＋ 종목 추가</button></h3>
         <div id="slotList"></div>
@@ -171,8 +182,11 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
           <b>겹침 설정</b> — 자동: 겹치는 구간 시설을 이 코스 km로 자동 환산 / 일부: 겹치는 구간만 자동 / 독립: 이 코스 전용 시설만.<br>
           코스가 같은 길인데 시설이 안 잡히면 <b>인식 반경</b>을 넓히세요(GPX 궤적이 서로 떨어져 있을 때).
         </div>
+        <label class="f">↩ 복편(반환 후) 라인 <span style="font-weight:400;color:#9aa5b1">— 왕복 코스 표시</span></label>
+        <label class="chk" style="margin-top:0"><input type="checkbox" id="retOn" checked> 왕편과 분리해 <b>평행 점선</b>으로 표시</label>
+        <div class="rng" style="margin-top:6px"><input type="range" id="retRange" min="0" max="120" step="2" value="14"><b id="retVal">14 m</b></div>
+        <div class="hint" style="margin-top:6px">반환 지점은 코스 카드의 <b>↩ 반환점</b> 버튼에서 km를 직접 지정할 수 있습니다(왕복 코스는 자동 감지값 제공). 오프셋은 <b>화면 표시용</b>이며 거리·시설 km 계산에는 영향을 주지 않습니다.</div>
       </div>
-
       <div class="block">
         <h3>3. 대회 운영 정보</h3>
         <div style="display:flex;gap:6px">
@@ -183,32 +197,27 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
         <div class="hint" style="margin-top:7px">시설별 <b>운영 시간(선두 도착 ~ 후미 통과)</b>이 자동 계산됩니다. 종목별 참가 인원은 코스 카드의 ✎ 옆 인원 칸에 입력하세요.</div>
         <button class="btn sm full" id="cutAutoBtn" style="margin-top:7px">⏱ 컷오프 시각 후미 페이스로 자동 계산</button>
       </div>
-
       <div class="block">
         <h3>4. 시설 카테고리 <button class="btn sm" id="addCatBtn" style="margin-left:auto">＋ 추가</button></h3>
         <div id="catList"></div>
       </div>
-
       <div class="block">
         <h3>5. 배치된 시설 <span id="poiCnt" style="font-weight:400;color:#9aa5b1"></span>
           <button class="btn sm" id="bulkBtn" style="margin-left:auto">⚡ 일괄 입력</button></h3>
         <div id="poiList"></div>
         <div class="hint" style="margin-top:8px">지도 <b>우클릭</b> → 시설 배치 · 마커 클릭 → 수정/이동/삭제</div>
       </div>
-
       <div class="block">
         <h3>6. 관리자용 물자 항목 <button class="btn sm" id="addSupBtn" style="margin-left:auto">＋ 항목</button></h3>
         <div id="supList"></div>
         <div class="hint" style="margin-top:6px">항목별 <b>1인당 계수</b>를 넣어두면 참가 인원 기준으로 급수대 수량을 자동 산정할 수 있습니다.</div>
       </div>
-
       <div class="block">
         <h3>7. 표 열 표시 (참가자 / 관리자)</h3>
         <div id="colCfg"></div>
         <label class="f">물자 수량 처리</label>
         <select id="roundSel"><option value="round">반올림</option><option value="ceil">올림 (부족 방지)</option></select>
       </div>
-
       <div class="block">
         <h3>8. 표 · 안내 문구</h3>
         <label class="f">헤더 부제</label><input type="text" id="t_subtitle">
@@ -224,7 +233,6 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
           <div style="flex:1"><label class="f">비고 열</label><input type="text" id="t_colMemo"></div>
         </div>
       </div>
-
       <div class="block">
         <h3>9. 내보내기 / 저장</h3>
         <div class="btnrow">
@@ -237,7 +245,6 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
       </div>
     </div>
   </aside>
-
   <main id="main">
     <div id="topbar">
       <input type="text" id="titleIn" value="마라톤 코스도">
@@ -256,11 +263,32 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
             </span>
             <button class="btn sm" id="fitBtn">전체 보기</button>
             <button class="btn sm" id="kmToggle">km 표시 ON</button>
+            <button class="btn sm" id="retToggle">복편 분리 ON</button>
+            <span class="rng" style="width:150px" title="왕편 ↔ 복편 라인 간격">
+              <input type="range" id="retRange2" min="0" max="120" step="2" value="14"><b id="retVal2">14 m</b>
+            </span>
           </span>
         </h2>
         <div id="mapWrap">
           <div id="map"></div>
           <div id="moveBanner">📍 새 위치를 지도에서 클릭하세요 (ESC 취소)</div>
+          <div id="editBar">
+            <span class="ttl">✏ <span id="edName">코스 라인 편집</span></span>
+            <span class="seg" id="edMode">
+              <button data-m="move" class="on">이동 / 추가</button><button data-m="del">점 삭제</button><button data-m="append">뒤에 이어 그리기</button><button data-m="prepend">앞에 이어 그리기</button>
+            </span>
+            <span class="edInfo" id="edInfo"></span>
+            <span class="rng"><input type="range" id="edStep" min="10" max="300" step="10" value="50"><b id="edStepV">50 m</b></span>
+            <button class="btn sm" id="edTurn">↩ 반환점</button>
+            <button class="btn sm" id="edTrim">✂ 앞/뒤 자르기</button>
+            <button class="btn sm" id="edSnap">📍 시설 재스냅</button>
+            <button class="btn sm" id="edUndo">↺ 되돌리기</button>
+            <span style="margin-left:auto;display:flex;gap:6px">
+              <button class="btn sm ok" id="edApply">✔ 적용</button>
+              <button class="btn sm" id="edCancel">✕ 취소</button>
+            </span>
+          </div>
+          <div id="editHint"></div>
           <div id="mapOverlayMsg"><div class="in" id="mapOverlayIn"></div></div>
         </div>
         <div class="note" id="mapNoteEl"></div>
@@ -306,7 +334,6 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
 <div id="ctx"></div>
 <div id="modalBg"><div class="modal" id="modal"></div></div>
 <div id="toast"></div>
-
 <script>
 /* ══════════════ 기본 정의 ══════════════ */
 const DEFAULT_CATS = [
@@ -340,7 +367,7 @@ const DEFAULT_COLS = {
 };
 const DEFAULT_TEXTS = {
   subtitle:'현장 상황에 따라 변경 될 수 있습니다.',
-  mapNote:'코스 버튼으로 종목을 전환할 수 있습니다 · 우측 하단 ◎ 버튼: 내 위치 실시간 추적 (위치 권한 필요)',
+  mapNote:'코스 버튼으로 종목을 전환할 수 있습니다 · 점선은 반환 후 복편 구간입니다 · 우측 하단 ◎ 버튼: 내 위치 실시간 추적 (위치 권한 필요)',
   tableTitle:'📋 코스 시설 안내',
   tableNote:'표의 행을 클릭하면 지도에서 해당 위치로 이동합니다. 코스를 전환하면 해당 코스 기준 왕/복 거리로 다시 계산됩니다.',
   colGo:'왕편', colBack:'복편', colName:'명칭', colMemo:'비고', colGap:'간격', colOps:'운영 시간'
@@ -354,10 +381,8 @@ const DEFAULT_SLOTS = [
 const SLOT_COLORS = ['#e53935','#1e88e5','#43a047','#8e24aa','#fb8c00','#00897b','#5d4037','#d81b60'];
 const OVERLAP_LABEL = {auto:'겹침 자동 계산', partial:'일부만 겹침', none:'독립 코스'};
 const DIR_LABEL = {both:'양방향', go:'왕편만', back:'복편만'};
-
 let SEQ = 1;
 const uid = p => p + (SEQ++) + Math.random().toString(36).slice(2,5);
-
 const S = {
   title:'마라톤 코스도',
   kakaoKey:'c45e1e08eea53db5a726efa6edae142b',
@@ -368,12 +393,16 @@ const S = {
     id:uid('c'), slot:s.slot, name:s.name, color:s.color,
     enabled:false, overlap:'auto', participants:0, limit:s.limit, targetKm:s.km,
     source:'gpx', derive:null,                 // derive:{mode:'cut'|'outback', km:21.1}
+    turnKm:null, turnManual:false,             // 반환 지점(km) · 사용자가 직접 지정했는지
     pts:null, cum:null, total_km:0, profile:[], gain:0, ele_min:0, ele_max:0, hasEle:false
   })),
   masterId: null,                              // 기준(전체) 코스 id
   pois: [],
   activeCourse: null,
   showKm: true,
+  showReturn: true,                            // 복편 라인 분리 표시
+  returnOffset: 14,                            // 복편 평행 오프셋(m, 표시 전용)
+  edit: {on:false, courseId:null, mode:'move', step:50, nodes:[], undo:[]},   // 코스 라인 편집
   snap: 120,                                   // 겹침 인식 반경(m)
   event: {start:'08:00', lead:'3:30', last:'9:00'},
   supFilter: 'all',
@@ -492,9 +521,11 @@ function sliceTo(master, km){
   }
   return out.length>1?out:master.pts.map(p=>p.slice());
 }
-function deriveTrack(master, mode, km){
+/* mode:'outback' → turnKm 지점에서 반환 (총 turnKm×2) · mode:'cut' → 앞에서 km까지 편도 */
+function deriveTrack(master, mode, km, turnKm){
   if(mode==='outback'){
-    const half=sliceTo(master, km/2);
+    const t=(turnKm!=null&&turnKm>0)?turnKm:km/2;
+    const half=sliceTo(master, t);
     return half.concat(half.slice(0,-1).reverse().map(p=>p.slice()));
   }
   return sliceTo(master, km);
@@ -504,11 +535,12 @@ function rebuildDerived(){
   if(!master||!master.pts) return;
   S.courses.forEach(c=>{
     if(c.source!=='derive'||!c.derive||c.id===S.masterId) return;
-    applyTrack(c, deriveTrack(master, c.derive.mode, c.derive.km));
+    const d=c.derive;
+    const trk=deriveTrack(master, d.mode, d.km, d.turnKm);
+    applyTrack(c, trk, d.mode==='outback'?{setTurn:true, turnKm:(d.turnKm!=null?d.turnKm:d.km/2), manual:false}:null);
   });
   passCache.clear(); relCache.clear();
 }
-
 /* ══════════════ 지오 유틸 ══════════════ */
 const R_EARTH = 6371008.8, RAD = Math.PI/180;
 function haversine(a,b){
@@ -517,7 +549,6 @@ function haversine(a,b){
   return 2*R_EARTH*Math.asin(Math.min(1,Math.sqrt(h)));
 }
 const proj = (p, lat0) => [p[1]*RAD*R_EARTH*Math.cos(lat0*RAD), p[0]*RAD*R_EARTH];
-
 function nearestOnTrack(course, lat, lon){
   const pts=course.pts, cum=course.cum, lat0=lat, P=proj([lat,lon],lat0);
   let best={dist:Infinity};
@@ -556,7 +587,73 @@ function passesOnTrack(course, lat, lon, thresh){
   });
   return out;
 }
-
+/* ══════════════ 반환(복편) 구간 ══════════════ */
+function ptAtDist(pts, cum, d){                 // 누적거리(m) → 좌표
+  const last=cum[cum.length-1];
+  if(!(d>0)) return [pts[0][0], pts[0][1]];
+  if(d>=last) return [pts[pts.length-1][0], pts[pts.length-1][1]];
+  let lo=0, hi=cum.length-1;
+  while(lo<hi){ const m=(lo+hi)>>1; cum[m]<d?lo=m+1:hi=m; }
+  const i=Math.max(1,lo), d0=cum[i-1], d1=cum[i], t=d1>d0?(d-d0)/(d1-d0):0;
+  const a=pts[i-1], b=pts[i];
+  return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1])];
+}
+/* 왕복(아웃&백) 코스의 반환 지점(km) 자동 감지 — 되짚어 오는 구간을 찾는다 */
+function detectTurn(pts, cum){
+  const total=cum[cum.length-1];
+  if(!(total>800)) return null;
+  const probes=[];
+  const maxD=Math.min(2000, total/2);
+  for(let d=60; d<=maxD; d+=60) probes.push(d);
+  if(probes.length<6) return null;
+  const need=Math.ceil(probes.length*0.75);
+  const step=Math.max(25, total/400);
+  let best=null, bestScore=0;
+  for(let c=maxD; c<=total-maxD; c+=step){
+    let sc=0;
+    for(const d of probes){
+      if(haversine(ptAtDist(pts,cum,c-d), ptAtDist(pts,cum,c+d))<40) sc++;
+      else break;
+    }
+    if(sc>bestScore){ bestScore=sc; best=c; }
+    if(sc===probes.length && bestScore===probes.length) { /* 계속 탐색해 최댓값 유지 */ }
+  }
+  if(best==null || bestScore<need) return null;
+  return +(best/1000).toFixed(3);
+}
+function courseTurnKm(c){                        // 유효한 반환 지점만 반환
+  if(!c||!c.pts||c.turnKm==null) return null;
+  const t=+c.turnKm;
+  return (isFinite(t)&&t>0.01&&t<c.total_km-0.01)?t:null;
+}
+/* 진행 방향 오른쪽으로 meters 만큼 평행 이동 (표시 전용) */
+function offsetPath(path, meters){
+  const n=path.length, out=[];
+  for(let i=0;i<n;i++){
+    const a=path[Math.max(0,i-1)], b=path[Math.min(n-1,i+1)];
+    const lat=path[i][0], cosL=Math.cos(lat*RAD)||1;
+    const ex=(b[1]-a[1])*cosL, ny=(b[0]-a[0]);
+    const L=Math.hypot(ex,ny);
+    if(!L){ out.push([path[i][0], path[i][1]]); continue; }
+    const pe=ny/L, pn=-ex/L;
+    out.push([path[i][0]+meters*pn/111320, path[i][1]+meters*pe/(111320*cosL)]);
+  }
+  return out;
+}
+function splitPath(course, km){                  // 왕편 / 복편 좌표 분할
+  const d=km*1000, go=[], back=[];
+  let cut=false;
+  for(let i=0;i<course.pts.length;i++){
+    if(!cut && course.cum[i]<=d){ go.push([course.pts[i][0], course.pts[i][1]]); continue; }
+    if(!cut){
+      const t=ptAtDist(course.pts, course.cum, d);
+      go.push(t); back.push(t); cut=true;
+    }
+    back.push([course.pts[i][0], course.pts[i][1]]);
+  }
+  if(!back.length){ const t=ptAtDist(course.pts,course.cum,d); back.push(t); }
+  return {go, back};
+}
 /* ══════════════ GPX ══════════════ */
 function parseGPX(text, fallbackName){
   const doc=new DOMParser().parseFromString(text,'application/xml');
@@ -589,7 +686,8 @@ function smooth(arr,w){
   }
   return out;
 }
-function applyTrack(course, pts){
+/* opts.setTurn=true → opts.turnKm 사용(null 허용) · 아니면 수동 지정값 유지 or 자동 감지 */
+function applyTrack(course, pts, opts){
   const cum=[0];
   for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+haversine(pts[i-1],pts[i]));
   const total=cum[cum.length-1]/1000;
@@ -619,15 +717,19 @@ function applyTrack(course, pts){
     ele_max:hasEle?+Math.max(...es).toFixed(1):0,
     enabled:true
   });
+  if(opts && opts.setTurn){
+    course.turnKm = (opts.turnKm==null||!isFinite(+opts.turnKm)) ? null : +(+opts.turnKm).toFixed(3);
+    course.turnManual = !!opts.manual;
+  } else if(!course.turnManual){
+    course.turnKm = detectTurn(pts, cum);
+  }
 }
-
 /* ══════════════ 헬퍼 ══════════════ */
 const esc = s => String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const catById = id => S.cats.find(c=>c.id===id) || {id,label:id,icon:'●',color:'#607d8b'};
 const supById = id => S.supplies.find(s=>s.id===id) || {id,label:id,unit:''};
 const readyCourses = () => S.courses.filter(c=>c.enabled && c.pts && c.pts.length>1);
 const activeCourse = () => readyCourses().find(c=>c.id===S.activeCourse) || readyCourses()[0] || null;
-
 const passCache=new Map(), relCache=new Map();
 function poiPasses(p, course){
   if(!course.pts) return null;
@@ -671,6 +773,15 @@ function latlngAtKm(course, km){
   const i=Math.max(1,lo), d0=cum[i-1], d1=cum[i], t=d1>d0?(d-d0)/(d1-d0):0;
   const a=course.pts[i-1], b=course.pts[i];
   return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1])];
+}
+/* 복편 구간이면 화면 표시용 오프셋 좌표를 돌려준다 */
+function displayAtKm(course, km){
+  const ll=latlngAtKm(course, km), t=courseTurnKm(course);
+  if(!S.showReturn || !(S.returnOffset>0) || t==null || km<=t) return ll;
+  const eps=Math.max(0.005, Math.min(0.03, course.total_km/300));
+  const a=latlngAtKm(course, Math.max(t, km-eps));
+  const b=latlngAtKm(course, Math.min(course.total_km, km+eps));
+  return offsetPath([a, ll, b], S.returnOffset)[1];
 }
 function eleAtKm(c, km){
   const P=c.profile;
@@ -749,9 +860,13 @@ function initKakao(){
     openCtx(lastCtxXY.x, lastCtxXY.y, e.latLng.getLat(), e.latLng.getLng());
   });
   kakao.maps.event.addListener(kmap,'click', e=>{
+    if(S.edit.on && (S.edit.mode==='append'||S.edit.mode==='prepend')){
+      editAddEnd(e.latLng.getLat(), e.latLng.getLng(), S.edit.mode==='prepend'); return;
+    }
     if(moveMode){ finishMove(e.latLng.getLat(), e.latLng.getLng()); return; }
     closeKInfo();
   });
+  kakao.maps.event.addListener(kmap,'idle', ()=>{ if(S.edit.on) renderEditMap(false); });
   refreshAll(true);
 }
 document.getElementById('mapWrap').addEventListener('contextmenu', e=>{
@@ -785,14 +900,15 @@ function showKInfo(html, lat, lon, wire){
   if(wire) wire(el);
 }
 const kmSize = k => k%5===0?22:15;
-function kmHtml(k){
+function kmHtml(k, back){
   const big=k%5===0, s=kmSize(k), f=big?9:8;
-  return '<div class="kkm" style="background:'+(big?'#e53935':'#fff')+';color:'+(big?'#fff':'#e53935')+
-    ';border:'+(big?'2px solid #fff':'1.5px solid #e53935')+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</div>';
+  const col=back?'#ef6c00':'#e53935';
+  return '<div class="kkm" style="background:'+(big?col:'#fff')+';color:'+(big?'#fff':col)+
+    ';border:'+(big?'2px solid #fff':'1.5px solid '+col)+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</div>';
 }
 const poiHtml = p => '<div class="kpoi" style="background:'+catById(p.cat).color+'">'+catById(p.cat).icon+'</div>';
 function nudgedKm(course,k){
-  const ll=latlngAtKm(course,k);
+  const ll=displayAtKm(course,k);
   for(const p of S.pois){
     const dy=(ll[0]-p.lat)*111320, dx=(ll[1]-p.lon)*111320*Math.cos(ll[0]*RAD);
     if(Math.hypot(dx,dy)<45) return [ll[0]+0.00035, ll[1]+0.0002];
@@ -801,6 +917,7 @@ function nudgedKm(course,k){
 }
 function renderMap(fit){
   if(!kReady||!kmap) return;
+  if(S.edit.on){ renderEditMap(fit); return; }
   kObjs.forEach(o=>o.setMap(null)); kObjs=[]; closeKInfo(); kHover=null;
   const act=activeCourse();
   if(!act){ showMapMsg('<h4>GPX를 등록해 주세요</h4>왼쪽 <b>2. 코스 구성</b>에서 종목별 GPX 파일을 올리면 코스가 표시됩니다.'); return; }
@@ -809,23 +926,43 @@ function renderMap(fit){
     const pl=new kakao.maps.Polyline({path:c.pts.map(kLL), strokeColor:'#90a4ae', strokeWeight:3, strokeOpacity:.45});
     pl.setMap(kmap); kObjs.push(pl);
   });
-  const pl=new kakao.maps.Polyline({path:act.pts.map(kLL), strokeColor:act.color, strokeWeight:5, strokeOpacity:.92});
-  pl.setMap(kmap); kObjs.push(pl);
+  const tk=courseTurnKm(act), useRet=(S.showReturn && S.returnOffset>0 && tk!=null);
+  if(useRet){
+    const sp=splitPath(act, tk);
+    const plGo=new kakao.maps.Polyline({path:sp.go.map(kLL), strokeColor:act.color, strokeWeight:5, strokeOpacity:.92});
+    plGo.setMap(kmap); kObjs.push(plGo);
+    const plBk=new kakao.maps.Polyline({path:offsetPath(sp.back, S.returnOffset).map(kLL),
+      strokeColor:act.color, strokeWeight:4, strokeOpacity:.85, strokeStyle:'shortdash'});
+    plBk.setMap(kmap); kObjs.push(plBk);
+    const tp=latlngAtKm(act, tk);
+    kOv(kLL(tp), '<div class="kturn">↩ 반환 '+tk.toFixed(2)+'km</div>', 320, ()=>{
+      showKInfo('<b>↩ 반환 지점</b><br>'+tk.toFixed(3)+' km / 총 '+act.total_km.toFixed(2)+' km<br>'+
+        '<span style="color:#607d8b">복편 '+(act.total_km-tk).toFixed(2)+' km · 점선 구간</span>'+
+        '<div style="margin-top:9px"><button class="btn sm" data-a="edit">반환점 km 수정</button></div>', tp[0], tp[1],
+        el=>{ el.querySelector('[data-a=edit]').onclick=()=>{ closeKInfo(); turnModal(act); }; });
+    });
+  } else {
+    const pl=new kakao.maps.Polyline({path:act.pts.map(kLL), strokeColor:act.color, strokeWeight:5, strokeOpacity:.92});
+    pl.setMap(kmap); kObjs.push(pl);
+  }
   const st=act.pts[0];
   kOv(kLL(st), '<div class="kstart">출발/도착</div>', 300,
     ()=>showKInfo('<b>🏁 출발 / 도착</b><br>0 km / '+act.total_km.toFixed(2)+' km', st[0], st[1]));
   if(S.showKm){
     for(let k=1;k<act.total_km;k++){
-      const ll=nudgedKm(act,k);
-      ((kk,l)=>kOv(kLL(l), kmHtml(kk), 40, ()=>showKInfo('<b>'+kk+' km 지점</b>', l[0], l[1])))(k, ll);
+      const ll=nudgedKm(act,k), isBack=(useRet && k>tk);
+      ((kk,l,bk)=>kOv(kLL(l), kmHtml(kk,bk), 40, ()=>showKInfo('<b>'+kk+' km 지점</b>'+(bk?'<br><span style="color:#ef6c00">복편 구간</span>':''), l[0], l[1])))(k, ll, isBack);
     }
   }
   const seen={};
   S.pois.forEach(p=>{
-    if(!poiRows(p,act).length) return;
-    const key=p.lat.toFixed(4)+','+p.lon.toFixed(4);
+    const rr=poiRows(p,act);
+    if(!rr.length) return;
+    let pos=[p.lat, p.lon];
+    if(useRet && rr.length===1 && rr[0].km>tk) pos=displayAtKm(act, rr[0].km);
+    const key=pos[0].toFixed(4)+','+pos[1].toFixed(4);
     const n=seen[key]||0; seen[key]=n+1;
-    kOv(kLL([p.lat, p.lon+n*0.00038]), poiHtml(p), 200, ()=>openPoiInfo(p.id));
+    kOv(kLL([pos[0], pos[1]+n*0.00038]), poiHtml(p), 200, ()=>openPoiInfo(p.id));
   });
   if(fit){
     const b=new kakao.maps.LatLngBounds();
@@ -879,10 +1016,11 @@ document.getElementById('fitBtn').onclick = ()=>renderMap(true);
 document.getElementById('kmToggle').onclick = e=>{
   S.showKm=!S.showKm; e.target.textContent='km 표시 '+(S.showKm?'ON':'OFF'); renderMap(false);
 };
-
+document.getElementById('retToggle').onclick = ()=>setShowReturn(!S.showReturn);
 /* ══════════════ 우클릭 메뉴 ══════════════ */
 const ctx=document.getElementById('ctx');
 function openCtx(x,y,lat,lon){
+  if(S.edit.on){ toast('코스 라인 편집 중에는 시설을 배치할 수 없습니다'); return; }
   if(!readyCourses().length){ toast('먼저 GPX를 등록해 주세요'); return; }
   const snap=snapToAnyCourse(lat,lon);
   const c=readyCourses().find(c=>c.id===snap.courseId)||activeCourse();
@@ -892,6 +1030,7 @@ function openCtx(x,y,lat,lon){
     h+='<button data-cat="'+cat.id+'"><span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span>'+esc(cat.label)+'</button>';
   });
   h+='<div style="border-top:1px solid var(--line);margin:4px 0"></div>'+
+     '<button data-cat="__turn"><span class="catDot" style="background:#f57c00">↩</span>여기를 <b>코스 반환 지점</b>으로</button>'+
      '<button data-cat="__new"><span class="catDot" style="background:#94a3b8">＋</span>새 카테고리 만들기…</button>';
   ctx.innerHTML=h; ctx.style.display='block';
   ctx.style.left=Math.min(x, innerWidth-ctx.offsetWidth-10)+'px';
@@ -900,12 +1039,12 @@ function openCtx(x,y,lat,lon){
     b.onclick=()=>{
       ctx.style.display='none';
       if(b.dataset.cat==='__new'){ catModal(null, id=>createPoi(id,snap)); return; }
+      if(b.dataset.cat==='__turn'){ setCourseTurn(c, snap.km); return; }
       createPoi(b.dataset.cat, snap);
     };
   });
 }
 document.addEventListener('click', e=>{ if(!ctx.contains(e.target)) ctx.style.display='none'; });
-
 /* ══════════════ 시설 CRUD ══════════════ */
 function nextName(catId){
   const cat=catById(catId), n=S.pois.filter(p=>p.cat===catId).length+1;
@@ -1002,7 +1141,6 @@ function editPoi(id, isNew){
   document.querySelectorAll('.m_c').forEach(x=>x.onchange=preview);
   setTimeout(()=>document.getElementById('m_name').select(),40);
 }
-
 /* ══════════════ 일괄 입력 ══════════════ */
 function bulkModal(){
   const list=readyCourses();
@@ -1082,7 +1220,6 @@ function parseBulkLine(line){
   return {km, dir, time, name:nameParts.join(' '), memo};
 }
 document.getElementById('bulkBtn').onclick=bulkModal;
-
 /* ══════════════ 카테고리 / 물자 항목 ══════════════ */
 const ICON_POOL=['💧','✚','🚑','↩','⏱','👤','🚧','🚻','🍌','📷','🏁','🎽','🔊','🅿️','🚌','⛑','🧊','🍚','🎪','🚩','⚠️','🩹','🛟','🍫'];
 const COLOR_POOL=['#1976d2','#d32f2f','#b71c1c','#f57c00','#37474f','#6a1b9a','#c2a000','#00897b','#2e7d32','#5d4037','#e91e63','#0097a7'];
@@ -1179,7 +1316,6 @@ function supModal(existing){
   wireSupModal();
 }
 document.getElementById('addSupBtn').onclick=e=>{ e.stopPropagation(); supModal(null); };
-
 /* ══════════════ 모달 ══════════════ */
 const modalBg=document.getElementById('modalBg'), modalEl=document.getElementById('modal');
 function openModal(title, body, onOk, onAlt, altLabel){
@@ -1210,6 +1346,7 @@ gpxInput.onchange=()=>{
   rd.onload=()=>{
     try{
       const g=parseGPX(rd.result, f.name.replace(/\.[^.]+$/,''));
+      course.turnManual=false;                        // 새 GPX → 반환 지점 자동 재감지
       applyTrack(course, g.pts);
       course.source='gpx'; course.derive=null;
       if(!S.masterId || S.masterId===course.id ||
@@ -1219,6 +1356,7 @@ gpxInput.onchange=()=>{
       if(S.masterId===course.id) rebuildDerived();
       refreshAll(true);
       toast(course.name+' 등록 완료 ('+course.total_km.toFixed(2)+'km)'+
+        (courseTurnKm(course)?' · 반환 '+course.turnKm.toFixed(2)+'km 자동 감지':'')+
         (S.masterId===course.id?' · 기준 코스로 지정':''));
       if(S.masterId===course.id && S.courses.some(c=>c.id!==course.id && !c.pts)) setTimeout(deriveWizard, 350);
     }catch(err){ toast(f.name+': '+err.message); }
@@ -1227,51 +1365,148 @@ gpxInput.onchange=()=>{
   rd.readAsText(f);
 };
 function pickGpx(courseId){ pendingSlot=courseId; gpxInput.click(); }
-
+/* ── 반환 지점 지정 ── */
+function applyCourseTurn(course, km){               // km=null → 반환 없음(순환)
+  if(km!=null && course.source==='derive' && course.derive && course.derive.mode==='outback'){
+    const master=S.courses.find(c=>c.id===S.masterId);
+    if(master && master.pts){
+      const t=Math.min(km, master.total_km);
+      course.derive={mode:'outback', km:+(t*2).toFixed(4), turnKm:+t.toFixed(4)};
+      applyTrack(course, deriveTrack(master,'outback',t*2,t), {setTurn:true, turnKm:t, manual:true});
+      passCache.clear(); relCache.clear();
+      refreshAll(true);
+      toast(course.name+' — 반환 '+t.toFixed(3)+' km · 총 '+course.total_km.toFixed(3)+' km');
+      return;
+    }
+  }
+  course.turnKm = (km==null)?null:+(+km).toFixed(3);
+  course.turnManual = true;
+  refreshAll(false);
+  toast(km==null ? course.name+' — 반환 지점 해제(순환 코스)' : course.name+' — 반환 지점 '+(+km).toFixed(3)+' km');
+}
+function setCourseTurn(course, km){
+  if(!course||!course.pts){ toast('먼저 GPX를 등록해 주세요'); return; }
+  if(km==null||!(km>0)||km>=course.total_km){ toast('코스 위의 지점을 선택해 주세요'); return; }
+  applyCourseTurn(course, +km.toFixed(3));
+}
+function turnModal(course){
+  if(!course||!course.pts){ toast('먼저 GPX를 등록해 주세요'); return; }
+  const auto=detectTurn(course.pts, course.cum);
+  const cur=courseTurnKm(course);
+  const master=S.courses.find(c=>c.id===S.masterId);
+  const isOB=(course.source==='derive' && course.derive && course.derive.mode==='outback' && master && master.pts);
+  const maxV=isOB?master.total_km:course.total_km;
+  const seed=(cur!=null?cur:(auto!=null?auto:course.total_km/2));
+  openModal('↩ '+esc(course.name)+' 반환 지점',
+    '<div class="hint">반환 지점을 기준으로 <b>왕편 / 복편</b>이 나뉘고, 복편이 <b>평행 점선</b>으로 그려집니다.'+
+      (auto!=null?'<br>GPX 자동 감지값: <b>'+auto.toFixed(3)+' km</b>':'<br>왕복 형태가 자동 감지되지 않았습니다. 아래에 직접 입력하세요.')+'</div>'+
+    '<label class="f">반환 지점 (km) <span style="font-weight:400;color:#9aa5b1">— 비우면 반환 없음(순환)</span></label>'+
+    '<input type="number" id="tn_km" step="0.001" min="0" max="'+maxV.toFixed(3)+'" value="'+(cur!=null?cur:'')+'" placeholder="예: 10.549">'+
+    '<div class="rng" style="margin-top:8px"><input type="range" id="tn_r" min="0" max="'+maxV.toFixed(3)+'" step="0.005" value="'+seed.toFixed(3)+'"><b id="tn_v"></b></div>'+
+    '<div id="tn_p" style="margin-top:10px;font-size:.82rem;background:#f5f9ff;border:1px solid #cfe0f5;border-radius:9px;padding:10px 12px"></div>'+
+    (isOB?'<div class="warnBox">이 코스는 기준 코스에서 <b>반환 왕복</b>으로 생성되었습니다. 반환 지점을 바꾸면 궤적과 <b>총 거리(= 반환 × 2)</b>가 함께 다시 계산됩니다.</div>'
+         :'<div class="hint" style="margin-top:8px">GPX로 직접 등록한 코스에서는 이 값이 <b>왕/복 표시 구분용</b>입니다. 시설의 왕·복 km는 기존대로 GPX 궤적에서 계산됩니다.</div>'),
+    ()=>{
+      const raw=document.getElementById('tn_km').value.trim();
+      if(raw===''){ closeModal(); applyCourseTurn(course, null); return; }
+      const k=parseFloat(raw);
+      if(!(k>0) || k>maxV+1e-6 || (!isOB && k>=course.total_km)){
+        toast('0 ~ '+maxV.toFixed(2)+' km 사이로 입력해 주세요'); return;
+      }
+      closeModal(); applyCourseTurn(course, k);
+    },
+    ()=>{ closeModal(); applyCourseTurn(course, auto); },
+    auto!=null?'자동 감지값 사용':'반환 없음으로');
+  const num=document.getElementById('tn_km'), rng=document.getElementById('tn_r'),
+        lab=document.getElementById('tn_v'), prev=document.getElementById('tn_p');
+  const paint=()=>{
+    const raw=num.value.trim();
+    lab.textContent=(+rng.value).toFixed(2)+' km';
+    if(raw===''){ prev.innerHTML='<b>반환 없음</b> — 전체를 한 줄(왕편)로 표시합니다.'; return; }
+    const k=parseFloat(raw)||0;
+    prev.innerHTML = isOB
+      ? '기준 코스 <b>'+k.toFixed(3)+' km 지점에서 반환</b> → 총 거리 <b>'+(k*2).toFixed(3)+' km</b>'
+      : '왕편 <b>0 ~ '+k.toFixed(3)+' km</b> · 복편 <b>'+k.toFixed(3)+' ~ '+course.total_km.toFixed(3)+' km</b> (점선)';
+  };
+  num.oninput=()=>{ const k=parseFloat(num.value); if(isFinite(k)) rng.value=Math.min(maxV,Math.max(0,k)); paint(); };
+  rng.oninput=()=>{ num.value=(+rng.value).toFixed(3); paint(); };
+  paint();
+  setTimeout(()=>num.select(),40);
+}
 /* ── 기준 코스에서 종목 생성 ── */
 function deriveModal(course){
   const master=S.courses.find(c=>c.id===S.masterId);
   if(!master||!master.pts){ toast('먼저 전체(기준) GPX를 등록해 주세요'); return; }
   const defKm=Math.min(course.targetKm||master.total_km, master.total_km*2);
   const cur=course.derive||{mode:'outback', km:defKm};
+  const curTurn=(cur.turnKm!=null?cur.turnKm:(cur.km||defKm)/2);
   openModal('🧬 '+esc(course.name)+' — 기준 코스에서 생성',
     '<div class="hint">기준 코스 <b>'+esc(master.name)+' ('+master.total_km.toFixed(2)+'km)</b> 의 궤적을 그대로 사용합니다. 좌표가 완전히 일치하므로 시설 km가 100% 자동 환산됩니다.</div>'+
     '<label class="f">생성 방식</label>'+
     '<select id="d_mode">'+
-      '<option value="outback"'+(cur.mode!=='cut'?' selected':'')+'>반환 왕복 — 목표 거리의 절반 지점에서 되돌아옴 (권장)</option>'+
+      '<option value="outback"'+(cur.mode!=='cut'?' selected':'')+'>반환 왕복 — 반환 지점에서 되돌아옴 (권장)</option>'+
       '<option value="cut"'+(cur.mode==='cut'?' selected':'')+'>앞에서 잘라내기 — 출발점부터 목표 거리까지 편도</option>'+
     '</select>'+
-    '<label class="f">목표 거리 (km)</label><input type="number" id="d_km" step="0.0001" min="0.1" value="'+defKm+'">'+
+    '<div style="display:flex;gap:8px">'+
+      '<div style="flex:1"><label class="f">목표 거리 (km)</label><input type="number" id="d_km" step="0.0001" min="0.1" value="'+(cur.km||defKm)+'"></div>'+
+      '<div style="flex:1" id="d_turnWrap"><label class="f">↩ 반환 지점 (km)</label><input type="number" id="d_turn" step="0.0001" min="0.05" value="'+(+curTurn).toFixed(4)+'"></div>'+
+    '</div>'+
+    '<div class="rng" style="margin-top:8px"><input type="range" id="d_turnR" min="0.05" max="'+master.total_km.toFixed(3)+'" step="0.005" value="'+Math.min(curTurn,master.total_km).toFixed(3)+'"><b id="d_turnV"></b></div>'+
     '<div id="d_prev" style="margin-top:10px;font-size:.82rem;background:#f5f9ff;border:1px solid #cfe0f5;border-radius:9px;padding:10px 12px"></div>'+
-    '<div class="hint" style="margin-top:8px">하프 21.0975 · 10K 10 · 5K 5 처럼 공인 거리를 넣으면 됩니다.<br>'+
+    '<div class="hint" style="margin-top:8px">둘 중 <b>아무 칸이나</b> 고치면 나머지가 자동으로 맞춰집니다(왕복 = 반환 × 2).<br>'+
+      '하프 21.0975 · 10K 10 · 5K 5 처럼 공인 거리를 넣거나, 실측 반환점 km를 직접 넣으세요.<br>'+
       '실제 코스가 다른 길로 돌아온다면 이 기능 대신 <b>그 종목 GPX를 따로</b> 올려 주세요.</div>',
     ()=>{
       const mode=document.getElementById('d_mode').value;
-      let km=parseFloat(document.getElementById('d_km').value)||defKm;
-      km=Math.min(km, master.total_km*(mode==='outback'?2:1));
-      if(!(km>0)){ toast('거리를 확인해 주세요'); return; }
-      course.source='derive'; course.derive={mode, km};
-      applyTrack(course, deriveTrack(master, mode, km));
+      if(mode==='outback'){
+        let t=parseFloat(document.getElementById('d_turn').value);
+        if(!(t>0)){ toast('반환 지점을 확인해 주세요'); return; }
+        t=Math.min(t, master.total_km);
+        course.source='derive'; course.derive={mode:'outback', km:+(t*2).toFixed(4), turnKm:+t.toFixed(4)};
+        applyTrack(course, deriveTrack(master,'outback',t*2,t), {setTurn:true, turnKm:t, manual:false});
+      } else {
+        let km=parseFloat(document.getElementById('d_km').value)||defKm;
+        km=Math.min(km, master.total_km);
+        if(!(km>0)){ toast('거리를 확인해 주세요'); return; }
+        course.source='derive'; course.derive={mode:'cut', km:+km.toFixed(4), turnKm:null};
+        course.turnManual=false;
+        applyTrack(course, deriveTrack(master,'cut',km));
+      }
       course.enabled=true;
       if(!S.activeCourse) S.activeCourse=course.id;
       passCache.clear(); relCache.clear();
       closeModal(); refreshAll(true);
       toast(course.name+' 생성 완료 ('+course.total_km.toFixed(3)+'km)');
     });
+  const modeSel=document.getElementById('d_mode'), kmIn=document.getElementById('d_km'),
+        tnIn=document.getElementById('d_turn'), tnR=document.getElementById('d_turnR'),
+        tnV=document.getElementById('d_turnV'), prev=document.getElementById('d_prev');
+  let lock=false;
   const upd=()=>{
-    const mode=document.getElementById('d_mode').value;
-    let km=parseFloat(document.getElementById('d_km').value)||0;
-    const cap=master.total_km*(mode==='outback'?2:1);
-    const use=Math.min(km, cap);
-    const turn=mode==='outback'?(use/2):use;
-    document.getElementById('d_prev').innerHTML=
-      (mode==='outback'
-        ? '기준 코스의 <b>'+turn.toFixed(3)+' km 지점에서 반환</b> → 왕복 <b>'+use.toFixed(3)+' km</b>'
-        : '기준 코스 출발점부터 <b>'+use.toFixed(3)+' km</b> 지점까지 (편도)')+
-      (km>cap?'<br><span style="color:#c62828">기준 코스 길이를 넘어 '+cap.toFixed(3)+'km로 제한됩니다</span>':'');
+    const mode=modeSel.value, ob=(mode==='outback');
+    document.getElementById('d_turnWrap').style.display=ob?'block':'none';
+    tnR.parentElement.style.display=ob?'flex':'none';
+    if(ob){
+      const t=Math.min(parseFloat(tnIn.value)||0, master.total_km);
+      tnV.textContent=t.toFixed(2)+' km';
+      prev.innerHTML='기준 코스의 <b>'+t.toFixed(3)+' km 지점에서 반환</b> → 왕복 총 <b>'+(t*2).toFixed(3)+' km</b>'+
+        '<br><span style="color:#607d8b">복편은 지도에서 평행 점선으로 표시됩니다</span>'+
+        (parseFloat(tnIn.value)>master.total_km?'<br><span style="color:#c62828">기준 코스 길이를 넘어 '+master.total_km.toFixed(3)+'km로 제한됩니다</span>':'');
+    } else {
+      const km=Math.min(parseFloat(kmIn.value)||0, master.total_km);
+      prev.innerHTML='기준 코스 출발점부터 <b>'+km.toFixed(3)+' km</b> 지점까지 (편도)'+
+        (parseFloat(kmIn.value)>master.total_km?'<br><span style="color:#c62828">기준 코스 길이를 넘어 '+master.total_km.toFixed(3)+'km로 제한됩니다</span>':'');
+    }
   };
-  document.getElementById('d_mode').onchange=upd;
-  document.getElementById('d_km').oninput=upd;
+  kmIn.oninput=()=>{ if(lock) return; lock=true;
+    if(modeSel.value==='outback'){ const k=parseFloat(kmIn.value); if(isFinite(k)){ tnIn.value=(k/2).toFixed(4); tnR.value=Math.min(master.total_km,Math.max(0,k/2)); } }
+    lock=false; upd(); };
+  tnIn.oninput=()=>{ if(lock) return; lock=true;
+    const t=parseFloat(tnIn.value); if(isFinite(t)){ kmIn.value=(t*2).toFixed(4); tnR.value=Math.min(master.total_km,Math.max(0,t)); }
+    lock=false; upd(); };
+  tnR.oninput=()=>{ if(lock) return; lock=true;
+    const t=+tnR.value; tnIn.value=t.toFixed(4); kmIn.value=(t*2).toFixed(4); lock=false; upd(); };
+  modeSel.onchange=upd;
   upd();
 }
 function deriveWizard(){
@@ -1279,16 +1514,18 @@ function deriveWizard(){
   const rest=S.courses.filter(c=>c.id!==S.masterId && !c.pts);
   if(!master||!rest.length) return;
   openModal('🧬 나머지 종목을 기준 코스에서 자동 생성',
-    '<div class="hint">기준 코스 <b>'+esc(master.name)+' '+master.total_km.toFixed(2)+'km</b> 를 잘라 다른 종목을 만들 수 있습니다. 필요한 종목만 체크하세요. 실제 코스가 다른 종목은 체크하지 말고 나중에 GPX를 따로 올리면 됩니다.</div>'+
+    '<div class="hint">기준 코스 <b>'+esc(master.name)+' '+master.total_km.toFixed(2)+'km</b> 를 잘라 다른 종목을 만들 수 있습니다. 필요한 종목만 체크하세요. '+
+      '<b>목표 거리</b>와 <b>반환 지점</b>은 서로 연동됩니다(왕복 = 반환 × 2). 실제 코스가 다른 종목은 체크하지 말고 나중에 GPX를 따로 올리면 됩니다.</div>'+
     rest.map(c=>{
       const km=c.targetKm||0;
       return '<div style="border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin-top:8px">'+
         '<label class="chk" style="margin-top:0"><input type="checkbox" class="w_on" data-id="'+c.id+'"'+(km?' checked':'')+'> <b>'+esc(c.name)+'</b></label>'+
         '<div style="display:flex;gap:6px;margin-top:6px">'+
           '<select class="w_mode" data-id="'+c.id+'" style="flex:1;padding:5px;font-size:.75rem"><option value="outback">반환 왕복 (권장)</option><option value="cut">앞에서 잘라내기</option></select>'+
-          '<input type="number" class="w_km" data-id="'+c.id+'" step="0.0001" value="'+(km||5)+'" style="width:110px;padding:5px;font-size:.75rem">'+
+          '<input type="number" class="w_km" data-id="'+c.id+'" step="0.0001" title="목표 거리(km)" value="'+(km||5)+'" style="width:96px;padding:5px;font-size:.75rem">'+
+          '<input type="number" class="w_turn" data-id="'+c.id+'" step="0.0001" title="반환 지점(km)" value="'+((km||5)/2).toFixed(4)+'" style="width:96px;padding:5px;font-size:.75rem">'+
         '</div>'+
-        '<div style="font-size:.72rem;color:#6b7280;margin-top:5px">반환 왕복 시 <b>'+((km||5)/2).toFixed(3)+' km 지점</b>에서 되돌아 총 '+(km||5).toFixed(3)+' km</div>'+
+        '<div style="font-size:.72rem;color:#6b7280;margin-top:5px" class="w_note" data-id="'+c.id+'">↩ '+((km||5)/2).toFixed(3)+' km 지점에서 반환 → 총 '+(km||5).toFixed(3)+' km</div>'+
         '</div>';
     }).join(''),
     ()=>{
@@ -1296,18 +1533,41 @@ function deriveWizard(){
       document.querySelectorAll('.w_on:checked').forEach(chk=>{
         const c=S.courses.find(x=>x.id===chk.dataset.id); if(!c) return;
         const mode=document.querySelector('.w_mode[data-id="'+c.id+'"]').value;
-        const km=parseFloat(document.querySelector('.w_km[data-id="'+c.id+'"]').value);
-        if(!(km>0)) return;
-        c.source='derive'; c.derive={mode, km};
-        applyTrack(c, deriveTrack(master, mode, km));
+        if(mode==='outback'){
+          let t=parseFloat(document.querySelector('.w_turn[data-id="'+c.id+'"]').value);
+          if(!(t>0)) return;
+          t=Math.min(t, master.total_km);
+          c.source='derive'; c.derive={mode:'outback', km:+(t*2).toFixed(4), turnKm:+t.toFixed(4)};
+          applyTrack(c, deriveTrack(master,'outback',t*2,t), {setTurn:true, turnKm:t, manual:false});
+        } else {
+          let km=parseFloat(document.querySelector('.w_km[data-id="'+c.id+'"]').value);
+          if(!(km>0)) return;
+          km=Math.min(km, master.total_km);
+          c.source='derive'; c.derive={mode:'cut', km:+km.toFixed(4), turnKm:null};
+          c.turnManual=false;
+          applyTrack(c, deriveTrack(master,'cut',km));
+        }
         c.enabled=true; n++;
       });
       passCache.clear(); relCache.clear();
       closeModal(); refreshAll(true);
       toast(n?n+'개 종목을 자동 생성했습니다':'생성된 종목이 없습니다');
     }, closeModal, '건너뛰기');
+  const noteOf=id=>document.querySelector('.w_note[data-id="'+id+'"]');
+  const sync=(id,from)=>{
+    const kmEl=document.querySelector('.w_km[data-id="'+id+'"]'), tnEl=document.querySelector('.w_turn[data-id="'+id+'"]');
+    const mode=document.querySelector('.w_mode[data-id="'+id+'"]').value;
+    if(from==='km'){ const k=parseFloat(kmEl.value); if(isFinite(k)) tnEl.value=(k/2).toFixed(4); }
+    else { const t=parseFloat(tnEl.value); if(isFinite(t)) kmEl.value=(t*2).toFixed(4); }
+    const k=parseFloat(kmEl.value)||0, t=parseFloat(tnEl.value)||0;
+    tnEl.disabled=(mode==='cut');
+    noteOf(id).textContent = mode==='cut' ? ('출발 ~ '+k.toFixed(3)+' km 편도') : ('↩ '+t.toFixed(3)+' km 지점에서 반환 → 총 '+(t*2).toFixed(3)+' km');
+  };
+  document.querySelectorAll('.w_km').forEach(el=>el.oninput=()=>sync(el.dataset.id,'km'));
+  document.querySelectorAll('.w_turn').forEach(el=>el.oninput=()=>sync(el.dataset.id,'turn'));
+  document.querySelectorAll('.w_mode').forEach(el=>el.onchange=()=>sync(el.dataset.id,'km'));
+  document.querySelectorAll('.w_on').forEach(el=>sync(el.dataset.id,'km'));
 }
-
 function relationText(c){
   const others=readyCourses().filter(o=>o.id!==c.id);
   if(!others.length||!c.pts) return '';
@@ -1323,79 +1583,101 @@ function relationText(c){
   }).join(' · ');
 }
 function renderSlots(){
-  const box=document.getElementById('slotList'); box.innerHTML='';
+  const box=document.getElementById('slotList');
+  if(!box) return;
+  let html='';
   S.courses.forEach(c=>{
     const ready=!!(c.pts&&c.pts.length>1);
-    const d=document.createElement('div');
-    d.className='slot '+(c.enabled?(c.id===(activeCourse()||{}).id?'on':''):'off');
+    const cls='slot '+(c.enabled?(c.id===(activeCourse()||{}).id?'on':''):'off');
     const badgeCls=c.overlap==='auto'?'b-auto':(c.overlap==='partial'?'b-part':'b-none');
     const isMaster=(c.id===S.masterId);
-    d.innerHTML=
+    const tk=courseTurnKm(c);
+    html+='<div class="'+cls+'" data-id="'+c.id+'">'+
       '<div class="r1"><span class="sw '+(c.enabled?'on':'')+'" data-a="toggle"></span>'+
         '<span class="swatch" style="background:'+c.color+'"></span>'+
         '<span class="nm" data-a="act">'+esc(c.name)+'</span>'+
         (isMaster?'<span class="badge" style="background:#0d47a1;color:#fff">기준</span>':'')+
+        (tk!=null?'<span class="badge b-turn" title="반환 지점">↩ '+tk.toFixed(2)+'k</span>':'')+
         '<span class="badge '+badgeCls+'">'+OVERLAP_LABEL[c.overlap]+'</span>'+
         '<button class="iconbtn" data-a="ren" title="이름 변경">✎</button>'+
         '<button class="iconbtn" data-a="del" title="삭제">✕</button></div>'+
       '<div class="sub">'+(ready
         ? c.total_km.toFixed(2)+' km · '+(c.hasEle?'+'+c.gain+' m · ':'')+'시설 '+poisOfCourse(c).length+'개'+
           (c.source==='derive'?' <span class="miniTag">기준에서 생성</span>':'')+
+          (tk!=null?'<br><span style="color:#ef6c00">↩ 반환 '+tk.toFixed(3)+' km · 복편 '+(c.total_km-tk).toFixed(2)+' km'+(c.turnManual?' (직접 지정)':' (자동 감지)')+'</span>':'')+
           (relationText(c)?'<br><span style="color:#90a4ae">'+esc(relationText(c))+'</span>':'')
         : '<span style="color:#c62828">코스 미등록</span>')+'</div>'+
       '<div class="tools">'+
         '<button class="btn sm" data-a="gpx">'+(ready?'GPX 교체':'＋ GPX 등록')+'</button>'+
+        (ready?'<button class="btn sm" data-a="eline" title="코스 라인 직접 수정">✏ 라인 편집</button>'
+              :'<button class="btn sm" data-a="edraw" title="지도를 클릭해 코스를 그립니다">🖉 지도에 그리기</button>')+
         (isMaster?'':'<button class="btn sm" data-a="derive">🧬 기준에서 생성</button>')+
+        (ready?'<button class="btn sm" data-a="turn" title="반환 지점 km 수정">↩ 반환점</button>':'')+
         '<select data-a="ov" style="width:auto;padding:4px 6px;font-size:.72rem">'+
           Object.keys(OVERLAP_LABEL).map(k=>'<option value="'+k+'"'+(c.overlap===k?' selected':'')+'>'+OVERLAP_LABEL[k]+'</option>').join('')+
         '</select>'+
         '<input type="text" data-a="lim" value="'+esc(c.limit||'')+'" placeholder="제한 5:00" title="제한시간 (시:분)" style="width:78px;padding:4px 6px;font-size:.72rem">'+
         '<input type="number" min="0" data-a="pp" value="'+(c.participants||'')+'" placeholder="인원" style="width:74px;padding:4px 6px;font-size:.72rem">'+
         (isMaster?'':'<button class="btn sm" data-a="mk" title="이 코스를 기준으로">기준 지정</button>')+
-      '</div>';
-    d.addEventListener('click', e=>{
-      const a=(e.target.dataset||{}).a;
-      if(a==='toggle'){ c.enabled=!c.enabled; if(!c.enabled&&S.activeCourse===c.id) S.activeCourse=(readyCourses()[0]||{}).id||null; refreshAll(true); return; }
-      if(a==='gpx'){ pickGpx(c.id); return; }
-      if(a==='derive'){ deriveModal(c); return; }
-      if(a==='mk'){
-        if(!c.pts){ toast('먼저 이 코스의 GPX를 등록해 주세요'); return; }
-        S.masterId=c.id; c.source='gpx'; c.derive=null; rebuildDerived(); refreshAll(true);
-        toast(c.name+'를 기준 코스로 지정했습니다'); return;
-      }
-      if(a==='ren'){ const n=prompt('종목 이름', c.name); if(n&&n.trim()){c.name=n.trim(); refreshAll();} return; }
-      if(a==='del'){
-        if(!confirm('"'+c.name+'" 종목을 삭제할까요?')) return;
-        S.courses=S.courses.filter(x=>x.id!==c.id);
-        S.pois.forEach(p=>{ p.courses=(p.courses||[]).filter(x=>x!==c.id); });
-        S.pois=S.pois.filter(p=>p.scope!=='only'||p.courses.length);
-        if(S.activeCourse===c.id) S.activeCourse=(readyCourses()[0]||{}).id||null;
-        refreshAll(true); return;
-      }
-      if(a==='act'){ if(c.enabled&&c.pts){ S.activeCourse=c.id; refreshAll(true);} else toast('GPX를 먼저 등록하고 사용을 켜주세요'); }
-    });
-    d.querySelector('[data-a=ov]').addEventListener('change', e=>{
-      c.overlap=e.target.value; passCache.clear(); refreshAll();
-      toast(c.name+' → '+OVERLAP_LABEL[c.overlap]);
-    });
-    d.querySelector('[data-a=pp]').addEventListener('change', e=>{
-      c.participants=Math.max(0, parseInt(e.target.value,10)||0);
-      renderSupplies();
-    });
-    d.querySelector('[data-a=lim]').addEventListener('change', e=>{
-      c.limit=e.target.value.trim();
-      renderTables(); renderPace(); renderTexts();
-      toast(c.name+' 제한시간 '+(c.limit||'없음'));
-    });
-    box.appendChild(d);
+      '</div></div>';
   });
+  box.innerHTML = html || '<div class="hint">종목이 없습니다. 위 <b>＋ 종목 추가</b>로 만들어 주세요.</div>';
 }
+/* 슬롯 이벤트는 컨테이너 하나에 위임 — 개별 요소 조회 없음 */
+(function wireSlotList(){
+  const box=document.getElementById('slotList');
+  if(!box) return;
+  const findCourse=el=>{
+    const w=el.closest?el.closest('.slot'):null;
+    return w?S.courses.find(c=>c.id===w.dataset.id):null;
+  };
+  box.addEventListener('click', e=>{
+    const t=e.target.closest('[data-a]'); if(!t) return;
+    const c=findCourse(t); if(!c) return;
+    const a=t.dataset.a;
+    if(a==='toggle'){ c.enabled=!c.enabled; if(!c.enabled&&S.activeCourse===c.id) S.activeCourse=(readyCourses()[0]||{}).id||null; refreshAll(true); }
+    else if(a==='gpx') pickGpx(c.id);
+    else if(a==='derive') deriveModal(c);
+    else if(a==='turn') turnModal(c);
+    else if(a==='eline') editStart(c,false);
+    else if(a==='edraw') editStart(c,true);
+    else if(a==='mk'){
+      if(!c.pts){ toast('먼저 이 코스의 GPX를 등록해 주세요'); return; }
+      S.masterId=c.id; c.source='gpx'; c.derive=null; rebuildDerived(); refreshAll(true);
+      toast(c.name+'를 기준 코스로 지정했습니다');
+    }
+    else if(a==='ren'){ const n=prompt('종목 이름', c.name); if(n&&n.trim()){ c.name=n.trim(); refreshAll(); } }
+    else if(a==='del'){
+      if(!confirm('"'+c.name+'" 종목을 삭제할까요?')) return;
+      S.courses=S.courses.filter(x=>x.id!==c.id);
+      S.pois.forEach(p=>{ p.courses=(p.courses||[]).filter(x=>x!==c.id); });
+      S.pois=S.pois.filter(p=>p.scope!=='only'||p.courses.length);
+      if(S.activeCourse===c.id) S.activeCourse=(readyCourses()[0]||{}).id||null;
+      refreshAll(true);
+    }
+    else if(a==='act'){
+      if(c.enabled&&c.pts){ S.activeCourse=c.id; refreshAll(true); }
+      else toast('GPX를 먼저 등록하고 사용 스위치를 켜주세요');
+    }
+  });
+  box.addEventListener('change', e=>{
+    const t=e.target.closest('[data-a]'); if(!t) return;
+    const c=findCourse(t); if(!c) return;
+    if(t.dataset.a==='ov'){ c.overlap=t.value; passCache.clear(); refreshAll(); toast(c.name+' → '+OVERLAP_LABEL[c.overlap]); }
+    else if(t.dataset.a==='pp'){ c.participants=Math.max(0,parseInt(t.value,10)||0); renderSupplies(); }
+    else if(t.dataset.a==='lim'){ c.limit=t.value.trim(); renderTables(); renderPace(); renderTexts(); toast(c.name+' 제한시간 '+(c.limit||'없음')); }
+  });
+})();
 document.getElementById('addSlotBtn').onclick=()=>{
   const n=prompt('추가할 종목 이름', '기타 코스');
-  if(!n||!n.trim()) return;
-  S.courses.push({id:uid('c'), slot:'custom', name:n.trim(), color:SLOT_COLORS[S.courses.length%SLOT_COLORS.length],
-    enabled:false, overlap:'auto', pts:null, cum:null, total_km:0, profile:[], gain:0, ele_min:0, ele_max:0, hasEle:false});
+  if(n===null) return;
+  const name=(n||'').trim()||('코스 '+(S.courses.length+1));
+  S.courses.push({id:uid('c'), slot:'custom', name, color:SLOT_COLORS[S.courses.length%SLOT_COLORS.length],
+    enabled:false, overlap:'auto', participants:0, limit:'', targetKm:0, source:'gpx', derive:null,
+    turnKm:null, turnManual:false,
+    pts:null, cum:null, total_km:0, profile:[], gain:0, ele_min:0, ele_max:0, hasEle:false});
   refreshAll();
+  toast('"'+name+'" 종목을 추가했습니다 · GPX를 등록하세요');
 };
 function renderSide(){
   renderSlots();
@@ -1489,28 +1771,40 @@ document.getElementById('previewSeg').onclick=e=>{
   const b=e.target.closest('button'); if(b) setPreview(b.dataset.m);
 };
 document.getElementById('roundSel').onchange=e=>{ S.roundMode=e.target.value; renderSupplies(); };
-
 /* 코스 탭 (상단 + 지도 위) */
 function renderCourseSeg(){
-  const list=readyCourses(), act=activeCourse();
+  const act=activeCourse();
   ['courseSeg','courseSegMap'].forEach(id=>{
     const seg=document.getElementById(id);
-    seg.innerHTML=list.map(c=>'<button data-c="'+c.id+'"'+(act&&c.id===act.id?' class="on"':'')+'>'+esc(c.name)+
-      ' <span style="opacity:.75;font-weight:400">'+c.total_km.toFixed(1)+'k</span></button>').join('');
-    seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{ S.activeCourse=b.dataset.c; refreshAll(true); });
+    if(!seg) return;
+    seg.innerHTML=S.courses.map(c=>{
+      const ready=!!(c.pts&&c.enabled);
+      return '<button data-c="'+c.id+'"'+(act&&c.id===act.id?' class="on"':'')+
+        (ready?'':' style="opacity:.5" title="GPX 미등록"')+'>'+esc(c.name)+
+        ' <span style="opacity:.75;font-weight:400">'+(ready?c.total_km.toFixed(1)+'k':'미등록')+'</span></button>';
+    }).join('');
+    seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+      const c=S.courses.find(x=>x.id===b.dataset.c);
+      if(!c) return;
+      if(c.pts&&c.enabled){ S.activeCourse=c.id; refreshAll(true); }
+      else { toast(c.name+' — GPX를 먼저 등록해 주세요'); pickGpx(c.id); }
+    });
   });
 }
 function renderStats(){
   const c=activeCourse(), box=document.getElementById('stats');
   if(!c){ box.innerHTML=''; document.getElementById('tblLabel').textContent=''; document.getElementById('mapHint').textContent=''; return; }
+  const tk=courseTurnKm(c);
   box.innerHTML='<div class="stat">총 거리<b>'+c.total_km.toFixed(2)+' km</b></div>'+
+    '<div class="stat">반환 지점<b>'+(tk!=null?tk.toFixed(2)+' km':'—')+'</b></div>'+
     '<div class="stat">누적 상승<b>'+(c.hasEle?'+'+c.gain+' m':'—')+'</b></div>'+
     '<div class="stat">최저<b>'+(c.hasEle?c.ele_min.toFixed(0)+' m':'—')+'</b></div>'+
     '<div class="stat">최고<b>'+(c.hasEle?c.ele_max.toFixed(0)+' m':'—')+'</b></div>'+
     '<div class="stat">시설<b>'+poisOfCourse(c).length+' 개</b></div>';
   document.getElementById('tblLabel').textContent='— '+c.name+' 기준';
   document.getElementById('supLabel').textContent='— '+c.name+' 기준';
-  document.getElementById('mapHint').textContent=c.name+' · '+c.total_km.toFixed(2)+' km · '+OVERLAP_LABEL[c.overlap];
+  document.getElementById('mapHint').textContent=c.name+' · '+c.total_km.toFixed(2)+' km'+
+    (tk!=null?' · ↩ '+tk.toFixed(2)+'km 반환':'')+' · '+OVERLAP_LABEL[c.overlap];
 }
 /* ══════════════ 표 (인라인 편집) ══════════════ */
 function renderTables(){
@@ -1698,18 +1992,22 @@ function renderPace(){
   const bands=paceBands(c), st=hmToMin(S.event.start)||0;
   const onlyPoi=document.getElementById('paceOnlyPoi').checked;
   const step=+document.getElementById('paceStep').value;
+  const tk=courseTurnKm(c);
   const marks=[];
   if(onlyPoi){
     poisOfCourse(c).forEach(({p,rows})=>rows.forEach(r=>marks.push({km:r.km, label:catById(p.cat).icon+' '+p.name+(r.d?' '+dirLabel(r.d):'')})));
     marks.sort((a,b)=>a.km-b.km);
   } else {
     for(let k=step;k<c.total_km;k+=step) marks.push({km:k, label:''});
+    if(tk!=null) marks.push({km:tk, label:'↩ 반환'});
     marks.push({km:c.total_km, label:'피니시'});
+    marks.sort((a,b)=>a.km-b.km);
   }
   if(!marks.length){ box.innerHTML='<div style="color:#9aa5b1;font-size:.85rem">표시할 지점이 없습니다.</div>'; return; }
   let h='<table><thead><tr><th>거리</th><th>지점</th>'+bands.map(b=>'<th style="text-align:right'+(b.limit?';color:#c62828':'')+'">'+esc(b.label)+'</th>').join('')+'</tr></thead><tbody>';
   marks.forEach(m=>{
-    h+='<tr><td class="km">'+m.km.toFixed(m.km<10?2:2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label||'')+'</td>'+
+    const isTurn=(tk!=null && Math.abs(m.km-tk)<1e-6);
+    h+='<tr'+(isTurn?' style="background:#fff8e1"':'')+'><td class="km">'+m.km.toFixed(2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label||'')+'</td>'+
       bands.map(b=>'<td class="qty"'+(b.limit?' style="color:#c62828;font-weight:700"':'')+'>'+minToHm(st+m.km*b.pace)+'</td>').join('')+'</tr>';
   });
   h+='</tbody></table>';
@@ -1717,7 +2015,6 @@ function renderPace(){
 }
 document.getElementById('paceStep').onchange=renderPace;
 document.getElementById('paceOnlyPoi').onchange=renderPace;
-
 /* ══════════════ 고저도 ══════════════ */
 const canvas=document.getElementById('elev'), cctx=canvas.getContext('2d'), tipEl=document.getElementById('tip');
 const PAD={l:48,r:14,t:14,b:26};
@@ -1746,6 +2043,14 @@ function drawChart(hoverX){
   for(let k=0;k<=total;k+=kStep){
     cctx.beginPath(); cctx.moveTo(x(k),PAD.t); cctx.lineTo(x(k),H-PAD.b); cctx.stroke();
     cctx.textAlign='center'; cctx.fillText(k+'km', x(k), H-8);
+  }
+  const tk=courseTurnKm(c);
+  if(tk!=null){                                    // 반환 지점 표식
+    cctx.beginPath(); cctx.moveTo(x(tk),PAD.t); cctx.lineTo(x(tk),H-PAD.b);
+    cctx.strokeStyle='#f57c00'; cctx.lineWidth=1.5; cctx.setLineDash([5,4]); cctx.stroke(); cctx.setLineDash([]);
+    cctx.fillStyle='#ef6c00'; cctx.textAlign='center'; cctx.font='bold 10px sans-serif';
+    cctx.fillText('↩ 반환', x(tk), PAD.t+10);
+    cctx.font='10px sans-serif';
   }
   const grad=cctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
   grad.addColorStop(0,'rgba(21,101,192,.42)'); grad.addColorStop(1,'rgba(21,101,192,.04)');
@@ -1784,14 +2089,16 @@ canvas.addEventListener('mousemove', ev=>{
   let i=0; while(i<P.length-1&&P[i+1][0]<res.km) i++;
   const j=Math.min(i+4,P.length-1);
   const grade=P[j][0]>P[i][0]?((P[j][1]-P[i][1])/((P[j][0]-P[i][0])*1000)*100):0;
-  tipEl.innerHTML='<b>'+res.km.toFixed(2)+' km</b><br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
+  const tk=courseTurnKm(c);
+  tipEl.innerHTML='<b>'+res.km.toFixed(2)+' km</b>'+(tk!=null?' <span style="color:#ffb74d">'+(res.km>tk?'복편':'왕편')+'</span>':'')+
+    '<br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
   tipEl.style.display='block';
   const box=document.getElementById('chartBox').getBoundingClientRect();
   let tx=ev.clientX-box.left+14;
   if(tx+tipEl.offsetWidth>box.width-10) tx=ev.clientX-box.left-tipEl.offsetWidth-14;
   tipEl.style.left=tx+'px'; tipEl.style.top=(ev.clientY-box.top-10)+'px';
   if(kReady&&kmap){
-    const ll=latlngAtKm(c,res.km);
+    const ll=displayAtKm(c,res.km);
     if(!kHover){
       const el=document.createElement('div');
       el.innerHTML='<div style="width:16px;height:16px;background:#e53935;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>';
@@ -1828,6 +2135,34 @@ snapRange.addEventListener('input', e=>{
   document.getElementById('snapVal').textContent=S.snap+' m';
 });
 snapRange.addEventListener('change', ()=>{ passCache.clear(); refreshAll(); toast('인식 반경 '+S.snap+' m 적용'); });
+/* 복편 라인 표시 — 사이드바 / 지도 상단 슬라이더 동기화 */
+let mapRaf=null;
+function scheduleMap(){
+  if(mapRaf) return;
+  mapRaf=requestAnimationFrame(()=>{ mapRaf=null; renderMap(false); });
+}
+function setReturnOffset(v, silent){
+  S.returnOffset=Math.max(0, Math.round(+v)||0);
+  ['retRange','retRange2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && +el.value!==S.returnOffset) el.value=S.returnOffset;
+  });
+  document.getElementById('retVal').textContent=S.returnOffset+' m';
+  document.getElementById('retVal2').textContent=S.returnOffset+' m';
+  if(!silent) scheduleMap();
+}
+function setShowReturn(on){
+  S.showReturn=!!on;
+  document.getElementById('retOn').checked=S.showReturn;
+  document.getElementById('retToggle').textContent='복편 분리 '+(S.showReturn?'ON':'OFF');
+  scheduleMap();
+}
+document.getElementById('retOn').addEventListener('change', e=>setShowReturn(e.target.checked));
+['retRange','retRange2'].forEach(id=>{
+  const el=document.getElementById(id);
+  el.addEventListener('input', e=>setReturnOffset(e.target.value));
+  el.addEventListener('change', ()=>toast('왕편 ↔ 복편 간격 '+S.returnOffset+' m'));
+});
 /* 대회 운영 정보 */
 ['ev_start','ev_lead','ev_last'].forEach(id=>{
   document.getElementById(id).addEventListener('input', e=>{
@@ -1849,11 +2184,366 @@ document.getElementById('cutAutoBtn').onclick=()=>{
   refreshAll();
   toast(n?n+'개 컷오프 시각 계산 완료 ('+(lp!=null?c.name+' 제한 '+c.limit:'후미 '+S.event.last)+' 기준)':'컷오프 시설이 없습니다');
 };
-
+/* ══════════════ 코스 라인 편집 ══════════════ */
+const EDIT_HINT={
+  move:'점을 끌어 경로를 옮기고, 코스 선을 클릭하면 그 자리에 점이 추가됩니다 · 주황 점 = 복편(반환 후) 구간',
+  del:'지울 점을 클릭하세요',
+  append:'지도를 클릭하면 코스 끝(도착 쪽)에 점이 이어집니다',
+  prepend:'지도를 클릭하면 코스 앞(출발 쪽)에 점이 이어집니다'
+};
+function edCourse(){ return S.courses.find(c=>c.id===S.edit.courseId)||null; }
+function ptAt3(pts,cum,d){                       // 고도까지 보간
+  const last=cum[cum.length-1];
+  const trip=p=>[p[0],p[1],(p[2]==null?null:p[2])];
+  if(!(d>0)) return trip(pts[0]);
+  if(d>=last) return trip(pts[pts.length-1]);
+  let lo=0,hi=cum.length-1;
+  while(lo<hi){ const m=(lo+hi)>>1; cum[m]<d?lo=m+1:hi=m; }
+  const i=Math.max(1,lo), d0=cum[i-1], d1=cum[i], t=d1>d0?(d-d0)/(d1-d0):0;
+  const a=pts[i-1], b=pts[i];
+  const e=(a[2]!=null&&b[2]!=null)?+(a[2]+t*(b[2]-a[2])).toFixed(1):(a[2]!=null?a[2]:(b[2]!=null?b[2]:null));
+  return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1]), e];
+}
+function resampleTrack(pts,cum,stepM){           // 일정 간격 편집점으로 간소화
+  const total=cum[cum.length-1];
+  const out=[[pts[0][0],pts[0][1],(pts[0][2]==null?null:pts[0][2])]];
+  for(let d=stepM; d<total-stepM*0.4; d+=stepM) out.push(ptAt3(pts,cum,d));
+  const L=pts[pts.length-1];
+  out.push([L[0],L[1],(L[2]==null?null:L[2])]);
+  return out;
+}
+function nodesGeom(){
+  const pts=S.edit.nodes.map(n=>[n[0],n[1],(n[2]==null?null:n[2])]);
+  const cum=[0];
+  for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+haversine(pts[i-1],pts[i]));
+  return {pts, cum, total:cum[cum.length-1]/1000};
+}
+function editPush(){
+  S.edit.undo.push(S.edit.nodes.map(n=>n.slice()));
+  if(S.edit.undo.length>60) S.edit.undo.shift();
+}
+function editStart(course, fresh){
+  if(!kReady||!kmap){ toast('지도를 먼저 불러와 주세요'); return; }
+  if(S.edit.on && S.edit.courseId!==course.id){ toast('편집 중인 코스를 먼저 적용하거나 취소해 주세요'); return; }
+  if(!fresh && !(course.pts&&course.pts.length>1)){ fresh=true; }
+  S.edit.on=true; S.edit.courseId=course.id; S.edit.undo=[]; S.edit.turnSet=false;
+  S.edit.mode = fresh?'append':'move';
+  S.edit.nodes = fresh?[] : resampleTrack(course.pts, course.cum, S.edit.step);
+  S.edit.turnKm = fresh?null:courseTurnKm(course);
+  if(!fresh && S.edit.turnKm==null){
+    const g=nodesGeom(); S.edit.turnKm=detectTurn(g.pts, g.cum);
+  }
+  if(course.pts&&course.pts.length>1) S.activeCourse=course.id;
+  document.getElementById('editBar').style.display='flex';
+  document.getElementById('edName').textContent=course.name+' 라인 편집';
+  document.querySelectorAll('#edMode button').forEach(b=>b.classList.toggle('on', b.dataset.m===S.edit.mode));
+  document.getElementById('edStep').value=S.edit.step;
+  document.getElementById('edStepV').textContent=S.edit.step+' m';
+  closeKInfo(); cancelMove();
+  let auto='';
+  if(S.edit.turnKm!=null && (!S.showReturn || S.returnOffset<6)){   // 복편을 잡을 수 있게 자동으로 벌려 줌
+    S.showReturn=true;
+    document.getElementById('retOn').checked=true;
+    document.getElementById('retToggle').textContent='복편 분리 ON';
+    setReturnOffset(Math.max(S.returnOffset,14), true);
+    auto=' · 복편 라인을 '+S.returnOffset+'m 벌렸습니다';
+  }
+  renderEditMap(!fresh);
+  toast((fresh?'지도를 클릭해 코스를 그리세요':'점을 끌어 코스를 수정한 뒤 [적용]을 누르세요')+auto);
+}
+function editStop(){
+  S.edit.on=false; S.edit.nodes=[]; S.edit.undo=[]; S.edit.courseId=null;
+  document.getElementById('editBar').style.display='none';
+  document.getElementById('editHint').style.display='none';
+  refreshAll(false);
+}
+function editApply(){
+  const c=edCourse();
+  if(!c){ editStop(); return; }
+  const nodes=S.edit.nodes;
+  if(nodes.length<2){ toast('점이 2개 이상 필요합니다'); return; }
+  const before=(c.pts&&c.pts.length>1)?poisOfCourse(c).map(x=>x.p.id):[];
+  const pts=nodes.map(n=>[+(+n[0]).toFixed(6), +(+n[1]).toFixed(6), (n[2]==null?null:n[2])]);
+  c.source='gpx'; c.derive=null;
+  const keepTurn=(S.edit.turnSet || c.turnManual || S.edit.turnKm!=null);
+  applyTrack(c, pts, keepTurn?{setTurn:true, turnKm:S.edit.turnKm, manual:(S.edit.turnSet||c.turnManual)}:null);
+  c.enabled=true;
+  if(!S.masterId) S.masterId=c.id;
+  if(!S.activeCourse) S.activeCourse=c.id;
+  passCache.clear(); relCache.clear();
+  if(S.masterId===c.id) rebuildDerived();
+  const now=poisOfCourse(c).map(x=>x.p.id);
+  const lost=before.filter(id=>now.indexOf(id)<0).length;
+  const total=c.total_km;
+  editStop();
+  refreshAll(true);
+  toast(c.name+' 라인 적용 ('+total.toFixed(3)+' km)'+(lost?' · 시설 '+lost+'개가 코스에서 벗어났습니다':''));
+}
+function editAddEnd(lat, lon, front){
+  editPush();
+  const n=[+lat.toFixed(6), +lon.toFixed(6), null];
+  if(front) S.edit.nodes.unshift(n); else S.edit.nodes.push(n);
+  renderEditMap(false);
+}
+function editInsertNear(lat, lon){                 // 화면(오프셋) 좌표 기준으로 가장 가까운 구간에 점 삽입
+  if(S.edit.nodes.length<2) return;
+  const D=editDisplay(), disp=D.disp, dvec=D.dvec;
+  const lat0=lat, P=proj([lat,lon],lat0);
+  let best={d:Infinity,i:1,t:0};
+  for(let i=1;i<disp.length;i++){
+    const A=proj(disp[i-1],lat0), B=proj(disp[i],lat0);
+    const vx=B[0]-A[0], vy=B[1]-A[1], L2=vx*vx+vy*vy;
+    let t=L2>0?((P[0]-A[0])*vx+(P[1]-A[1])*vy)/L2:0;
+    t=Math.max(0,Math.min(1,t));
+    const d=Math.hypot(P[0]-(A[0]+t*vx), P[1]-(A[1]+t*vy));
+    if(d<best.d) best={d,i,t};
+  }
+  const a=S.edit.nodes[best.i-1], b=S.edit.nodes[best.i];
+  const e=(a[2]!=null&&b[2]!=null)?+(a[2]+best.t*(b[2]-a[2])).toFixed(1):(a[2]!=null?a[2]:(b[2]!=null?b[2]:null));
+  const dy=dvec[best.i-1][0]+best.t*(dvec[best.i][0]-dvec[best.i-1][0]);
+  const dx=dvec[best.i-1][1]+best.t*(dvec[best.i][1]-dvec[best.i-1][1]);
+  editPush();
+  S.edit.nodes.splice(best.i, 0, [+(lat-dy).toFixed(6), +(lon-dx).toFixed(6), e]);
+  renderEditMap(false);
+}
+function editTurnPrompt(){
+  const g=nodesGeom();
+  const cur=S.edit.turnKm;
+  const auto=detectTurn(g.pts, g.cum);
+  const raw=prompt('반환 지점 (km) — 이 지점 이후가 복편(점선)으로 분리되어 따로 편집됩니다.\n'+
+    '현재 라인 길이 '+g.total.toFixed(3)+' km'+(auto!=null?' · 자동 감지 '+auto.toFixed(3)+' km':'')+
+    '\n비우고 확인하면 반환 없음(순환)으로 처리합니다.',
+    cur!=null?cur.toFixed(3):(auto!=null?auto.toFixed(3):''));
+  if(raw===null) return;
+  const v=raw.trim();
+  if(v===''){ S.edit.turnKm=null; S.edit.turnSet=true; renderEditMap(false); toast('반환 없음으로 설정'); return; }
+  const k=parseFloat(v);
+  if(!(k>0)||k>=g.total){ toast('0 ~ '+g.total.toFixed(2)+' km 사이로 입력해 주세요'); return; }
+  S.edit.turnKm=+k.toFixed(3); S.edit.turnSet=true;
+  renderEditMap(false);
+  toast('반환 지점 '+S.edit.turnKm.toFixed(3)+' km');
+}
+function editDeleteNode(i){
+  if(S.edit.nodes.length<=2){ toast('점이 2개 이하라 지울 수 없습니다'); return; }
+  editPush();
+  S.edit.nodes.splice(i,1);
+  renderEditMap(false);
+}
+function updateEditInfo(){
+  const g=nodesGeom();
+  const t=S.edit.turnKm;
+  document.getElementById('edInfo').textContent='점 '+S.edit.nodes.length+'개 · '+g.total.toFixed(3)+' km'+
+    (t!=null&&t>0.01&&t<g.total-0.01 ? ' · ↩ '+t.toFixed(2)+'km (왕 '+t.toFixed(2)+' / 복 '+(g.total-t).toFixed(2)+')' : '');
+  const h=document.getElementById('editHint');
+  h.textContent=EDIT_HINT[S.edit.mode]||'';
+  h.style.display=h.textContent?'block':'none';
+}
+/* 편집점의 화면 좌표(복편은 평행 오프셋) 와 보정 벡터 */
+function editDisplay(){
+  const n=S.edit.nodes, g=nodesGeom();
+  const disp=n.map(p=>[p[0],p[1]]), dvec=n.map(()=>[0,0]);
+  const t=S.edit.turnKm;
+  if(S.showReturn && S.returnOffset>0 && n.length>2 && t!=null && t>0.01 && t<g.total-0.01){
+    let i0=0; while(i0<g.cum.length-1 && g.cum[i0]<t*1000) i0++;
+    i0=Math.max(1, Math.min(i0, n.length-2));
+    const back=n.slice(i0).map(p=>[p[0],p[1]]);
+    if(back.length>1){
+      const off=offsetPath(back, S.returnOffset);
+      off.forEach((p,k)=>{ const i=i0+k;
+        disp[i]=[p[0],p[1]];
+        dvec[i]=[p[0]-n[i][0], p[1]-n[i][1]];
+      });
+    }
+    return {g, disp, dvec, turnIdx:i0};
+  }
+  return {g, disp, dvec, turnIdx:-1};
+}
+function nodeImg(kind){
+  const col = kind==='start'?'#2e7d32':(kind==='end'?'#c62828':
+              (S.edit.mode==='del'?'#d32f2f':(kind==='back'?'#ef6c00':'#1565c0')));
+  const r = (kind&&kind!=='back')?6:5, s=(r+2)*2;
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+s+'" height="'+s+'">'+
+    '<circle cx="'+(s/2)+'" cy="'+(s/2)+'" r="'+r+'" fill="'+col+'" stroke="#fff" stroke-width="2"/></svg>';
+  return new kakao.maps.MarkerImage('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg),
+    new kakao.maps.Size(s,s), {offset:new kakao.maps.Point(s/2,s/2)});
+}
+function renderEditMap(fit){
+  if(!kReady||!kmap) return;
+  kObjs.forEach(o=>o.setMap(null)); kObjs=[]; closeKInfo(); kHover=null;
+  hideMapMsg();
+  const c=edCourse(); if(!c){ editStop(); return; }
+  readyCourses().filter(o=>o.id!==c.id).forEach(o=>{
+    const pl=new kakao.maps.Polyline({path:o.pts.map(kLL), strokeColor:'#b0bec5', strokeWeight:3, strokeOpacity:.35});
+    pl.setMap(kmap); kObjs.push(pl);
+  });
+  if(c.pts&&c.pts.length>1){                     // 원래 라인(회색 점선)
+    const org=new kakao.maps.Polyline({path:c.pts.map(kLL), strokeColor:'#78909c', strokeWeight:3, strokeOpacity:.5, strokeStyle:'shortdash'});
+    org.setMap(kmap); kObjs.push(org);
+  }
+  S.pois.forEach(p=>{                            // 시설은 참고용으로만
+    const ov=kOv(kLL([p.lat,p.lon]), '<div class="kpoi" style="background:'+catById(p.cat).color+';opacity:.55;width:20px;height:20px;font-size:10px">'+catById(p.cat).icon+'</div>', 100);
+  });
+  const nodes=S.edit.nodes;
+  const D=editDisplay(), disp=D.disp, dvec=D.dvec, ti=D.turnIdx;
+  if(nodes.length>1){
+    const wire=pl=>kakao.maps.event.addListener(pl,'click', ev=>{
+      if(S.edit.mode!=='move') return;
+      editInsertNear(ev.latLng.getLat(), ev.latLng.getLng());
+    });
+    if(ti>0){                                     // 왕편 실선 · 복편 점선(오프셋)
+      const go=new kakao.maps.Polyline({path:disp.slice(0,ti+1).map(kLL), strokeColor:c.color, strokeWeight:5, strokeOpacity:.95});
+      go.setMap(kmap); kObjs.push(go); wire(go);
+      const bk=new kakao.maps.Polyline({path:disp.slice(ti).map(kLL), strokeColor:c.color, strokeWeight:4, strokeOpacity:.9, strokeStyle:'shortdash'});
+      bk.setMap(kmap); kObjs.push(bk); wire(bk);
+      const tp=disp[ti];
+      kOv(kLL(tp), '<div class="kturn">↩ 반환 '+S.edit.turnKm.toFixed(2)+'km</div>', 330, ()=>editTurnPrompt());
+    } else {
+      const pl=new kakao.maps.Polyline({path:disp.map(kLL), strokeColor:c.color, strokeWeight:5, strokeOpacity:.95});
+      pl.setMap(kmap); kObjs.push(pl); wire(pl);
+    }
+  }
+  const b=kmap.getBounds();
+  const vis=[];
+  disp.forEach((n,i)=>{ if(b.contain(kLL(n))) vis.push(i); });
+  const stride=Math.max(1, Math.ceil(vis.length/500));
+  const shown=vis.filter((_,k)=>k%stride===0);
+  if(nodes.length){ if(shown.indexOf(0)<0 && b.contain(kLL(disp[0]))) shown.unshift(0);
+    const last=nodes.length-1;
+    if(shown.indexOf(last)<0 && b.contain(kLL(disp[last]))) shown.push(last); }
+  shown.forEach(i=>{
+    const isBack=(ti>0 && i>ti);
+    const kind = i===0?'start':(i===nodes.length-1?'end':(isBack?'back':''));
+    const mk=new kakao.maps.Marker({position:kLL(disp[i]), image:nodeImg(kind),
+      draggable:(S.edit.mode==='move'), zIndex:400+((kind&&kind!=='back')?50:0)});
+    mk.setMap(kmap); kObjs.push(mk);
+    kakao.maps.event.addListener(mk,'dragstart', ()=>editPush());
+    kakao.maps.event.addListener(mk,'dragend', ()=>{
+      const ll=mk.getPosition();                  // 화면 좌표 → 실제 좌표(오프셋 보정)
+      S.edit.nodes[i]=[+(ll.getLat()-dvec[i][0]).toFixed(6), +(ll.getLng()-dvec[i][1]).toFixed(6), nodes[i][2]];
+      renderEditMap(false);
+    });
+    kakao.maps.event.addListener(mk,'click', ()=>{
+      if(S.edit.mode==='del'){ editDeleteNode(i); return; }
+      showKInfo('<b>'+(kind==='start'?'🏁 출발점':(kind==='end'?'🏁 도착점':'편집점 '+(i+1)))+'</b>'+
+        (isBack?' <span style="color:#ef6c00">복편</span>':(ti>0?' <span style="color:#1565c0">왕편</span>':''))+'<br>'+
+        nodes[i][0].toFixed(6)+', '+nodes[i][1].toFixed(6)+
+        '<div style="margin-top:8px"><button class="btn sm" data-a="del" style="color:#d32f2f">이 점 삭제</button></div>',
+        disp[i][0], disp[i][1], el=>{ el.querySelector('[data-a=del]').onclick=()=>{ closeKInfo(); editDeleteNode(i); }; });
+    });
+  });
+  if(stride>1) document.getElementById('edInfo').style.color='#e65100';
+  else document.getElementById('edInfo').style.color='#546e7a';
+  if(fit && nodes.length>1){
+    const bb=new kakao.maps.LatLngBounds();
+    const st=Math.max(1, Math.floor(nodes.length/400));
+    for(let i=0;i<nodes.length;i+=st) bb.extend(kLL(nodes[i]));
+    bb.extend(kLL(nodes[nodes.length-1]));
+    kmap.setBounds(bb);
+  }
+  updateEditInfo();
+  if(stride>1) document.getElementById('edInfo').textContent+=' · 화면에 일부만 표시(확대하세요)';
+}
+function editTrimModal(){
+  const g=nodesGeom();
+  if(g.total<=0.05){ toast('먼저 코스를 그려 주세요'); return; }
+  openModal('✂ 앞/뒤 자르기',
+    '<div class="hint">현재 편집 중인 라인 길이는 <b>'+g.total.toFixed(3)+' km</b> 입니다. 남길 구간의 시작·끝 km를 입력하세요.</div>'+
+    '<div style="display:flex;gap:8px">'+
+      '<div style="flex:1"><label class="f">시작 km</label><input type="number" id="tr_a" step="0.01" min="0" max="'+g.total.toFixed(3)+'" value="0"></div>'+
+      '<div style="flex:1"><label class="f">끝 km</label><input type="number" id="tr_b" step="0.01" min="0" max="'+g.total.toFixed(3)+'" value="'+g.total.toFixed(3)+'"></div>'+
+    '</div>'+
+    '<div id="tr_p" style="margin-top:10px;font-size:.82rem;background:#f5f9ff;border:1px solid #cfe0f5;border-radius:9px;padding:10px 12px"></div>',
+    ()=>{
+      let a=parseFloat(document.getElementById('tr_a').value)||0;
+      let b=parseFloat(document.getElementById('tr_b').value);
+      if(!isFinite(b)) b=g.total;
+      a=Math.max(0,Math.min(a,g.total)); b=Math.max(0,Math.min(b,g.total));
+      if(b-a<0.02){ toast('남길 구간이 너무 짧습니다'); return; }
+      editPush();
+      const out=[ptAt3(g.pts,g.cum,a*1000)];
+      for(let i=0;i<g.pts.length;i++){
+        const d=g.cum[i]/1000;
+        if(d>a+1e-9 && d<b-1e-9) out.push([g.pts[i][0],g.pts[i][1],g.pts[i][2]]);
+      }
+      out.push(ptAt3(g.pts,g.cum,b*1000));
+      S.edit.nodes=out;
+      closeModal(); renderEditMap(true);
+      toast('자르기 완료 · '+(b-a).toFixed(3)+' km');
+    });
+  const upd=()=>{
+    const a=parseFloat(document.getElementById('tr_a').value)||0;
+    const b=parseFloat(document.getElementById('tr_b').value)||0;
+    document.getElementById('tr_p').innerHTML='남는 구간 <b>'+Math.max(0,b-a).toFixed(3)+' km</b> ('+a.toFixed(2)+' ~ '+b.toFixed(2)+' km)';
+  };
+  document.getElementById('tr_a').oninput=upd;
+  document.getElementById('tr_b').oninput=upd;
+  upd();
+}
+function editSnapPois(){
+  const g=nodesGeom();
+  if(g.pts.length<2){ toast('먼저 코스를 그려 주세요'); return; }
+  const fake={pts:g.pts, cum:g.cum};
+  const lim=Math.max(S.snap, 150);
+  let n=0;
+  S.pois.forEach(p=>{
+    const near=nearestOnTrack(fake, p.lat, p.lon);
+    if(near.dist<=lim && near.dist>0.5){ p.lat=+near.lat.toFixed(6); p.lon=+near.lon.toFixed(6); n++; }
+  });
+  passCache.clear();
+  renderEditMap(false);
+  toast(n?n+'개 시설을 코스 위로 옮겼습니다 (반경 '+Math.round(lim)+' m)':'옮길 시설이 없습니다');
+}
+document.getElementById('edMode').onclick=e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  S.edit.mode=b.dataset.m;
+  document.querySelectorAll('#edMode button').forEach(x=>x.classList.toggle('on',x===b));
+  renderEditMap(false);
+};
+document.getElementById('edStep').addEventListener('input', e=>{
+  document.getElementById('edStepV').textContent=e.target.value+' m';
+});
+document.getElementById('edStep').addEventListener('change', e=>{
+  const v=+e.target.value; S.edit.step=v;
+  const c=edCourse(); if(!c) return;
+  if(!S.edit.undo.length && c.pts && c.pts.length>1){ S.edit.nodes=resampleTrack(c.pts, c.cum, v); }
+  else if(S.edit.nodes.length>2){ const g=nodesGeom(); editPush(); S.edit.nodes=resampleTrack(g.pts, g.cum, v); }
+  renderEditMap(false);
+  toast('편집점 간격 '+v+' m');
+});
+document.getElementById('edTurn').onclick=editTurnPrompt;
+document.getElementById('edTrim').onclick=editTrimModal;
+document.getElementById('edSnap').onclick=editSnapPois;
+document.getElementById('edUndo').onclick=()=>{
+  if(!S.edit.undo.length){ toast('되돌릴 작업이 없습니다'); return; }
+  S.edit.nodes=S.edit.undo.pop();
+  renderEditMap(false);
+};
+document.getElementById('edApply').onclick=editApply;
+document.getElementById('edCancel').onclick=()=>{
+  if(S.edit.undo.length && !confirm('편집한 내용을 버리고 나갈까요?')) return;
+  editStop(); toast('편집을 취소했습니다');
+};
+/* 한 부분이 실패해도 나머지 화면은 계속 그려지도록 격리 */
+function safe(name, fn){
+  try{ fn(); }
+  catch(err){
+    console.error('['+name+']', err);
+    const t=document.getElementById('toast');
+    if(t){ t.textContent=name+' 오류: '+err.message; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),5000); }
+  }
+}
 function refreshAll(fit){
   if(fit){ passCache.clear(); relCache.clear(); }
-  renderCourseSeg(); renderMap(fit); renderSide(); renderStats(); renderTables();
-  renderPace(); renderSupplies(); renderTexts(); drawChart(null);
+  safe('코스 목록', renderSlots);
+  safe('코스 버튼', renderCourseSeg);
+  safe('지도', ()=>renderMap(fit));
+  safe('사이드바', renderSide);
+  safe('통계', renderStats);
+  safe('시설표', renderTables);
+  safe('페이스표', renderPace);
+  safe('물자표', renderSupplies);
+  safe('문구', renderTexts);
+  safe('고저도', ()=>drawChart(null));
 }
 /* ══════════════ 저장 / 불러오기 / 내보내기 ══════════════ */
 function download(name, content, type){
@@ -1865,11 +2555,13 @@ function download(name, content, type){
 }
 document.getElementById('saveBtn').onclick=()=>{
   download((S.title||'course')+'.json', JSON.stringify({
-    v:5, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, cats:S.cats, supplies:S.supplies,
+    v:6, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, cats:S.cats, supplies:S.supplies,
     cols:S.cols, roundMode:S.roundMode,
     activeCourse:S.activeCourse, snap:S.snap, event:S.event, masterId:S.masterId,
+    showReturn:S.showReturn, returnOffset:S.returnOffset,
     courses:S.courses.map(c=>({id:c.id,slot:c.slot,name:c.name,color:c.color,enabled:c.enabled,overlap:c.overlap,
-      participants:c.participants,limit:c.limit,targetKm:c.targetKm,source:c.source,derive:c.derive,pts:c.pts})),
+      participants:c.participants,limit:c.limit,targetKm:c.targetKm,source:c.source,derive:c.derive,
+      turnKm:c.turnKm,turnManual:c.turnManual,pts:c.pts})),
     pois:S.pois
   }), 'application/json');
   toast('프로젝트를 저장했습니다');
@@ -1890,18 +2582,27 @@ document.getElementById('projFile').onchange=e=>{
       S.roundMode=d.roundMode||'round';
       document.getElementById('roundSel').value=S.roundMode;
       S.snap=d.snap||S.snap;
+      S.showReturn=(d.showReturn!==false);
+      S.returnOffset=(d.returnOffset!=null?+d.returnOffset:S.returnOffset);
       S.event=Object.assign({start:'08:00',lead:'3:30',last:'9:00'}, d.event||{});
       S.courses=(d.courses||[]).map(c=>{
         const base={id:c.id||uid('c'), slot:c.slot||'custom', name:c.name, color:c.color||'#e53935',
           enabled:!!c.enabled, overlap:c.overlap||'auto', participants:c.participants||0,
           limit:c.limit||'', targetKm:c.targetKm||0, source:c.source||'gpx', derive:c.derive||null,
+          turnKm:(c.turnKm==null?null:+c.turnKm), turnManual:!!c.turnManual,
           pts:null, cum:null, total_km:0, profile:[], gain:0, ele_min:0, ele_max:0, hasEle:false};
-        if(c.pts&&c.pts.length>1){ applyTrack(base,c.pts); base.enabled=c.enabled!==false; }
+        if(c.pts&&c.pts.length>1){
+          applyTrack(base, c.pts, base.turnManual?{setTurn:true, turnKm:base.turnKm, manual:true}:null);
+          base.enabled=c.enabled!==false;
+        }
         return base;
       });
       S.masterId=d.masterId||(S.courses.find(c=>c.pts)||{}).id||null;
       document.getElementById('snapRange').value=S.snap;
       document.getElementById('snapVal').textContent=S.snap+' m';
+      document.getElementById('retOn').checked=S.showReturn;
+      document.getElementById('retToggle').textContent='복편 분리 '+(S.showReturn?'ON':'OFF');
+      setReturnOffset(S.returnOffset, true);
       document.getElementById('ev_start').value=S.event.start;
       document.getElementById('ev_lead').value=S.event.lead;
       document.getElementById('ev_last').value=S.event.last;
@@ -1923,6 +2624,7 @@ function buildExportData(mode){
     courses[c.id]={
       name:c.name, color:c.color, total_km:+c.total_km.toFixed(2), gain:c.gain,
       ele_min:c.ele_min, ele_max:c.ele_max, hasEle:c.hasEle,
+      turnKm: courseTurnKm(c),
       participants: mode==='admin'?(c.participants||0):0,
       limit:c.limit||'', limitPace:limitPaceMin(c),
       track:c.pts.map(p=>[p[0],p[1]]), profile:c.profile,
@@ -1945,6 +2647,7 @@ function buildExportData(mode){
   });
   return {mode, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, cats:S.cats, event:S.event,
     limitNote: limitNoteText(), cols:S.cols[mode]||DEFAULT_COLS[mode], roundMode:S.roundMode,
+    showReturn:S.showReturn, returnOffset:S.returnOffset,
     supplies: mode==='admin'?activeSupplies():[], order:list.map(c=>c.id),
     start:[list[0].pts[0][0], list[0].pts[0][1]], courses};
 }
@@ -1962,13 +2665,18 @@ function doExport(mode){
 }
 document.getElementById('exportPublic').onclick=()=>doExport('public');
 document.getElementById('exportAdmin').onclick=()=>doExport('admin');
-
 /* 초기화 */
-syncTextInputs();
-renderColCfg();
-setPreview('admin');
-refreshAll();
-loadKakao();
+window.addEventListener('error', e=>{
+  const t=document.getElementById('toast');
+  if(t){ t.textContent='오류: '+e.message; t.classList.add('on'); }
+  console.error(e.error||e.message);
+});
+safe('코스 목록', renderSlots);          // 무슨 일이 있어도 종목 카드는 먼저 그린다
+safe('문구 입력', syncTextInputs);
+safe('열 설정', renderColCfg);
+safe('모드', ()=>setPreview('admin'));
+safe('전체 갱신', ()=>refreshAll());
+safe('지도 로드', loadKakao);
 </script>
 <script type="text/plain" id="viewerTpl"><!DOCTYPE html>
 <html lang="ko">
@@ -2028,6 +2736,7 @@ loadKakao();
   .kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
   .kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
   .kstart{background:#2e7d32;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;}
+  .kturn{background:#f57c00;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;cursor:pointer;}
   .kinfo{position:relative;background:#fff;border:1px solid #cfd8dc;border-radius:10px;padding:11px 28px 11px 13px;font-size:.83rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.28);white-space:nowrap;}
   .kinfo:after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0;}
   .kinfo .x{position:absolute;top:4px;right:7px;cursor:pointer;color:#90a4ae;font-size:14px;font-weight:700;}
@@ -2046,7 +2755,7 @@ loadKakao();
     body{background:#fff;}
     .wrap{max-width:none;padding:0;}
     .card{break-inside:avoid;box-shadow:none;border-color:#bbb;margin-bottom:10px;}
-    .seg,.locate-btn,.printbtn,.kakao-open,#ovSeg,#typeSeg{display:none !important;}
+    .seg,.locate-btn,.printbtn,.kakao-open,#ovSeg,#typeSeg,#retSeg,#retRangeBox{display:none !important;}
     header{background:#0d47a1 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     header.admin{background:#37474f !important;}
     .tables{grid-template-columns:1fr 1fr;}
@@ -2063,6 +2772,7 @@ loadKakao();
     <div class="stats">
       <div class="stat">코스<b id="stCourse">-</b></div>
       <div class="stat">총 거리<b id="stTotal">-</b></div>
+      <div class="stat" id="stTurnBox" style="display:none">반환 지점<b id="stTurn">-</b></div>
       <div class="stat">누적 상승<b id="stGain">-</b></div>
       <div class="stat">최저 고도<b id="stMin">-</b></div>
       <div class="stat">최고 고도<b id="stMax">-</b></div>
@@ -2077,6 +2787,10 @@ loadKakao();
         <button data-t="ROADMAP" class="on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
       </span>
       <span class="seg kk" id="ovSeg"><button data-o="TRAFFIC">교통</button><button data-o="TERRAIN">지형</button></span>
+      <span class="seg kk" id="retSeg" style="display:none"><button data-r="1" class="on">↩ 복편 분리</button></span>
+      <span id="retRangeBox" style="display:none;align-items:center;gap:6px;font-size:.72rem;color:#607d8b;font-weight:400" title="왕편 ↔ 복편 라인 간격">
+        <input type="range" id="retRangeV" min="0" max="120" step="2" value="14" style="width:96px;accent-color:#1976d2"><b id="retValV" style="font-variant-numeric:tabular-nums">14 m</b>
+      </span>
       <span class="legend" id="legend"></span>
     </h2>
     <div id="mapWrap">
@@ -2127,6 +2841,8 @@ const SUP=DATA.supplies||[];
 const T=Object.assign({subtitle:'',mapNote:'',tableTitle:'📋 코스 시설 안내',tableNote:'',colGo:'왕편',colBack:'복편',colName:'명칭',colMemo:'비고'}, DATA.texts||{});
 const ADMIN = DATA.mode==='admin';
 const COLS = Object.assign({gap:false,ops:false,memo:true,ele:false}, DATA.cols||{});
+let RETOFF = (DATA.returnOffset!=null?+DATA.returnOffset:14);
+let RETON = (DATA.showReturn!==false) && RETOFF>0;
 const RQ = n => (DATA.roundMode==='ceil'?Math.ceil(n):Math.round(n));
 function boxesOf(item, units){
   if(!item||!item.boxQty||item.boxQty<=0||!units) return null;
@@ -2149,10 +2865,11 @@ if(ADMIN){
   document.getElementById('paceCard').style.display='block';
 }
 document.getElementById('kakaoOpenLink').href='https://map.kakao.com/link/map/'+encodeURIComponent(DATA.title+' 출발/도착')+','+DATA.start[0]+','+DATA.start[1];
-
 const dirLabel=d=>d==='go'?T.colGo:(d==='back'?T.colBack:'');
 const passInfo=p=>(p.rows&&p.rows.length)?p.rows:[{km:p.km||0,d:''}];
 const passStr=p=>passInfo(p).map(x=>(x.d?dirLabel(x.d)+' ':'')+x.km.toFixed(2)+' km').join(' · ');
+const turnOf=c=>{ const t=(c&&c.turnKm!=null)?+c.turnKm:null;
+  return (t!=null&&isFinite(t)&&t>0.01&&t<c.total_km-0.01)?t:null; };
 function supStr(p){
   if(!ADMIN||!p.sup) return '';
   const arr=SUP.filter(s=>p.sup[s.id]).map(s=>{
@@ -2206,6 +2923,20 @@ function init(){
     else { kmap.addOverlayMapTypeId(id); b.classList.add('on'); }
     ovState[t]=!ovState[t];
   };
+  document.getElementById('retSeg').onclick=e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    RETON=!RETON; b.classList.toggle('on',RETON);
+    rebuildMap(false); drawChart(null);
+  };
+  const rv=document.getElementById('retRangeV');
+  rv.value=RETOFF; document.getElementById('retValV').textContent=RETOFF+' m';
+  let rraf=null;
+  rv.addEventListener('input', ()=>{
+    RETOFF=+rv.value;
+    document.getElementById('retValV').textContent=RETOFF+' m';
+    if(rraf) return;
+    rraf=requestAnimationFrame(()=>{ rraf=null; rebuildMap(false); });
+  });
   setCourse(DATA.order[0]);
 }
 function kOv(pos,html,z,onClick,yAnchor){
@@ -2241,14 +2972,46 @@ function latlngAtKm(km){
   const a=C.track[i-1],b=C.track[i];
   return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1])];
 }
+/* ── 복편(반환 후) 평행 오프셋 ── */
+function offsetPath(path, meters){
+  const n=path.length, out=[], RADv=Math.PI/180;
+  for(let i=0;i<n;i++){
+    const a=path[Math.max(0,i-1)], b=path[Math.min(n-1,i+1)];
+    const lat=path[i][0], cosL=Math.cos(lat*RADv)||1;
+    const ex=(b[1]-a[1])*cosL, ny=(b[0]-a[0]);
+    const L=Math.sqrt(ex*ex+ny*ny);
+    if(!L){ out.push([path[i][0],path[i][1]]); continue; }
+    const pe=ny/L, pn=-ex/L;
+    out.push([path[i][0]+meters*pn/111320, path[i][1]+meters*pe/(111320*cosL)]);
+  }
+  return out;
+}
+function splitPath(km){
+  const d=km*1000, go=[], back=[];
+  let cut=false;
+  for(let i=0;i<C.track.length;i++){
+    if(!cut && cum[i]<=d){ go.push([C.track[i][0],C.track[i][1]]); continue; }
+    if(!cut){ const t=latlngAtKm(km); go.push(t); back.push(t); cut=true; }
+    back.push([C.track[i][0],C.track[i][1]]);
+  }
+  if(!back.length) back.push(latlngAtKm(km));
+  return {go, back};
+}
+function displayAtKm(km){
+  const ll=latlngAtKm(km), t=turnOf(C);
+  if(!RETON || t==null || km<=t) return ll;
+  const eps=Math.max(0.005, Math.min(0.03, C.total_km/300));
+  const a=latlngAtKm(Math.max(t, km-eps)), b=latlngAtKm(Math.min(C.total_km, km+eps));
+  return offsetPath([a, ll, b], RETOFF)[1];
+}
 const kmSize=k=>k%5===0?22:15;
-function kmHtml(k){
-  const big=k%5===0,s=kmSize(k),f=big?9:8;
-  return '<div class="kkm" style="background:'+(big?'#e53935':'#fff')+';color:'+(big?'#fff':'#e53935')+
-    ';border:'+(big?'2px solid #fff':'1.5px solid #e53935')+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</div>';
+function kmHtml(k, back){
+  const big=k%5===0,s=kmSize(k),f=big?9:8,col=back?'#ef6c00':'#e53935';
+  return '<div class="kkm" style="background:'+(big?col:'#fff')+';color:'+(big?'#fff':col)+
+    ';border:'+(big?'2px solid #fff':'1.5px solid '+col)+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</div>';
 }
 function nudged(k){
-  const ll=latlngAtKm(k);
+  const ll=displayAtKm(k);
   for(const p of C.pois){
     const dy=(ll[0]-p.lat)*111320, dx=(ll[1]-p.lon)*111320*Math.cos(ll[0]*Math.PI/180);
     if(Math.sqrt(dx*dx+dy*dy)<45) return [ll[0]+0.00035, ll[1]+0.0002];
@@ -2260,19 +3023,36 @@ function rebuildMap(fit){
   if(!kReady) return;
   kObjs.forEach(o=>o.setMap(null)); kObjs=[]; closeInfo();
   for(const k in markerOv) delete markerOv[k];
-  const pl=new kakao.maps.Polyline({path:C.track.map(kLL),strokeColor:C.color||'#e53935',strokeWeight:5,strokeOpacity:.9});
-  pl.setMap(kmap); kObjs.push(pl);
+  const tk=turnOf(C), useRet=(RETON && tk!=null);
+  if(useRet){
+    const sp=splitPath(tk);
+    const plGo=new kakao.maps.Polyline({path:sp.go.map(kLL),strokeColor:C.color||'#e53935',strokeWeight:5,strokeOpacity:.9});
+    plGo.setMap(kmap); kObjs.push(plGo);
+    const plBk=new kakao.maps.Polyline({path:offsetPath(sp.back,RETOFF).map(kLL),strokeColor:C.color||'#e53935',
+      strokeWeight:4,strokeOpacity:.85,strokeStyle:'shortdash'});
+    plBk.setMap(kmap); kObjs.push(plBk);
+    const tp=latlngAtKm(tk);
+    kOv(kLL(tp),'<div class="kturn">↩ 반환 '+tk.toFixed(2)+'km</div>',320,
+      ()=>showInfo('<b>↩ 반환 지점</b><br>'+tk.toFixed(2)+' km / 총 '+C.total_km.toFixed(2)+' km<br>'+
+        '<span style="color:#607d8b">점선 = 복편 '+(C.total_km-tk).toFixed(2)+' km</span>',tp[0],tp[1]));
+  } else {
+    const pl=new kakao.maps.Polyline({path:C.track.map(kLL),strokeColor:C.color||'#e53935',strokeWeight:5,strokeOpacity:.9});
+    pl.setMap(kmap); kObjs.push(pl);
+  }
   const st=C.track[0];
   kOv(kLL(st),'<div class="kstart">출발/도착</div>',300,()=>showInfo('<b>🏁 출발 / 도착</b><br>0 km / '+C.total_km.toFixed(2)+' km',st[0],st[1]));
   for(let k=1;k<C.total_km;k++){
-    const ll=nudged(k);
-    ((kk,l)=>kOv(kLL(l),kmHtml(kk),40,()=>showInfo('<b>'+kk+' km 지점</b>',l[0],l[1])))(k,ll);
+    const ll=nudged(k), bk=(useRet&&k>tk);
+    ((kk,l,b2)=>kOv(kLL(l),kmHtml(kk,b2),40,()=>showInfo('<b>'+kk+' km 지점</b>'+(b2?'<br><span style="color:#ef6c00">복편 구간</span>':''),l[0],l[1])))(k,ll,bk);
   }
   const seen={};
   C.pois.forEach((p,i)=>{
-    const key=p.lat.toFixed(4)+','+p.lon.toFixed(4);
+    const info=passInfo(p);
+    let pos=[p.lat,p.lon];
+    if(useRet && info.length===1 && info[0].km>tk) pos=displayAtKm(info[0].km);
+    const key=pos[0].toFixed(4)+','+pos[1].toFixed(4);
     const n=seen[key]||0; seen[key]=n+1;
-    markerOv[i]=kOv(kLL([p.lat,p.lon+n*0.00038]),'<div class="kpoi" style="background:'+CAT[p.cat].color+'">'+CAT[p.cat].icon+'</div>',200,
+    markerOv[i]=kOv(kLL([pos[0],pos[1]+n*0.00038]),'<div class="kpoi" style="background:'+CAT[p.cat].color+'">'+CAT[p.cat].icon+'</div>',200,
       ()=>showInfo(poiInfoHtml(p),p.lat,p.lon));
   });
   if(fit){
@@ -2333,6 +3113,13 @@ function drawChart(hoverX){
     ctx.beginPath();ctx.moveTo(x(k),PAD.t);ctx.lineTo(x(k),H-PAD.b);ctx.stroke();
     ctx.textAlign='center';ctx.fillText(k+'km',x(k),H-8);
   }
+  const tk=turnOf(C);
+  if(tk!=null){
+    ctx.beginPath();ctx.moveTo(x(tk),PAD.t);ctx.lineTo(x(tk),H-PAD.b);
+    ctx.strokeStyle='#f57c00';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#ef6c00';ctx.textAlign='center';ctx.font='bold 10px sans-serif';
+    ctx.fillText('↩ 반환',x(tk),PAD.t+10); ctx.font='10px sans-serif';
+  }
   const grad=ctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
   grad.addColorStop(0,'rgba(25,118,210,.45)');grad.addColorStop(1,'rgba(25,118,210,.05)');
   ctx.beginPath(); ctx.moveTo(x(P[0][0]),y(P[0][1]));
@@ -2369,14 +3156,16 @@ canvas.addEventListener('mousemove',ev=>{
   let i=0; while(i<P.length-1&&P[i+1][0]<res.km) i++;
   const j=Math.min(i+4,P.length-1);
   const grade=P[j][0]>P[i][0]?((P[j][1]-P[i][1])/((P[j][0]-P[i][0])*1000)*100):0;
-  tooltip.innerHTML='<b>'+res.km.toFixed(2)+' km</b><br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
+  const tk=turnOf(C);
+  tooltip.innerHTML='<b>'+res.km.toFixed(2)+' km</b>'+(tk!=null?' <span style="color:#ffb74d">'+(res.km>tk?'복편':'왕편')+'</span>':'')+
+    '<br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
   tooltip.style.display='block';
   const box=document.getElementById('chartBox').getBoundingClientRect();
   let tx=ev.clientX-box.left+14;
   if(tx+tooltip.offsetWidth>box.width-10) tx=ev.clientX-box.left-tooltip.offsetWidth-14;
   tooltip.style.left=tx+'px'; tooltip.style.top=(ev.clientY-box.top-10)+'px';
   if(kReady&&kmap){
-    const ll=latlngAtKm(res.km);
+    const ll=displayAtKm(res.km);
     if(!kHover){
       const el=document.createElement('div');
       el.innerHTML='<div style="width:16px;height:16px;background:#e53935;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>';
@@ -2487,18 +3276,22 @@ function renderPace(){
   } else { [4.5,5.5,6.5,paceMin(ev.last)||9].forEach(p=>{ if(p>lead) bands.push({label:paceStr(p), pace:p}); }); }
   document.getElementById('paceLabel').textContent='— '+C.name+' · 출발 '+ev.start+(C.limit?' · 제한 '+C.limit:'');
   const step=+document.getElementById('paceStep').value, onlyPoi=document.getElementById('paceOnlyPoi').checked;
+  const tk=turnOf(C);
   const marks=[];
   if(onlyPoi){
     C.pois.forEach(p=>passInfo(p).forEach(r=>marks.push({km:r.km, label:CAT[p.cat].icon+' '+p.name+(r.d?' '+dirLabel(r.d):'')})));
     marks.sort((a,b)=>a.km-b.km);
   } else {
     for(let k=step;k<C.total_km;k+=step) marks.push({km:k,label:''});
+    if(tk!=null) marks.push({km:tk,label:'↩ 반환'});
     marks.push({km:C.total_km,label:'피니시'});
+    marks.sort((a,b)=>a.km-b.km);
   }
   let h='<div><table><thead><tr><th>거리</th><th>지점</th>'+
     bands.map(b=>'<th style="text-align:right'+(b.limit?';color:#c62828':'')+'">'+esc(b.label)+'</th>').join('')+'</tr></thead><tbody>';
   marks.forEach(m=>{
-    h+='<tr><td class="km">'+m.km.toFixed(2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label)+'</td>'+
+    const isTurn=(tk!=null&&Math.abs(m.km-tk)<1e-6);
+    h+='<tr'+(isTurn?' style="background:#fff8e1"':'')+'><td class="km">'+m.km.toFixed(2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label)+'</td>'+
       bands.map(b=>'<td class="qty"'+(b.limit?' style="color:#c62828;font-weight:700"':'')+'>'+toHm(st+m.km*b.pace)+'</td>').join('')+'</tr>';
   });
   h+='</tbody></table></div>';
@@ -2510,19 +3303,27 @@ if(ADMIN){
 }
 function renderLegend(){
   const used=[...new Set(C.pois.map(p=>p.cat))];
-  document.getElementById('legend').innerHTML=used.map(id=>{
-    const c=CAT[id];
-    return '<span class="chip"><span class="dot" style="background:'+c.color+'"></span>'+esc(c.label)+'</span>';
-  }).join('');
+  const tk=turnOf(C);
+  document.getElementById('legend').innerHTML=
+    (tk!=null?'<span class="chip"><span style="display:inline-block;width:16px;border-top:2px dashed '+(C.color||'#e53935')+'"></span>복편(점선)</span>':'')+
+    used.map(id=>{
+      const c=CAT[id];
+      return '<span class="chip"><span class="dot" style="background:'+c.color+'"></span>'+esc(c.label)+'</span>';
+    }).join('');
 }
 function renderStats(){
+  const tk=turnOf(C);
   document.getElementById('stCourse').textContent=C.name;
   document.getElementById('stTotal').textContent=C.total_km.toFixed(2)+' km';
+  document.getElementById('stTurnBox').style.display=(tk!=null?'block':'none');
+  document.getElementById('stTurn').textContent=(tk!=null?tk.toFixed(2)+' km':'—');
   document.getElementById('stGain').textContent=C.hasEle?'+'+C.gain+' m':'—';
   document.getElementById('stMin').textContent=C.hasEle?C.ele_min.toFixed(0)+' m':'—';
   document.getElementById('stMax').textContent=C.hasEle?C.ele_max.toFixed(0)+' m':'—';
-  document.getElementById('tblCourseLabel').textContent='— '+C.name+' 기준';
+  document.getElementById('tblCourseLabel').textContent='— '+C.name+' 기준'+(tk!=null?' · ↩ '+tk.toFixed(2)+'km 반환':'');
   document.getElementById('supLabel').textContent='— '+C.name+' 기준';
+  document.getElementById('retSeg').style.display=(tk!=null?'inline-flex':'none');
+  document.getElementById('retRangeBox').style.display=(tk!=null?'inline-flex':'none');
 }
 const courseSeg=document.getElementById('courseSeg');
 courseSeg.innerHTML=DATA.order.map((id,i)=>'<button data-c="'+id+'"'+(i===0?' class="on"':'')+'>'+esc(DATA.courses[id].name)+'</button>').join('');
