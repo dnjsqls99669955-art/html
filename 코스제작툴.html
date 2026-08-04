@@ -1,0 +1,2541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마라톤 코스도 제작기 (카카오맵)</title>
+<style>
+:root{
+  --bg:#eef1f5; --panel:#fff; --line:#dfe4ea; --dark:#1f2937; --muted:#6b7280;
+  --brand:#1565c0; --brand2:#0d47a1; --ok:#2e7d32; --warn:#f57c00; --danger:#d32f2f;
+  --kakao:#fee500; --shadow:0 2px 10px rgba(15,23,42,.07);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--bg);color:var(--dark);font-size:14px;}
+button,input,select,textarea{font-family:inherit;}
+#app{display:flex;height:100vh;overflow:hidden;}
+#side{width:340px;min-width:340px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;}
+#brand{background:linear-gradient(135deg,#0d47a1,#1976d2);color:#fff;padding:16px 18px;}
+#brand h1{font-size:1.05rem;letter-spacing:-.3px;}
+#brand p{font-size:.72rem;opacity:.85;margin-top:3px;}
+#sideScroll{flex:1;overflow-y:auto;padding:14px;}
+.block{margin-bottom:18px;}
+.block>h3{font-size:.74rem;font-weight:800;color:var(--muted);letter-spacing:.6px;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:#fff;color:#374151;border-radius:9px;padding:9px 12px;font-size:.82rem;cursor:pointer;transition:.15s;font-weight:600;}
+.btn:hover{border-color:#b8c2cc;background:#f8fafc;}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff;}
+.btn.primary:hover{background:var(--brand2);}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff;}
+.btn.admin{background:#37474f;border-color:#37474f;color:#fff;}
+.btn.ghost{background:#f5f7fa;}
+.btn.sm{padding:5px 9px;font-size:.72rem;border-radius:7px;}
+.btn.full{width:100%;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btnrow{display:flex;gap:6px;flex-wrap:wrap;}
+.slot{border:1px solid var(--line);border-radius:11px;padding:10px 11px;margin-bottom:8px;background:#fff;transition:.15s;}
+.slot.on{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192,.1);}
+.slot.off{opacity:.55;background:#fafbfc;}
+.slot .r1{display:flex;align-items:center;gap:8px;}
+.slot .nm{font-weight:800;font-size:.86rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;}
+.slot .sub{font-size:.72rem;color:var(--muted);margin-top:4px;}
+.slot .tools{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
+.swatch{width:11px;height:11px;border-radius:3px;flex:none;}
+.sw{display:inline-block;width:34px;height:19px;border-radius:20px;background:#cfd8dc;position:relative;cursor:pointer;transition:.2s;flex:none;}
+.sw:after{content:'';position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+.sw.on{background:var(--ok);} .sw.on:after{left:17px;}
+.iconbtn{border:none;background:none;cursor:pointer;color:#9aa5b1;font-size:.8rem;padding:2px 4px;border-radius:5px;}
+.iconbtn:hover{background:#f1f5f9;color:var(--danger);}
+.catRow,.poiRow,.supRow{display:flex;align-items:center;gap:8px;padding:5px 7px;border-radius:8px;font-size:.8rem;}
+.catRow:hover,.poiRow:hover,.supRow:hover{background:#f6f8fa;}
+.poiRow{cursor:pointer;} .poiRow:hover{background:#eef6ff;}
+.catRow .nm,.poiRow .nm,.supRow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.catRow .cnt,.poiRow .km{font-size:.72rem;color:var(--muted);}
+.catRow .cnt{background:#f1f5f9;border-radius:20px;padding:1px 7px;}
+.catDot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+.hint{font-size:.72rem;color:var(--muted);line-height:1.65;background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:9px 11px;}
+.hint b{color:#374151;}
+.hint code{background:#eef2f7;border-radius:4px;padding:1px 4px;font-size:.9em;}
+input[type=text],input[type=number],select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.82rem;color:var(--dark);background:#fff;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(21,101,192,.12);}
+label.f{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin:10px 0 4px;}
+.chk{display:flex;align-items:center;gap:7px;font-size:.8rem;margin-top:8px;cursor:pointer;}
+.chk input{width:16px;height:16px;accent-color:var(--brand);}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#topbar{background:var(--panel);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#titleIn{font-size:1rem;font-weight:800;border:1px solid transparent;background:transparent;border-radius:8px;padding:6px 8px;width:240px;}
+#titleIn:hover{background:#f5f7fa;}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;}
+.seg button{padding:7px 13px;border:none;background:#fff;cursor:pointer;font-size:.78rem;color:#455a64;font-weight:600;}
+.seg button:not(:last-child){border-right:1px solid var(--line);}
+.seg button.on{background:var(--ok);color:#fff;}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
+.stat{background:#f5f7fa;border:1px solid var(--line);border-radius:9px;padding:5px 11px;font-size:.7rem;color:var(--muted);text-align:center;min-width:72px;}
+.stat b{display:block;font-size:.86rem;color:var(--dark);margin-top:1px;font-variant-numeric:tabular-nums;}
+#content{flex:1;overflow-y:auto;padding:14px;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow);}
+.card>h2{font-size:.92rem;padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.card>h2 .sm{font-size:.72rem;font-weight:400;color:var(--muted);}
+#mapWrap{position:relative;}
+#map{height:560px;width:100%;background:#e8edf2;}
+#mapOverlayMsg{position:absolute;inset:0;background:rgba(244,246,248,.97);display:flex;align-items:center;justify-content:center;z-index:50;padding:24px;text-align:center;}
+#mapOverlayMsg .in{max-width:520px;font-size:.85rem;line-height:1.8;color:#455a64;}
+#mapOverlayMsg h4{font-size:1rem;margin-bottom:10px;color:var(--dark);}
+#mapOverlayMsg code{background:#e8edf2;border-radius:4px;padding:2px 6px;}
+#moveBanner{position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:60;background:#1565c0;color:#fff;padding:8px 16px;border-radius:20px;font-size:.8rem;box-shadow:0 4px 14px rgba(0,0,0,.25);display:none;}
+#chartBox{position:relative;padding:10px 14px 14px;}
+#elev{width:100%;height:240px;display:block;cursor:crosshair;}
+#tip{position:absolute;pointer-events:none;background:rgba(31,41,55,.95);color:#fff;padding:8px 11px;border-radius:8px;font-size:.76rem;line-height:1.55;display:none;white-space:nowrap;z-index:10;}
+.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;padding:14px;}
+table{width:100%;border-collapse:collapse;font-size:.82rem;}
+th{background:#f7f9fb;text-align:left;padding:8px 10px;border-bottom:2px solid var(--line);font-size:.73rem;color:var(--muted);white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid #eef1f4;vertical-align:middle;}
+td.km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
+td.qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;white-space:nowrap;}
+td.edit{outline:none;border-radius:5px;}
+td.edit:hover{background:#f1f7ff;}
+td.edit:focus{background:#fff;box-shadow:inset 0 0 0 2px var(--brand);}
+tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
+.titleicon{width:23px;height:23px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
+.note{font-size:.73rem;color:var(--muted);padding:0 16px 13px;line-height:1.6;}
+.empty-state{padding:52px 20px;text-align:center;color:var(--muted);}
+.empty-state .big{font-size:2.6rem;margin-bottom:10px;}
+.kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
+.kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
+.kstart{background:#2e7d32;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;}
+.kinfo{position:relative;background:#fff;border:1px solid #cfd8dc;border-radius:10px;padding:11px 28px 11px 13px;font-size:.82rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.28);white-space:nowrap;}
+.kinfo:after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0;}
+.kinfo .x{position:absolute;top:4px;right:7px;cursor:pointer;color:#90a4ae;font-size:14px;font-weight:700;}
+#ctx{position:fixed;z-index:5000;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:0 10px 30px rgba(15,23,42,.22);padding:6px;display:none;min-width:200px;max-height:70vh;overflow:auto;}
+#ctx .h{font-size:.7rem;color:var(--muted);padding:5px 9px 6px;border-bottom:1px solid var(--line);margin-bottom:4px;}
+#ctx button{display:flex;align-items:center;gap:9px;width:100%;border:none;background:none;padding:7px 9px;border-radius:8px;cursor:pointer;font-size:.82rem;text-align:left;color:var(--dark);}
+#ctx button:hover{background:#eef6ff;}
+#modalBg{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:6000;padding:16px;}
+.modal{background:#fff;border-radius:15px;width:100%;max-width:430px;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;max-height:92vh;display:flex;flex-direction:column;}
+.modal h3{padding:15px 18px;border-bottom:1px solid var(--line);font-size:.95rem;display:flex;align-items:center;gap:9px;}
+.modal .body{padding:14px 18px 18px;overflow-y:auto;}
+.modal .foot{padding:12px 18px;background:#f8fafc;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;}
+.supGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px;}
+.supGrid label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:2px;}
+.iconpick{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-top:5px;}
+.iconpick button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 0;font-size:15px;cursor:pointer;}
+.iconpick button.on{border-color:var(--brand);background:#eff6ff;}
+.colorpick{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
+.colorpick button{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;}
+.colorpick button.on{box-shadow:0 0 0 3px rgba(21,101,192,.5);}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:#1f2937;color:#fff;padding:11px 20px;border-radius:10px;font-size:.82rem;opacity:0;pointer-events:none;transition:.25s;z-index:7000;}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.badge{font-size:.68rem;padding:2px 7px;border-radius:20px;font-weight:700;}
+.b-auto{background:#e8f5e9;color:#2e7d32;} .b-part{background:#fff3e0;color:#e65100;} .b-none{background:#eceff1;color:#455a64;}
+input.cell{border:1px solid transparent;background:transparent;border-radius:6px;padding:4px 6px;width:100%;font-size:.82rem;min-width:90px;}
+input.cell:hover{border-color:#dfe4ea;background:#fafbfc;}
+input.cell:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 2px rgba(21,101,192,.15);}
+input.qtyin{width:62px;text-align:right;border:1px solid var(--line);border-radius:6px;padding:3px 5px;font-size:.78rem;font-variant-numeric:tabular-nums;}
+input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192,.15);outline:none;}
+.rng{display:flex;align-items:center;gap:8px;}
+.rng input[type=range]{flex:1;accent-color:var(--brand);}
+.rng b{font-size:.75rem;min-width:52px;text-align:right;font-variant-numeric:tabular-nums;}
+.ops{font-size:.75rem;color:#455a64;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.miniTag{font-size:.66rem;background:#eceff1;color:#546e7a;border-radius:5px;padding:1px 5px;margin-left:4px;}
+.gridScroll{overflow-x:auto;}
+.warnBox{background:#fff8e1;border:1px solid #ffe082;color:#8d6e00;border-radius:9px;padding:9px 11px;font-size:.75rem;line-height:1.6;margin-top:8px;}
+@media (max-width:900px){#app{flex-direction:column;height:auto;} #side{width:100%;min-width:0;max-height:46vh;} #map{height:420px;}}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div id="brand">
+      <h1>🏁 마라톤 코스도 제작기</h1>
+      <p>카카오맵 기반 · 참가자용/관리자용 코스도 생성</p>
+    </div>
+    <div id="sideScroll">
+
+      <div class="block">
+        <h3>1. 카카오맵 설정</h3>
+        <input type="text" id="kakaoKey" value="c45e1e08eea53db5a726efa6edae142b" placeholder="카카오 JavaScript 키">
+        <div class="btnrow" style="margin-top:7px">
+          <button class="btn sm" id="reloadKakao">지도 다시 불러오기</button>
+          <span id="kakaoState" style="font-size:.73rem;color:var(--muted);align-self:center"></span>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>2. 코스 구성 <button class="btn sm" id="addSlotBtn" style="margin-left:auto">＋ 종목 추가</button></h3>
+        <div id="slotList"></div>
+        <input type="file" id="gpxFile" accept=".gpx,.xml" style="display:none">
+        <label class="f">겹침 인식 반경 <span style="font-weight:400;color:#9aa5b1">— 코스별 GPX의 GPS 오차 보정</span></label>
+        <div class="rng"><input type="range" id="snapRange" min="20" max="400" step="10" value="120"><b id="snapVal">120 m</b></div>
+        <div class="hint" style="margin-top:6px">
+          <b>사용</b> 스위치로 없는 종목은 비활성화하세요.<br>
+          <b>겹침 설정</b> — 자동: 겹치는 구간 시설을 이 코스 km로 자동 환산 / 일부: 겹치는 구간만 자동 / 독립: 이 코스 전용 시설만.<br>
+          코스가 같은 길인데 시설이 안 잡히면 <b>인식 반경</b>을 넓히세요(GPX 궤적이 서로 떨어져 있을 때).
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>3. 대회 운영 정보</h3>
+        <div style="display:flex;gap:6px">
+          <div style="flex:1"><label class="f" style="margin-top:0">출발 시각</label><input type="text" id="ev_start" value="08:00" placeholder="08:00"></div>
+          <div style="flex:1"><label class="f" style="margin-top:0">선두 페이스</label><input type="text" id="ev_lead" value="3:30" placeholder="분:초/km"></div>
+          <div style="flex:1"><label class="f" style="margin-top:0">후미 페이스</label><input type="text" id="ev_last" value="9:00" placeholder="분:초/km"></div>
+        </div>
+        <div class="hint" style="margin-top:7px">시설별 <b>운영 시간(선두 도착 ~ 후미 통과)</b>이 자동 계산됩니다. 종목별 참가 인원은 코스 카드의 ✎ 옆 인원 칸에 입력하세요.</div>
+        <button class="btn sm full" id="cutAutoBtn" style="margin-top:7px">⏱ 컷오프 시각 후미 페이스로 자동 계산</button>
+      </div>
+
+      <div class="block">
+        <h3>4. 시설 카테고리 <button class="btn sm" id="addCatBtn" style="margin-left:auto">＋ 추가</button></h3>
+        <div id="catList"></div>
+      </div>
+
+      <div class="block">
+        <h3>5. 배치된 시설 <span id="poiCnt" style="font-weight:400;color:#9aa5b1"></span>
+          <button class="btn sm" id="bulkBtn" style="margin-left:auto">⚡ 일괄 입력</button></h3>
+        <div id="poiList"></div>
+        <div class="hint" style="margin-top:8px">지도 <b>우클릭</b> → 시설 배치 · 마커 클릭 → 수정/이동/삭제</div>
+      </div>
+
+      <div class="block">
+        <h3>6. 관리자용 물자 항목 <button class="btn sm" id="addSupBtn" style="margin-left:auto">＋ 항목</button></h3>
+        <div id="supList"></div>
+        <div class="hint" style="margin-top:6px">항목별 <b>1인당 계수</b>를 넣어두면 참가 인원 기준으로 급수대 수량을 자동 산정할 수 있습니다.</div>
+      </div>
+
+      <div class="block">
+        <h3>7. 표 열 표시 (참가자 / 관리자)</h3>
+        <div id="colCfg"></div>
+        <label class="f">물자 수량 처리</label>
+        <select id="roundSel"><option value="round">반올림</option><option value="ceil">올림 (부족 방지)</option></select>
+      </div>
+
+      <div class="block">
+        <h3>8. 표 · 안내 문구</h3>
+        <label class="f">헤더 부제</label><input type="text" id="t_subtitle">
+        <label class="f">지도 하단 안내문</label><input type="text" id="t_mapNote">
+        <label class="f">시설 표 제목</label><input type="text" id="t_tableTitle">
+        <label class="f">시설 표 하단 안내문</label><input type="text" id="t_tableNote">
+        <div style="display:flex;gap:6px">
+          <div style="flex:1"><label class="f">왕편 열</label><input type="text" id="t_colGo"></div>
+          <div style="flex:1"><label class="f">복편 열</label><input type="text" id="t_colBack"></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <div style="flex:1"><label class="f">명칭 열</label><input type="text" id="t_colName"></div>
+          <div style="flex:1"><label class="f">비고 열</label><input type="text" id="t_colMemo"></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>9. 내보내기 / 저장</h3>
+        <div class="btnrow">
+          <button class="btn ok full" id="exportPublic">🏃 참가자 전용으로 다운로드 (HTML)</button>
+          <button class="btn admin full" id="exportAdmin">🧰 관리자 전용으로 다운로드 (HTML)</button>
+          <button class="btn ghost" id="saveBtn" style="flex:1">💾 프로젝트 저장</button>
+          <button class="btn ghost" id="loadBtn" style="flex:1">📂 불러오기</button>
+        </div>
+        <input type="file" id="projFile" accept=".json" style="display:none">
+      </div>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div id="topbar">
+      <input type="text" id="titleIn" value="마라톤 코스도">
+      <span class="seg" id="courseSeg"></span>
+      <span class="seg" id="previewSeg" title="표에 보일 열을 모드별로 미리봅니다">
+        <button data-m="public">🏃 참가자용</button><button data-m="admin" class="on">🧰 관리자용</button>
+      </span>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div id="content">
+      <div class="card">
+        <h2>🗺 코스 지도 <span class="seg" id="courseSegMap"></span> <span class="sm" id="mapHint"></span>
+          <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+            <span class="seg" id="mapTypeSeg">
+              <button data-t="ROADMAP" class="on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
+            </span>
+            <button class="btn sm" id="fitBtn">전체 보기</button>
+            <button class="btn sm" id="kmToggle">km 표시 ON</button>
+          </span>
+        </h2>
+        <div id="mapWrap">
+          <div id="map"></div>
+          <div id="moveBanner">📍 새 위치를 지도에서 클릭하세요 (ESC 취소)</div>
+          <div id="mapOverlayMsg"><div class="in" id="mapOverlayIn"></div></div>
+        </div>
+        <div class="note" id="mapNoteEl"></div>
+      </div>
+      <div class="card">
+        <h2>⛰ 고저도 <span class="sm">마우스를 올리면 지점별 고도·경사와 지도 위치가 표시됩니다</span></h2>
+        <div id="chartBox"><canvas id="elev"></canvas><div id="tip"></div></div>
+      </div>
+      <div class="card">
+        <h2><span id="tblTitleEl">📋 코스 시설 안내</span> <span class="sm" id="tblLabel"></span>
+          <span class="sm" style="margin-left:auto">명칭·비고 칸을 클릭하면 바로 수정됩니다</span>
+        </h2>
+        <div class="tables" id="tables"></div>
+        <div class="note" id="tblNoteEl"></div>
+      </div>
+      <div class="card" id="paceCard">
+        <h2>⏱ 구간별 통과 예상 시각 <span class="sm" id="paceLabel"></span>
+          <span style="margin-left:auto;display:flex;gap:6px;align-items:center">
+            <span class="sm">간격</span>
+            <select id="paceStep" style="width:auto;padding:5px 8px;font-size:.75rem">
+              <option value="1">1 km</option><option value="2">2 km</option><option value="5" selected>5 km</option>
+            </select>
+            <label class="chk" style="margin:0"><input type="checkbox" id="paceOnlyPoi"> 시설 지점만</label>
+          </span>
+        </h2>
+        <div class="gridScroll" style="padding:14px" id="paceTable"></div>
+        <div class="note">출발 시각과 페이스 밴드 기준 예상 통과 시각입니다(제한시간 열 = 코스별 제한시간 평균 페이스). <b>관리자용 코스도에만</b> 포함됩니다.</div>
+      </div>
+      <div class="card" id="supCard">
+        <h2>🧰 물자 배정표 <span class="sm" id="supLabel"></span>
+          <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+            <select id="supCatFilter" style="width:auto;padding:5px 8px;font-size:.75rem"></select>
+            <button class="btn sm" id="autoSupBtn">🧮 인원 기준 자동 산정</button>
+            <button class="btn sm" id="clearSupBtn">비우기</button>
+          </span>
+        </h2>
+        <div class="gridScroll" style="padding:14px" id="supGrid"></div>
+        <div class="note">칸에 수량을 직접 입력하면 즉시 저장됩니다. <b>자동 산정</b>은 (그 지점을 지나는 종목들의 참가 인원 합) × (물자 항목의 1인당 계수)로 채웁니다. 관리자용 코스도에만 표시됩니다.</div>
+      </div>
+    </div>
+  </main>
+</div>
+<div id="ctx"></div>
+<div id="modalBg"><div class="modal" id="modal"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ══════════════ 기본 정의 ══════════════ */
+const DEFAULT_CATS = [
+  {id:'water',  label:'급수대',      icon:'💧', color:'#1976d2', supply:true},
+  {id:'medic',  label:'적십자(의료)', icon:'✚', color:'#d32f2f'},
+  {id:'amb',    label:'구급차',      icon:'🚑', color:'#b71c1c'},
+  {id:'turn',   label:'반환점',      icon:'↩', color:'#f57c00'},
+  {id:'cut',    label:'컷오프',      icon:'⏱', color:'#37474f', hasTime:true},
+  {id:'staff',  label:'스탭',        icon:'👤', color:'#6a1b9a'},
+  {id:'police', label:'교통통제',    icon:'🚧', color:'#c2a000'},
+  {id:'toilet', label:'화장실',      icon:'🚻', color:'#00897b'},
+  {id:'food',   label:'간식/보급',   icon:'🍌', color:'#2e7d32'},
+  {id:'photo',  label:'촬영포인트',  icon:'📷', color:'#5d4037'}
+];
+/* per = 1인당 소비량(perUnit 기준) · size = 낱개 1개 용량(perUnit) · boxQty = 박스당 낱개 수 */
+const DEFAULT_SUPPLIES = [
+  {id:'water', label:'생수',       unit:'병', per:100, perUnit:'ml', size:2000, boxQty:6,    boxNote:'2L × 6입', on:true},
+  {id:'ion',   label:'이온음료',   unit:'병', per:50,  perUnit:'ml', size:1500, boxQty:12,   boxNote:'1.5L × 12입', on:true},
+  {id:'cup',   label:'종이컵',     unit:'개', per:0,   perUnit:'개', size:1,    boxQty:1000, boxNote:'1000개입', on:true, mode:'liquid', cupPer:1},
+  {id:'banana',label:'바나나',     unit:'다발',per:0.25,perUnit:'다발',size:1,  boxQty:90,   boxNote:'6송이×15다발=90다발', on:true, ratio:100},
+  {id:'choco', label:'초코파이',   unit:'개', per:0.25,perUnit:'개', size:1,    boxQty:96,   boxNote:'96개입', on:true, ratio:100},
+  {id:'table', label:'테이블',     unit:'개', per:0,   perUnit:'개', size:1,    boxQty:0,    boxNote:'', on:true},
+  {id:'bin',   label:'휴지통',     unit:'개', per:0,   perUnit:'개', size:1,    boxQty:0,    boxNote:'', on:true},
+  {id:'bag',   label:'쓰레기봉투', unit:'장', per:0,   perUnit:'장', size:1,    boxQty:0,    boxNote:'', on:true},
+  {id:'staffN',label:'인원',       unit:'명', per:0,   perUnit:'명', size:1,    boxQty:0,    boxNote:'', on:true}
+];
+/* 표 열 표시 설정 */
+const DEFAULT_COLS = {
+  public:{gap:false, ops:false, memo:true,  ele:false},
+  admin: {gap:true,  ops:true,  memo:true,  ele:false}
+};
+const DEFAULT_TEXTS = {
+  subtitle:'현장 상황에 따라 변경 될 수 있습니다.',
+  mapNote:'코스 버튼으로 종목을 전환할 수 있습니다 · 우측 하단 ◎ 버튼: 내 위치 실시간 추적 (위치 권한 필요)',
+  tableTitle:'📋 코스 시설 안내',
+  tableNote:'표의 행을 클릭하면 지도에서 해당 위치로 이동합니다. 코스를 전환하면 해당 코스 기준 왕/복 거리로 다시 계산됩니다.',
+  colGo:'왕편', colBack:'복편', colName:'명칭', colMemo:'비고', colGap:'간격', colOps:'운영 시간'
+};
+const DEFAULT_SLOTS = [
+  {slot:'full', name:'풀코스', color:'#e53935', limit:'5:00', km:42.195},
+  {slot:'half', name:'하프',   color:'#1e88e5', limit:'3:00', km:21.0975},
+  {slot:'ten',  name:'10K',    color:'#43a047', limit:'1:40', km:10},
+  {slot:'five', name:'5K',     color:'#8e24aa', limit:'1:00', km:5}
+];
+const SLOT_COLORS = ['#e53935','#1e88e5','#43a047','#8e24aa','#fb8c00','#00897b','#5d4037','#d81b60'];
+const OVERLAP_LABEL = {auto:'겹침 자동 계산', partial:'일부만 겹침', none:'독립 코스'};
+const DIR_LABEL = {both:'양방향', go:'왕편만', back:'복편만'};
+
+let SEQ = 1;
+const uid = p => p + (SEQ++) + Math.random().toString(36).slice(2,5);
+
+const S = {
+  title:'마라톤 코스도',
+  kakaoKey:'c45e1e08eea53db5a726efa6edae142b',
+  texts: Object.assign({}, DEFAULT_TEXTS),
+  cats: JSON.parse(JSON.stringify(DEFAULT_CATS)),
+  supplies: JSON.parse(JSON.stringify(DEFAULT_SUPPLIES)),
+  courses: DEFAULT_SLOTS.map(s=>({
+    id:uid('c'), slot:s.slot, name:s.name, color:s.color,
+    enabled:false, overlap:'auto', participants:0, limit:s.limit, targetKm:s.km,
+    source:'gpx', derive:null,                 // derive:{mode:'cut'|'outback', km:21.1}
+    pts:null, cum:null, total_km:0, profile:[], gain:0, ele_min:0, ele_max:0, hasEle:false
+  })),
+  masterId: null,                              // 기준(전체) 코스 id
+  pois: [],
+  activeCourse: null,
+  showKm: true,
+  snap: 120,                                   // 겹침 인식 반경(m)
+  event: {start:'08:00', lead:'3:30', last:'9:00'},
+  supFilter: 'all',
+  cols: JSON.parse(JSON.stringify(DEFAULT_COLS)),
+  preview: 'admin',                            // 에디터 미리보기 모드
+  roundMode: 'round'                           // round | ceil
+};
+const COL_LABEL = {gap:'간격', ops:'운영 시간', memo:'비고', ele:'고도'};
+const roundQ = n => (S.roundMode==='ceil'?Math.ceil(n):Math.round(n));
+/* 물자 산정: 낱개 수 / 박스 수 */
+const activeSupplies = () => S.supplies.filter(s=>s.on!==false);
+const ratioOf = s => (s.ratio==null?100:Math.max(0,s.ratio))/100;
+/* 켜져 있는 음료(ml 단위) 항목 = 컵 계산 대상 */
+function drinkItems(){
+  return S.supplies.filter(s=>s.on!==false && s.mode!=='liquid' && (s.perUnit||'')==='ml' && s.per>0);
+}
+function liquidSourceLabel(){
+  const l=drinkItems();
+  return l.length ? l.map(s=>s.label+(ratioOf(s)!==1?' '+Math.round(ratioOf(s)*100)+'%':'')).join(' + ') : '음료 없음';
+}
+function cupsPerPerson(item){
+  const per=item.cupPer>0?item.cupPer:1;
+  return drinkItems().reduce((a,s)=>a+ratioOf(s)*per, 0);
+}
+function needUnits(item, people){
+  if(item.on===false || !people) return 0;
+  let v;
+  if(item.mode==='liquid'){                      // 음료 종류별 1컵씩
+    v=people*cupsPerPerson(item);
+  } else {
+    if(!item.per) return 0;
+    v=(people*ratioOf(item)*item.per)/(item.size||1);
+  }
+  const r=roundQ(v);
+  return (v>0&&r<1)?1:r;
+}
+function boxesOf(item, units){
+  if(!item.boxQty||item.boxQty<=0||!units) return null;
+  const v=units/item.boxQty, r=roundQ(v);
+  return (v>0&&r<1)?1:r;
+}
+const qtyCellText = (item, units) => {
+  if(!units) return '';
+  const b=boxesOf(item, units);
+  return units.toLocaleString()+(b!=null?' <span style="color:#90a4ae">('+b+'박스)</span>':'');
+};
+/* 시각·페이스 유틸 */
+function paceSec(str){
+  const m=String(str||'').trim().match(/^(\d+):([0-5]?\d)$/);
+  if(m) return (+m[1])*60+(+m[2]);
+  const f=parseFloat(str);
+  return isFinite(f)?f*60:0;
+}
+function hmToMin(str){
+  const m=String(str||'').trim().match(/^(\d{1,2}):([0-5]\d)$/);
+  return m?(+m[1])*60+(+m[2]):null;
+}
+function minToHm(mins){
+  if(mins==null||!isFinite(mins)) return '—';
+  let t=Math.round(mins); t=((t%1440)+1440)%1440;
+  return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
+}
+function timeAtKm(km, paceStr){
+  const st=hmToMin(S.event.start);
+  if(st==null) return null;
+  return st + km*paceSec(paceStr)/60;
+}
+function limitMin(course){                       // 제한시간(분)
+  const m=String(course.limit||'').trim().match(/^(\d+):([0-5]\d)$/);
+  if(m) return (+m[1])*60+(+m[2]);
+  const f=parseFloat(course.limit);
+  return isFinite(f)?f*60:null;
+}
+function limitPaceMin(course){                   // 제한시간 기준 페이스(분/km)
+  const L=limitMin(course);
+  return (L&&course.total_km>0)?L/course.total_km:null;
+}
+function paceStrOf(minPerKm){
+  if(minPerKm==null||!isFinite(minPerKm)) return '—';
+  const s=Math.round(minPerKm*60);
+  return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+}
+/* 운영 시간 = 선두 도착 ~ 제한시간(후미) 통과 */
+function opsWindow(rows, course){
+  if(!rows||!rows.length) return null;
+  const st=hmToMin(S.event.start); if(st==null) return null;
+  const first=rows[0].km, last=rows[rows.length-1].km;
+  const open=st + first*paceSec(S.event.lead)/60;
+  const lp=course?limitPaceMin(course):null;
+  const close=lp!=null ? st + last*lp : st + last*paceSec(S.event.last)/60;
+  return minToHm(open)+' ~ '+minToHm(close);
+}
+function limitNoteText(){
+  const list=readyCourses().filter(c=>limitMin(c));
+  if(!list.length) return '';
+  const st=hmToMin(S.event.start);
+  return '제한시간 — '+list.map(c=>{
+    const L=limitMin(c);
+    const end=st!=null?minToHm(st+L):'';
+    return c.name+' '+Math.floor(L/60)+'시간'+(L%60?' '+(L%60)+'분':'')+(end?' (종료 '+end+')':'')+
+           ' · 평균 '+paceStrOf(L/c.total_km)+'/km';
+  }).join('   |   ');
+}
+/* ── 기준 코스에서 종목 코스 파생 ── */
+function sliceTo(master, km){
+  const d=km*1000, out=[];
+  for(let i=0;i<master.pts.length;i++){
+    if(master.cum[i]<=d){ out.push(master.pts[i].slice()); continue; }
+    if(i>0){
+      const t=(d-master.cum[i-1])/(master.cum[i]-master.cum[i-1]);
+      const a=master.pts[i-1], b=master.pts[i];
+      out.push([+(a[0]+t*(b[0]-a[0])).toFixed(6), +(a[1]+t*(b[1]-a[1])).toFixed(6),
+        (a[2]!=null&&b[2]!=null)?+(a[2]+t*(b[2]-a[2])).toFixed(1):a[2]]);
+    }
+    break;
+  }
+  return out.length>1?out:master.pts.map(p=>p.slice());
+}
+function deriveTrack(master, mode, km){
+  if(mode==='outback'){
+    const half=sliceTo(master, km/2);
+    return half.concat(half.slice(0,-1).reverse().map(p=>p.slice()));
+  }
+  return sliceTo(master, km);
+}
+function rebuildDerived(){
+  const master=S.courses.find(c=>c.id===S.masterId);
+  if(!master||!master.pts) return;
+  S.courses.forEach(c=>{
+    if(c.source!=='derive'||!c.derive||c.id===S.masterId) return;
+    applyTrack(c, deriveTrack(master, c.derive.mode, c.derive.km));
+  });
+  passCache.clear(); relCache.clear();
+}
+
+/* ══════════════ 지오 유틸 ══════════════ */
+const R_EARTH = 6371008.8, RAD = Math.PI/180;
+function haversine(a,b){
+  const dla=(b[0]-a[0])*RAD, dlo=(b[1]-a[1])*RAD;
+  const h=Math.sin(dla/2)**2+Math.cos(a[0]*RAD)*Math.cos(b[0]*RAD)*Math.sin(dlo/2)**2;
+  return 2*R_EARTH*Math.asin(Math.min(1,Math.sqrt(h)));
+}
+const proj = (p, lat0) => [p[1]*RAD*R_EARTH*Math.cos(lat0*RAD), p[0]*RAD*R_EARTH];
+
+function nearestOnTrack(course, lat, lon){
+  const pts=course.pts, cum=course.cum, lat0=lat, P=proj([lat,lon],lat0);
+  let best={dist:Infinity};
+  for(let i=1;i<pts.length;i++){
+    const A=proj(pts[i-1],lat0), B=proj(pts[i],lat0);
+    const vx=B[0]-A[0], vy=B[1]-A[1], L2=vx*vx+vy*vy;
+    let t=L2>0?((P[0]-A[0])*vx+(P[1]-A[1])*vy)/L2:0;
+    t=Math.max(0,Math.min(1,t));
+    const d=Math.hypot(P[0]-(A[0]+t*vx), P[1]-(A[1]+t*vy));
+    if(d<best.dist) best={dist:d, km:(cum[i-1]+t*(cum[i]-cum[i-1]))/1000,
+      lat:pts[i-1][0]+t*(pts[i][0]-pts[i-1][0]), lon:pts[i-1][1]+t*(pts[i][1]-pts[i-1][1])};
+  }
+  return best;
+}
+function passesOnTrack(course, lat, lon, thresh){
+  thresh=thresh||80;
+  const pts=course.pts, cum=course.cum, lat0=lat, P=proj([lat,lon],lat0);
+  const clusters=[]; let cur=null;
+  for(let i=1;i<pts.length;i++){
+    const A=proj(pts[i-1],lat0), B=proj(pts[i],lat0);
+    const vx=B[0]-A[0], vy=B[1]-A[1], L2=vx*vx+vy*vy;
+    let t=L2>0?((P[0]-A[0])*vx+(P[1]-A[1])*vy)/L2:0;
+    t=Math.max(0,Math.min(1,t));
+    const d=Math.hypot(P[0]-(A[0]+t*vx), P[1]-(A[1]+t*vy));
+    const km=(cum[i-1]+t*(cum[i]-cum[i-1]))/1000;
+    if(d<thresh){
+      if(cur && km-cur.lastKm<0.35){ if(d<cur.d){cur.d=d;cur.km=km;} cur.lastKm=km; }
+      else { if(cur) clusters.push(cur); cur={d,km,lastKm:km}; }
+    }
+  }
+  if(cur) clusters.push(cur);
+  const out=[];
+  clusters.sort((a,b)=>a.km-b.km).forEach(c=>{
+    if(out.length && c.km-out[out.length-1]<0.12) return;
+    out.push(Math.round(c.km*100)/100);
+  });
+  return out;
+}
+
+/* ══════════════ GPX ══════════════ */
+function parseGPX(text, fallbackName){
+  const doc=new DOMParser().parseFromString(text,'application/xml');
+  if(doc.querySelector('parsererror')) throw new Error('GPX 형식을 읽을 수 없습니다.');
+  let nodes=Array.from(doc.getElementsByTagName('trkpt'));
+  if(!nodes.length) nodes=Array.from(doc.getElementsByTagName('rtept'));
+  if(!nodes.length) nodes=Array.from(doc.getElementsByTagName('wpt'));
+  if(nodes.length<2) throw new Error('트랙 포인트가 없습니다.');
+  const pts=[];
+  for(const n of nodes){
+    const la=parseFloat(n.getAttribute('lat')), lo=parseFloat(n.getAttribute('lon'));
+    if(!isFinite(la)||!isFinite(lo)) continue;
+    const e=n.getElementsByTagName('ele')[0];
+    const ele=e?parseFloat(e.textContent):null;
+    const last=pts[pts.length-1];
+    if(last && Math.abs(last[0]-la)<1e-7 && Math.abs(last[1]-lo)<1e-7) continue;
+    pts.push([+la.toFixed(6), +lo.toFixed(6), isFinite(ele)?ele:null]);
+  }
+  let name=fallbackName;
+  const nEl=doc.querySelector('trk > name')||doc.querySelector('metadata > name');
+  if(nEl && nEl.textContent.trim()) name=nEl.textContent.trim();
+  return {name, pts};
+}
+function smooth(arr,w){
+  const out=[];
+  for(let i=0;i<arr.length;i++){
+    let s=0,n=0;
+    for(let k=Math.max(0,i-w);k<=Math.min(arr.length-1,i+w);k++){s+=arr[k];n++;}
+    out.push(s/n);
+  }
+  return out;
+}
+function applyTrack(course, pts){
+  const cum=[0];
+  for(let i=1;i<pts.length;i++) cum.push(cum[i-1]+haversine(pts[i-1],pts[i]));
+  const total=cum[cum.length-1]/1000;
+  const hasEle=pts.some(p=>p[2]!==null);
+  let ele=pts.map(p=>p[2]);
+  if(hasEle){
+    let last=ele.find(e=>e!==null); if(last==null) last=0;
+    ele=ele.map(e=> e===null?last:(last=e));
+    ele=smooth(ele,5);
+  } else ele=pts.map(()=>0);
+  const step=total>8?0.05:0.02, profile=[]; let j=1;
+  for(let km=0;km<=total+1e-9;km+=step){
+    const d=km*1000;
+    while(j<cum.length-1 && cum[j]<d) j++;
+    const d0=cum[j-1], d1=cum[j], t=d1>d0?(d-d0)/(d1-d0):0;
+    profile.push([+km.toFixed(3), +(ele[j-1]+t*(ele[j]-ele[j-1])).toFixed(1)]);
+  }
+  const lastKm=+total.toFixed(3);
+  if(profile[profile.length-1][0]<lastKm) profile.push([lastKm, +ele[ele.length-1].toFixed(1)]);
+  let gain=0, ref=profile[0][1];
+  for(const [,e] of profile){ if(e>ref+1){gain+=e-ref;ref=e;} else if(e<ref) ref=e; }
+  const es=profile.map(p=>p[1]);
+  Object.assign(course,{
+    pts, cum, total_km:+total.toFixed(3), profile, hasEle,
+    gain:Math.round(gain),
+    ele_min:hasEle?+Math.min(...es).toFixed(1):0,
+    ele_max:hasEle?+Math.max(...es).toFixed(1):0,
+    enabled:true
+  });
+}
+
+/* ══════════════ 헬퍼 ══════════════ */
+const esc = s => String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const catById = id => S.cats.find(c=>c.id===id) || {id,label:id,icon:'●',color:'#607d8b'};
+const supById = id => S.supplies.find(s=>s.id===id) || {id,label:id,unit:''};
+const readyCourses = () => S.courses.filter(c=>c.enabled && c.pts && c.pts.length>1);
+const activeCourse = () => readyCourses().find(c=>c.id===S.activeCourse) || readyCourses()[0] || null;
+
+const passCache=new Map(), relCache=new Map();
+function poiPasses(p, course){
+  if(!course.pts) return null;
+  const only = p.scope==='only';
+  if(only && !(p.courses||[]).includes(course.id)) return null;
+  if(!only && course.overlap==='none') return null;     // 독립 코스: 전용 시설만
+  const key=course.id+'|'+p.id+'|'+p.lat+'|'+p.lon+'|'+S.snap;
+  if(passCache.has(key)) return passCache.get(key);
+  const ps=passesOnTrack(course,p.lat,p.lon,S.snap);
+  const v=ps.length?ps:null;
+  passCache.set(key,v);
+  return v;
+}
+/* 진단: 이 시설과 각 코스의 최근접 거리 */
+function poiDistanceTo(p, course){
+  if(!course.pts) return null;
+  return nearestOnTrack(course, p.lat, p.lon).dist;
+}
+function poiRows(p, course){
+  const ps=poiPasses(p,course);
+  if(!ps) return [];
+  const dir=p.dir||'both', first=ps[0], last=ps[ps.length-1];
+  if(catById(p.cat).hasTime) return [{km: dir==='go'?first:last, d:''}];
+  if(ps.length>1){
+    if(dir==='go')   return [{km:first,d:'go'}];
+    if(dir==='back') return [{km:last, d:'back'}];
+    return [{km:first,d:'go'},{km:last,d:'back'}];
+  }
+  return [{km:first,d:''}];
+}
+const dirLabel = d => d==='go'?S.texts.colGo:(d==='back'?S.texts.colBack:'');
+const rowsStr = rows => rows.map(r=>(r.d?dirLabel(r.d)+' ':'')+r.km.toFixed(2)+' km').join(' · ');
+function poisOfCourse(course){
+  return S.pois.map(p=>({p, rows:poiRows(p,course)})).filter(x=>x.rows.length)
+               .sort((a,b)=>a.rows[0].km-b.rows[0].km);
+}
+function latlngAtKm(course, km){
+  const d=km*1000, cum=course.cum;
+  let lo=0, hi=cum.length-1;
+  while(lo<hi){const m=(lo+hi)>>1; cum[m]<d?lo=m+1:hi=m;}
+  const i=Math.max(1,lo), d0=cum[i-1], d1=cum[i], t=d1>d0?(d-d0)/(d1-d0):0;
+  const a=course.pts[i-1], b=course.pts[i];
+  return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1])];
+}
+function eleAtKm(c, km){
+  const P=c.profile;
+  let i=0; while(i<P.length-1 && P[i+1][0]<km) i++;
+  const [k0,e0]=P[i], [k1,e1]=P[Math.min(i+1,P.length-1)];
+  const t=k1>k0?(km-k0)/(k1-k0):0;
+  return e0+t*(e1-e0);
+}
+function overlapRatio(a,b){
+  if(!a.pts||!b.pts) return 0;
+  const key=a.id+'>'+b.id;
+  if(relCache.has(key)) return relCache.get(key);
+  const st=Math.max(1,Math.floor(a.pts.length/250));
+  let on=0,n=0;
+  for(let i=0;i<a.pts.length;i+=st){ n++; if(nearestOnTrack(b,a.pts[i][0],a.pts[i][1]).dist<30) on++; }
+  const v=n?on/n:0; relCache.set(key,v); return v;
+}
+function gapMap(course){          // 직전 시설과의 간격
+  const list=poisOfCourse(course), m={};
+  let prev=0;
+  list.forEach(({p,rows})=>{ m[p.id]=rows[0].km-prev; prev=rows[0].km; });
+  return m;
+}
+function snapToAnyCourse(lat, lon){
+  let best={dist:Infinity, lat, lon, courseId:S.activeCourse};
+  readyCourses().forEach(c=>{
+    const n=nearestOnTrack(c,lat,lon);
+    if(n.dist<best.dist) best={dist:n.dist, lat:n.lat, lon:n.lon, km:n.km, courseId:c.id};
+  });
+  if(best.dist>500) return {lat, lon, courseId:S.activeCourse, dist:best.dist};
+  return best;
+}
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2400);
+}
+/* ══════════════ 카카오맵 ══════════════ */
+let kmap=null, kReady=false, kObjs=[], kInfo=null, kHover=null, moveMode=null, lastCtxXY={x:200,y:200};
+const mapMsg=document.getElementById('mapOverlayMsg'), mapMsgIn=document.getElementById('mapOverlayIn');
+function showMapMsg(html){ mapMsgIn.innerHTML=html; mapMsg.style.display='flex'; }
+function hideMapMsg(){ mapMsg.style.display='none'; }
+function kakaoState(txt,color){ const el=document.getElementById('kakaoState'); el.textContent=txt; el.style.color=color||'var(--muted)'; }
+function failMsg(reason){
+  kReady=false;
+  kakaoState('불러오기 실패', 'var(--danger)');
+  showMapMsg('<h4>카카오맵을 불러오지 못했습니다 ('+esc(reason)+')</h4>'+
+    '카카오 지도 SDK는 <b>등록된 도메인에서만</b> 동작합니다. 아래를 확인해 주세요.<br><br>'+
+    '① <b>파일을 더블클릭해서 연 경우(file://)는 동작하지 않습니다.</b> 파일이 있는 폴더에서 간단한 로컬 서버를 띄우고 <code>http://localhost:8000</code> 으로 여세요.<br>'+
+    '&nbsp;&nbsp;&nbsp;윈도우 명령프롬프트: <code>python -m http.server 8000</code><br><br>'+
+    '② <a href="https://developers.kakao.com" target="_blank">카카오 개발자 콘솔</a> → 내 애플리케이션 → 앱 설정 → <b>플랫폼 → Web</b> 에 '+
+    '<code>http://localhost:8000</code> (그리고 실제 배포 도메인)을 등록하세요.<br><br>'+
+    '③ 카카오맵 API가 <b>활성화(ON)</b> 되어 있는지 확인하세요.<br><br>'+
+    '<button class="btn primary" onclick="loadKakao()">다시 시도</button>');
+}
+function loadKakao(){
+  S.kakaoKey=document.getElementById('kakaoKey').value.trim();
+  if(!S.kakaoKey){ failMsg('키 없음'); return; }
+  kakaoState('불러오는 중…');
+  showMapMsg('<h4>카카오맵을 불러오는 중…</h4>잠시만 기다려 주세요.');
+  if(window.kakao && window.kakao.maps && window.kakao.maps.Map){ initKakao(); return; }
+  const old=document.getElementById('kakaoSdk'); if(old) old.remove();
+  const s=document.createElement('script'); s.id='kakaoSdk';
+  s.src='https://dapi.kakao.com/v2/maps/sdk.js?appkey='+encodeURIComponent(S.kakaoKey)+'&autoload=false';
+  s.onload=()=>{ try{ kakao.maps.load(()=>initKakao()); }catch(e){ failMsg(e.message); } };
+  s.onerror=()=>failMsg('스크립트 로드 실패');
+  document.head.appendChild(s);
+  setTimeout(()=>{ if(!kReady) failMsg('응답 없음'); }, 9000);
+}
+function initKakao(){
+  const el=document.getElementById('map');
+  kmap=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(36.5,127.9), level:9});
+  kReady=true; hideMapMsg(); kakaoState('연결됨 ✓','var(--ok)');
+  kakao.maps.event.addListener(kmap,'rightclick', e=>{
+    openCtx(lastCtxXY.x, lastCtxXY.y, e.latLng.getLat(), e.latLng.getLng());
+  });
+  kakao.maps.event.addListener(kmap,'click', e=>{
+    if(moveMode){ finishMove(e.latLng.getLat(), e.latLng.getLng()); return; }
+    closeKInfo();
+  });
+  refreshAll(true);
+}
+document.getElementById('mapWrap').addEventListener('contextmenu', e=>{
+  e.preventDefault(); lastCtxXY={x:e.clientX, y:e.clientY};
+});
+document.getElementById('reloadKakao').onclick = ()=>{
+  const k=document.getElementById('kakaoKey').value.trim();
+  if(window.kakao && window.kakao.maps && k!==S.kakaoKey){
+    alert('키를 변경했습니다. 브라우저 새로고침(F5) 후 적용됩니다.');
+  }
+  loadKakao();
+};
+const kLL = a => new kakao.maps.LatLng(a[0], a[1]);
+function kOv(pos, html, z, onClick, yAnchor){
+  const box=document.createElement('div'); box.innerHTML=html;
+  const node=box.firstElementChild;
+  const ov=new kakao.maps.CustomOverlay({position:pos, content:node, xAnchor:0.5,
+    yAnchor:(yAnchor==null?0.5:yAnchor), zIndex:z||1, clickable:true});
+  if(onClick) node.addEventListener('click', ev=>{ ev.stopPropagation(); onClick(ev); });
+  ov.setMap(kmap); kObjs.push(ov);
+  return ov;
+}
+function closeKInfo(){ if(kInfo){ kInfo.setMap(null); kInfo=null; } }
+function showKInfo(html, lat, lon, wire){
+  closeKInfo();
+  const el=document.createElement('div');
+  el.className='kinfo'; el.innerHTML=html+'<span class="x">×</span>';
+  el.querySelector('.x').addEventListener('click', closeKInfo);
+  kInfo=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(lat,lon), content:el, yAnchor:1.45, zIndex:900, clickable:true});
+  kInfo.setMap(kmap);
+  if(wire) wire(el);
+}
+const kmSize = k => k%5===0?22:15;
+function kmHtml(k){
+  const big=k%5===0, s=kmSize(k), f=big?9:8;
+  return '<div class="kkm" style="background:'+(big?'#e53935':'#fff')+';color:'+(big?'#fff':'#e53935')+
+    ';border:'+(big?'2px solid #fff':'1.5px solid #e53935')+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</div>';
+}
+const poiHtml = p => '<div class="kpoi" style="background:'+catById(p.cat).color+'">'+catById(p.cat).icon+'</div>';
+function nudgedKm(course,k){
+  const ll=latlngAtKm(course,k);
+  for(const p of S.pois){
+    const dy=(ll[0]-p.lat)*111320, dx=(ll[1]-p.lon)*111320*Math.cos(ll[0]*RAD);
+    if(Math.hypot(dx,dy)<45) return [ll[0]+0.00035, ll[1]+0.0002];
+  }
+  return ll;
+}
+function renderMap(fit){
+  if(!kReady||!kmap) return;
+  kObjs.forEach(o=>o.setMap(null)); kObjs=[]; closeKInfo(); kHover=null;
+  const act=activeCourse();
+  if(!act){ showMapMsg('<h4>GPX를 등록해 주세요</h4>왼쪽 <b>2. 코스 구성</b>에서 종목별 GPX 파일을 올리면 코스가 표시됩니다.'); return; }
+  hideMapMsg();
+  readyCourses().filter(c=>c.id!==act.id).forEach(c=>{
+    const pl=new kakao.maps.Polyline({path:c.pts.map(kLL), strokeColor:'#90a4ae', strokeWeight:3, strokeOpacity:.45});
+    pl.setMap(kmap); kObjs.push(pl);
+  });
+  const pl=new kakao.maps.Polyline({path:act.pts.map(kLL), strokeColor:act.color, strokeWeight:5, strokeOpacity:.92});
+  pl.setMap(kmap); kObjs.push(pl);
+  const st=act.pts[0];
+  kOv(kLL(st), '<div class="kstart">출발/도착</div>', 300,
+    ()=>showKInfo('<b>🏁 출발 / 도착</b><br>0 km / '+act.total_km.toFixed(2)+' km', st[0], st[1]));
+  if(S.showKm){
+    for(let k=1;k<act.total_km;k++){
+      const ll=nudgedKm(act,k);
+      ((kk,l)=>kOv(kLL(l), kmHtml(kk), 40, ()=>showKInfo('<b>'+kk+' km 지점</b>', l[0], l[1])))(k, ll);
+    }
+  }
+  const seen={};
+  S.pois.forEach(p=>{
+    if(!poiRows(p,act).length) return;
+    const key=p.lat.toFixed(4)+','+p.lon.toFixed(4);
+    const n=seen[key]||0; seen[key]=n+1;
+    kOv(kLL([p.lat, p.lon+n*0.00038]), poiHtml(p), 200, ()=>openPoiInfo(p.id));
+  });
+  if(fit){
+    const b=new kakao.maps.LatLngBounds();
+    const st2=Math.max(1, Math.floor(act.pts.length/400));
+    for(let i=0;i<act.pts.length;i+=st2) b.extend(kLL(act.pts[i]));
+    b.extend(kLL(act.pts[act.pts.length-1]));
+    kmap.setBounds(b);
+  }
+}
+function openPoiInfo(id){
+  const p=S.pois.find(x=>x.id===id); if(!p) return;
+  const c=catById(p.cat), act=activeCourse();
+  const rows=act?poiRows(p,act):[];
+  let s='<b>'+c.icon+' '+esc(p.name)+'</b><br>구분: '+esc(c.label);
+  if(rows.length) s+='<br>거리: '+rowsStr(rows);
+  if(p.time) s+='<br>제한 시각: <b>'+esc(p.time)+'</b>';
+  if(p.memo) s+='<br>'+esc(S.texts.colMemo)+': '+esc(p.memo);
+  const sup=supplyList(p);
+  if(sup.length) s+='<br><span style="color:#455a64">🧰 '+sup.map(x=>esc(x.label)+' '+x.qty+esc(x.unit)).join(', ')+'</span>';
+  s+='<div style="margin-top:9px;display:flex;gap:5px">'+
+     '<button class="btn sm" data-a="edit">수정</button>'+
+     '<button class="btn sm" data-a="move">위치 이동</button>'+
+     '<button class="btn sm" data-a="del" style="color:#d32f2f">삭제</button></div>';
+  showKInfo(s, p.lat, p.lon, el=>{
+    el.querySelector('[data-a=edit]').onclick=()=>{ closeKInfo(); editPoi(p.id); };
+    el.querySelector('[data-a=move]').onclick=()=>{ closeKInfo(); startMove(p.id); };
+    el.querySelector('[data-a=del]').onclick=()=>{ S.pois=S.pois.filter(x=>x.id!==p.id); closeKInfo(); refreshAll(); toast('삭제했습니다'); };
+  });
+}
+function startMove(id){ moveMode=id; document.getElementById('moveBanner').style.display='block'; }
+function cancelMove(){ moveMode=null; document.getElementById('moveBanner').style.display='none'; }
+function finishMove(lat,lon){
+  const p=S.pois.find(x=>x.id===moveMode); cancelMove();
+  if(!p) return;
+  const snap=snapToAnyCourse(lat,lon);
+  p.lat=+snap.lat.toFixed(6); p.lon=+snap.lon.toFixed(6);
+  refreshAll(); toast('위치를 이동했습니다');
+}
+function focusPoi(id){
+  const p=S.pois.find(x=>x.id===id); if(!p||!kmap) return;
+  kmap.setLevel(3); kmap.setCenter(new kakao.maps.LatLng(p.lat,p.lon));
+  openPoiInfo(id);
+  document.getElementById('mapWrap').scrollIntoView({behavior:'smooth',block:'center'});
+}
+document.getElementById('mapTypeSeg').onclick = e=>{
+  const b=e.target.closest('button'); if(!b||!kmap) return;
+  document.querySelectorAll('#mapTypeSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  kmap.setMapTypeId(kakao.maps.MapTypeId[b.dataset.t]);
+};
+document.getElementById('fitBtn').onclick = ()=>renderMap(true);
+document.getElementById('kmToggle').onclick = e=>{
+  S.showKm=!S.showKm; e.target.textContent='km 표시 '+(S.showKm?'ON':'OFF'); renderMap(false);
+};
+
+/* ══════════════ 우클릭 메뉴 ══════════════ */
+const ctx=document.getElementById('ctx');
+function openCtx(x,y,lat,lon){
+  if(!readyCourses().length){ toast('먼저 GPX를 등록해 주세요'); return; }
+  const snap=snapToAnyCourse(lat,lon);
+  const c=readyCourses().find(c=>c.id===snap.courseId)||activeCourse();
+  const kmTxt=snap.km!=null?(' · '+c.name+' '+snap.km.toFixed(2)+'km'):'';
+  let h='<div class="h">여기에 배치'+esc(kmTxt)+'</div>';
+  S.cats.forEach(cat=>{
+    h+='<button data-cat="'+cat.id+'"><span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span>'+esc(cat.label)+'</button>';
+  });
+  h+='<div style="border-top:1px solid var(--line);margin:4px 0"></div>'+
+     '<button data-cat="__new"><span class="catDot" style="background:#94a3b8">＋</span>새 카테고리 만들기…</button>';
+  ctx.innerHTML=h; ctx.style.display='block';
+  ctx.style.left=Math.min(x, innerWidth-ctx.offsetWidth-10)+'px';
+  ctx.style.top =Math.min(y, innerHeight-ctx.offsetHeight-10)+'px';
+  ctx.querySelectorAll('button').forEach(b=>{
+    b.onclick=()=>{
+      ctx.style.display='none';
+      if(b.dataset.cat==='__new'){ catModal(null, id=>createPoi(id,snap)); return; }
+      createPoi(b.dataset.cat, snap);
+    };
+  });
+}
+document.addEventListener('click', e=>{ if(!ctx.contains(e.target)) ctx.style.display='none'; });
+
+/* ══════════════ 시설 CRUD ══════════════ */
+function nextName(catId){
+  const cat=catById(catId), n=S.pois.filter(p=>p.cat===catId).length+1;
+  if(catId==='water') return n+'급수대';
+  if(catId==='medic') return n+'적십자';
+  if(catId==='cut')   return n+'차 컷오프';
+  return cat.label+' '+n;
+}
+function newPoi(catId, lat, lon, extra){
+  return Object.assign({
+    id:uid('p'), cat:catId, name:nextName(catId), lat:+lat.toFixed(6), lon:+lon.toFixed(6),
+    time:'', memo:'', dir:'both', scope:'auto', courses:[S.activeCourse], sup:{}
+  }, extra||{});
+}
+function createPoi(catId, snap){
+  const p=newPoi(catId, snap.lat, snap.lon, {courses:[snap.courseId||S.activeCourse]});
+  S.pois.push(p); refreshAll(); editPoi(p.id, true);
+}
+function supplyList(p){
+  const out=[];
+  S.supplies.forEach(s=>{
+    const q=(p.sup||{})[s.id];
+    if(q) out.push({id:s.id, label:s.label, unit:s.unit, qty:q});
+  });
+  return out;
+}
+function passLinesHtml(p){
+  const list=readyCourses();
+  if(!list.length) return '<div style="color:#9aa5b1">등록된 코스 없음</div>';
+  let warn=false;
+  const body=list.map(c=>{
+    const rows=poiRows(p,c);
+    if(rows.length) return '<div><b>'+esc(c.name)+'</b> — '+rowsStr(rows)+
+      ' <span class="miniTag">'+minToHm(timeAtKm(rows[0].km,S.event.lead))+'~'+minToHm(timeAtKm(rows[rows.length-1].km,S.event.last))+'</span></div>';
+    const d=poiDistanceTo(p,c);
+    let why='';
+    if(c.overlap==='none') why='독립 코스로 설정됨';
+    else if(p.scope==='only') why='이 코스가 선택되지 않음';
+    else if(d!=null){ why='코스에서 '+Math.round(d)+' m 떨어짐 (인식 반경 '+S.snap+' m)'; if(d<400) warn=true; }
+    return '<div style="color:#9aa5b1">'+esc(c.name)+' — 표시 안 됨 · '+why+'</div>';
+  }).join('');
+  return body + (warn?'<div class="warnBox">같은 길인데 안 잡히나요? 왼쪽 <b>겹침 인식 반경</b>을 위 거리보다 크게 올리면 자동으로 잡힙니다.</div>':'');
+}
+function editPoi(id, isNew){
+  const p=S.pois.find(x=>x.id===id); if(!p) return;
+  const cat=catById(p.cat);
+  const supHtml=S.supplies.map(s=>
+    '<div><label>'+esc(s.label)+' ('+esc(s.unit)+')</label>'+
+    '<input type="number" min="0" step="1" class="m_s" data-s="'+s.id+'" value="'+((p.sup||{})[s.id]||'')+'" placeholder="0"></div>').join('');
+  openModal('<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span>'+(isNew?'시설 추가':'시설 수정'),
+    '<label class="f">시설 이름</label><input type="text" id="m_name" value="'+esc(p.name)+'">'+
+    '<div style="display:flex;gap:8px">'+
+      '<div style="flex:1"><label class="f">종류</label><select id="m_cat">'+S.cats.map(c=>'<option value="'+c.id+'"'+(c.id===p.cat?' selected':'')+'>'+c.icon+' '+esc(c.label)+'</option>').join('')+'</select></div>'+
+      '<div style="flex:1"><label class="f">표기 방향</label><select id="m_dir">'+Object.keys(DIR_LABEL).map(k=>'<option value="'+k+'"'+((p.dir||'both')===k?' selected':'')+'>'+DIR_LABEL[k]+'</option>').join('')+'</select></div>'+
+    '</div>'+
+    '<div id="m_timeWrap" style="display:'+(cat.hasTime?'block':'none')+'"><label class="f">제한 시각 (예: 10:50)</label><input type="text" id="m_time" value="'+esc(p.time||'')+'"></div>'+
+    '<label class="f">'+esc(S.texts.colMemo)+'</label><input type="text" id="m_memo" value="'+esc(p.memo||'')+'" placeholder="예: 생수+이온음료, 스탭 4명">'+
+    '<label class="f">적용 코스</label>'+
+    '<select id="m_scope"><option value="auto"'+(p.scope!=='only'?' selected':'')+'>자동 — 이 지점을 지나는 코스 모두</option>'+
+      '<option value="only"'+(p.scope==='only'?' selected':'')+'>선택한 코스에만</option></select>'+
+    '<div id="m_courseBox" style="display:'+(p.scope==='only'?'block':'none')+';margin-top:6px">'+
+      readyCourses().map(c=>'<label class="chk" style="margin-top:4px"><input type="checkbox" class="m_c" value="'+c.id+'"'+((p.courses||[]).includes(c.id)?' checked':'')+'> <span class="swatch" style="background:'+c.color+'"></span> '+esc(c.name)+'</label>').join('')+
+    '</div>'+
+    '<label class="f" style="margin-top:14px">🧰 관리자용 물자 (관리자용 코스도에만 표시)</label>'+
+    '<div class="supGrid">'+supHtml+'</div>'+
+    '<div id="m_pass" style="margin-top:12px;font-size:.78rem;line-height:1.8;background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:9px 11px">'+
+      '<div style="font-size:.72rem;color:#6b7280;font-weight:700;margin-bottom:4px">코스별 통과 거리 (GPX 자동 계산)</div>'+passLinesHtml(p)+'</div>',
+    ()=>{
+      p.name=document.getElementById('m_name').value.trim()||p.name;
+      p.cat =document.getElementById('m_cat').value;
+      p.dir =document.getElementById('m_dir').value;
+      p.memo=document.getElementById('m_memo').value.trim();
+      const t=document.getElementById('m_time');
+      p.time=(t && catById(p.cat).hasTime)?t.value.trim():'';
+      p.scope=document.getElementById('m_scope').value;
+      p.courses=Array.from(document.querySelectorAll('.m_c:checked')).map(x=>x.value);
+      if(p.scope==='only' && !p.courses.length) p.courses=[S.activeCourse];
+      p.sup={};
+      document.querySelectorAll('.m_s').forEach(inp=>{
+        const v=parseInt(inp.value,10);
+        if(isFinite(v)&&v>0) p.sup[inp.dataset.s]=v;
+      });
+      closeModal(); refreshAll();
+    },
+    isNew?()=>{ S.pois=S.pois.filter(x=>x.id!==p.id); closeModal(); refreshAll(); }:null);
+  const sel=document.getElementById('m_cat'), dirSel=document.getElementById('m_dir'), scopeSel=document.getElementById('m_scope');
+  const preview=()=>{
+    const tmp=Object.assign({}, p, {dir:dirSel.value, cat:sel.value, scope:scopeSel.value,
+      courses:Array.from(document.querySelectorAll('.m_c:checked')).map(x=>x.value)});
+    document.getElementById('m_pass').innerHTML='<div style="font-size:.72rem;color:#6b7280;font-weight:700;margin-bottom:4px">코스별 통과 거리 (GPX 자동 계산)</div>'+passLinesHtml(tmp);
+  };
+  sel.onchange=()=>{ document.getElementById('m_timeWrap').style.display=catById(sel.value).hasTime?'block':'none'; preview(); };
+  dirSel.onchange=preview; scopeSel.onchange=()=>{ document.getElementById('m_courseBox').style.display=scopeSel.value==='only'?'block':'none'; preview(); };
+  document.querySelectorAll('.m_c').forEach(x=>x.onchange=preview);
+  setTimeout(()=>document.getElementById('m_name').select(),40);
+}
+
+/* ══════════════ 일괄 입력 ══════════════ */
+function bulkModal(){
+  const list=readyCourses();
+  if(!list.length){ toast('먼저 GPX를 등록해 주세요'); return; }
+  const base=activeCourse();
+  openModal('⚡ 시설 일괄 입력',
+    '<label class="f">기준 코스 (입력한 km 기준)</label>'+
+    '<select id="b_course">'+list.map(c=>'<option value="'+c.id+'"'+(c.id===base.id?' selected':'')+'>'+esc(c.name)+' ('+c.total_km.toFixed(2)+'km)</option>').join('')+'</select>'+
+    '<label class="f">종류</label><select id="b_cat">'+S.cats.map(c=>'<option value="'+c.id+'">'+c.icon+' '+esc(c.label)+'</option>').join('')+'</select>'+
+    '<label class="f">입력 — 한 줄에 하나 (Enter로 줄바꿈)</label>'+
+    '<textarea id="b_text" rows="8" style="line-height:1.7" placeholder="2.42  1급수대  왕  (생수 300)&#10;2.61  1급수대  복&#10;4.12  2급수대&#10;10.5  하프 반환점&#10;24.45 1차 컷오프 10:50"></textarea>'+
+    '<div class="hint" style="margin-top:8px">형식 <b>km 이름 [왕/복/양] [hh:mm] (비고)</b> · 순서 자유 · 공백/쉼표/탭 구분<br>'+
+      '입력창에서 <b>Enter = 줄바꿈</b>, 저장은 아래 <b>확인</b> 버튼(또는 Ctrl+Enter)</div>'+
+    '<div style="border-top:1px solid var(--line);margin:14px 0 8px"></div>'+
+    '<label class="chk" style="margin-top:0"><input type="checkbox" id="b_interval"> 대신 <b>일정 간격</b>으로 자동 생성</label>'+
+    '<div style="display:flex;gap:6px">'+
+      '<div style="flex:1"><label class="f">시작 km</label><input type="number" id="b_from" value="5" step="0.1"></div>'+
+      '<div style="flex:1"><label class="f">끝 km</label><input type="number" id="b_to" value="'+base.total_km.toFixed(1)+'" step="0.1"></div>'+
+      '<div style="flex:1"><label class="f">간격 km</label><input type="number" id="b_step" value="5" step="0.1"></div>'+
+    '</div>'+
+    '<label class="f">이름 규칙 (# = 번호)</label><input type="text" id="b_pat" value="#급수대">',
+    ()=>{
+      const cid=document.getElementById('b_course').value;
+      const course=S.courses.find(c=>c.id===cid);
+      const cat=document.getElementById('b_cat').value;
+      let made=0;
+      if(document.getElementById('b_interval').checked){
+        const from=parseFloat(document.getElementById('b_from').value),
+              to=parseFloat(document.getElementById('b_to').value),
+              st=parseFloat(document.getElementById('b_step').value),
+              pat=document.getElementById('b_pat').value||'#';
+        if(!(st>0)){ toast('간격을 확인해 주세요'); return; }
+        let n=1;
+        for(let km=from; km<=to+1e-9; km+=st){
+          if(km<0||km>course.total_km) continue;
+          const ll=latlngAtKm(course,km);
+          S.pois.push(newPoi(cat, ll[0], ll[1], {name:pat.replace('#',n), courses:[cid]}));
+          n++; made++;
+        }
+      } else {
+        document.getElementById('b_text').value.split(/\r?\n/).forEach(line=>{
+          const q=parseBulkLine(line);
+          if(!q) return;
+          if(q.km<0||q.km>course.total_km+0.05) return;
+          const ll=latlngAtKm(course,q.km);
+          S.pois.push(newPoi(cat, ll[0], ll[1], {name:q.name||nextName(cat), dir:q.dir, time:q.time, memo:q.memo, courses:[cid]}));
+          made++;
+        });
+      }
+      closeModal(); refreshAll();
+      toast(made?made+'개 시설을 배치했습니다':'인식된 항목이 없습니다');
+    });
+  const ta=document.getElementById('b_text');
+  ta.addEventListener('keydown', e=>{
+    e.stopPropagation();                              // 모달 Enter 제출 차단
+    if(e.key==='Enter' && (e.ctrlKey||e.metaKey)){ e.preventDefault(); document.getElementById('mOk').click(); }
+  });
+  setTimeout(()=>ta.focus(),50);
+}
+function parseBulkLine(line){
+  let raw=line.trim();
+  if(!raw||raw.startsWith('#')||raw.startsWith('//')) return null;
+  let memo='';
+  const mm=raw.match(/\(([^()]*)\)\s*$/);
+  if(mm){ memo=mm[1].trim(); raw=raw.slice(0,mm.index).trim(); }
+  const toks=raw.split(/[,\t]+|\s+/).map(t=>t.trim()).filter(Boolean);
+  let km=null, dir='both', time='', nameParts=[];
+  toks.forEach(t=>{
+    if(km===null && /^\d+(\.\d+)?(km)?$/i.test(t)){ km=parseFloat(t); return; }
+    if(/^(왕|왕편|go|out)$/i.test(t)){ dir='go'; return; }
+    if(/^(복|복편|back|return|반환후)$/i.test(t)){ dir='back'; return; }
+    if(/^(양|양방향|both)$/i.test(t)){ dir='both'; return; }
+    if(/^\d{1,2}:\d{2}$/.test(t)){ time=t; return; }
+    nameParts.push(t);
+  });
+  if(km===null) return null;
+  return {km, dir, time, name:nameParts.join(' '), memo};
+}
+document.getElementById('bulkBtn').onclick=bulkModal;
+
+/* ══════════════ 카테고리 / 물자 항목 ══════════════ */
+const ICON_POOL=['💧','✚','🚑','↩','⏱','👤','🚧','🚻','🍌','📷','🏁','🎽','🔊','🅿️','🚌','⛑','🧊','🍚','🎪','🚩','⚠️','🩹','🛟','🍫'];
+const COLOR_POOL=['#1976d2','#d32f2f','#b71c1c','#f57c00','#37474f','#6a1b9a','#c2a000','#00897b','#2e7d32','#5d4037','#e91e63','#0097a7'];
+function catModal(existing, onCreate){
+  let icon=existing?existing.icon:'🚩', color=existing?existing.color:'#1976d2';
+  openModal(existing?'카테고리 수정':'새 카테고리',
+    '<label class="f">이름</label><input type="text" id="c_name" value="'+esc(existing?existing.label:'')+'" placeholder="예: 페이스메이커 집결지">'+
+    '<label class="f">아이콘</label><div class="iconpick" id="c_icons">'+ICON_POOL.map(i=>'<button data-i="'+i+'"'+(i===icon?' class="on"':'')+'>'+i+'</button>').join('')+'</div>'+
+    '<label class="f">색상</label><div class="colorpick" id="c_colors">'+COLOR_POOL.map(c=>'<button data-c="'+c+'" style="background:'+c+'"'+(c===color?' class="on"':'')+'></button>').join('')+'</div>'+
+    '<label class="chk"><input type="checkbox" id="c_time"'+(existing&&existing.hasTime?' checked':'')+'> 제한 시각 입력란 사용 (컷오프 등)</label>'+
+    '<label class="chk"><input type="checkbox" id="c_sup"'+(existing&&existing.supply?' checked':'')+'> 🧰 물자 배정 대상 (물자 배정표에 표시)</label>',
+    ()=>{
+      const label=document.getElementById('c_name').value.trim();
+      if(!label){ toast('이름을 입력해 주세요'); return; }
+      const hasTime=document.getElementById('c_time').checked;
+      const supply=document.getElementById('c_sup').checked;
+      if(existing) Object.assign(existing,{label,icon,color,hasTime,supply});
+      else{
+        const id=uid('cat');
+        S.cats.push({id,label,icon,color,hasTime,supply});
+        if(onCreate){ closeModal(); refreshAll(); onCreate(id); return; }
+      }
+      closeModal(); refreshAll();
+    },
+    existing && !DEFAULT_CATS.some(d=>d.id===existing.id)?()=>{
+      S.cats=S.cats.filter(c=>c.id!==existing.id);
+      S.pois=S.pois.filter(p=>p.cat!==existing.id);
+      closeModal(); refreshAll();
+    }:null, existing?'삭제':'취소');
+  document.getElementById('c_icons').onclick=e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    icon=b.dataset.i; document.querySelectorAll('#c_icons button').forEach(x=>x.classList.toggle('on',x===b));
+  };
+  document.getElementById('c_colors').onclick=e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    color=b.dataset.c; document.querySelectorAll('#c_colors button').forEach(x=>x.classList.toggle('on',x===b));
+  };
+}
+/* 물자 모달의 음료 기준 토글 (openModal 이후 바인딩) */
+function wireSupModal(){
+  const chk=document.getElementById('s_liquid');
+  if(chk) chk.onchange=()=>{ document.getElementById('s_cupWrap').style.display=chk.checked?'block':'none'; };
+  const r=document.getElementById('s_ratioR'), n=document.getElementById('s_ratio');
+  if(r&&n){ r.oninput=()=>{ n.value=r.value; }; n.oninput=()=>{ r.value=Math.max(0,Math.min(100,+n.value||0)); }; }
+}
+document.getElementById('addCatBtn').onclick=e=>{ e.stopPropagation(); catModal(null); };
+function supModal(existing){
+  const e0=existing||{label:'',unit:'개',per:0,perUnit:'개',size:1,boxQty:0,boxNote:''};
+  openModal(existing?'물자 항목 수정':'물자 항목 추가',
+    '<label class="f">항목 이름</label><input type="text" id="s_name" value="'+esc(e0.label)+'" placeholder="예: 파워젤">'+
+    '<div style="display:flex;gap:8px">'+
+      '<div style="flex:1"><label class="f">낱개 단위</label><input type="text" id="s_unit" value="'+esc(e0.unit)+'" placeholder="병 / 개 / 다발"></div>'+
+      '<div style="flex:1"><label class="f">1인당 소비량</label><input type="number" step="0.01" min="0" id="s_per" value="'+(e0.per||0)+'"></div>'+
+      '<div style="flex:1"><label class="f">소비 단위</label><input type="text" id="s_perUnit" value="'+esc(e0.perUnit||'개')+'" placeholder="ml / 개"></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:8px">'+
+      '<div style="flex:1"><label class="f">낱개 1개 용량</label><input type="number" step="1" min="0.001" id="s_size" value="'+(e0.size||1)+'"></div>'+
+      '<div style="flex:1"><label class="f">박스당 낱개 수</label><input type="number" step="1" min="0" id="s_box" value="'+(e0.boxQty||0)+'"></div>'+
+      '<div style="flex:1"><label class="f">박스 설명</label><input type="text" id="s_note" value="'+esc(e0.boxNote||'')+'" placeholder="2L × 6입"></div>'+
+    '</div>'+
+    '<label class="f">🍌 섭취 참가자 비율 (%)</label>'+
+    '<div class="rng"><input type="range" id="s_ratioR" min="0" max="100" step="5" value="'+(e0.ratio==null?100:e0.ratio)+'">'+
+      '<input type="number" id="s_ratio" min="0" max="100" step="1" value="'+(e0.ratio==null?100:e0.ratio)+'" style="width:74px"></div>'+
+    '<div class="hint" style="margin-top:6px">참가자 전원이 먹지 않는 품목(바나나·초코파이 등)은 비율을 낮추세요. 예) 1,000명 · 60% · 1인 0.25다발 → 150다발.</div>'+
+    '<label class="chk"><input type="checkbox" id="s_liquid"'+(e0.mode==='liquid'?' checked':'')+'> 🥤 <b>음료 종류별 1컵씩 계산</b> (종이컵)</label>'+
+    '<div id="s_cupWrap" style="display:'+(e0.mode==='liquid'?'block':'none')+'"><label class="f">음료 1종당 1인 컵 수</label>'+
+      '<input type="number" id="s_cup" min="0.1" step="0.1" value="'+(e0.cupPer||1)+'"></div>'+
+    '<div class="hint" style="margin-top:8px">예) 생수 = 1인당 <b>100</b> ml, 낱개 1개 용량 <b>2000</b> ml, 박스당 <b>6</b>병 → 1,000명 지점: <b>50병 = 8박스</b><br>'+
+      '종이컵은 현재 <b>'+esc(liquidSourceLabel())+'</b> 기준, 1인 <b>'+(+cupsPerPerson(existing&&existing.mode==='liquid'?existing:{cupPer:1}).toFixed(2))+'컵</b>으로 계산됩니다.</div>',
+    ()=>{
+      const label=document.getElementById('s_name').value.trim();
+      if(!label){ toast('이름을 입력해 주세요'); return; }
+      const isLiquid=document.getElementById('s_liquid').checked;
+      const v={
+        label, unit:document.getElementById('s_unit').value.trim()||'개',
+        per:Math.max(0,parseFloat(document.getElementById('s_per').value)||0),
+        perUnit:document.getElementById('s_perUnit').value.trim()||'개',
+        size:Math.max(0.001,parseFloat(document.getElementById('s_size').value)||1),
+        boxQty:Math.max(0,parseInt(document.getElementById('s_box').value,10)||0),
+        boxNote:document.getElementById('s_note').value.trim(),
+        ratio:Math.max(0,Math.min(100,parseInt(document.getElementById('s_ratio').value,10)||0)),
+        mode:isLiquid?'liquid':'',
+        cupPer:Math.max(0.1,parseFloat(document.getElementById('s_cup').value)||1)
+      };
+      if(existing) Object.assign(existing,v);
+      else S.supplies.push(Object.assign({id:uid('s'), on:true},v));
+      closeModal(); refreshAll();
+    },
+    existing?()=>{
+      S.supplies=S.supplies.filter(s=>s.id!==existing.id);
+      S.pois.forEach(p=>{ if(p.sup) delete p.sup[existing.id]; });
+      closeModal(); refreshAll();
+    }:null);
+  wireSupModal();
+}
+document.getElementById('addSupBtn').onclick=e=>{ e.stopPropagation(); supModal(null); };
+
+/* ══════════════ 모달 ══════════════ */
+const modalBg=document.getElementById('modalBg'), modalEl=document.getElementById('modal');
+function openModal(title, body, onOk, onAlt, altLabel){
+  modalEl.innerHTML='<h3>'+title+'</h3><div class="body">'+body+'</div>'+
+    '<div class="foot">'+(onAlt?'<button class="btn" id="mAlt" style="margin-right:auto;color:#d32f2f">'+(altLabel||'삭제')+'</button>':'')+
+    '<button class="btn" id="mCancel">취소</button><button class="btn primary" id="mOk">확인</button></div>';
+  modalBg.style.display='flex';
+  document.getElementById('mOk').onclick=onOk;
+  document.getElementById('mCancel').onclick=closeModal;
+  if(onAlt) document.getElementById('mAlt').onclick=onAlt;
+}
+function closeModal(){ modalBg.style.display='none'; }
+modalBg.addEventListener('click', e=>{ if(e.target===modalBg) closeModal(); });
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ closeModal(); ctx.style.display='none'; cancelMove(); }
+  const tag=(e.target.tagName||'').toUpperCase();
+  if(e.key==='Enter' && modalBg.style.display==='flex' && tag!=='TEXTAREA' && !e.shiftKey){
+    const b=document.getElementById('mOk'); if(b) b.click();
+  }
+});
+/* ══════════════ 사이드바 ══════════════ */
+let pendingSlot=null;
+const gpxInput=document.getElementById('gpxFile');
+gpxInput.onchange=()=>{
+  const f=gpxInput.files[0]; if(!f||!pendingSlot) return;
+  const course=S.courses.find(c=>c.id===pendingSlot);
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const g=parseGPX(rd.result, f.name.replace(/\.[^.]+$/,''));
+      applyTrack(course, g.pts);
+      course.source='gpx'; course.derive=null;
+      if(!S.masterId || S.masterId===course.id ||
+         !S.courses.some(c=>c.id===S.masterId && c.pts)) S.masterId=course.id;
+      if(!S.activeCourse) S.activeCourse=course.id;
+      passCache.clear(); relCache.clear();
+      if(S.masterId===course.id) rebuildDerived();
+      refreshAll(true);
+      toast(course.name+' 등록 완료 ('+course.total_km.toFixed(2)+'km)'+
+        (S.masterId===course.id?' · 기준 코스로 지정':''));
+      if(S.masterId===course.id && S.courses.some(c=>c.id!==course.id && !c.pts)) setTimeout(deriveWizard, 350);
+    }catch(err){ toast(f.name+': '+err.message); }
+    gpxInput.value=''; pendingSlot=null;
+  };
+  rd.readAsText(f);
+};
+function pickGpx(courseId){ pendingSlot=courseId; gpxInput.click(); }
+
+/* ── 기준 코스에서 종목 생성 ── */
+function deriveModal(course){
+  const master=S.courses.find(c=>c.id===S.masterId);
+  if(!master||!master.pts){ toast('먼저 전체(기준) GPX를 등록해 주세요'); return; }
+  const defKm=Math.min(course.targetKm||master.total_km, master.total_km*2);
+  const cur=course.derive||{mode:'outback', km:defKm};
+  openModal('🧬 '+esc(course.name)+' — 기준 코스에서 생성',
+    '<div class="hint">기준 코스 <b>'+esc(master.name)+' ('+master.total_km.toFixed(2)+'km)</b> 의 궤적을 그대로 사용합니다. 좌표가 완전히 일치하므로 시설 km가 100% 자동 환산됩니다.</div>'+
+    '<label class="f">생성 방식</label>'+
+    '<select id="d_mode">'+
+      '<option value="outback"'+(cur.mode!=='cut'?' selected':'')+'>반환 왕복 — 목표 거리의 절반 지점에서 되돌아옴 (권장)</option>'+
+      '<option value="cut"'+(cur.mode==='cut'?' selected':'')+'>앞에서 잘라내기 — 출발점부터 목표 거리까지 편도</option>'+
+    '</select>'+
+    '<label class="f">목표 거리 (km)</label><input type="number" id="d_km" step="0.0001" min="0.1" value="'+defKm+'">'+
+    '<div id="d_prev" style="margin-top:10px;font-size:.82rem;background:#f5f9ff;border:1px solid #cfe0f5;border-radius:9px;padding:10px 12px"></div>'+
+    '<div class="hint" style="margin-top:8px">하프 21.0975 · 10K 10 · 5K 5 처럼 공인 거리를 넣으면 됩니다.<br>'+
+      '실제 코스가 다른 길로 돌아온다면 이 기능 대신 <b>그 종목 GPX를 따로</b> 올려 주세요.</div>',
+    ()=>{
+      const mode=document.getElementById('d_mode').value;
+      let km=parseFloat(document.getElementById('d_km').value)||defKm;
+      km=Math.min(km, master.total_km*(mode==='outback'?2:1));
+      if(!(km>0)){ toast('거리를 확인해 주세요'); return; }
+      course.source='derive'; course.derive={mode, km};
+      applyTrack(course, deriveTrack(master, mode, km));
+      course.enabled=true;
+      if(!S.activeCourse) S.activeCourse=course.id;
+      passCache.clear(); relCache.clear();
+      closeModal(); refreshAll(true);
+      toast(course.name+' 생성 완료 ('+course.total_km.toFixed(3)+'km)');
+    });
+  const upd=()=>{
+    const mode=document.getElementById('d_mode').value;
+    let km=parseFloat(document.getElementById('d_km').value)||0;
+    const cap=master.total_km*(mode==='outback'?2:1);
+    const use=Math.min(km, cap);
+    const turn=mode==='outback'?(use/2):use;
+    document.getElementById('d_prev').innerHTML=
+      (mode==='outback'
+        ? '기준 코스의 <b>'+turn.toFixed(3)+' km 지점에서 반환</b> → 왕복 <b>'+use.toFixed(3)+' km</b>'
+        : '기준 코스 출발점부터 <b>'+use.toFixed(3)+' km</b> 지점까지 (편도)')+
+      (km>cap?'<br><span style="color:#c62828">기준 코스 길이를 넘어 '+cap.toFixed(3)+'km로 제한됩니다</span>':'');
+  };
+  document.getElementById('d_mode').onchange=upd;
+  document.getElementById('d_km').oninput=upd;
+  upd();
+}
+function deriveWizard(){
+  const master=S.courses.find(c=>c.id===S.masterId);
+  const rest=S.courses.filter(c=>c.id!==S.masterId && !c.pts);
+  if(!master||!rest.length) return;
+  openModal('🧬 나머지 종목을 기준 코스에서 자동 생성',
+    '<div class="hint">기준 코스 <b>'+esc(master.name)+' '+master.total_km.toFixed(2)+'km</b> 를 잘라 다른 종목을 만들 수 있습니다. 필요한 종목만 체크하세요. 실제 코스가 다른 종목은 체크하지 말고 나중에 GPX를 따로 올리면 됩니다.</div>'+
+    rest.map(c=>{
+      const km=c.targetKm||0;
+      return '<div style="border:1px solid var(--line);border-radius:9px;padding:9px 10px;margin-top:8px">'+
+        '<label class="chk" style="margin-top:0"><input type="checkbox" class="w_on" data-id="'+c.id+'"'+(km?' checked':'')+'> <b>'+esc(c.name)+'</b></label>'+
+        '<div style="display:flex;gap:6px;margin-top:6px">'+
+          '<select class="w_mode" data-id="'+c.id+'" style="flex:1;padding:5px;font-size:.75rem"><option value="outback">반환 왕복 (권장)</option><option value="cut">앞에서 잘라내기</option></select>'+
+          '<input type="number" class="w_km" data-id="'+c.id+'" step="0.0001" value="'+(km||5)+'" style="width:110px;padding:5px;font-size:.75rem">'+
+        '</div>'+
+        '<div style="font-size:.72rem;color:#6b7280;margin-top:5px">반환 왕복 시 <b>'+((km||5)/2).toFixed(3)+' km 지점</b>에서 되돌아 총 '+(km||5).toFixed(3)+' km</div>'+
+        '</div>';
+    }).join(''),
+    ()=>{
+      let n=0;
+      document.querySelectorAll('.w_on:checked').forEach(chk=>{
+        const c=S.courses.find(x=>x.id===chk.dataset.id); if(!c) return;
+        const mode=document.querySelector('.w_mode[data-id="'+c.id+'"]').value;
+        const km=parseFloat(document.querySelector('.w_km[data-id="'+c.id+'"]').value);
+        if(!(km>0)) return;
+        c.source='derive'; c.derive={mode, km};
+        applyTrack(c, deriveTrack(master, mode, km));
+        c.enabled=true; n++;
+      });
+      passCache.clear(); relCache.clear();
+      closeModal(); refreshAll(true);
+      toast(n?n+'개 종목을 자동 생성했습니다':'생성된 종목이 없습니다');
+    }, closeModal, '건너뛰기');
+}
+
+function relationText(c){
+  const others=readyCourses().filter(o=>o.id!==c.id);
+  if(!others.length||!c.pts) return '';
+  return others.map(o=>{
+    const ab=overlapRatio(c,o), ba=overlapRatio(o,c), pct=Math.round(ab*100);
+    let t;
+    if(ab>=.97&&ba>=.97&&Math.abs(c.total_km-o.total_km)<0.15) t='동일';
+    else if(ab>=.95) t=o.name+'에 포함';
+    else if(ba>=.95) t=o.name+' 포함';
+    else if(pct>=5) t=o.name+' '+pct+'%';
+    else t=o.name+' 별개';
+    return t;
+  }).join(' · ');
+}
+function renderSlots(){
+  const box=document.getElementById('slotList'); box.innerHTML='';
+  S.courses.forEach(c=>{
+    const ready=!!(c.pts&&c.pts.length>1);
+    const d=document.createElement('div');
+    d.className='slot '+(c.enabled?(c.id===(activeCourse()||{}).id?'on':''):'off');
+    const badgeCls=c.overlap==='auto'?'b-auto':(c.overlap==='partial'?'b-part':'b-none');
+    const isMaster=(c.id===S.masterId);
+    d.innerHTML=
+      '<div class="r1"><span class="sw '+(c.enabled?'on':'')+'" data-a="toggle"></span>'+
+        '<span class="swatch" style="background:'+c.color+'"></span>'+
+        '<span class="nm" data-a="act">'+esc(c.name)+'</span>'+
+        (isMaster?'<span class="badge" style="background:#0d47a1;color:#fff">기준</span>':'')+
+        '<span class="badge '+badgeCls+'">'+OVERLAP_LABEL[c.overlap]+'</span>'+
+        '<button class="iconbtn" data-a="ren" title="이름 변경">✎</button>'+
+        '<button class="iconbtn" data-a="del" title="삭제">✕</button></div>'+
+      '<div class="sub">'+(ready
+        ? c.total_km.toFixed(2)+' km · '+(c.hasEle?'+'+c.gain+' m · ':'')+'시설 '+poisOfCourse(c).length+'개'+
+          (c.source==='derive'?' <span class="miniTag">기준에서 생성</span>':'')+
+          (relationText(c)?'<br><span style="color:#90a4ae">'+esc(relationText(c))+'</span>':'')
+        : '<span style="color:#c62828">코스 미등록</span>')+'</div>'+
+      '<div class="tools">'+
+        '<button class="btn sm" data-a="gpx">'+(ready?'GPX 교체':'＋ GPX 등록')+'</button>'+
+        (isMaster?'':'<button class="btn sm" data-a="derive">🧬 기준에서 생성</button>')+
+        '<select data-a="ov" style="width:auto;padding:4px 6px;font-size:.72rem">'+
+          Object.keys(OVERLAP_LABEL).map(k=>'<option value="'+k+'"'+(c.overlap===k?' selected':'')+'>'+OVERLAP_LABEL[k]+'</option>').join('')+
+        '</select>'+
+        '<input type="text" data-a="lim" value="'+esc(c.limit||'')+'" placeholder="제한 5:00" title="제한시간 (시:분)" style="width:78px;padding:4px 6px;font-size:.72rem">'+
+        '<input type="number" min="0" data-a="pp" value="'+(c.participants||'')+'" placeholder="인원" style="width:74px;padding:4px 6px;font-size:.72rem">'+
+        (isMaster?'':'<button class="btn sm" data-a="mk" title="이 코스를 기준으로">기준 지정</button>')+
+      '</div>';
+    d.addEventListener('click', e=>{
+      const a=(e.target.dataset||{}).a;
+      if(a==='toggle'){ c.enabled=!c.enabled; if(!c.enabled&&S.activeCourse===c.id) S.activeCourse=(readyCourses()[0]||{}).id||null; refreshAll(true); return; }
+      if(a==='gpx'){ pickGpx(c.id); return; }
+      if(a==='derive'){ deriveModal(c); return; }
+      if(a==='mk'){
+        if(!c.pts){ toast('먼저 이 코스의 GPX를 등록해 주세요'); return; }
+        S.masterId=c.id; c.source='gpx'; c.derive=null; rebuildDerived(); refreshAll(true);
+        toast(c.name+'를 기준 코스로 지정했습니다'); return;
+      }
+      if(a==='ren'){ const n=prompt('종목 이름', c.name); if(n&&n.trim()){c.name=n.trim(); refreshAll();} return; }
+      if(a==='del'){
+        if(!confirm('"'+c.name+'" 종목을 삭제할까요?')) return;
+        S.courses=S.courses.filter(x=>x.id!==c.id);
+        S.pois.forEach(p=>{ p.courses=(p.courses||[]).filter(x=>x!==c.id); });
+        S.pois=S.pois.filter(p=>p.scope!=='only'||p.courses.length);
+        if(S.activeCourse===c.id) S.activeCourse=(readyCourses()[0]||{}).id||null;
+        refreshAll(true); return;
+      }
+      if(a==='act'){ if(c.enabled&&c.pts){ S.activeCourse=c.id; refreshAll(true);} else toast('GPX를 먼저 등록하고 사용을 켜주세요'); }
+    });
+    d.querySelector('[data-a=ov]').addEventListener('change', e=>{
+      c.overlap=e.target.value; passCache.clear(); refreshAll();
+      toast(c.name+' → '+OVERLAP_LABEL[c.overlap]);
+    });
+    d.querySelector('[data-a=pp]').addEventListener('change', e=>{
+      c.participants=Math.max(0, parseInt(e.target.value,10)||0);
+      renderSupplies();
+    });
+    d.querySelector('[data-a=lim]').addEventListener('change', e=>{
+      c.limit=e.target.value.trim();
+      renderTables(); renderPace(); renderTexts();
+      toast(c.name+' 제한시간 '+(c.limit||'없음'));
+    });
+    box.appendChild(d);
+  });
+}
+document.getElementById('addSlotBtn').onclick=()=>{
+  const n=prompt('추가할 종목 이름', '기타 코스');
+  if(!n||!n.trim()) return;
+  S.courses.push({id:uid('c'), slot:'custom', name:n.trim(), color:SLOT_COLORS[S.courses.length%SLOT_COLORS.length],
+    enabled:false, overlap:'auto', pts:null, cum:null, total_km:0, profile:[], gain:0, ele_min:0, ele_max:0, hasEle:false});
+  refreshAll();
+};
+function renderSide(){
+  renderSlots();
+  const kl=document.getElementById('catList'); kl.innerHTML='';
+  S.cats.forEach(cat=>{
+    const d=document.createElement('div'); d.className='catRow';
+    d.innerHTML='<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span><span class="nm">'+esc(cat.label)+'</span>'+
+      '<span class="cnt">'+S.pois.filter(p=>p.cat===cat.id).length+'</span><button class="iconbtn" title="수정">✎</button>';
+    d.querySelector('.iconbtn').onclick=()=>catModal(cat);
+    kl.appendChild(d);
+  });
+  const sl=document.getElementById('supList'); sl.innerHTML='';
+  S.supplies.forEach(s=>{
+    const d=document.createElement('div'); d.className='supRow';
+    if(s.on===false) d.style.opacity=.45;
+    d.innerHTML='<span class="sw '+(s.on!==false?'on':'')+'" data-sw="1" title="사용 켜기/끄기"></span>'+
+      '<span class="nm">'+esc(s.label)+' <span style="color:#9aa5b1">('+esc(s.unit)+')</span>'+
+      (s.mode==='liquid'
+        ? '<span class="miniTag">'+esc(liquidSourceLabel())+' 각 '+(s.cupPer||1)+'컵 → 1인 '+(+cupsPerPerson(s).toFixed(2))+'컵</span>'
+        : (s.per>0?'<span class="miniTag">1인당 '+s.per+esc(s.perUnit||'')+'</span>':''))+
+      (s.boxQty>0?'<span class="miniTag">'+esc(s.boxNote||(s.boxQty+'입'))+'</span>':'')+
+      '</span>'+
+      (s.per>0?'<input class="qtyin" data-ratio="1" type="number" min="0" max="100" step="5" value="'+(s.ratio==null?100:s.ratio)+'" title="섭취 참가자 비율(%)" style="width:54px">'+
+        '<span style="font-size:.7rem;color:#9aa5b1">%</span>':'')+
+      '<button class="iconbtn" title="수정">✎</button>';
+    const rin=d.querySelector('[data-ratio]');
+    if(rin) rin.onchange=()=>{
+      s.ratio=Math.max(0,Math.min(100,parseInt(rin.value,10)||0));
+      renderSide(); renderSupplies();
+      toast(s.label+' 섭취 비율 '+s.ratio+'%');
+    };
+    d.querySelector('[data-sw]').onclick=()=>{
+      s.on=(s.on===false);
+      renderSide(); renderSupplies(); renderTables();
+      toast(s.label+' '+(s.on?'사용':'제외'));
+    };
+    d.querySelector('.iconbtn').onclick=()=>supModal(s);
+    sl.appendChild(d);
+  });
+  const pl=document.getElementById('poiList'), act=activeCourse();
+  document.getElementById('poiCnt').textContent=S.pois.length?'('+S.pois.length+')':'';
+  pl.innerHTML='';
+  if(!S.pois.length){ pl.innerHTML='<div class="hint">지도에서 <b>우클릭</b>해 첫 시설을 배치해 보세요.</div>'; }
+  else if(act){
+    poisOfCourse(act).forEach(({p,rows})=>{
+      const cat=catById(p.cat);
+      const dirTag=(p.dir&&p.dir!=='both')?' <span style="color:#9aa5b1;font-size:.7rem">('+(p.dir==='go'?S.texts.colGo:S.texts.colBack)+')</span>':'';
+      const d=document.createElement('div'); d.className='poiRow';
+      d.innerHTML='<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span>'+
+        '<span class="nm">'+esc(p.name)+dirTag+(p.scope==='only'?' <span style="color:#9aa5b1;font-size:.7rem">(지정)</span>':'')+'</span>'+
+        '<span class="km">'+rows.map(r=>r.km.toFixed(2)).join(' / ')+'</span>';
+      d.onclick=()=>focusPoi(p.id);
+      pl.appendChild(d);
+    });
+    S.pois.filter(p=>!poiRows(p,act).length).forEach(p=>{
+      const cat=catById(p.cat);
+      const d=document.createElement('div'); d.className='poiRow'; d.style.opacity=.5;
+      d.innerHTML='<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span><span class="nm">'+esc(p.name)+'</span><span class="km">해당없음</span>';
+      d.onclick=()=>editPoi(p.id);
+      pl.appendChild(d);
+    });
+  }
+}
+/* 표 열 표시 설정 */
+function renderColCfg(){
+  const box=document.getElementById('colCfg');
+  box.innerHTML=[['public','🏃 참가자용'],['admin','🧰 관리자용']].map(([m,label])=>
+    '<div style="border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-bottom:7px'+
+      (S.preview===m?';border-color:var(--brand);background:#f5f9ff':'')+'">'+
+      '<div style="font-size:.78rem;font-weight:800;margin-bottom:5px">'+label+
+      ' <button class="btn sm" data-pv="'+m+'" style="float:right">미리보기</button></div>'+
+      Object.keys(COL_LABEL).map(k=>
+        '<label class="chk" style="margin-top:4px;display:inline-flex;margin-right:10px">'+
+        '<input type="checkbox" data-m="'+m+'" data-k="'+k+'"'+(S.cols[m][k]?' checked':'')+'> '+COL_LABEL[k]+'</label>').join('')+
+    '</div>').join('')+
+    '<div class="hint">관리자용에는 물자 열·물자 배정표·통과 예상 시각표가 항상 포함됩니다. 참가자용에는 물자 정보가 전혀 들어가지 않습니다.</div>';
+  box.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.onchange=()=>{
+    S.cols[cb.dataset.m][cb.dataset.k]=cb.checked;
+    renderTables();
+  });
+  box.querySelectorAll('[data-pv]').forEach(b=>b.onclick=()=>{ setPreview(b.dataset.pv); });
+}
+function setPreview(m){
+  S.preview=m;
+  document.querySelectorAll('#previewSeg button').forEach(b=>b.classList.toggle('on', b.dataset.m===m));
+  document.getElementById('paceCard').style.display = m==='admin'?'block':'none';
+  document.getElementById('supCard').style.display  = m==='admin'?'block':'none';
+  renderColCfg(); renderTables();
+}
+document.getElementById('previewSeg').onclick=e=>{
+  const b=e.target.closest('button'); if(b) setPreview(b.dataset.m);
+};
+document.getElementById('roundSel').onchange=e=>{ S.roundMode=e.target.value; renderSupplies(); };
+
+/* 코스 탭 (상단 + 지도 위) */
+function renderCourseSeg(){
+  const list=readyCourses(), act=activeCourse();
+  ['courseSeg','courseSegMap'].forEach(id=>{
+    const seg=document.getElementById(id);
+    seg.innerHTML=list.map(c=>'<button data-c="'+c.id+'"'+(act&&c.id===act.id?' class="on"':'')+'>'+esc(c.name)+
+      ' <span style="opacity:.75;font-weight:400">'+c.total_km.toFixed(1)+'k</span></button>').join('');
+    seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{ S.activeCourse=b.dataset.c; refreshAll(true); });
+  });
+}
+function renderStats(){
+  const c=activeCourse(), box=document.getElementById('stats');
+  if(!c){ box.innerHTML=''; document.getElementById('tblLabel').textContent=''; document.getElementById('mapHint').textContent=''; return; }
+  box.innerHTML='<div class="stat">총 거리<b>'+c.total_km.toFixed(2)+' km</b></div>'+
+    '<div class="stat">누적 상승<b>'+(c.hasEle?'+'+c.gain+' m':'—')+'</b></div>'+
+    '<div class="stat">최저<b>'+(c.hasEle?c.ele_min.toFixed(0)+' m':'—')+'</b></div>'+
+    '<div class="stat">최고<b>'+(c.hasEle?c.ele_max.toFixed(0)+' m':'—')+'</b></div>'+
+    '<div class="stat">시설<b>'+poisOfCourse(c).length+' 개</b></div>';
+  document.getElementById('tblLabel').textContent='— '+c.name+' 기준';
+  document.getElementById('supLabel').textContent='— '+c.name+' 기준';
+  document.getElementById('mapHint').textContent=c.name+' · '+c.total_km.toFixed(2)+' km · '+OVERLAP_LABEL[c.overlap];
+}
+/* ══════════════ 표 (인라인 편집) ══════════════ */
+function renderTables(){
+  const box=document.getElementById('tables'), c=activeCourse();
+  if(!c){ box.innerHTML='<div class="empty-state"><div class="big">📍</div>GPX를 등록하면 시설 표가 생성됩니다</div>'; return; }
+  box.innerHTML='';
+  const gaps=gapMap(c), cols=S.cols[S.preview]||S.cols.admin;
+  S.cats.forEach(cat=>{
+    const items=poisOfCourse(c).filter(x=>x.p.cat===cat.id);
+    if(!items.length) return;
+    let rows='';
+    items.forEach(({p,rows:rr})=>{
+      const go=rr.find(r=>r.d!=='back'), back=rr.find(r=>r.d==='back');
+      const c2=cat.hasTime
+        ? '<td class="km">'+rr[0].km.toFixed(2)+' km</td>'+
+          '<td><input class="cell" style="min-width:70px" data-id="'+p.id+'" data-f="time" value="'+esc(p.time||'')+'" placeholder="hh:mm"></td>'
+        : '<td class="km">'+(go?go.km.toFixed(2)+' km':'—')+'</td><td class="km" style="opacity:.7">'+(back?back.km.toFixed(2)+' km':'—')+'</td>';
+      rows+='<tr>'+c2+
+        '<td><input class="cell" data-id="'+p.id+'" data-f="name" value="'+esc(p.name)+'"></td>'+
+        (cols.gap?'<td class="km" style="color:#90a4ae;font-weight:400">+'+(gaps[p.id]||0).toFixed(2)+'</td>':'')+
+        (cols.ops?'<td class="ops">'+(opsWindow(rr,c)||'—')+'</td>':'')+
+        (cols.ele&&c.hasEle?'<td class="qty" style="color:#607d8b">'+eleAtKm(c,rr[0].km).toFixed(0)+' m</td>':'')+
+        (cols.memo?'<td><input class="cell" data-id="'+p.id+'" data-f="memo" value="'+esc(p.memo||'')+'" placeholder="—"></td>':'')+
+        '<td style="width:1%;white-space:nowrap"><button class="btn sm" data-go="'+p.id+'" title="지도에서 보기">↗</button> '+
+        '<button class="btn sm" data-ed="'+p.id+'" title="상세 편집">⚙</button></td></tr>';
+    });
+    const hcell=(key,val)=>'<th><input class="cell" style="font-size:.73rem;font-weight:700;color:#607d8b;min-width:56px" data-t="'+key+'" value="'+esc(val)+'"></th>';
+    const heads=(cat.hasTime?'<th>거리</th><th>제한 시각</th>':hcell('colGo',S.texts.colGo)+hcell('colBack',S.texts.colBack))+
+      hcell('colName',S.texts.colName)+
+      (cols.gap?hcell('colGap',S.texts.colGap):'')+
+      (cols.ops?hcell('colOps',S.texts.colOps):'')+
+      (cols.ele&&c.hasEle?'<th style="text-align:right">고도</th>':'')+
+      (cols.memo?hcell('colMemo',S.texts.colMemo):'')+'<th></th>';
+    const nCols=3+(cols.gap?1:0)+(cols.ops?1:0)+(cols.ele&&c.hasEle?1:0)+(cols.memo?1:0)+1;
+    const wrap=document.createElement('div');
+    wrap.innerHTML='<table><thead><tr><th colspan="'+nCols+'">'+
+      '<span class="titleicon" style="background:'+cat.color+'">'+cat.icon+'</span> '+
+      '<input class="cell" style="font-weight:800;font-size:.9rem;width:auto;max-width:190px" data-cat="'+cat.id+'" value="'+esc(cat.label)+'">'+
+      ' <span style="font-weight:400;color:#90a4ae">'+items.length+'개</span></th></tr>'+
+      '<tr>'+heads+'</tr></thead><tbody>'+rows+'</tbody></table>';
+    box.appendChild(wrap);
+  });
+  if(!box.children.length) box.innerHTML='<div class="empty-state">아직 배치된 시설이 없습니다. 지도에서 우클릭해 보세요.</div>';
+}
+document.getElementById('tables').addEventListener('click', e=>{
+  const g=e.target.closest('[data-go]'), ed=e.target.closest('[data-ed]');
+  if(g) focusPoi(g.dataset.go);
+  if(ed) editPoi(ed.dataset.ed);
+});
+document.getElementById('tables').addEventListener('input', e=>{
+  const el=e.target.closest('input.cell'); if(!el) return;
+  if(el.dataset.t){                               // 열 제목 편집
+    S.texts[el.dataset.t]=el.value;
+    clearTimeout(el._t); el._t=setTimeout(()=>{ syncTextInputs(); renderTables(); }, 700);
+    return;
+  }
+  if(el.dataset.cat){                             // 카테고리명 편집
+    const cat=S.cats.find(c=>c.id===el.dataset.cat);
+    if(cat){ cat.label=el.value; clearTimeout(el._t); el._t=setTimeout(()=>{ renderSide(); renderSupplies(); }, 500); }
+    return;
+  }
+  const p=S.pois.find(x=>x.id===el.dataset.id); if(!p) return;
+  p[el.dataset.f]=el.value;                       // 행마다 개별 저장
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{ renderSide(); renderMap(false); drawChart(null); renderSupplies(); }, 400);
+});
+document.getElementById('tables').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && e.target.closest('input.cell')) e.target.blur();
+});
+/* ══════════════ 물자 집계 ══════════════ */
+function autoParticipants(p){      // 이 시설을 지나는 종목들의 참가 인원 합
+  return readyCourses().reduce((a,c)=>a+(poiRows(p,c).length?(c.participants||0):0), 0);
+}
+function poiParticipants(p){       // 직접 입력값 우선
+  return (p.people!=null && p.people!=='' ) ? (+p.people||0) : autoParticipants(p);
+}
+const supplyCats = () => S.cats.filter(c=>c.supply);
+function renderSupplies(){
+  const box=document.getElementById('supGrid'), c=activeCourse();
+  const filt=document.getElementById('supCatFilter');
+  const cats=supplyCats();
+  if(!cats.some(x=>x.id===S.supFilter)) S.supFilter = cats.length?(cats.length>1?'all':cats[0].id):'all';
+  filt.innerHTML=(cats.length>1?'<option value="all">물자 대상 전체</option>':'')+
+    cats.map(cat=>'<option value="'+cat.id+'">'+cat.icon+' '+esc(cat.label)+'</option>').join('');
+  filt.value=S.supFilter;
+  if(!cats.length){ box.innerHTML='<div style="color:#9aa5b1;font-size:.85rem">물자 배정 대상 카테고리가 없습니다. 카테고리 편집(✎)에서 <b>물자 배정 대상</b>을 켜세요.</div>'; return; }
+  if(!c){ box.innerHTML='<div style="color:#9aa5b1;font-size:.85rem">코스를 등록하면 표시됩니다.</div>'; return; }
+  const catIds=cats.map(x=>x.id);
+  let items=poisOfCourse(c).filter(x=>catIds.includes(x.p.cat));
+  if(S.supFilter!=='all') items=items.filter(x=>x.p.cat===S.supFilter);
+  if(!items.length){ box.innerHTML='<div style="color:#9aa5b1;font-size:.85rem">이 코스에 해당 시설이 없습니다.</div>'; return; }
+  const used=activeSupplies();
+  const totals={};
+  items.forEach(({p})=>used.forEach(s=>{ const v=(p.sup||{})[s.id]; if(v) totals[s.id]=(totals[s.id]||0)+v; }));
+  let h='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+
+    used.map(s=>{
+      const u=totals[s.id]||0, b=boxesOf(s,u);
+      return '<div class="stat" style="min-width:104px">'+esc(s.label)+'<b>'+u.toLocaleString()+' '+esc(s.unit)+
+        (b!=null?'<br><span style="font-size:.72rem;color:#546e7a">'+b+'박스</span>':'')+'</b></div>';
+    }).join('')+'</div>';
+  h+='<table><thead><tr><th>지점</th><th>'+esc(S.texts.colName)+'</th><th style="text-align:right">통과 인원</th>'+
+     used.map(s=>'<th style="text-align:right">'+esc(s.label)+'<br><span style="font-weight:400">'+esc(s.unit)+
+       (s.boxNote?' · '+esc(s.boxNote):'')+'</span></th>').join('')+'</tr></thead><tbody>';
+  items.forEach(({p,rows})=>{
+    h+='<tr><td class="km">'+rows[0].km.toFixed(2)+' km</td><td style="white-space:nowrap">'+catById(p.cat).icon+' '+esc(p.name)+'</td>'+
+       '<td class="qty"><input class="qtyin" type="number" min="0" data-id="'+p.id+'" data-people="1" value="'+(p.people!=null&&p.people!==''?p.people:'')+'" placeholder="'+(autoParticipants(p)||0)+'"></td>'+
+       used.map(s=>{
+         const u=(p.sup||{})[s.id]||0, b=boxesOf(s,u);
+         return '<td class="qty"><input class="qtyin" type="number" min="0" data-id="'+p.id+'" data-s="'+s.id+'" value="'+(u||'')+'" placeholder="0">'+
+           (b!=null?'<div style="font-size:.68rem;color:#90a4ae">'+b+'박스</div>':'')+'</td>';
+       }).join('')+'</tr>';
+  });
+  h+='</tbody><tfoot><tr><td colspan="3">합계</td>'+
+    used.map(s=>{ const u=totals[s.id]||0, b=boxesOf(s,u);
+      return '<td class="qty">'+u.toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#546e7a">'+b+'박스</div>':'')+'</td>'; }).join('')+
+    '</tr></tfoot></table>';
+  box.innerHTML=h;
+}
+document.getElementById('supGrid').addEventListener('input', e=>{
+  const el=e.target.closest('input.qtyin'); if(!el) return;
+  const p=S.pois.find(x=>x.id===el.dataset.id); if(!p) return;
+  if(el.dataset.people){                                  // 통과 인원 직접 입력 → 즉시 자동 산정
+    const v=parseInt(el.value,10);
+    p.people=(isFinite(v)&&v>0)?v:'';
+    const ppl=poiParticipants(p);
+    if(ppl){ p.sup=p.sup||{}; activeSupplies().forEach(s=>{ const q=needUnits(s,ppl); if(q) p.sup[s.id]=q; }); }
+    clearTimeout(el._t); el._t=setTimeout(()=>{ renderSupplies(); renderTables(); }, 600);
+    return;
+  }
+  p.sup=p.sup||{};
+  const v=parseInt(el.value,10);
+  if(isFinite(v)&&v>0) p.sup[el.dataset.s]=v; else delete p.sup[el.dataset.s];
+  clearTimeout(el._t); el._t=setTimeout(()=>renderSupplies(), 700);
+});
+document.getElementById('supCatFilter').onchange=e=>{ S.supFilter=e.target.value; renderSupplies(); };
+document.getElementById('autoSupBtn').onclick=()=>{
+  const c=activeCourse(); if(!c) return;
+  const catIds=supplyCats().map(x=>x.id);
+  let items=poisOfCourse(c).filter(x=>catIds.includes(x.p.cat));
+  if(S.supFilter!=='all') items=items.filter(x=>x.p.cat===S.supFilter);
+  const withPer=activeSupplies().filter(s=>s.per>0||s.mode==='liquid');
+  if(!withPer.length){ toast('1인당 소비량이 설정된 물자 항목이 없습니다'); return; }
+  let n=0;
+  items.forEach(({p})=>{
+    const ppl=poiParticipants(p);
+    if(!ppl) return;
+    p.sup=p.sup||{};
+    withPer.forEach(s=>{ const q=needUnits(s,ppl); if(q) p.sup[s.id]=q; });
+    n++;
+  });
+  renderSupplies(); renderTables();
+  toast(n?n+'개 시설 물자를 자동 산정했습니다':'통과 인원 또는 종목별 참가 인원을 입력해 주세요');
+};
+document.getElementById('clearSupBtn').onclick=()=>{
+  const c=activeCourse(); if(!c) return;
+  const catIds2=supplyCats().map(x=>x.id);
+  let items=poisOfCourse(c).filter(x=>catIds2.includes(x.p.cat));
+  if(S.supFilter!=='all') items=items.filter(x=>x.p.cat===S.supFilter);
+  if(!confirm('표시된 시설의 물자 수량을 모두 비울까요?')) return;
+  items.forEach(({p})=>p.sup={});
+  renderSupplies(); toast('비웠습니다');
+};
+/* ══════════════ 구간별 통과 예상 시각 ══════════════ */
+function paceBands(course){
+  const lead=paceSec(S.event.lead)/60;
+  const lim=limitPaceMin(course);
+  const bands=[{label:'선두 '+S.event.lead, pace:lead}];
+  if(lim&&lim>lead){
+    const n=3;
+    for(let i=1;i<=n;i++){
+      const p=lead+(lim-lead)*i/(n+1);
+      bands.push({label:paceStrOf(p), pace:p});
+    }
+    bands.push({label:'제한 '+paceStrOf(lim), pace:lim, limit:true});
+  } else {
+    [4.5,5.5,6.5,paceSec(S.event.last)/60].forEach(p=>{ if(p>lead) bands.push({label:paceStrOf(p), pace:p}); });
+  }
+  return bands;
+}
+function renderPace(){
+  const box=document.getElementById('paceTable'), c=activeCourse();
+  if(!c){ box.innerHTML='<div style="color:#9aa5b1;font-size:.85rem">코스를 등록하면 표시됩니다.</div>'; return; }
+  document.getElementById('paceLabel').textContent='— '+c.name+' · 출발 '+S.event.start+
+    (limitMin(c)?' · 제한 '+c.limit:'');
+  const bands=paceBands(c), st=hmToMin(S.event.start)||0;
+  const onlyPoi=document.getElementById('paceOnlyPoi').checked;
+  const step=+document.getElementById('paceStep').value;
+  const marks=[];
+  if(onlyPoi){
+    poisOfCourse(c).forEach(({p,rows})=>rows.forEach(r=>marks.push({km:r.km, label:catById(p.cat).icon+' '+p.name+(r.d?' '+dirLabel(r.d):'')})));
+    marks.sort((a,b)=>a.km-b.km);
+  } else {
+    for(let k=step;k<c.total_km;k+=step) marks.push({km:k, label:''});
+    marks.push({km:c.total_km, label:'피니시'});
+  }
+  if(!marks.length){ box.innerHTML='<div style="color:#9aa5b1;font-size:.85rem">표시할 지점이 없습니다.</div>'; return; }
+  let h='<table><thead><tr><th>거리</th><th>지점</th>'+bands.map(b=>'<th style="text-align:right'+(b.limit?';color:#c62828':'')+'">'+esc(b.label)+'</th>').join('')+'</tr></thead><tbody>';
+  marks.forEach(m=>{
+    h+='<tr><td class="km">'+m.km.toFixed(m.km<10?2:2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label||'')+'</td>'+
+      bands.map(b=>'<td class="qty"'+(b.limit?' style="color:#c62828;font-weight:700"':'')+'>'+minToHm(st+m.km*b.pace)+'</td>').join('')+'</tr>';
+  });
+  h+='</tbody></table>';
+  box.innerHTML=h;
+}
+document.getElementById('paceStep').onchange=renderPace;
+document.getElementById('paceOnlyPoi').onchange=renderPace;
+
+/* ══════════════ 고저도 ══════════════ */
+const canvas=document.getElementById('elev'), cctx=canvas.getContext('2d'), tipEl=document.getElementById('tip');
+const PAD={l:48,r:14,t:14,b:26};
+function drawChart(hoverX){
+  const c=activeCourse();
+  const dpr=window.devicePixelRatio||1, W=canvas.clientWidth, H=canvas.clientHeight;
+  canvas.width=W*dpr; canvas.height=H*dpr; cctx.setTransform(dpr,0,0,dpr,0,0);
+  cctx.clearRect(0,0,W,H);
+  if(!c||!c.hasEle){
+    cctx.fillStyle='#9aa5b1'; cctx.font='13px sans-serif'; cctx.textAlign='center';
+    cctx.fillText(c?'이 GPX에는 고도(ele) 정보가 없습니다':'GPX를 등록하면 고저도가 표시됩니다', W/2, H/2);
+    return null;
+  }
+  const P=c.profile, total=c.total_km;
+  let eMin=Math.floor(c.ele_min/10)*10, eMax=Math.ceil(c.ele_max/10)*10+10;
+  if(eMax-eMin<30) eMax=eMin+30;
+  const iw=W-PAD.l-PAD.r, ih=H-PAD.t-PAD.b;
+  const x=km=>PAD.l+iw*km/total, y=e=>PAD.t+ih*(1-(e-eMin)/(eMax-eMin));
+  const eStep=(eMax-eMin)>120?50:((eMax-eMin)>60?25:10);
+  cctx.font='10px sans-serif'; cctx.fillStyle='#9aa5b1'; cctx.strokeStyle='#eceff1'; cctx.lineWidth=1;
+  for(let e=eMin;e<=eMax;e+=eStep){
+    cctx.beginPath(); cctx.moveTo(PAD.l,y(e)); cctx.lineTo(W-PAD.r,y(e)); cctx.stroke();
+    cctx.textAlign='right'; cctx.fillText(e+'m', PAD.l-6, y(e)+3);
+  }
+  const kStep=total>25?5:(total>8?2:1);
+  for(let k=0;k<=total;k+=kStep){
+    cctx.beginPath(); cctx.moveTo(x(k),PAD.t); cctx.lineTo(x(k),H-PAD.b); cctx.stroke();
+    cctx.textAlign='center'; cctx.fillText(k+'km', x(k), H-8);
+  }
+  const grad=cctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
+  grad.addColorStop(0,'rgba(21,101,192,.42)'); grad.addColorStop(1,'rgba(21,101,192,.04)');
+  cctx.beginPath(); cctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) cctx.lineTo(x(k),y(e));
+  cctx.lineTo(x(P[P.length-1][0]),H-PAD.b); cctx.lineTo(x(P[0][0]),H-PAD.b); cctx.closePath();
+  cctx.fillStyle=grad; cctx.fill();
+  cctx.beginPath(); cctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) cctx.lineTo(x(k),y(e));
+  cctx.strokeStyle='#1565c0'; cctx.lineWidth=2; cctx.stroke();
+  poisOfCourse(c).forEach(({p,rows})=>rows.forEach(r=>{
+    cctx.beginPath(); cctx.arc(x(r.km), y(eleAtKm(c,r.km)), 4.5, 0, 7);
+    cctx.fillStyle=catById(p.cat).color; cctx.fill();
+    cctx.strokeStyle='#fff'; cctx.lineWidth=1.5; cctx.stroke();
+  }));
+  if(hoverX!=null && hoverX>=PAD.l && hoverX<=W-PAD.r){
+    const km=(hoverX-PAD.l)/iw*total, ele=eleAtKm(c,km);
+    cctx.beginPath(); cctx.moveTo(hoverX,PAD.t); cctx.lineTo(hoverX,H-PAD.b);
+    cctx.strokeStyle='rgba(31,41,55,.5)'; cctx.lineWidth=1; cctx.setLineDash([4,3]); cctx.stroke(); cctx.setLineDash([]);
+    cctx.beginPath(); cctx.arc(hoverX,y(ele),5,0,7); cctx.fillStyle='#e53935'; cctx.fill();
+    cctx.strokeStyle='#fff'; cctx.lineWidth=2; cctx.stroke();
+    return {km, ele};
+  }
+  return null;
+}
+canvas.addEventListener('mousemove', ev=>{
+  const c=activeCourse(); if(!c) return;
+  const r=canvas.getBoundingClientRect(), res=drawChart(ev.clientX-r.left);
+  if(!res){ tipEl.style.display='none'; return; }
+  let near='';
+  poisOfCourse(c).forEach(({p,rows})=>rows.forEach(rr=>{
+    if(Math.abs(rr.km-res.km)<=Math.max(0.15,c.total_km*0.006))
+      near+='<br>'+catById(p.cat).icon+' '+esc(p.name)+(rr.d?' '+dirLabel(rr.d):'')+' ('+rr.km.toFixed(2)+'km)';
+  }));
+  const P=c.profile;
+  let i=0; while(i<P.length-1&&P[i+1][0]<res.km) i++;
+  const j=Math.min(i+4,P.length-1);
+  const grade=P[j][0]>P[i][0]?((P[j][1]-P[i][1])/((P[j][0]-P[i][0])*1000)*100):0;
+  tipEl.innerHTML='<b>'+res.km.toFixed(2)+' km</b><br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
+  tipEl.style.display='block';
+  const box=document.getElementById('chartBox').getBoundingClientRect();
+  let tx=ev.clientX-box.left+14;
+  if(tx+tipEl.offsetWidth>box.width-10) tx=ev.clientX-box.left-tipEl.offsetWidth-14;
+  tipEl.style.left=tx+'px'; tipEl.style.top=(ev.clientY-box.top-10)+'px';
+  if(kReady&&kmap){
+    const ll=latlngAtKm(c,res.km);
+    if(!kHover){
+      const el=document.createElement('div');
+      el.innerHTML='<div style="width:16px;height:16px;background:#e53935;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>';
+      kHover=new kakao.maps.CustomOverlay({position:kLL(ll), content:el.firstElementChild, xAnchor:.5, yAnchor:.5, zIndex:800});
+      kHover.setMap(kmap);
+    } else kHover.setPosition(kLL(ll));
+  }
+});
+canvas.addEventListener('mouseleave', ()=>{
+  drawChart(null); tipEl.style.display='none';
+  if(kHover){ kHover.setMap(null); kHover=null; }
+});
+window.addEventListener('resize', ()=>{ drawChart(null); if(kmap) kmap.relayout(); });
+/* ══════════════ 문구 ══════════════ */
+function renderTexts(){
+  const lim=limitNoteText();
+  document.getElementById('mapNoteEl').innerHTML=esc(S.texts.mapNote)+
+    (lim?'<div style="margin-top:5px;color:#455a64;font-weight:700">'+esc(lim)+'</div>':'');
+  document.getElementById('tblTitleEl').textContent=S.texts.tableTitle;
+  document.getElementById('tblNoteEl').textContent=S.texts.tableNote;
+}
+const TEXT_FIELDS={t_subtitle:'subtitle',t_mapNote:'mapNote',t_tableTitle:'tableTitle',t_tableNote:'tableNote',
+  t_colGo:'colGo',t_colBack:'colBack',t_colName:'colName',t_colMemo:'colMemo'};
+function syncTextInputs(){ Object.entries(TEXT_FIELDS).forEach(([id,k])=>{ document.getElementById(id).value=S.texts[k]; }); }
+Object.entries(TEXT_FIELDS).forEach(([id,k])=>{
+  document.getElementById(id).addEventListener('input', e=>{ S.texts[k]=e.target.value; renderTexts(); renderTables(); renderSupplies(); });
+});
+document.getElementById('titleIn').oninput=e=>S.title=e.target.value;
+document.getElementById('kakaoKey').oninput=e=>S.kakaoKey=e.target.value.trim();
+/* 겹침 인식 반경 */
+const snapRange=document.getElementById('snapRange');
+snapRange.addEventListener('input', e=>{
+  S.snap=+e.target.value;
+  document.getElementById('snapVal').textContent=S.snap+' m';
+});
+snapRange.addEventListener('change', ()=>{ passCache.clear(); refreshAll(); toast('인식 반경 '+S.snap+' m 적용'); });
+/* 대회 운영 정보 */
+['ev_start','ev_lead','ev_last'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    S.event[id.replace('ev_','')]=e.target.value.trim();
+    renderTables(); renderPace(); renderSupplies(); renderTexts();
+  });
+});
+document.getElementById('cutAutoBtn').onclick=()=>{
+  const c=activeCourse(); if(!c){ toast('코스를 먼저 등록해 주세요'); return; }
+  const lp=limitPaceMin(c), st=hmToMin(S.event.start);
+  if(st==null){ toast('출발 시각을 확인해 주세요'); return; }
+  let n=0;
+  poisOfCourse(c).forEach(({p,rows})=>{
+    if(!catById(p.cat).hasTime) return;
+    const km=rows[rows.length-1].km;
+    const t=lp!=null ? st+km*lp : timeAtKm(km, S.event.last);
+    if(t!=null){ p.time=minToHm(t); n++; }
+  });
+  refreshAll();
+  toast(n?n+'개 컷오프 시각 계산 완료 ('+(lp!=null?c.name+' 제한 '+c.limit:'후미 '+S.event.last)+' 기준)':'컷오프 시설이 없습니다');
+};
+
+function refreshAll(fit){
+  if(fit){ passCache.clear(); relCache.clear(); }
+  renderCourseSeg(); renderMap(fit); renderSide(); renderStats(); renderTables();
+  renderPace(); renderSupplies(); renderTexts(); drawChart(null);
+}
+/* ══════════════ 저장 / 불러오기 / 내보내기 ══════════════ */
+function download(name, content, type){
+  const blob=new Blob([content],{type:type||'text/plain;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();},600);
+}
+document.getElementById('saveBtn').onclick=()=>{
+  download((S.title||'course')+'.json', JSON.stringify({
+    v:5, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, cats:S.cats, supplies:S.supplies,
+    cols:S.cols, roundMode:S.roundMode,
+    activeCourse:S.activeCourse, snap:S.snap, event:S.event, masterId:S.masterId,
+    courses:S.courses.map(c=>({id:c.id,slot:c.slot,name:c.name,color:c.color,enabled:c.enabled,overlap:c.overlap,
+      participants:c.participants,limit:c.limit,targetKm:c.targetKm,source:c.source,derive:c.derive,pts:c.pts})),
+    pois:S.pois
+  }), 'application/json');
+  toast('프로젝트를 저장했습니다');
+};
+document.getElementById('loadBtn').onclick=()=>document.getElementById('projFile').click();
+document.getElementById('projFile').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const d=JSON.parse(rd.result);
+      S.title=d.title||S.title;
+      S.texts=Object.assign({},DEFAULT_TEXTS,d.texts||{});
+      S.kakaoKey=d.kakaoKey||S.kakaoKey;
+      S.cats=d.cats&&d.cats.length?d.cats:JSON.parse(JSON.stringify(DEFAULT_CATS));
+      S.supplies=d.supplies&&d.supplies.length?d.supplies:JSON.parse(JSON.stringify(DEFAULT_SUPPLIES));
+      S.cols=Object.assign(JSON.parse(JSON.stringify(DEFAULT_COLS)), d.cols||{});
+      S.roundMode=d.roundMode||'round';
+      document.getElementById('roundSel').value=S.roundMode;
+      S.snap=d.snap||S.snap;
+      S.event=Object.assign({start:'08:00',lead:'3:30',last:'9:00'}, d.event||{});
+      S.courses=(d.courses||[]).map(c=>{
+        const base={id:c.id||uid('c'), slot:c.slot||'custom', name:c.name, color:c.color||'#e53935',
+          enabled:!!c.enabled, overlap:c.overlap||'auto', participants:c.participants||0,
+          limit:c.limit||'', targetKm:c.targetKm||0, source:c.source||'gpx', derive:c.derive||null,
+          pts:null, cum:null, total_km:0, profile:[], gain:0, ele_min:0, ele_max:0, hasEle:false};
+        if(c.pts&&c.pts.length>1){ applyTrack(base,c.pts); base.enabled=c.enabled!==false; }
+        return base;
+      });
+      S.masterId=d.masterId||(S.courses.find(c=>c.pts)||{}).id||null;
+      document.getElementById('snapRange').value=S.snap;
+      document.getElementById('snapVal').textContent=S.snap+' m';
+      document.getElementById('ev_start').value=S.event.start;
+      document.getElementById('ev_lead').value=S.event.lead;
+      document.getElementById('ev_last').value=S.event.last;
+      S.pois=(d.pois||[]).map(p=>{ p.dir=p.dir||'both'; p.memo=p.memo||''; p.sup=p.sup||{}; p.scope=p.scope||'auto'; p.courses=p.courses||[]; return p; });
+      S.activeCourse=d.activeCourse||(readyCourses()[0]||{}).id||null;
+      document.getElementById('titleIn').value=S.title;
+      document.getElementById('kakaoKey').value=S.kakaoKey;
+      syncTextInputs(); refreshAll(true); toast('프로젝트를 불러왔습니다');
+    }catch(err){ toast('불러오기 실패: '+err.message); }
+    e.target.value='';
+  };
+  rd.readAsText(f);
+};
+function buildExportData(mode){
+  const list=readyCourses();
+  const courses={};
+  list.forEach(c=>{
+    const gaps=gapMap(c);
+    courses[c.id]={
+      name:c.name, color:c.color, total_km:+c.total_km.toFixed(2), gain:c.gain,
+      ele_min:c.ele_min, ele_max:c.ele_max, hasEle:c.hasEle,
+      participants: mode==='admin'?(c.participants||0):0,
+      limit:c.limit||'', limitPace:limitPaceMin(c),
+      track:c.pts.map(p=>[p[0],p[1]]), profile:c.profile,
+      pois: poisOfCourse(c).map(({p,rows})=>{
+        const o={cat:p.cat, name:p.name, lat:p.lat, lon:p.lon,
+          ele:c.hasEle?+eleAtKm(c,rows[0].km).toFixed(1):null,
+          rows:rows.map(r=>({km:+r.km.toFixed(2), d:r.d})),
+          time:p.time||'', memo:p.memo||'',
+          gap:+(gaps[p.id]||0).toFixed(2), ops:opsWindow(rows,c)||''};
+        if(c.hasEle) o.ele=+eleAtKm(c,rows[0].km).toFixed(0);
+        if(mode==='admin'){
+          const sup={};
+          activeSupplies().forEach(s=>{ const v=(p.sup||{})[s.id]; if(v) sup[s.id]=v; });
+          if(Object.keys(sup).length) o.sup=sup;
+          const ppl=poiParticipants(p); if(ppl) o.people=ppl;
+        }
+        return o;
+      })
+    };
+  });
+  return {mode, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, cats:S.cats, event:S.event,
+    limitNote: limitNoteText(), cols:S.cols[mode]||DEFAULT_COLS[mode], roundMode:S.roundMode,
+    supplies: mode==='admin'?activeSupplies():[], order:list.map(c=>c.id),
+    start:[list[0].pts[0][0], list[0].pts[0][1]], courses};
+}
+function doExport(mode){
+  if(!readyCourses().length){ toast('먼저 GPX를 등록해 주세요'); return; }
+  if(!S.kakaoKey){ toast('카카오 JavaScript 키를 입력해 주세요'); return; }
+  const json=JSON.stringify(buildExportData(mode));
+  const t=esc(S.title+(mode==='admin'?' (관리자용)':''));
+  const html=document.getElementById('viewerTpl').textContent
+    .replace('__TITLE__', ()=>t)
+    .replace('/*__DATA__*/null', ()=>json)
+    .replace(/<%SCRIPT_END%>/g, ()=>'<'+'/script>');
+  download((S.title||'코스도')+(mode==='admin'?'_관리자용':'_참가자용')+'.html', html, 'text/html;charset=utf-8');
+  toast((mode==='admin'?'관리자용':'참가자용')+' 코스도를 내보냈습니다');
+}
+document.getElementById('exportPublic').onclick=()=>doExport('public');
+document.getElementById('exportAdmin').onclick=()=>doExport('admin');
+
+/* 초기화 */
+syncTextInputs();
+renderColCfg();
+setPreview('admin');
+refreshAll();
+loadKakao();
+</script>
+<script type="text/plain" id="viewerTpl"><!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>__TITLE__</title>
+<style>
+  :root{--blue:#1976d2;--dark:#263238;--bg:#f4f6f8;--card:#fff;--line:#e0e4e8;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--bg);color:var(--dark);}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px;}
+  header{background:linear-gradient(135deg,#0d47a1,#1976d2);color:#fff;border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+  header.admin{background:linear-gradient(135deg,#263238,#455a64);}
+  header h1{font-size:1.5rem;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  header .tag{font-size:.7rem;background:rgba(255,255,255,.22);border-radius:20px;padding:3px 11px;font-weight:700;}
+  header p{opacity:.9;font-size:.9rem;}
+  .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;}
+  .stat{background:rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;font-size:.85rem;}
+  .stat b{font-size:1.05rem;display:block;}
+  .kakao-open{margin-left:auto;background:#fee500;color:#191919;font-weight:700;border-radius:10px;padding:10px 16px;font-size:.85rem;text-decoration:none;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:16px;overflow:hidden;}
+  .card h2{font-size:1.05rem;padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:.75rem;font-weight:400;}
+  .seg button{padding:6px 12px;border:none;background:#fff;cursor:pointer;font-size:.75rem;color:#455a64;}
+  .seg button:not(:last-child){border-right:1px solid var(--line);}
+  .seg button.on{background:var(--blue);color:#fff;font-weight:700;}
+  .seg.course button.on{background:#2e7d32;}
+  .seg.kk button.on{background:#fee500;color:#191919;}
+  #mapWrap{position:relative;}
+  #map{height:520px;width:100%;background:#e8edf2;}
+  #mapErr{position:absolute;inset:0;background:rgba(244,246,248,.97);display:none;align-items:center;justify-content:center;padding:24px;text-align:center;z-index:40;}
+  #mapErr .in{max-width:520px;font-size:.85rem;line-height:1.8;color:#455a64;}
+  #mapErr code{background:#e8edf2;border-radius:4px;padding:2px 6px;}
+  .legend{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;font-size:.75rem;font-weight:400;}
+  .chip{display:inline-flex;align-items:center;gap:5px;background:#f0f3f6;border-radius:20px;padding:3px 10px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .locate-btn{position:absolute;z-index:30;bottom:26px;right:18px;width:52px;height:52px;background:#fff;border:none;border-radius:50%;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:#546e7a;transition:.2s;}
+  .locate-btn:hover{transform:scale(1.08);}
+  .locate-btn svg{width:24px;height:24px;stroke:currentColor;}
+  .locate-btn.tracking{background:var(--blue);color:#fff;}
+  .my-dot{width:16px;height:16px;background:#1976d2;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+  #chartBox{position:relative;padding:10px 14px 14px;}
+  #elev{width:100%;height:230px;display:block;cursor:crosshair;}
+  #tooltip{position:absolute;pointer-events:none;background:rgba(38,50,56,.94);color:#fff;padding:8px 11px;border-radius:8px;font-size:.78rem;line-height:1.5;display:none;white-space:nowrap;z-index:10;}
+  .tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;padding:16px;}
+  .tables>div{min-width:0;overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;}
+  th{background:#f7f9fb;text-align:left;padding:9px 11px;border-bottom:2px solid var(--line);font-size:.77rem;color:#607d8b;white-space:nowrap;}
+  td{padding:9px 11px;border-bottom:1px solid #eef1f4;}
+  tr.row{cursor:pointer;} tr.row:hover{background:#eef6ff;}
+  td.km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
+  td.qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;}
+  tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
+  .titleicon{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
+  .note{font-size:.75rem;color:#78909c;padding:10px 18px 14px;line-height:1.6;}
+  .kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
+  .kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
+  .kstart{background:#2e7d32;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;}
+  .kinfo{position:relative;background:#fff;border:1px solid #cfd8dc;border-radius:10px;padding:11px 28px 11px 13px;font-size:.83rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.28);white-space:nowrap;}
+  .kinfo:after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0;}
+  .kinfo .x{position:absolute;top:4px;right:7px;cursor:pointer;color:#90a4ae;font-size:14px;font-weight:700;}
+  .sumchips{display:flex;gap:9px;flex-wrap:wrap;padding:16px 16px 0;}
+  .sumchip{background:#eceff1;border-radius:10px;padding:9px 14px;font-size:.78rem;color:#455a64;}
+  .sumchip b{display:block;font-size:1.05rem;color:#263238;margin-top:2px;}
+  .printbtn{background:#37474f;color:#fff;border:none;border-radius:9px;padding:7px 13px;font-size:.75rem;font-weight:700;cursor:pointer;}
+  .ops{white-space:nowrap;font-variant-numeric:tabular-nums;color:#455a64;}
+  @media (max-width:640px){
+    #map{height:400px;} #elev{height:180px;}
+    .wrap{padding:10px;} table{font-size:.8rem;} th,td{padding:8px;}
+    .tables{padding:10px !important;grid-template-columns:1fr;}
+    .card h2{padding:12px;gap:8px;} .legend{margin-left:0;} .kakao-open{margin-left:0;}
+  }
+  @media print{
+    body{background:#fff;}
+    .wrap{max-width:none;padding:0;}
+    .card{break-inside:avoid;box-shadow:none;border-color:#bbb;margin-bottom:10px;}
+    .seg,.locate-btn,.printbtn,.kakao-open,#ovSeg,#typeSeg{display:none !important;}
+    header{background:#0d47a1 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    header.admin{background:#37474f !important;}
+    .tables{grid-template-columns:1fr 1fr;}
+    #map{height:380px;}
+    th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="hdr">
+    <h1><span id="hTitle">코스도</span><span class="tag" id="hTag" style="display:none">관리자용</span></h1>
+    <p id="hSub"></p>
+    <div class="stats">
+      <div class="stat">코스<b id="stCourse">-</b></div>
+      <div class="stat">총 거리<b id="stTotal">-</b></div>
+      <div class="stat">누적 상승<b id="stGain">-</b></div>
+      <div class="stat">최저 고도<b id="stMin">-</b></div>
+      <div class="stat">최고 고도<b id="stMax">-</b></div>
+      <a class="kakao-open" id="kakaoOpenLink" href="#" target="_blank">카카오맵 앱으로 열기 ↗</a>
+      <button class="printbtn" onclick="window.print()">🖨 인쇄 / PDF</button>
+    </div>
+  </header>
+  <div class="card">
+    <h2>🗺 코스 지도
+      <span class="seg course" id="courseSeg"></span>
+      <span class="seg kk" id="typeSeg">
+        <button data-t="ROADMAP" class="on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
+      </span>
+      <span class="seg kk" id="ovSeg"><button data-o="TRAFFIC">교통</button><button data-o="TERRAIN">지형</button></span>
+      <span class="legend" id="legend"></span>
+    </h2>
+    <div id="mapWrap">
+      <div id="map"></div>
+      <div id="mapErr"><div class="in" id="mapErrIn"></div></div>
+      <button class="locate-btn" id="locateBtn" title="내 위치 추적">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/>
+          <line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/>
+          <line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="note" id="mapNoteEl"></div>
+    <div class="note" id="limitNoteEl" style="padding-top:0;color:#455a64;font-weight:700"></div>
+  </div>
+  <div class="card" id="paceCard" style="display:none">
+    <h2>⏱ 구간별 통과 예상 시각 <span id="paceLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span>
+      <span style="margin-left:auto;display:flex;gap:6px;align-items:center;font-size:.75rem;font-weight:400">
+        간격 <select id="paceStep" style="padding:4px 7px;font-size:.75rem;border:1px solid var(--line);border-radius:7px">
+          <option value="1">1 km</option><option value="2">2 km</option><option value="5" selected>5 km</option></select>
+        <label><input type="checkbox" id="paceOnlyPoi"> 시설 지점만</label>
+      </span>
+    </h2>
+    <div class="tables" id="paceTable" style="grid-template-columns:1fr"></div>
+    <div class="note">출발 시각 기준 예상 통과 시각 (관리자용)</div>
+  </div>
+  <div class="card">
+    <h2>⛰ 고저도 <span style="font-size:.75rem;color:#78909c;font-weight:400">마우스를 올리면 지점별 상세 정보가 표시됩니다</span></h2>
+    <div id="chartBox"><canvas id="elev"></canvas><div id="tooltip"></div></div>
+  </div>
+  <div class="card">
+    <h2><span id="tblTitleEl">📋 코스 시설 안내</span> <span id="tblCourseLabel" style="font-size:.78rem;color:#2e7d32;font-weight:700"></span></h2>
+    <div class="tables" id="tables"></div>
+    <div class="note" id="tblNoteEl"></div>
+  </div>
+  <div class="card" id="supCard" style="display:none">
+    <h2>🧰 물자 집계 <span id="supLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span></h2>
+    <div class="sumchips" id="supChips"></div>
+    <div class="tables" id="supTable"></div>
+    <div class="note">관리자용 자료입니다. 참가자 배포용 파일에는 포함되지 않습니다.</div>
+  </div>
+</div>
+<script>
+const DATA = /*__DATA__*/null;
+const CAT={}; DATA.cats.forEach(c=>CAT[c.id]=c);
+const SUP=DATA.supplies||[];
+const T=Object.assign({subtitle:'',mapNote:'',tableTitle:'📋 코스 시설 안내',tableNote:'',colGo:'왕편',colBack:'복편',colName:'명칭',colMemo:'비고'}, DATA.texts||{});
+const ADMIN = DATA.mode==='admin';
+const COLS = Object.assign({gap:false,ops:false,memo:true,ele:false}, DATA.cols||{});
+const RQ = n => (DATA.roundMode==='ceil'?Math.ceil(n):Math.round(n));
+function boxesOf(item, units){
+  if(!item||!item.boxQty||item.boxQty<=0||!units) return null;
+  const v=units/item.boxQty, r=RQ(v);
+  return (v>0&&r<1)?1:r;
+}
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let curKey=DATA.order[0], C=DATA.courses[curKey];
+document.getElementById('hTitle').textContent=DATA.title;
+document.getElementById('hSub').textContent=T.subtitle;
+document.getElementById('mapNoteEl').textContent=T.mapNote;
+document.getElementById('tblTitleEl').textContent=T.tableTitle;
+document.getElementById('tblNoteEl').textContent=T.tableNote;
+document.title=DATA.title+(ADMIN?' (관리자용)':'');
+document.getElementById('limitNoteEl').textContent=DATA.limitNote||'';
+if(ADMIN){
+  document.getElementById('hdr').classList.add('admin');
+  document.getElementById('hTag').style.display='inline-block';
+  document.getElementById('supCard').style.display='block';
+  document.getElementById('paceCard').style.display='block';
+}
+document.getElementById('kakaoOpenLink').href='https://map.kakao.com/link/map/'+encodeURIComponent(DATA.title+' 출발/도착')+','+DATA.start[0]+','+DATA.start[1];
+
+const dirLabel=d=>d==='go'?T.colGo:(d==='back'?T.colBack:'');
+const passInfo=p=>(p.rows&&p.rows.length)?p.rows:[{km:p.km||0,d:''}];
+const passStr=p=>passInfo(p).map(x=>(x.d?dirLabel(x.d)+' ':'')+x.km.toFixed(2)+' km').join(' · ');
+function supStr(p){
+  if(!ADMIN||!p.sup) return '';
+  const arr=SUP.filter(s=>p.sup[s.id]).map(s=>{
+    const b=boxesOf(s,p.sup[s.id]);
+    return esc(s.label)+' '+p.sup[s.id]+esc(s.unit)+(b!=null?'('+b+'박스)':'');
+  });
+  return (p.people?'<br><span style="color:#455a64">👥 통과 '+p.people.toLocaleString()+'명</span>':'')+
+    (arr.length?'<br><span style="color:#455a64">🧰 '+arr.join(', ')+'</span>':'');
+}
+function poiInfoHtml(p){
+  const c=CAT[p.cat];
+  let s='<b>'+c.icon+' '+esc(p.name)+'</b><br>구분: '+esc(c.label)+'<br>거리: '+passStr(p);
+  if(p.time) s+='<br>제한 시각: <b>'+esc(p.time)+'</b>';
+  if(ADMIN&&p.ops) s+='<br>운영 시간: '+esc(p.ops);
+  if(p.memo) s+='<br>'+esc(T.colMemo)+': '+esc(p.memo);
+  if(p.ele!=null) s+='<br>고도: '+p.ele+' m';
+  return s+supStr(p);
+}
+/* ── 카카오맵 ── */
+let kmap=null,kReady=false,kObjs=[],kInfo=null,kHover=null,kMy=null,cum=[];
+const ovState={TRAFFIC:false,TERRAIN:false};
+function mapErr(reason){
+  document.getElementById('mapErr').style.display='flex';
+  document.getElementById('mapErrIn').innerHTML='<b>카카오맵을 불러오지 못했습니다 ('+esc(reason)+')</b><br><br>'+
+    '이 파일을 <b>더블클릭(file://)으로 열면</b> 카카오 지도가 동작하지 않습니다.<br>'+
+    '웹 서버에 올린 뒤, 카카오 개발자 콘솔 → 앱 설정 → <b>플랫폼 → Web</b> 에 해당 도메인을 등록해 주세요.<br>'+
+    '(로컬 확인은 <code>python -m http.server 8000</code> 후 <code>http://localhost:8000</code> 등록)';
+}
+(function loadKakao(){
+  const s=document.createElement('script');
+  s.src='https://dapi.kakao.com/v2/maps/sdk.js?appkey='+encodeURIComponent(DATA.kakaoKey||'')+'&autoload=false';
+  s.onload=()=>{ try{ kakao.maps.load(init); }catch(e){ mapErr(e.message); } };
+  s.onerror=()=>mapErr('스크립트 로드 실패');
+  document.head.appendChild(s);
+  setTimeout(()=>{ if(!kReady) mapErr('응답 없음'); },9000);
+})();
+const kLL=a=>new kakao.maps.LatLng(a[0],a[1]);
+function init(){
+  kmap=new kakao.maps.Map(document.getElementById('map'),{center:kLL(DATA.start),level:7});
+  kReady=true;
+  kakao.maps.event.addListener(kmap,'click',()=>closeInfo());
+  document.getElementById('typeSeg').onclick=e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    document.querySelectorAll('#typeSeg button').forEach(x=>x.classList.toggle('on',x===b));
+    kmap.setMapTypeId(kakao.maps.MapTypeId[b.dataset.t]);
+  };
+  document.getElementById('ovSeg').onclick=e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    const t=b.dataset.o, id=kakao.maps.MapTypeId[t];
+    if(ovState[t]){ kmap.removeOverlayMapTypeId(id); b.classList.remove('on'); }
+    else { kmap.addOverlayMapTypeId(id); b.classList.add('on'); }
+    ovState[t]=!ovState[t];
+  };
+  setCourse(DATA.order[0]);
+}
+function kOv(pos,html,z,onClick,yAnchor){
+  const box=document.createElement('div'); box.innerHTML=html;
+  const node=box.firstElementChild;
+  const ov=new kakao.maps.CustomOverlay({position:pos,content:node,xAnchor:.5,yAnchor:(yAnchor==null?.5:yAnchor),zIndex:z||1,clickable:true});
+  if(onClick) node.addEventListener('click',ev=>{ev.stopPropagation();onClick(ev);});
+  ov.setMap(kmap); kObjs.push(ov); return ov;
+}
+function closeInfo(){ if(kInfo){kInfo.setMap(null);kInfo=null;} }
+function showInfo(html,lat,lon){
+  closeInfo();
+  const el=document.createElement('div');
+  el.className='kinfo'; el.innerHTML=html+'<span class="x">×</span>';
+  el.querySelector('.x').addEventListener('click',closeInfo);
+  kInfo=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(lat,lon),content:el,yAnchor:1.45,zIndex:900,clickable:true});
+  kInfo.setMap(kmap);
+}
+function computeCum(){
+  cum=[0];
+  const R=6371008.8, rad=Math.PI/180;
+  for(let i=1;i<C.track.length;i++){
+    const a=C.track[i-1],b=C.track[i];
+    const dla=(b[0]-a[0])*rad, dlo=(b[1]-a[1])*rad;
+    const h=Math.sin(dla/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(dlo/2)**2;
+    cum.push(cum[i-1]+2*R*Math.asin(Math.sqrt(h)));
+  }
+}
+function latlngAtKm(km){
+  const d=km*1000; let lo=0,hi=cum.length-1;
+  while(lo<hi){const m=(lo+hi)>>1; cum[m]<d?lo=m+1:hi=m;}
+  const i=Math.max(1,lo),d0=cum[i-1],d1=cum[i],t=d1>d0?(d-d0)/(d1-d0):0;
+  const a=C.track[i-1],b=C.track[i];
+  return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1])];
+}
+const kmSize=k=>k%5===0?22:15;
+function kmHtml(k){
+  const big=k%5===0,s=kmSize(k),f=big?9:8;
+  return '<div class="kkm" style="background:'+(big?'#e53935':'#fff')+';color:'+(big?'#fff':'#e53935')+
+    ';border:'+(big?'2px solid #fff':'1.5px solid #e53935')+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</div>';
+}
+function nudged(k){
+  const ll=latlngAtKm(k);
+  for(const p of C.pois){
+    const dy=(ll[0]-p.lat)*111320, dx=(ll[1]-p.lon)*111320*Math.cos(ll[0]*Math.PI/180);
+    if(Math.sqrt(dx*dx+dy*dy)<45) return [ll[0]+0.00035, ll[1]+0.0002];
+  }
+  return ll;
+}
+const markerOv={};
+function rebuildMap(fit){
+  if(!kReady) return;
+  kObjs.forEach(o=>o.setMap(null)); kObjs=[]; closeInfo();
+  for(const k in markerOv) delete markerOv[k];
+  const pl=new kakao.maps.Polyline({path:C.track.map(kLL),strokeColor:C.color||'#e53935',strokeWeight:5,strokeOpacity:.9});
+  pl.setMap(kmap); kObjs.push(pl);
+  const st=C.track[0];
+  kOv(kLL(st),'<div class="kstart">출발/도착</div>',300,()=>showInfo('<b>🏁 출발 / 도착</b><br>0 km / '+C.total_km.toFixed(2)+' km',st[0],st[1]));
+  for(let k=1;k<C.total_km;k++){
+    const ll=nudged(k);
+    ((kk,l)=>kOv(kLL(l),kmHtml(kk),40,()=>showInfo('<b>'+kk+' km 지점</b>',l[0],l[1])))(k,ll);
+  }
+  const seen={};
+  C.pois.forEach((p,i)=>{
+    const key=p.lat.toFixed(4)+','+p.lon.toFixed(4);
+    const n=seen[key]||0; seen[key]=n+1;
+    markerOv[i]=kOv(kLL([p.lat,p.lon+n*0.00038]),'<div class="kpoi" style="background:'+CAT[p.cat].color+'">'+CAT[p.cat].icon+'</div>',200,
+      ()=>showInfo(poiInfoHtml(p),p.lat,p.lon));
+  });
+  if(fit){
+    const b=new kakao.maps.LatLngBounds();
+    const st2=Math.max(1,Math.floor(C.track.length/400));
+    for(let i=0;i<C.track.length;i+=st2) b.extend(kLL(C.track[i]));
+    b.extend(kLL(C.track[C.track.length-1]));
+    kmap.setBounds(b);
+  }
+}
+/* ── 내 위치 ── */
+let watchId=null, firstFix=true;
+const btn=document.getElementById('locateBtn');
+btn.addEventListener('click',()=>{
+  if(!navigator.geolocation){alert('이 기기에서는 위치 서비스를 사용할 수 없습니다.');return;}
+  if(watchId!==null){ navigator.geolocation.clearWatch(watchId); watchId=null; btn.classList.remove('tracking'); firstFix=true; if(kMy){kMy.setMap(null);kMy=null;} return; }
+  watchId=navigator.geolocation.watchPosition(pos=>{
+    if(!kReady) return;
+    const ll=[pos.coords.latitude,pos.coords.longitude];
+    btn.classList.add('tracking');
+    if(!kMy){
+      const el=document.createElement('div'); el.innerHTML='<div class="my-dot"></div>';
+      kMy=new kakao.maps.CustomOverlay({position:kLL(ll),content:el.firstElementChild,xAnchor:.5,yAnchor:.5,zIndex:950});
+      kMy.setMap(kmap);
+    } else kMy.setPosition(kLL(ll));
+    if(firstFix){ firstFix=false; kmap.setLevel(4); kmap.setCenter(kLL(ll)); }
+  }, err=>{ btn.classList.remove('tracking'); alert('위치를 가져올 수 없습니다: '+err.message); },
+  {enableHighAccuracy:true,maximumAge:1000,timeout:15000});
+});
+/* ── 고저도 ── */
+const canvas=document.getElementById('elev'), ctx=canvas.getContext('2d'), tooltip=document.getElementById('tooltip');
+const PAD={l:46,r:14,t:14,b:26};
+function eleAtKm(km){
+  const P=C.profile;
+  let i=0; while(i<P.length-1&&P[i+1][0]<km) i++;
+  const [k0,e0]=P[i],[k1,e1]=P[Math.min(i+1,P.length-1)];
+  const t=k1>k0?(km-k0)/(k1-k0):0;
+  return e0+t*(e1-e0);
+}
+function drawChart(hoverX){
+  const P=C.profile,total=C.total_km;
+  const dpr=window.devicePixelRatio||1,W=canvas.clientWidth,H=canvas.clientHeight;
+  canvas.width=W*dpr; canvas.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  if(!C.hasEle){ ctx.fillStyle='#90a4ae'; ctx.font='13px sans-serif'; ctx.textAlign='center'; ctx.fillText('고도 정보가 없는 코스입니다',W/2,H/2); return null; }
+  let eMin=Math.floor(C.ele_min/10)*10, eMax=Math.ceil(C.ele_max/10)*10+10;
+  if(eMax-eMin<30) eMax=eMin+30;
+  const iw=W-PAD.l-PAD.r, ih=H-PAD.t-PAD.b;
+  const x=km=>PAD.l+iw*km/total, y=e=>PAD.t+ih*(1-(e-eMin)/(eMax-eMin));
+  const eStep=(eMax-eMin)>120?50:((eMax-eMin)>60?25:10);
+  ctx.font='10px sans-serif'; ctx.fillStyle='#90a4ae'; ctx.strokeStyle='#eceff1'; ctx.lineWidth=1;
+  for(let e=eMin;e<=eMax;e+=eStep){
+    ctx.beginPath();ctx.moveTo(PAD.l,y(e));ctx.lineTo(W-PAD.r,y(e));ctx.stroke();
+    ctx.textAlign='right';ctx.fillText(e+'m',PAD.l-6,y(e)+3);
+  }
+  const kStep=total>25?5:(total>8?2:1);
+  for(let k=0;k<=total;k+=kStep){
+    ctx.beginPath();ctx.moveTo(x(k),PAD.t);ctx.lineTo(x(k),H-PAD.b);ctx.stroke();
+    ctx.textAlign='center';ctx.fillText(k+'km',x(k),H-8);
+  }
+  const grad=ctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
+  grad.addColorStop(0,'rgba(25,118,210,.45)');grad.addColorStop(1,'rgba(25,118,210,.05)');
+  ctx.beginPath(); ctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) ctx.lineTo(x(k),y(e));
+  ctx.lineTo(x(P[P.length-1][0]),H-PAD.b); ctx.lineTo(x(P[0][0]),H-PAD.b); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) ctx.lineTo(x(k),y(e));
+  ctx.strokeStyle='#1565c0'; ctx.lineWidth=2; ctx.stroke();
+  C.pois.forEach(p=>passInfo(p).forEach(r=>{
+    ctx.beginPath(); ctx.arc(x(r.km),y(eleAtKm(r.km)),4,0,7);
+    ctx.fillStyle=CAT[p.cat].color; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  }));
+  if(hoverX!=null&&hoverX>=PAD.l&&hoverX<=W-PAD.r){
+    const km=(hoverX-PAD.l)/iw*total, ele=eleAtKm(km);
+    ctx.beginPath();ctx.moveTo(hoverX,PAD.t);ctx.lineTo(hoverX,H-PAD.b);
+    ctx.strokeStyle='rgba(38,50,56,.55)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(hoverX,y(ele),5,0,7);ctx.fillStyle='#e53935';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    return {km,ele};
+  }
+  return null;
+}
+canvas.addEventListener('mousemove',ev=>{
+  const r=canvas.getBoundingClientRect(), res=drawChart(ev.clientX-r.left);
+  if(!res){tooltip.style.display='none';return;}
+  let near='';
+  C.pois.forEach(p=>passInfo(p).forEach(x2=>{
+    if(Math.abs(x2.km-res.km)<=Math.max(0.15,C.total_km*0.006))
+      near+='<br>'+CAT[p.cat].icon+' '+esc(p.name)+(x2.d?' '+dirLabel(x2.d):'')+' ('+x2.km.toFixed(2)+'km)'+(p.time?' · '+esc(p.time):'');
+  }));
+  const P=C.profile;
+  let i=0; while(i<P.length-1&&P[i+1][0]<res.km) i++;
+  const j=Math.min(i+4,P.length-1);
+  const grade=P[j][0]>P[i][0]?((P[j][1]-P[i][1])/((P[j][0]-P[i][0])*1000)*100):0;
+  tooltip.innerHTML='<b>'+res.km.toFixed(2)+' km</b><br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
+  tooltip.style.display='block';
+  const box=document.getElementById('chartBox').getBoundingClientRect();
+  let tx=ev.clientX-box.left+14;
+  if(tx+tooltip.offsetWidth>box.width-10) tx=ev.clientX-box.left-tooltip.offsetWidth-14;
+  tooltip.style.left=tx+'px'; tooltip.style.top=(ev.clientY-box.top-10)+'px';
+  if(kReady&&kmap){
+    const ll=latlngAtKm(res.km);
+    if(!kHover){
+      const el=document.createElement('div');
+      el.innerHTML='<div style="width:16px;height:16px;background:#e53935;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>';
+      kHover=new kakao.maps.CustomOverlay({position:kLL(ll),content:el.firstElementChild,xAnchor:.5,yAnchor:.5,zIndex:800});
+      kHover.setMap(kmap);
+    } else kHover.setPosition(kLL(ll));
+  }
+});
+canvas.addEventListener('mouseleave',()=>{
+  drawChart(null); tooltip.style.display='none';
+  if(kHover){kHover.setMap(null);kHover=null;}
+});
+window.addEventListener('resize',()=>{ drawChart(null); if(kmap) kmap.relayout(); });
+/* ── 표 ── */
+function renderTables(){
+  const box=document.getElementById('tables'); box.innerHTML='';
+  DATA.cats.forEach(cat=>{
+    const items=C.pois.filter(p=>p.cat===cat.id);
+    if(!items.length) return;
+    const useMemo=COLS.memo && items.some(p=>p.memo);
+    const useGap=COLS.gap, useEle=COLS.ele&&C.hasEle;
+    const supIds=ADMIN?SUP.filter(s=>items.some(p=>(p.sup||{})[s.id])).map(s=>s.id):[];
+    const useOps=COLS.ops && items.some(p=>p.ops);
+    let rows='';
+    items.forEach(p=>{
+      const info=passInfo(p), idx=C.pois.indexOf(p);
+      const go=info.find(x=>x.d!=='back'), back=info.find(x=>x.d==='back');
+      const c2=cat.hasTime
+        ? '<td class="km">'+info[0].km.toFixed(2)+' km</td><td class="km">'+esc(p.time||'—')+'</td>'
+        : '<td class="km">'+(go?go.km.toFixed(2)+' km':'—')+'</td><td class="km" style="opacity:.7">'+(back?back.km.toFixed(2)+' km':'—')+'</td>';
+      rows+='<tr class="row" data-i="'+idx+'">'+c2+'<td>'+esc(p.name)+'</td>'+
+        (useGap?'<td class="km" style="color:#90a4ae;font-weight:400">+'+(p.gap!=null?p.gap.toFixed(2):'')+'</td>':'')+
+        (useOps?'<td class="ops">'+esc(p.ops||'')+'</td>':'')+
+        (useEle?'<td class="qty" style="color:#607d8b">'+(p.ele!=null?p.ele+' m':'')+'</td>':'')+
+        (useMemo?'<td style="color:#607d8b">'+esc(p.memo||'')+'</td>':'')+
+        supIds.map(s=>{const o=SUP.find(v=>v.id===s), u=(p.sup||{})[s]||0, b=boxesOf(o,u);
+          return '<td class="qty">'+(u?u.toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#90a4ae">'+b+'박스</div>':''):'')+'</td>';}).join('')+
+        '</tr>';
+    });
+    const base=3+(useGap?1:0)+(useOps?1:0)+(useEle?1:0)+(useMemo?1:0);
+    let foot='';
+    if(supIds.length){
+      foot='<tfoot><tr><td colspan="'+base+'">합계</td>'+
+        supIds.map(s=>{const o=SUP.find(v=>v.id===s), u=items.reduce((a,p)=>a+((p.sup||{})[s]||0),0), b=boxesOf(o,u);
+          return '<td class="qty">'+u.toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#546e7a">'+b+'박스</div>':'')+'</td>';}).join('')+'</tr></tfoot>';
+    }
+    const wrap=document.createElement('div');
+    wrap.innerHTML='<table><thead><tr><th colspan="'+(base+supIds.length)+'">'+
+      '<span class="titleicon" style="background:'+cat.color+'">'+cat.icon+'</span> '+esc(cat.label)+'</th></tr>'+
+      '<tr><th>'+esc(cat.hasTime?'거리':T.colGo)+'</th><th>'+esc(cat.hasTime?'제한 시각':T.colBack)+'</th><th>'+esc(T.colName)+'</th>'+
+      (useGap?'<th>'+esc(T.colGap||'간격')+'</th>':'')+
+      (useOps?'<th>'+esc(T.colOps||'운영 시간')+'</th>':'')+
+      (useEle?'<th style="text-align:right">고도</th>':'')+
+      (useMemo?'<th>'+esc(T.colMemo)+'</th>':'')+
+      supIds.map(s=>{const o=SUP.find(v=>v.id===s);return '<th style="text-align:right">'+esc(o?o.label:s)+(o&&o.boxNote?'<br><span style="font-weight:400">'+esc(o.boxNote)+'</span>':'')+'</th>';}).join('')+
+      '</tr></thead><tbody>'+rows+'</tbody>'+foot+'</table>';
+    wrap.querySelectorAll('tr.row').forEach(tr=>{
+      tr.addEventListener('click',()=>{
+        const p=C.pois[+tr.dataset.i];
+        if(kReady){ kmap.setLevel(3); kmap.setCenter(new kakao.maps.LatLng(p.lat,p.lon)); showInfo(poiInfoHtml(p),p.lat,p.lon); }
+        document.getElementById('mapWrap').scrollIntoView({behavior:'smooth',block:'center'});
+      });
+    });
+    box.appendChild(wrap);
+  });
+  if(!box.children.length) box.innerHTML='<div style="padding:24px;color:#90a4ae;font-size:.85rem">이 코스에는 등록된 시설이 없습니다.</div>';
+}
+function renderSupplies(){
+  if(!ADMIN) return;
+  const totals={};
+  C.pois.forEach(p=>Object.entries(p.sup||{}).forEach(([k,v])=>{totals[k]=(totals[k]||0)+v;}));
+  const keys=SUP.filter(s=>totals[s.id]);
+  document.getElementById('supChips').innerHTML=keys.length
+    ? keys.map(s=>{const b=boxesOf(s,totals[s.id]);
+        return '<div class="sumchip">'+esc(s.label)+'<b>'+totals[s.id].toLocaleString()+' '+esc(s.unit)+
+          (b!=null?'<br><span style="font-size:.72rem;color:#546e7a">'+b+'박스'+(s.boxNote?' ('+esc(s.boxNote)+')':'')+'</span>':'')+'</b></div>';}).join('')
+    : '<div style="color:#90a4ae;font-size:.85rem;padding-bottom:10px">입력된 물자가 없습니다.</div>';
+  const box=document.getElementById('supTable'); box.innerHTML='';
+  if(!keys.length) return;
+  let h='<div><table><thead><tr><th>지점</th><th>'+esc(T.colName)+'</th><th style="text-align:right">통과 인원</th><th>'+esc(T.colOps||'운영 시간')+'</th>'+
+    keys.map(s=>'<th style="text-align:right">'+esc(s.label)+'<br><span style="font-weight:400">'+esc(s.unit)+(s.boxNote?' · '+esc(s.boxNote):'')+'</span></th>').join('')+'</tr></thead><tbody>';
+  C.pois.forEach(p=>{
+    if(!p.sup||!Object.keys(p.sup).length) return;
+    h+='<tr><td class="km">'+passInfo(p)[0].km.toFixed(2)+' km</td><td>'+CAT[p.cat].icon+' '+esc(p.name)+'</td>'+
+      '<td class="qty">'+(p.people?p.people.toLocaleString():'—')+'</td>'+
+      '<td class="ops">'+esc(p.ops||'—')+'</td>'+
+      keys.map(s=>{const u=p.sup[s.id]||0, b=boxesOf(s,u);
+        return '<td class="qty">'+(u?u.toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#90a4ae">'+b+'박스</div>':''):'')+'</td>';}).join('')+'</tr>';
+  });
+  h+='</tbody><tfoot><tr><td colspan="4">합계'+(C.participants?' · 참가 '+C.participants.toLocaleString()+'명':'')+'</td>'+
+    keys.map(s=>{const b=boxesOf(s,totals[s.id]);
+      return '<td class="qty">'+totals[s.id].toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#546e7a">'+b+'박스</div>':'')+'</td>';}).join('')+'</tr></tfoot></table></div>';
+  box.innerHTML=h;
+}
+/* 구간별 통과 예상 시각 (관리자용) */
+function hm(str){ const m=String(str||'').match(/^(\d{1,2}):([0-5]\d)$/); return m?(+m[1])*60+(+m[2]):null; }
+function paceMin(str){ const m=String(str||'').match(/^(\d+):([0-5]?\d)$/); return m?(+m[1])+(+m[2])/60:null; }
+function toHm(mins){ let t=Math.round(mins); t=((t%1440)+1440)%1440; return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function paceStr(p){ const s=Math.round(p*60); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function renderPace(){
+  if(!ADMIN) return;
+  const ev=DATA.event||{start:'08:00',lead:'3:30',last:'9:00'};
+  const st=hm(ev.start)||0, lead=paceMin(ev.lead)||3.5, lim=C.limitPace||null;
+  const bands=[{label:'선두 '+ev.lead, pace:lead}];
+  if(lim&&lim>lead){
+    for(let i=1;i<=3;i++){ const p=lead+(lim-lead)*i/4; bands.push({label:paceStr(p), pace:p}); }
+    bands.push({label:'제한 '+paceStr(lim), pace:lim, limit:true});
+  } else { [4.5,5.5,6.5,paceMin(ev.last)||9].forEach(p=>{ if(p>lead) bands.push({label:paceStr(p), pace:p}); }); }
+  document.getElementById('paceLabel').textContent='— '+C.name+' · 출발 '+ev.start+(C.limit?' · 제한 '+C.limit:'');
+  const step=+document.getElementById('paceStep').value, onlyPoi=document.getElementById('paceOnlyPoi').checked;
+  const marks=[];
+  if(onlyPoi){
+    C.pois.forEach(p=>passInfo(p).forEach(r=>marks.push({km:r.km, label:CAT[p.cat].icon+' '+p.name+(r.d?' '+dirLabel(r.d):'')})));
+    marks.sort((a,b)=>a.km-b.km);
+  } else {
+    for(let k=step;k<C.total_km;k+=step) marks.push({km:k,label:''});
+    marks.push({km:C.total_km,label:'피니시'});
+  }
+  let h='<div><table><thead><tr><th>거리</th><th>지점</th>'+
+    bands.map(b=>'<th style="text-align:right'+(b.limit?';color:#c62828':'')+'">'+esc(b.label)+'</th>').join('')+'</tr></thead><tbody>';
+  marks.forEach(m=>{
+    h+='<tr><td class="km">'+m.km.toFixed(2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label)+'</td>'+
+      bands.map(b=>'<td class="qty"'+(b.limit?' style="color:#c62828;font-weight:700"':'')+'>'+toHm(st+m.km*b.pace)+'</td>').join('')+'</tr>';
+  });
+  h+='</tbody></table></div>';
+  document.getElementById('paceTable').innerHTML=h;
+}
+if(ADMIN){
+  document.getElementById('paceStep').onchange=renderPace;
+  document.getElementById('paceOnlyPoi').onchange=renderPace;
+}
+function renderLegend(){
+  const used=[...new Set(C.pois.map(p=>p.cat))];
+  document.getElementById('legend').innerHTML=used.map(id=>{
+    const c=CAT[id];
+    return '<span class="chip"><span class="dot" style="background:'+c.color+'"></span>'+esc(c.label)+'</span>';
+  }).join('');
+}
+function renderStats(){
+  document.getElementById('stCourse').textContent=C.name;
+  document.getElementById('stTotal').textContent=C.total_km.toFixed(2)+' km';
+  document.getElementById('stGain').textContent=C.hasEle?'+'+C.gain+' m':'—';
+  document.getElementById('stMin').textContent=C.hasEle?C.ele_min.toFixed(0)+' m':'—';
+  document.getElementById('stMax').textContent=C.hasEle?C.ele_max.toFixed(0)+' m':'—';
+  document.getElementById('tblCourseLabel').textContent='— '+C.name+' 기준';
+  document.getElementById('supLabel').textContent='— '+C.name+' 기준';
+}
+const courseSeg=document.getElementById('courseSeg');
+courseSeg.innerHTML=DATA.order.map((id,i)=>'<button data-c="'+id+'"'+(i===0?' class="on"':'')+'>'+esc(DATA.courses[id].name)+'</button>').join('');
+function setCourse(key){
+  curKey=key; C=DATA.courses[key];
+  courseSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.c===key));
+  computeCum(); rebuildMap(true); drawChart(null); renderTables(); renderSupplies(); renderPace(); renderLegend(); renderStats();
+}
+courseSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCourse(b.dataset.c)));
+computeCum(); drawChart(null); renderTables(); renderSupplies(); renderPace(); renderLegend(); renderStats();
+<%SCRIPT_END%>
+</body>
+</html>
+</script>
+</body>
+</html>
