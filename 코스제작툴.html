@@ -79,6 +79,31 @@ label.f{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin
 .card{background:var(--panel);border:1px solid var(--line);border-radius:13px;margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow);}
 .card>h2{font-size:.92rem;padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .card>h2 .sm{font-size:.72rem;font-weight:400;color:var(--muted);}
+#mapHint{min-width:0;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#mapTools{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end;min-width:0;max-width:100%;}
+#mapTools .rng{flex:none;width:auto;gap:6px;border:1px solid var(--line);border-radius:9px;padding:3px 9px;background:#f8fafc;}
+#mapTools .rng .lbl{font-size:.7rem;color:var(--muted);font-weight:600;white-space:nowrap;}
+#mapTools .rng input[type=range]{flex:none;width:104px;}
+#mapTools .rng b{min-width:40px;font-weight:700;}
+#pubBar{display:none;flex-wrap:wrap;gap:7px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:#fafbfc;}
+#pubBar .lbl{font-size:.76rem;font-weight:800;color:#37474f;white-space:nowrap;}
+#pubBar .hintx{font-size:.7rem;color:#9aa5b1;flex-basis:100%;}
+.pubchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:20px;
+  padding:4px 11px 4px 8px;font-size:.78rem;cursor:pointer;transition:.15s;user-select:none;}
+.pubchip:hover{border-color:#b8c2cc;}
+.pubchip input{width:15px;height:15px;accent-color:var(--ok);cursor:pointer;margin:0;flex:none;}
+.pubchip .catDot{width:19px;height:19px;font-size:10px;}
+.pubchip .cnt{font-size:.7rem;color:var(--muted);background:#f1f5f9;border-radius:20px;padding:1px 7px;font-variant-numeric:tabular-nums;}
+.pubchip.on{border-color:#a5d6a7;background:#f1f8f2;}
+.pubchip.off{background:#f4f5f7;color:#9aa5b1;border-style:dashed;}
+.pubchip.off .catDot{filter:grayscale(1);opacity:.6;}
+.pubchip.part{border-color:#ffcc80;background:#fff8ef;}
+.supcell{display:inline-flex;align-items:center;gap:5px;justify-content:flex-end;}
+.supcell input[type=checkbox]{width:14px;height:14px;accent-color:var(--ok);cursor:pointer;flex:none;margin:0;}
+td.offcell{background:#f6f7f9;}
+td.offcell .qtyin{opacity:.5;background:#eef1f4;color:#9aa5b1;}
+.colsw{cursor:pointer;border-bottom:1px dotted #b0bec5;}
+.colsw:hover{color:var(--brand);border-bottom-color:var(--brand);}
 #mapWrap{position:relative;}
 #map{height:560px;width:100%;background:#e8edf2;}
 #mapOverlayMsg{position:absolute;inset:0;background:rgba(244,246,248,.97);display:flex;align-items:center;justify-content:center;z-index:50;padding:24px;text-align:center;}
@@ -96,7 +121,9 @@ label.f{display:block;font-size:.74rem;font-weight:700;color:var(--muted);margin
 #chartBox{position:relative;padding:10px 14px 14px;}
 #elev{width:100%;height:240px;display:block;cursor:crosshair;}
 #tip{position:absolute;pointer-events:none;background:rgba(31,41,55,.95);color:#fff;padding:8px 11px;border-radius:8px;font-size:.76rem;line-height:1.55;display:none;white-space:nowrap;z-index:10;}
-.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;padding:14px;}
+.tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;padding:14px;align-items:start;}
+.tables>div{min-width:0;max-width:100%;overflow-x:auto;overflow-y:hidden;}
+.tables table{min-width:max-content;}
 table{width:100%;border-collapse:collapse;font-size:.82rem;}
 th{background:#f7f9fb;text-align:left;padding:8px 10px;border-bottom:2px solid var(--line);font-size:.73rem;color:var(--muted);white-space:nowrap;}
 td{padding:7px 10px;border-bottom:1px solid #eef1f4;vertical-align:middle;}
@@ -170,6 +197,9 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
           <button class="btn sm" id="reloadKakao">지도 다시 불러오기</button>
           <span id="kakaoState" style="font-size:.73rem;color:var(--muted);align-self:center"></span>
         </div>
+        <label class="f">카카오모빌리티 REST 키 <span style="font-weight:400;color:#9aa5b1">— 도로 보정용(선택)</span></label>
+        <input type="text" id="restKey" placeholder="비워두면 도로 보정 버튼이 비활성화됩니다">
+        <div class="hint" style="margin-top:6px">라인 편집 모드의 <b>🛣 도로 보정</b>에 사용됩니다. 브라우저에서 직접 호출하므로 <b>CORS가 막히면 동작하지 않을 수 있고</b>, 키가 파일에 저장되니 외부 배포용 파일에는 넣지 마세요. 키가 없어도 <b>〰 선 다듬기</b>는 그냥 씁니다.</div>
       </div>
       <div class="block">
         <h3>2. 코스 구성 <button class="btn sm" id="addSlotBtn" style="margin-left:auto">＋ 종목 추가</button></h3>
@@ -257,14 +287,15 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
     <div id="content">
       <div class="card">
         <h2>🗺 코스 지도 <span class="seg" id="courseSegMap"></span> <span class="sm" id="mapHint"></span>
-          <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+          <span id="mapTools">
             <span class="seg" id="mapTypeSeg">
               <button data-t="ROADMAP" class="on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
             </span>
             <button class="btn sm" id="fitBtn">전체 보기</button>
             <button class="btn sm" id="kmToggle">km 표시 ON</button>
             <button class="btn sm" id="retToggle">복편 분리 ON</button>
-            <span class="rng" style="width:150px" title="왕편 ↔ 복편 라인 간격">
+            <span class="rng" title="왕편 ↔ 복편 라인 간격">
+              <span class="lbl">복편 간격</span>
               <input type="range" id="retRange2" min="0" max="120" step="2" value="14"><b id="retVal2">14 m</b>
             </span>
           </span>
@@ -280,6 +311,8 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
             <span class="edInfo" id="edInfo"></span>
             <span class="rng"><input type="range" id="edStep" min="10" max="300" step="10" value="50"><b id="edStepV">50 m</b></span>
             <button class="btn sm" id="edTurn">↩ 반환점</button>
+            <button class="btn sm" id="edSmooth">〰 선 다듬기</button>
+            <button class="btn sm" id="edRoad">🛣 도로 보정</button>
             <button class="btn sm" id="edTrim">✂ 앞/뒤 자르기</button>
             <button class="btn sm" id="edSnap">📍 시설 재스냅</button>
             <button class="btn sm" id="edUndo">↺ 되돌리기</button>
@@ -301,6 +334,7 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
         <h2><span id="tblTitleEl">📋 코스 시설 안내</span> <span class="sm" id="tblLabel"></span>
           <span class="sm" style="margin-left:auto">명칭·비고 칸을 클릭하면 바로 수정됩니다</span>
         </h2>
+        <div id="pubBar"></div>
         <div class="tables" id="tables"></div>
         <div class="note" id="tblNoteEl"></div>
       </div>
@@ -326,7 +360,7 @@ input.qtyin:focus{border-color:var(--brand);box-shadow:0 0 0 2px rgba(21,101,192
           </span>
         </h2>
         <div class="gridScroll" style="padding:14px" id="supGrid"></div>
-        <div class="note">칸에 수량을 직접 입력하면 즉시 저장됩니다. <b>자동 산정</b>은 (그 지점을 지나는 종목들의 참가 인원 합) × (물자 항목의 1인당 계수)로 채웁니다. 관리자용 코스도에만 표시됩니다.</div>
+        <div class="note">칸에 수량을 직접 입력하면 즉시 저장됩니다. 각 칸의 <b>체크박스</b>로 그 시설에서 해당 물자를 쓸지 끄고 켤 수 있고(끄면 자동 산정·합계에서 제외), 열 제목을 누르면 표시된 시설 전체에 일괄 적용됩니다. 시설명 옆 <b>⚙</b>로 한 시설의 종류를 모아서 선택할 수도 있습니다. <b>자동 산정</b>은 (그 지점을 지나는 종목들의 참가 인원 합) × (물자 항목의 1인당 계수)로 채웁니다. 관리자용 코스도에만 표시됩니다.</div>
       </div>
     </div>
   </main>
@@ -386,6 +420,8 @@ const uid = p => p + (SEQ++) + Math.random().toString(36).slice(2,5);
 const S = {
   title:'마라톤 코스도',
   kakaoKey:'c45e1e08eea53db5a726efa6edae142b',
+  restKey:'',                                  // 카카오모빌리티 REST 키(도로 보정용)
+  pubReturn:true,                              // 참가자용에 복편 분리 포함
   texts: Object.assign({}, DEFAULT_TEXTS),
   cats: JSON.parse(JSON.stringify(DEFAULT_CATS)),
   supplies: JSON.parse(JSON.stringify(DEFAULT_SUPPLIES)),
@@ -727,6 +763,9 @@ function applyTrack(course, pts, opts){
 /* ══════════════ 헬퍼 ══════════════ */
 const esc = s => String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 const catById = id => S.cats.find(c=>c.id===id) || {id,label:id,icon:'●',color:'#607d8b'};
+/* 참가자용 공개 여부 (카테고리 → 시설 순으로 확인) */
+const catPublic = c => !!c && c.pub!==false;
+const poiPublic = p => catPublic(catById(p.cat)) && p.pub!==false;
 const supById = id => S.supplies.find(s=>s.id===id) || {id,label:id,unit:''};
 const readyCourses = () => S.courses.filter(c=>c.enabled && c.pts && c.pts.length>1);
 const activeCourse = () => readyCourses().find(c=>c.id===S.activeCourse) || readyCourses()[0] || null;
@@ -1056,7 +1095,7 @@ function nextName(catId){
 function newPoi(catId, lat, lon, extra){
   return Object.assign({
     id:uid('p'), cat:catId, name:nextName(catId), lat:+lat.toFixed(6), lon:+lon.toFixed(6),
-    time:'', memo:'', dir:'both', scope:'auto', courses:[S.activeCourse], sup:{}
+    time:'', memo:'', dir:'both', scope:'auto', courses:[S.activeCourse], sup:{}, supOff:{}
   }, extra||{});
 }
 function createPoi(catId, snap){
@@ -1091,9 +1130,13 @@ function passLinesHtml(p){
 function editPoi(id, isNew){
   const p=S.pois.find(x=>x.id===id); if(!p) return;
   const cat=catById(p.cat);
-  const supHtml=S.supplies.map(s=>
-    '<div><label>'+esc(s.label)+' ('+esc(s.unit)+')</label>'+
-    '<input type="number" min="0" step="1" class="m_s" data-s="'+s.id+'" value="'+((p.sup||{})[s.id]||'')+'" placeholder="0"></div>').join('');
+  const supHtml=S.supplies.map(s=>{
+    const on=supEnabled(p,s);
+    return '<div><label style="display:flex;align-items:center;gap:5px;cursor:pointer">'+
+      '<input type="checkbox" class="m_so" data-s="'+s.id+'"'+(on?' checked':'')+' style="width:14px;height:14px;accent-color:var(--ok)">'+
+      esc(s.label)+' ('+esc(s.unit)+')</label>'+
+      '<input type="number" min="0" step="1" class="m_s" data-s="'+s.id+'" value="'+(on?((p.sup||{})[s.id]||''):'')+'" placeholder="'+(on?'0':'제외')+'"'+(on?'':' disabled')+'></div>';
+  }).join('');
   openModal('<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span>'+(isNew?'시설 추가':'시설 수정'),
     '<label class="f">시설 이름</label><input type="text" id="m_name" value="'+esc(p.name)+'">'+
     '<div style="display:flex;gap:8px">'+
@@ -1102,6 +1145,8 @@ function editPoi(id, isNew){
     '</div>'+
     '<div id="m_timeWrap" style="display:'+(cat.hasTime?'block':'none')+'"><label class="f">제한 시각 (예: 10:50)</label><input type="text" id="m_time" value="'+esc(p.time||'')+'"></div>'+
     '<label class="f">'+esc(S.texts.colMemo)+'</label><input type="text" id="m_memo" value="'+esc(p.memo||'')+'" placeholder="예: 생수+이온음료, 스탭 4명">'+
+    '<label class="chk"><input type="checkbox" id="m_pub"'+(p.pub!==false?' checked':'')+(catPublic(cat)?'':' disabled')+'> 🏃 참가자용 코스도에 공개'+
+      (catPublic(cat)?'':' <span style="color:#e65100">(카테고리 전체가 비공개)</span>')+'</label>'+
     '<label class="f">적용 코스</label>'+
     '<select id="m_scope"><option value="auto"'+(p.scope!=='only'?' selected':'')+'>자동 — 이 지점을 지나는 코스 모두</option>'+
       '<option value="only"'+(p.scope==='only'?' selected':'')+'>선택한 코스에만</option></select>'+
@@ -1119,11 +1164,16 @@ function editPoi(id, isNew){
       p.memo=document.getElementById('m_memo').value.trim();
       const t=document.getElementById('m_time');
       p.time=(t && catById(p.cat).hasTime)?t.value.trim():'';
+      const pubEl=document.getElementById('m_pub');
+      if(pubEl && !pubEl.disabled) p.pub=pubEl.checked;
       p.scope=document.getElementById('m_scope').value;
       p.courses=Array.from(document.querySelectorAll('.m_c:checked')).map(x=>x.value);
       if(p.scope==='only' && !p.courses.length) p.courses=[S.activeCourse];
+      p.supOff={};
+      document.querySelectorAll('.m_so').forEach(cb=>{ if(!cb.checked) p.supOff[cb.dataset.s]=true; });
       p.sup={};
       document.querySelectorAll('.m_s').forEach(inp=>{
+        if(p.supOff[inp.dataset.s]) return;
         const v=parseInt(inp.value,10);
         if(isFinite(v)&&v>0) p.sup[inp.dataset.s]=v;
       });
@@ -1230,16 +1280,18 @@ function catModal(existing, onCreate){
     '<label class="f">아이콘</label><div class="iconpick" id="c_icons">'+ICON_POOL.map(i=>'<button data-i="'+i+'"'+(i===icon?' class="on"':'')+'>'+i+'</button>').join('')+'</div>'+
     '<label class="f">색상</label><div class="colorpick" id="c_colors">'+COLOR_POOL.map(c=>'<button data-c="'+c+'" style="background:'+c+'"'+(c===color?' class="on"':'')+'></button>').join('')+'</div>'+
     '<label class="chk"><input type="checkbox" id="c_time"'+(existing&&existing.hasTime?' checked':'')+'> 제한 시각 입력란 사용 (컷오프 등)</label>'+
-    '<label class="chk"><input type="checkbox" id="c_sup"'+(existing&&existing.supply?' checked':'')+'> 🧰 물자 배정 대상 (물자 배정표에 표시)</label>',
+    '<label class="chk"><input type="checkbox" id="c_sup"'+(existing&&existing.supply?' checked':'')+'> 🧰 물자 배정 대상 (물자 배정표에 표시)</label>'+
+    '<label class="chk"><input type="checkbox" id="c_pub"'+(!existing||existing.pub!==false?' checked':'')+'> 🏃 참가자용 코스도에 공개 (끄면 이 종류 전체가 참가자용에서 빠집니다)</label>',
     ()=>{
       const label=document.getElementById('c_name').value.trim();
       if(!label){ toast('이름을 입력해 주세요'); return; }
       const hasTime=document.getElementById('c_time').checked;
       const supply=document.getElementById('c_sup').checked;
-      if(existing) Object.assign(existing,{label,icon,color,hasTime,supply});
+      const pub=document.getElementById('c_pub').checked;
+      if(existing) Object.assign(existing,{label,icon,color,hasTime,supply,pub});
       else{
         const id=uid('cat');
-        S.cats.push({id,label,icon,color,hasTime,supply});
+        S.cats.push({id,label,icon,color,hasTime,supply,pub});
         if(onCreate){ closeModal(); refreshAll(); onCreate(id); return; }
       }
       closeModal(); refreshAll();
@@ -1684,9 +1736,19 @@ function renderSide(){
   const kl=document.getElementById('catList'); kl.innerHTML='';
   S.cats.forEach(cat=>{
     const d=document.createElement('div'); d.className='catRow';
-    d.innerHTML='<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span><span class="nm">'+esc(cat.label)+'</span>'+
-      '<span class="cnt">'+S.pois.filter(p=>p.cat===cat.id).length+'</span><button class="iconbtn" title="수정">✎</button>';
-    d.querySelector('.iconbtn').onclick=()=>catModal(cat);
+    const hid=S.pois.filter(p=>p.cat===cat.id && !poiPublic(p)).length;
+    d.innerHTML='<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span><span class="nm">'+esc(cat.label)+
+        (catPublic(cat)?'':' <span class="miniTag" style="background:#ffe0b2;color:#e65100">참가자 비공개</span>')+
+        (catPublic(cat)&&hid?' <span class="miniTag">일부 비공개 '+hid+'</span>':'')+'</span>'+
+      '<span class="cnt">'+S.pois.filter(p=>p.cat===cat.id).length+'</span>'+
+      '<button class="iconbtn" data-pub="1" title="참가자용 공개/비공개">'+(catPublic(cat)?'👁':'🚫')+'</button>'+
+      '<button class="iconbtn" title="수정">✎</button>';
+    d.querySelector('[data-pub]').onclick=()=>{
+      cat.pub=!catPublic(cat);
+      renderSide(); renderTables();
+      toast(cat.label+' — 참가자용 '+(cat.pub?'공개':'비공개'));
+    };
+    d.querySelector('.iconbtn:last-child').onclick=()=>catModal(cat);
     kl.appendChild(d);
   });
   const sl=document.getElementById('supList'); sl.innerHTML='';
@@ -1806,14 +1868,55 @@ function renderStats(){
   document.getElementById('mapHint').textContent=c.name+' · '+c.total_km.toFixed(2)+' km'+
     (tk!=null?' · ↩ '+tk.toFixed(2)+'km 반환':'')+' · '+OVERLAP_LABEL[c.overlap];
 }
+/* ══════════════ 참가자 공개 바 (종류별 전체 / 개별) ══════════════ */
+function renderPubBar(){
+  const bar=document.getElementById('pubBar');
+  if(!bar) return;
+  const cats=S.cats.filter(cat=>S.pois.some(p=>p.cat===cat.id));
+  if(S.preview!=='admin' || !cats.length){ bar.style.display='none'; bar.innerHTML=''; return; }
+  bar.style.display='flex';
+  bar.innerHTML='<span class="lbl">🏃 참가자용 공개</span>'+
+    '<button class="btn sm" data-pb="all">전체 공개</button>'+
+    '<button class="btn sm" data-pb="none">전체 비공개</button>'+
+    '<span style="width:1px;height:20px;background:var(--line)"></span>'+
+    cats.map(cat=>{
+      const list=S.pois.filter(p=>p.cat===cat.id);
+      const shown=list.filter(poiPublic).length;
+      const on=catPublic(cat);
+      const cls = !on ? 'off' : (shown<list.length ? 'part' : 'on');
+      return '<label class="pubchip '+cls+'" title="'+(on?(shown<list.length?'일부만 참가자에게 표시':'참가자에게 표시 중'):'참가자에게 숨김')+'">'+
+        '<input type="checkbox" data-catpub2="'+cat.id+'"'+(on?' checked':'')+'>'+
+        '<span class="catDot" style="background:'+cat.color+'">'+cat.icon+'</span>'+esc(cat.label)+
+        '<span class="cnt">'+shown+'/'+list.length+'</span></label>';
+    }).join('')+
+    '<span class="hintx">체크를 끄면 그 종류 전체가 참가자용 코스도(지도·표)에서 빠집니다 · 하나씩 빼려면 아래 표의 <b>🏃 공개</b> 열을 쓰세요</span>';
+}
+document.getElementById('pubBar').addEventListener('click', e=>{
+  const b=e.target.closest('[data-pb]'); if(!b) return;
+  const on=(b.dataset.pb==='all');
+  S.cats.forEach(cat=>{ cat.pub=on; });
+  if(on) S.pois.forEach(p=>{ p.pub=true; });
+  renderPubBar(); renderTables(); renderSide();
+  toast(on?'모든 시설을 참가자용에 공개했습니다':'모든 시설을 참가자용에서 숨겼습니다');
+});
+document.getElementById('pubBar').addEventListener('change', e=>{
+  const cb=e.target.closest('[data-catpub2]'); if(!cb) return;
+  const cat=S.cats.find(x=>x.id===cb.dataset.catpub2); if(!cat) return;
+  cat.pub=cb.checked;
+  renderPubBar(); renderTables(); renderSide();
+  toast(cat.label+' — 참가자용 '+(cat.pub?'공개':'비공개'));
+});
 /* ══════════════ 표 (인라인 편집) ══════════════ */
 function renderTables(){
+  renderPubBar();
   const box=document.getElementById('tables'), c=activeCourse();
   if(!c){ box.innerHTML='<div class="empty-state"><div class="big">📍</div>GPX를 등록하면 시설 표가 생성됩니다</div>'; return; }
   box.innerHTML='';
   const gaps=gapMap(c), cols=S.cols[S.preview]||S.cols.admin;
+  const isAdmin=(S.preview==='admin');
   S.cats.forEach(cat=>{
-    const items=poisOfCourse(c).filter(x=>x.p.cat===cat.id);
+    let items=poisOfCourse(c).filter(x=>x.p.cat===cat.id);
+    if(!isAdmin) items=items.filter(x=>poiPublic(x.p));
     if(!items.length) return;
     let rows='';
     items.forEach(({p,rows:rr})=>{
@@ -1828,6 +1931,8 @@ function renderTables(){
         (cols.ops?'<td class="ops">'+(opsWindow(rr,c)||'—')+'</td>':'')+
         (cols.ele&&c.hasEle?'<td class="qty" style="color:#607d8b">'+eleAtKm(c,rr[0].km).toFixed(0)+' m</td>':'')+
         (cols.memo?'<td><input class="cell" data-id="'+p.id+'" data-f="memo" value="'+esc(p.memo||'')+'" placeholder="—"></td>':'')+
+        (isAdmin?'<td style="width:1%;text-align:center"><input type="checkbox" data-pub="'+p.id+'"'+(p.pub!==false?' checked':'')+(catPublic(cat)?'':' disabled')+
+          ' title="'+(catPublic(cat)?'참가자용 코스도에 표시':'카테고리 전체가 비공개입니다')+'" style="width:15px;height:15px;accent-color:var(--ok);cursor:pointer"></td>':'')+
         '<td style="width:1%;white-space:nowrap"><button class="btn sm" data-go="'+p.id+'" title="지도에서 보기">↗</button> '+
         '<button class="btn sm" data-ed="'+p.id+'" title="상세 편집">⚙</button></td></tr>';
     });
@@ -1837,13 +1942,18 @@ function renderTables(){
       (cols.gap?hcell('colGap',S.texts.colGap):'')+
       (cols.ops?hcell('colOps',S.texts.colOps):'')+
       (cols.ele&&c.hasEle?'<th style="text-align:right">고도</th>':'')+
-      (cols.memo?hcell('colMemo',S.texts.colMemo):'')+'<th></th>';
-    const nCols=3+(cols.gap?1:0)+(cols.ops?1:0)+(cols.ele&&c.hasEle?1:0)+(cols.memo?1:0)+1;
+      (cols.memo?hcell('colMemo',S.texts.colMemo):'')+
+      (isAdmin?'<th style="text-align:center" title="참가자용 코스도에 표시">🏃 공개</th>':'')+'<th></th>';
+    const nCols=3+(cols.gap?1:0)+(cols.ops?1:0)+(cols.ele&&c.hasEle?1:0)+(cols.memo?1:0)+(isAdmin?1:0)+1;
     const wrap=document.createElement('div');
     wrap.innerHTML='<table><thead><tr><th colspan="'+nCols+'">'+
       '<span class="titleicon" style="background:'+cat.color+'">'+cat.icon+'</span> '+
       '<input class="cell" style="font-weight:800;font-size:.9rem;width:auto;max-width:190px" data-cat="'+cat.id+'" value="'+esc(cat.label)+'">'+
-      ' <span style="font-weight:400;color:#90a4ae">'+items.length+'개</span></th></tr>'+
+      ' <span style="font-weight:400;color:#90a4ae">'+items.length+'개</span>'+
+      (isAdmin?' <label style="font-weight:400;font-size:.72rem;color:#607d8b;cursor:pointer;float:right">'+
+        '<input type="checkbox" data-catpub="'+cat.id+'"'+(catPublic(cat)?' checked':'')+
+        ' style="width:14px;height:14px;accent-color:var(--ok);vertical-align:-2px"> 이 종류 전체 참가자 공개</label>':'')+
+      '</th></tr>'+
       '<tr>'+heads+'</tr></thead><tbody>'+rows+'</tbody></table>';
     box.appendChild(wrap);
   });
@@ -1874,6 +1984,23 @@ document.getElementById('tables').addEventListener('input', e=>{
 document.getElementById('tables').addEventListener('keydown', e=>{
   if(e.key==='Enter' && e.target.closest('input.cell')) e.target.blur();
 });
+document.getElementById('tables').addEventListener('change', e=>{
+  const pb=e.target.closest('[data-pub]');
+  if(pb){
+    const p=S.pois.find(x=>x.id===pb.dataset.pub); if(!p) return;
+    p.pub=pb.checked;
+    renderTables(); renderSide();
+    toast(p.name+' — 참가자용 '+(p.pub?'공개':'비공개'));
+    return;
+  }
+  const cb=e.target.closest('[data-catpub]');
+  if(cb){
+    const cat=S.cats.find(x=>x.id===cb.dataset.catpub); if(!cat) return;
+    cat.pub=cb.checked;
+    renderTables(); renderSide();
+    toast(cat.label+' 전체 — 참가자용 '+(cat.pub?'공개':'비공개'));
+  }
+});
 /* ══════════════ 물자 집계 ══════════════ */
 function autoParticipants(p){      // 이 시설을 지나는 종목들의 참가 인원 합
   return readyCourses().reduce((a,c)=>a+(poiRows(p,c).length?(c.participants||0):0), 0);
@@ -1882,6 +2009,34 @@ function poiParticipants(p){       // 직접 입력값 우선
   return (p.people!=null && p.people!=='' ) ? (+p.people||0) : autoParticipants(p);
 }
 const supplyCats = () => S.cats.filter(c=>c.supply);
+/* 시설별 물자 항목 사용/제외 */
+const supEnabled = (p,s) => !(p && p.supOff && p.supOff[s.id]);
+function currentSupplyItems(){
+  const c=activeCourse(); if(!c) return [];
+  const catIds=supplyCats().map(x=>x.id);
+  let items=poisOfCourse(c).filter(x=>catIds.includes(x.p.cat));
+  if(S.supFilter!=='all') items=items.filter(x=>x.p.cat===S.supFilter);
+  return items;
+}
+function setSupOn(p, s, on){
+  p.supOff=p.supOff||{};
+  if(on){
+    delete p.supOff[s.id];
+    const ppl=poiParticipants(p), q=ppl?needUnits(s,ppl):0;
+    if(q){ p.sup=p.sup||{}; if(!p.sup[s.id]) p.sup[s.id]=q; }
+  } else {
+    p.supOff[s.id]=true;
+    if(p.sup) delete p.sup[s.id];
+  }
+}
+function toggleSupplyColumn(sid){
+  const s=supById(sid), items=currentSupplyItems();
+  if(!items.length) return;
+  const allOn=items.every(({p})=>supEnabled(p,s));
+  items.forEach(({p})=>setSupOn(p, s, !allOn));
+  renderSupplies(); renderTables();
+  toast(s.label+' — 표시된 '+items.length+'개 시설에서 '+(allOn?'제외':'사용'));
+}
 function renderSupplies(){
   const box=document.getElementById('supGrid'), c=activeCourse();
   const filt=document.getElementById('supCatFilter');
@@ -1906,15 +2061,20 @@ function renderSupplies(){
         (b!=null?'<br><span style="font-size:.72rem;color:#546e7a">'+b+'박스</span>':'')+'</b></div>';
     }).join('')+'</div>';
   h+='<table><thead><tr><th>지점</th><th>'+esc(S.texts.colName)+'</th><th style="text-align:right">통과 인원</th>'+
-     used.map(s=>'<th style="text-align:right">'+esc(s.label)+'<br><span style="font-weight:400">'+esc(s.unit)+
-       (s.boxNote?' · '+esc(s.boxNote):'')+'</span></th>').join('')+'</tr></thead><tbody>';
+     used.map(s=>'<th style="text-align:right"><span class="colsw" data-col="'+s.id+'" title="이 항목을 표시된 시설 전체에서 켜고 끕니다">'+esc(s.label)+'</span>'+
+       '<br><span style="font-weight:400">'+esc(s.unit)+(s.boxNote?' · '+esc(s.boxNote):'')+'</span></th>').join('')+'</tr></thead><tbody>';
   items.forEach(({p,rows})=>{
-    h+='<tr><td class="km">'+rows[0].km.toFixed(2)+' km</td><td style="white-space:nowrap">'+catById(p.cat).icon+' '+esc(p.name)+'</td>'+
+    h+='<tr><td class="km">'+rows[0].km.toFixed(2)+' km</td><td style="white-space:nowrap">'+catById(p.cat).icon+' '+esc(p.name)+
+       ' <button class="btn sm" data-supcfg="'+p.id+'" title="이 시설의 물자 종류 선택">⚙</button></td>'+
        '<td class="qty"><input class="qtyin" type="number" min="0" data-id="'+p.id+'" data-people="1" value="'+(p.people!=null&&p.people!==''?p.people:'')+'" placeholder="'+(autoParticipants(p)||0)+'"></td>'+
        used.map(s=>{
-         const u=(p.sup||{})[s.id]||0, b=boxesOf(s,u);
-         return '<td class="qty"><input class="qtyin" type="number" min="0" data-id="'+p.id+'" data-s="'+s.id+'" value="'+(u||'')+'" placeholder="0">'+
-           (b!=null?'<div style="font-size:.68rem;color:#90a4ae">'+b+'박스</div>':'')+'</td>';
+         const on=supEnabled(p,s), u=on?((p.sup||{})[s.id]||0):0, b=boxesOf(s,u);
+         return '<td class="qty'+(on?'':' offcell')+'">'+
+           '<span class="supcell">'+
+             '<input type="checkbox" class="supsw" data-id="'+p.id+'" data-s="'+s.id+'"'+(on?' checked':'')+' title="'+esc(s.label)+' 사용/제외">'+
+             '<input class="qtyin" type="number" min="0" data-id="'+p.id+'" data-s="'+s.id+'" value="'+(u||'')+'" placeholder="'+(on?'0':'제외')+'"'+(on?'':' disabled')+'>'+
+           '</span>'+
+           (on&&b!=null?'<div style="font-size:.68rem;color:#90a4ae">'+b+'박스</div>':'')+'</td>';
        }).join('')+'</tr>';
   });
   h+='</tbody><tfoot><tr><td colspan="3">합계</td>'+
@@ -1930,7 +2090,7 @@ document.getElementById('supGrid').addEventListener('input', e=>{
     const v=parseInt(el.value,10);
     p.people=(isFinite(v)&&v>0)?v:'';
     const ppl=poiParticipants(p);
-    if(ppl){ p.sup=p.sup||{}; activeSupplies().forEach(s=>{ const q=needUnits(s,ppl); if(q) p.sup[s.id]=q; }); }
+    if(ppl){ p.sup=p.sup||{}; activeSupplies().forEach(s=>{ if(!supEnabled(p,s)) return; const q=needUnits(s,ppl); if(q) p.sup[s.id]=q; }); }
     clearTimeout(el._t); el._t=setTimeout(()=>{ renderSupplies(); renderTables(); }, 600);
     return;
   }
@@ -1939,12 +2099,45 @@ document.getElementById('supGrid').addEventListener('input', e=>{
   if(isFinite(v)&&v>0) p.sup[el.dataset.s]=v; else delete p.sup[el.dataset.s];
   clearTimeout(el._t); el._t=setTimeout(()=>renderSupplies(), 700);
 });
+document.getElementById('supGrid').addEventListener('change', e=>{
+  const sw=e.target.closest('input.supsw'); if(!sw) return;
+  const p=S.pois.find(x=>x.id===sw.dataset.id); if(!p) return;
+  setSupOn(p, supById(sw.dataset.s), sw.checked);
+  renderSupplies(); renderTables();
+});
+document.getElementById('supGrid').addEventListener('click', e=>{
+  const col=e.target.closest('[data-col]');
+  if(col){ toggleSupplyColumn(col.dataset.col); return; }
+  const cfg=e.target.closest('[data-supcfg]');
+  if(cfg) poiSupplyModal(cfg.dataset.supcfg);
+});
+/* 시설 하나의 물자 종류 일괄 선택 */
+function poiSupplyModal(id){
+  const p=S.pois.find(x=>x.id===id); if(!p) return;
+  const used=activeSupplies();
+  openModal('<span class="catDot" style="background:'+catById(p.cat).color+'">'+catById(p.cat).icon+'</span>'+esc(p.name)+' — 물자 종류',
+    '<div class="hint">체크를 끄면 이 시설에서는 그 항목을 <b>배정하지 않습니다</b>. 자동 산정·합계·관리자용 코스도에서 모두 제외됩니다.</div>'+
+    '<div style="margin-top:8px">'+used.map(s=>
+      '<label class="chk" style="margin-top:6px"><input type="checkbox" class="ps_s" data-s="'+s.id+'"'+(supEnabled(p,s)?' checked':'')+'> '+
+      esc(s.label)+' <span style="color:#9aa5b1;font-size:.74rem">('+esc(s.unit)+
+      (s.per>0?' · 1인당 '+s.per+esc(s.perUnit||''):'')+')</span></label>').join('')+'</div>'+
+    '<div class="btnrow" style="margin-top:10px">'+
+      '<button class="btn sm" id="ps_all">전체 선택</button><button class="btn sm" id="ps_none">전체 해제</button>'+
+      '<button class="btn sm" id="ps_drink">음료만</button></div>',
+    ()=>{
+      document.querySelectorAll('.ps_s').forEach(cb=>setSupOn(p, supById(cb.dataset.s), cb.checked));
+      closeModal(); renderSupplies(); renderTables();
+      toast(p.name+' 물자 종류를 저장했습니다');
+    });
+  const set=fn=>document.querySelectorAll('.ps_s').forEach(cb=>{ cb.checked=fn(supById(cb.dataset.s)); });
+  document.getElementById('ps_all').onclick=()=>set(()=>true);
+  document.getElementById('ps_none').onclick=()=>set(()=>false);
+  document.getElementById('ps_drink').onclick=()=>set(s=>(s.perUnit==='ml'&&s.per>0)||s.mode==='liquid');
+}
 document.getElementById('supCatFilter').onchange=e=>{ S.supFilter=e.target.value; renderSupplies(); };
 document.getElementById('autoSupBtn').onclick=()=>{
   const c=activeCourse(); if(!c) return;
-  const catIds=supplyCats().map(x=>x.id);
-  let items=poisOfCourse(c).filter(x=>catIds.includes(x.p.cat));
-  if(S.supFilter!=='all') items=items.filter(x=>x.p.cat===S.supFilter);
+  const items=currentSupplyItems();
   const withPer=activeSupplies().filter(s=>s.per>0||s.mode==='liquid');
   if(!withPer.length){ toast('1인당 소비량이 설정된 물자 항목이 없습니다'); return; }
   let n=0;
@@ -1952,7 +2145,7 @@ document.getElementById('autoSupBtn').onclick=()=>{
     const ppl=poiParticipants(p);
     if(!ppl) return;
     p.sup=p.sup||{};
-    withPer.forEach(s=>{ const q=needUnits(s,ppl); if(q) p.sup[s.id]=q; });
+    withPer.forEach(s=>{ if(!supEnabled(p,s)) return; const q=needUnits(s,ppl); if(q) p.sup[s.id]=q; });
     n++;
   });
   renderSupplies(); renderTables();
@@ -1960,10 +2153,8 @@ document.getElementById('autoSupBtn').onclick=()=>{
 };
 document.getElementById('clearSupBtn').onclick=()=>{
   const c=activeCourse(); if(!c) return;
-  const catIds2=supplyCats().map(x=>x.id);
-  let items=poisOfCourse(c).filter(x=>catIds2.includes(x.p.cat));
-  if(S.supFilter!=='all') items=items.filter(x=>x.p.cat===S.supFilter);
-  if(!confirm('표시된 시설의 물자 수량을 모두 비울까요?')) return;
+  const items=currentSupplyItems();
+  if(!confirm('표시된 시설의 물자 수량을 모두 비울까요? (사용/제외 설정은 유지됩니다)')) return;
   items.forEach(({p})=>p.sup={});
   renderSupplies(); toast('비웠습니다');
 };
@@ -2128,6 +2319,7 @@ Object.entries(TEXT_FIELDS).forEach(([id,k])=>{
 });
 document.getElementById('titleIn').oninput=e=>S.title=e.target.value;
 document.getElementById('kakaoKey').oninput=e=>S.kakaoKey=e.target.value.trim();
+document.getElementById('restKey').oninput=e=>S.restKey=e.target.value.trim();
 /* 겹침 인식 반경 */
 const snapRange=document.getElementById('snapRange');
 snapRange.addEventListener('input', e=>{
@@ -2510,6 +2702,159 @@ document.getElementById('edStep').addEventListener('change', e=>{
   renderEditMap(false);
   toast('편집점 간격 '+v+' m');
 });
+/* ── 궤적 다듬기(평활화) ── */
+function turnAngleDeg(a,b,c){                    // b 지점에서 꺾이는 각도(0=직진)
+  const lat0=b[0];
+  const A=proj(a,lat0), B=proj(b,lat0), C=proj(c,lat0);
+  const v1=[B[0]-A[0], B[1]-A[1]], v2=[C[0]-B[0], C[1]-B[1]];
+  const n1=Math.hypot(v1[0],v1[1]), n2=Math.hypot(v2[0],v2[1]);
+  if(!n1||!n2) return 0;
+  let cos=(v1[0]*v2[0]+v1[1]*v2[1])/(n1*n2);
+  cos=Math.max(-1,Math.min(1,cos));
+  return Math.acos(cos)*180/Math.PI;
+}
+function smoothNodes(src, iters, minAngle){
+  let cur=src.map(n=>n.slice());
+  for(let it=0; it<iters; it++){
+    const next=cur.map(n=>n.slice());
+    for(let i=1;i<cur.length-1;i++){
+      if(turnAngleDeg(cur[i-1],cur[i],cur[i+1]) < minAngle) continue;   // 완만한 구간은 그대로
+      next[i][0]=+((cur[i-1][0]+2*cur[i][0]+cur[i+1][0])/4).toFixed(6);
+      next[i][1]=+((cur[i-1][1]+2*cur[i][1]+cur[i+1][1])/4).toFixed(6);
+    }
+    cur=next;
+  }
+  return cur;
+}
+function lenOf(list){
+  let d=0; for(let i=1;i<list.length;i++) d+=haversine(list[i-1],list[i]);
+  return d/1000;
+}
+function keepTurnAfterReshape(oldTotal, newTotal){   // 반환 지점을 같은 물리 위치로 유지
+  if(S.edit.turnKm==null || !(oldTotal>0) || !(newTotal>0)) return;
+  S.edit.turnKm=+(S.edit.turnKm*newTotal/oldTotal).toFixed(3);
+}
+function editSmoothModal(){
+  if(S.edit.nodes.length<5){ toast('점이 너무 적습니다'); return; }
+  const before=lenOf(S.edit.nodes);
+  const sharp=(list,ang)=>{ let n=0; for(let i=1;i<list.length-1;i++) if(turnAngleDeg(list[i-1],list[i],list[i+1])>=ang) n++; return n; };
+  openModal('〰 선 다듬기',
+    '<div class="hint">GPS 오차로 <b>뾰족하게 튀거나 지그재그로 흔들리는 지점만</b> 골라 평평하게 폅니다. 각도 기준보다 완만한 구간(직선 도로 등)은 <b>건드리지 않습니다</b>.<br>'+
+      '카카오 지도의 실제 도로선에 붙이는 기능은 아니며, 도로 스냅이 필요하면 <b>🛣 도로 보정</b>을 쓰세요.</div>'+
+    '<label class="f">다듬을 각도 기준 <span style="font-weight:400;color:#9aa5b1">— 이 각도 이상 꺾인 점만</span></label>'+
+    '<div class="rng"><input type="range" id="sm_a" min="5" max="90" step="5" value="20"><b id="sm_av">20°</b></div>'+
+    '<label class="f">강도 (반복 횟수)</label>'+
+    '<div class="rng"><input type="range" id="sm_i" min="1" max="8" step="1" value="2"><b id="sm_iv">2회</b></div>'+
+    '<div id="sm_p" style="margin-top:10px;font-size:.82rem;background:#f5f9ff;border:1px solid #cfe0f5;border-radius:9px;padding:10px 12px"></div>'+
+    '<div class="warnBox">다듬으면 거리가 아주 조금 <b>짧아집니다</b>. 위 예상 거리를 확인하고 적용하세요. 반환 지점은 같은 장소에 그대로 유지되고, 시설 km는 코스에 다시 투영해 자동 재계산됩니다.</div>',
+    ()=>{
+      const ang=+document.getElementById('sm_a').value, it=+document.getElementById('sm_i').value;
+      const out=smoothNodes(S.edit.nodes, it, ang);
+      const after=lenOf(out);
+      editPush();
+      S.edit.nodes=out;
+      keepTurnAfterReshape(before, after);
+      closeModal(); renderEditMap(false);
+      toast('선 다듬기 완료 · '+before.toFixed(3)+' → '+after.toFixed(3)+' km ('+((after-before)*1000).toFixed(0)+' m)');
+    });
+  const upd=()=>{
+    const ang=+document.getElementById('sm_a').value, it=+document.getElementById('sm_i').value;
+    document.getElementById('sm_av').textContent=ang+'°';
+    document.getElementById('sm_iv').textContent=it+'회';
+    const out=smoothNodes(S.edit.nodes, it, ang), after=lenOf(out);
+    document.getElementById('sm_p').innerHTML=
+      '대상 지점 <b>'+sharp(S.edit.nodes,ang)+'개</b> / 전체 '+S.edit.nodes.length+'개<br>'+
+      '거리 <b>'+before.toFixed(3)+' km → '+after.toFixed(3)+' km</b> '+
+      '<span style="color:'+(Math.abs(after-before)*1000>30?'#c62828':'#2e7d32')+'">('+((after-before)*1000).toFixed(0)+' m)</span>';
+  };
+  document.getElementById('sm_a').oninput=upd;
+  document.getElementById('sm_i').oninput=upd;
+  upd();
+}
+/* ── 도로 보정 (카카오모빌리티 길찾기 API) ── */
+function samplePts(list, everyM){
+  const cum=[0];
+  for(let i=1;i<list.length;i++) cum.push(cum[i-1]+haversine(list[i-1],list[i]));
+  const out=[list[0]], total=cum[cum.length-1];
+  for(let d=everyM; d<total-everyM*0.5; d+=everyM){
+    let lo=0,hi=cum.length-1;
+    while(lo<hi){ const m=(lo+hi)>>1; cum[m]<d?lo=m+1:hi=m; }
+    out.push(list[Math.max(1,lo)]);
+  }
+  out.push(list[list.length-1]);
+  return out;
+}
+async function fetchRoadPath(chunk, key, priority){
+  const body={
+    origin:{x:chunk[0][1], y:chunk[0][0]},
+    destination:{x:chunk[chunk.length-1][1], y:chunk[chunk.length-1][0]},
+    waypoints: chunk.slice(1,-1).map(p=>({x:p[1], y:p[0]})),
+    priority: priority||'RECOMMEND', road_details:true, car_type:1
+  };
+  const r=await fetch('https://apis-navi.kakaomobility.com/v1/waypoints/directions',{
+    method:'POST',
+    headers:{'Authorization':'KakaoAK '+key,'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const j=await r.json();
+  const rt=(j.routes&&j.routes[0])||null;
+  if(!rt || rt.result_code!==0) throw new Error('경로 없음('+(rt?rt.result_msg:'?')+')');
+  const path=[];
+  (rt.sections||[]).forEach(sec=>(sec.roads||[]).forEach(rd=>{
+    const v=rd.vertexes||[];
+    for(let i=0;i+1<v.length;i+=2) path.push([v[i+1], v[i]]);
+  }));
+  return path;
+}
+async function editRoadSnap(){
+  const key=(S.restKey||'').trim();
+  if(!key){ toast('사이드바에 카카오모빌리티 REST 키를 입력해 주세요'); return; }
+  if(S.edit.nodes.length<3){ toast('점이 너무 적습니다'); return; }
+  const tol=parseInt(prompt('도로 보정 허용 오차 (m)\n\n계산된 도로선이 이 거리 안에 있을 때만 편집점을 붙입니다.\n도로가 없거나 경로가 크게 어긋난 구간(하천변·공원길 등)은 건드리지 않습니다.','25'),10);
+  if(!isFinite(tol)||tol<=0) return;
+  const btn=document.getElementById('edRoad');
+  btn.disabled=true; btn.textContent='🛣 계산 중…';
+  try{
+    const way=samplePts(S.edit.nodes, 400);        // 400m 간격 경유지
+    const CH=25, chunks=[];
+    for(let i=0;i<way.length-1;i+=CH-1) chunks.push(way.slice(i, Math.min(way.length, i+CH)));
+    let road=[];
+    for(let i=0;i<chunks.length;i++){
+      if(chunks[i].length<2) continue;
+      btn.textContent='🛣 '+(i+1)+'/'+chunks.length+'…';
+      const seg=await fetchRoadPath(chunks[i], key);
+      road=road.concat(road.length?seg.slice(1):seg);
+    }
+    if(road.length<2) throw new Error('도로 경로를 받지 못했습니다');
+    const rcum=[0];
+    for(let i=1;i<road.length;i++) rcum.push(rcum[i-1]+haversine(road[i-1],road[i]));
+    const fake={pts:road, cum:rcum};
+    const before=lenOf(S.edit.nodes);
+    let moved=0;
+    const out=S.edit.nodes.map(n=>{
+      const near=nearestOnTrack(fake, n[0], n[1]);
+      if(near.dist<=tol){ moved++; return [+near.lat.toFixed(6), +near.lon.toFixed(6), n[2]]; }
+      return n.slice();                            // 도로 없음 → 원본 유지
+    });
+    const after=lenOf(out);
+    editPush();
+    S.edit.nodes=out;
+    keepTurnAfterReshape(before, after);
+    renderEditMap(false);
+    toast('도로 보정 '+moved+'/'+out.length+'개 점 적용 · '+before.toFixed(3)+' → '+after.toFixed(3)+' km');
+  }catch(err){
+    alert('도로 보정 실패: '+err.message+'\n\n'+
+      '· 브라우저에서 직접 호출하면 CORS로 막힐 수 있습니다(이 경우 서버 경유가 필요합니다)\n'+
+      '· REST 키·일일 쿼터를 확인해 주세요\n'+
+      '· 자동차 경로 기반이라 보행자 전용 길은 보정되지 않습니다\n\n'+
+      '대신 〰 선 다듬기로 뾰족한 지점만 정리할 수 있습니다.');
+  }finally{
+    btn.disabled=false; btn.textContent='🛣 도로 보정';
+  }
+}
+document.getElementById('edSmooth').onclick=editSmoothModal;
+document.getElementById('edRoad').onclick=editRoadSnap;
 document.getElementById('edTurn').onclick=editTurnPrompt;
 document.getElementById('edTrim').onclick=editTrimModal;
 document.getElementById('edSnap').onclick=editSnapPois;
@@ -2555,8 +2900,8 @@ function download(name, content, type){
 }
 document.getElementById('saveBtn').onclick=()=>{
   download((S.title||'course')+'.json', JSON.stringify({
-    v:6, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, cats:S.cats, supplies:S.supplies,
-    cols:S.cols, roundMode:S.roundMode,
+    v:7, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, restKey:S.restKey, cats:S.cats, supplies:S.supplies,
+    cols:S.cols, roundMode:S.roundMode, pubReturn:S.pubReturn,
     activeCourse:S.activeCourse, snap:S.snap, event:S.event, masterId:S.masterId,
     showReturn:S.showReturn, returnOffset:S.returnOffset,
     courses:S.courses.map(c=>({id:c.id,slot:c.slot,name:c.name,color:c.color,enabled:c.enabled,overlap:c.overlap,
@@ -2576,6 +2921,9 @@ document.getElementById('projFile').onchange=e=>{
       S.title=d.title||S.title;
       S.texts=Object.assign({},DEFAULT_TEXTS,d.texts||{});
       S.kakaoKey=d.kakaoKey||S.kakaoKey;
+      S.restKey=d.restKey||'';
+      S.pubReturn=(d.pubReturn!==false);
+      document.getElementById('restKey').value=S.restKey;
       S.cats=d.cats&&d.cats.length?d.cats:JSON.parse(JSON.stringify(DEFAULT_CATS));
       S.supplies=d.supplies&&d.supplies.length?d.supplies:JSON.parse(JSON.stringify(DEFAULT_SUPPLIES));
       S.cols=Object.assign(JSON.parse(JSON.stringify(DEFAULT_COLS)), d.cols||{});
@@ -2606,7 +2954,7 @@ document.getElementById('projFile').onchange=e=>{
       document.getElementById('ev_start').value=S.event.start;
       document.getElementById('ev_lead').value=S.event.lead;
       document.getElementById('ev_last').value=S.event.last;
-      S.pois=(d.pois||[]).map(p=>{ p.dir=p.dir||'both'; p.memo=p.memo||''; p.sup=p.sup||{}; p.scope=p.scope||'auto'; p.courses=p.courses||[]; return p; });
+      S.pois=(d.pois||[]).map(p=>{ p.dir=p.dir||'both'; p.memo=p.memo||''; p.sup=p.sup||{}; p.supOff=p.supOff||{}; p.scope=p.scope||'auto'; p.courses=p.courses||[]; return p; });
       S.activeCourse=d.activeCourse||(readyCourses()[0]||{}).id||null;
       document.getElementById('titleIn').value=S.title;
       document.getElementById('kakaoKey').value=S.kakaoKey;
@@ -2628,7 +2976,7 @@ function buildExportData(mode){
       participants: mode==='admin'?(c.participants||0):0,
       limit:c.limit||'', limitPace:limitPaceMin(c),
       track:c.pts.map(p=>[p[0],p[1]]), profile:c.profile,
-      pois: poisOfCourse(c).map(({p,rows})=>{
+      pois: poisOfCourse(c).filter(({p})=> mode==='admin' || poiPublic(p)).map(({p,rows})=>{
         const o={cat:p.cat, name:p.name, lat:p.lat, lon:p.lon,
           ele:c.hasEle?+eleAtKm(c,rows[0].km).toFixed(1):null,
           rows:rows.map(r=>({km:+r.km.toFixed(2), d:r.d})),
@@ -2645,9 +2993,11 @@ function buildExportData(mode){
       })
     };
   });
-  return {mode, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey, cats:S.cats, event:S.event,
+  const showRet = (mode==='admin') ? S.showReturn : (S.showReturn && S.pubReturn!==false);
+  return {mode, title:S.title, texts:S.texts, kakaoKey:S.kakaoKey,
+    cats:(mode==='admin'?S.cats:S.cats.filter(catPublic)), event:S.event,
     limitNote: limitNoteText(), cols:S.cols[mode]||DEFAULT_COLS[mode], roundMode:S.roundMode,
-    showReturn:S.showReturn, returnOffset:S.returnOffset,
+    showReturn:showRet, returnOffset:S.returnOffset, allowRetToggle:(mode==='admin'),
     supplies: mode==='admin'?activeSupplies():[], order:list.map(c=>c.id),
     start:[list[0].pts[0][0], list[0].pts[0][1]], courses};
 }
@@ -2663,7 +3013,25 @@ function doExport(mode){
   download((S.title||'코스도')+(mode==='admin'?'_관리자용':'_참가자용')+'.html', html, 'text/html;charset=utf-8');
   toast((mode==='admin'?'관리자용':'참가자용')+' 코스도를 내보냈습니다');
 }
-document.getElementById('exportPublic').onclick=()=>doExport('public');
+document.getElementById('exportPublic').onclick=()=>{
+  if(!readyCourses().length){ toast('먼저 GPX를 등록해 주세요'); return; }
+  const hidden=S.pois.filter(p=>!poiPublic(p)).length;
+  const hidCats=S.cats.filter(c=>!catPublic(c));
+  openModal('🏃 참가자용 코스도 내보내기',
+    '<div class="hint">참가자용에는 물자 정보·통과 예상 시각표가 <b>전혀 들어가지 않습니다</b>.</div>'+
+    '<label class="chk"><input type="checkbox" id="ex_ret"'+(S.pubReturn!==false?' checked':'')+'> ↩ 복편(반환 후) 점선 분리 표시 포함</label>'+
+    '<div class="hint" style="margin-top:6px">끄면 참가자용 지도는 <b>원래 궤적 한 줄</b>로만 그려집니다. 어느 쪽이든 참가자 화면에는 복편 분리 <b>조작 버튼·슬라이더가 나오지 않습니다</b>.</div>'+
+    '<label class="f">참가자에게 감춘 항목</label>'+
+    '<div style="font-size:.8rem;line-height:1.7;background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:9px 11px">'+
+      (hidCats.length?'<div>· 종류 전체 비공개: <b>'+hidCats.map(c=>esc(c.icon+' '+c.label)).join(', ')+'</b></div>':'')+
+      (hidden?'<div>· 개별 비공개 시설: <b>'+hidden+'개</b></div>':'')+
+      (!hidCats.length&&!hidden?'<div style="color:#9aa5b1">모두 공개 상태입니다. 관리자용 미리보기의 <b>🏃 공개</b> 열에서 조정하세요.</div>':'')+
+    '</div>',
+    ()=>{
+      S.pubReturn=document.getElementById('ex_ret').checked;
+      closeModal(); doExport('public');
+    });
+};
 document.getElementById('exportAdmin').onclick=()=>doExport('admin');
 /* 초기화 */
 window.addEventListener('error', e=>{
@@ -2843,6 +3211,7 @@ const ADMIN = DATA.mode==='admin';
 const COLS = Object.assign({gap:false,ops:false,memo:true,ele:false}, DATA.cols||{});
 let RETOFF = (DATA.returnOffset!=null?+DATA.returnOffset:14);
 let RETON = (DATA.showReturn!==false) && RETOFF>0;
+const ALLOWRET = !!DATA.allowRetToggle;          // 참가자용에는 복편 조작 UI 없음
 const RQ = n => (DATA.roundMode==='ceil'?Math.ceil(n):Math.round(n));
 function boxesOf(item, units){
   if(!item||!item.boxQty||item.boxQty<=0||!units) return null;
@@ -3322,8 +3691,9 @@ function renderStats(){
   document.getElementById('stMax').textContent=C.hasEle?C.ele_max.toFixed(0)+' m':'—';
   document.getElementById('tblCourseLabel').textContent='— '+C.name+' 기준'+(tk!=null?' · ↩ '+tk.toFixed(2)+'km 반환':'');
   document.getElementById('supLabel').textContent='— '+C.name+' 기준';
-  document.getElementById('retSeg').style.display=(tk!=null?'inline-flex':'none');
-  document.getElementById('retRangeBox').style.display=(tk!=null?'inline-flex':'none');
+  const showRetUI=(ALLOWRET && tk!=null);
+  document.getElementById('retSeg').style.display=(showRetUI?'inline-flex':'none');
+  document.getElementById('retRangeBox').style.display=(showRetUI?'inline-flex':'none');
 }
 const courseSeg=document.getElementById('courseSeg');
 courseSeg.innerHTML=DATA.order.map((id,i)=>'<button data-c="'+id+'"'+(i===0?' class="on"':'')+'>'+esc(DATA.courses[id].name)+'</button>').join('');
