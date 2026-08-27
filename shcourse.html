@@ -1,0 +1,1121 @@
+<!-- 마라톤 코스도 삽입 조각 · 모든 이름은 mcv- 로 시작하며 #mcv-root 안으로 스코프됩니다 -->
+<style>#mcv-root{--blue:#1976d2;--dark:#263238;--bg:#f4f6f8;--card:#fff;--line:#e0e4e8;}
+#mcv-root, #mcv-root *{margin:0;padding:0;box-sizing:border-box;}
+#mcv-root{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--bg);color:var(--dark);}
+#mcv-root .mcv-wrap{max-width:1100px;margin:0 auto;padding:16px;}
+#mcv-root header{background:linear-gradient(135deg,#0d47a1,#1976d2);color:#fff;border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+#mcv-root header.admin{background:linear-gradient(135deg,#263238,#455a64);}
+#mcv-root header h1{font-size:1.5rem;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#mcv-root header .mcv-tag{font-size:.7rem;background:rgba(255,255,255,.22);border-radius:20px;padding:3px 11px;font-weight:700;}
+#mcv-root header p{opacity:.9;font-size:.9rem;}
+#mcv-root .mcv-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;}
+#mcv-root .mcv-stat{background:rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;font-size:.85rem;}
+#mcv-root .mcv-stat b{font-size:1.05rem;display:block;}
+#mcv-root .mcv-kakao-open{margin-left:auto;background:#fee500;color:#191919;font-weight:700;border-radius:10px;padding:10px 16px;font-size:.85rem;text-decoration:none;}
+#mcv-root .mcv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:16px;overflow:hidden;}
+#mcv-root .mcv-card h2{font-size:1.05rem;padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#mcv-root .mcv-seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:.75rem;font-weight:400;}
+#mcv-root .mcv-seg button{padding:6px 12px;border:none;background:#fff;cursor:pointer;font-size:.75rem;color:#455a64;}
+#mcv-root .mcv-seg button:not(:last-child){border-right:1px solid var(--line);}
+#mcv-root .mcv-seg button.mcv-on{background:var(--blue);color:#fff;font-weight:700;}
+#mcv-root .mcv-seg.mcv-course button.mcv-on{background:#2e7d32;}
+#mcv-root .mcv-seg.mcv-kk button.mcv-on{background:#fee500;color:#191919;}
+#mcv-root #mcv-mapWrap{position:relative;}
+#mcv-root #mcv-map{height:520px;width:100%;background:#e8edf2;}
+#mcv-root #mcv-mapErr{position:absolute;inset:0;background:rgba(244,246,248,.97);display:none;align-items:center;justify-content:center;padding:24px;text-align:center;z-index:1500;}
+#mcv-root #mcv-mapErr .mcv-in{max-width:520px;font-size:.85rem;line-height:1.8;color:#455a64;}
+#mcv-root #mcv-mapErr code{background:#e8edf2;border-radius:4px;padding:2px 6px;}
+#mcv-root .mcv-legend{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;font-size:.75rem;font-weight:400;}
+#mcv-root .mcv-chip{display:inline-flex;align-items:center;gap:5px;background:#f0f3f6;border-radius:20px;padding:3px 10px;}
+#mcv-root .mcv-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+#mcv-root .mcv-locate-btn{position:absolute;z-index:1200;bottom:26px;right:18px;width:52px;height:52px;background:#fff;border:none;border-radius:50%;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:#546e7a;transition:.2s;}
+.leaflet-container{font:inherit;background:#e8edf2;}
+#mcv-root .mcv-lfIcon{background:none!important;border:none!important;}
+#mcv-root .mcv-lfIcon>*{position:absolute;transform:translate(-50%,-50%);}
+.leaflet-popup-content{margin:11px 13px;font-size:.83rem;line-height:1.6;}
+.leaflet-popup-content-wrapper{border-radius:10px;}
+#mcv-root .mcv-locate-btn:hover{transform:scale(1.08);}
+#mcv-root .mcv-locate-btn svg{width:24px;height:24px;stroke:currentColor;}
+#mcv-root .mcv-locate-btn.tracking{background:var(--blue);color:#fff;}
+#mcv-root .mcv-my-dot{width:16px;height:16px;background:#1976d2;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+#mcv-root #mcv-chartBox{position:relative;padding:10px 14px 14px;}
+#mcv-root #mcv-elev{width:100%;height:230px;display:block;cursor:crosshair;}
+#mcv-root #mcv-tooltip{position:absolute;pointer-events:none;background:rgba(38,50,56,.94);color:#fff;padding:8px 11px;border-radius:8px;font-size:.78rem;line-height:1.5;display:none;white-space:nowrap;z-index:10;}
+#mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;padding:16px;}
+#mcv-root .mcv-tables>div{min-width:0;overflow-x:auto;}
+#mcv-root table{width:100%;border-collapse:collapse;font-size:.85rem;}
+#mcv-root th{background:#f7f9fb;text-align:left;padding:9px 11px;border-bottom:2px solid var(--line);font-size:.77rem;color:#607d8b;white-space:nowrap;}
+#mcv-root td{padding:9px 11px;border-bottom:1px solid #eef1f4;}
+#mcv-root tr.mcv-row{cursor:pointer;}
+#mcv-root tr.mcv-row:hover{background:#eef6ff;}
+#mcv-root td.mcv-km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
+#mcv-root td.mcv-qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;}
+#mcv-root tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
+#mcv-root .mcv-titleicon{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
+#mcv-root .mcv-note{font-size:.75rem;color:#78909c;padding:10px 18px 14px;line-height:1.6;}
+#mcv-root .mcv-kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
+#mcv-root .mcv-kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
+#mcv-root .mcv-kstart{background:#2e7d32;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;}
+#mcv-root .mcv-kturn{background:#f57c00;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;cursor:pointer;}
+#mcv-root .mcv-kinfo{position:relative;background:#fff;border:1px solid #cfd8dc;border-radius:10px;padding:11px 28px 11px 13px;font-size:.83rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.28);white-space:nowrap;}
+#mcv-root .mcv-kinfo:after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0;}
+#mcv-root .mcv-kinfo .mcv-x{position:absolute;top:4px;right:7px;cursor:pointer;color:#90a4ae;font-size:14px;font-weight:700;}
+#mcv-root .mcv-sumchips{display:flex;gap:9px;flex-wrap:wrap;padding:16px 16px 0;}
+#mcv-root .mcv-sumchip{background:#eceff1;border-radius:10px;padding:9px 14px;font-size:.78rem;color:#455a64;}
+#mcv-root .mcv-sumchip b{display:block;font-size:1.05rem;color:#263238;margin-top:2px;}
+#mcv-root .mcv-printbtn{background:#37474f;color:#fff;border:none;border-radius:9px;padding:7px 13px;font-size:.75rem;font-weight:700;cursor:pointer;}
+#mcv-root .mcv-ops{white-space:nowrap;font-variant-numeric:tabular-nums;color:#455a64;}
+@media (max-width:640px){
+  #mcv-root #mcv-elev{height:180px;}
+  #mcv-root table{font-size:.8rem;}
+  #mcv-root th, #mcv-root td{padding:8px;}
+  #mcv-root .mcv-card h2{padding:12px;gap:8px;}
+  #mcv-root .mcv-legend{margin-left:0;}
+}
+@media print{
+  #mcv-root .mcv-wrap{max-width:none;padding:0;}
+  #mcv-root .mcv-card{break-inside:avoid;box-shadow:none;border-color:#bbb;margin-bottom:10px;}
+  #mcv-root .mcv-seg,#mcv-root .mcv-locate-btn,#mcv-root #mcv-ovSeg,#mcv-root #mcv-typeSeg,
+  #mcv-root #mcv-retSeg,#mcv-root #mcv-retRangeBox,#mcv-root #mcv-diagBtn{display:none !important;}
+  #mcv-root header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #mcv-root .mcv-tables{grid-template-columns:1fr 1fr;}
+  #mcv-root #mcv-map{height:380px !important;}
+  #mcv-root th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+#mcv-root{container-type:inline-size;box-sizing:border-box;text-align:left;font-size:16px;
+  font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;color:#263238;
+  background:var(--mcv-bg,#f4f6f8);padding:0;margin:0;line-height:1.6;-webkit-text-size-adjust:100%;}
+#mcv-root *,#mcv-root *:before,#mcv-root *:after{box-sizing:border-box;}
+#mcv-root h1,#mcv-root h2,#mcv-root h3,#mcv-root h4,#mcv-root p,#mcv-root div,#mcv-root span,
+#mcv-root table,#mcv-root thead,#mcv-root tbody,#mcv-root tfoot,#mcv-root tr,#mcv-root th,#mcv-root td,
+#mcv-root label,#mcv-root canvas{margin:0;padding:0;border:0;background:none;float:none;
+  font-family:inherit;letter-spacing:normal;text-transform:none;text-shadow:none;box-shadow:none;}
+#mcv-root button,#mcv-root select,#mcv-root input{font-family:inherit;font-size:100%;margin:0;
+  text-transform:none;letter-spacing:normal;box-shadow:none;text-shadow:none;min-height:0;line-height:1.4;}
+#mcv-root a{text-decoration:none;}
+#mcv-root table{border-collapse:collapse;border-spacing:0;width:100%;}
+#mcv-root img,#mcv-root canvas,#mcv-root svg{max-width:100%;}
+#mcv-root .mcv-wrap{max-width:var(--mcv-max,1240px);margin:0 auto;padding:16px;}
+#mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));
+  gap:14px;padding:16px;align-items:start;}
+#mcv-root .mcv-tables>div{min-width:0;max-width:100%;overflow-x:auto;}
+#mcv-root .mcv-tables table{min-width:max-content;}
+#mcv-root #mcv-map{height:clamp(300px,46vh,540px);}
+#mcv-root #mcv-elev{height:clamp(170px,24vh,240px);}
+@container (max-width:560px){
+  #mcv-root .mcv-wrap{padding:10px;}
+  #mcv-root .mcv-tables{padding:10px;gap:10px;}
+  #mcv-root .mcv-card>h2{padding:12px;gap:8px;}
+  #mcv-root .mcv-stat{padding:7px 11px;font-size:.8rem;}
+  #mcv-root table{font-size:.8rem;} #mcv-root th,#mcv-root td{padding:8px;}
+}
+@container (min-width:1100px){ #mcv-root .mcv-tables{gap:16px;} }
+@container (min-width:1420px){ #mcv-root .mcv-tables{grid-template-columns:repeat(4,minmax(0,1fr));} }
+/* ═══ 삽입한 홈페이지의 CSS가 덮어써도 레이아웃이 무너지지 않도록 고정 ═══ */
+#mcv-root .mcv-seg{display:inline-flex !important;visibility:visible !important;opacity:1 !important;
+  float:none !important;position:static !important;width:auto !important;height:auto !important;overflow:hidden !important;}
+#mcv-root .mcv-seg button{display:inline-block !important;visibility:visible !important;opacity:1 !important;
+  width:auto !important;height:auto !important;min-width:0 !important;min-height:0 !important;max-width:none !important;
+  float:none !important;position:static !important;text-indent:0 !important;white-space:nowrap !important;
+  border-radius:0 !important;line-height:1.4 !important;}
+#mcv-root .mcv-card,#mcv-root .mcv-cat,#mcv-root .mcv-item{display:block !important;visibility:visible !important;opacity:1 !important;float:none !important;}
+#mcv-root .mcv-card>h2{display:flex !important;flex-wrap:wrap !important;align-items:center !important;}
+#mcv-root .mcv-cat-h,#mcv-root .mcv-chips,#mcv-root .mcv-stats,#mcv-root .mcv-cat-f{display:flex !important;flex-wrap:wrap !important;}
+#mcv-root .mcv-tables{display:grid !important;}
+#mcv-root #mcv-map{display:block !important;width:100% !important;min-height:280px !important;}
+#mcv-root #mcv-mapWrap{position:relative !important;display:block !important;}
+#mcv-root .mcv-c{display:inline-block !important;}
+#mcv-root header,#mcv-root .mcv-wrap{display:block !important;visibility:visible !important;}
+#mcv-root .mcv-pop{min-width:180px;max-width:280px;}
+#mcv-root .mcv-pop-h{display:flex !important;align-items:center;gap:8px;margin-bottom:8px;}
+#mcv-root .mcv-pop-t{display:flex;flex-direction:column;min-width:0;}
+#mcv-root .mcv-pop-t b{font-size:.92rem;font-weight:700;color:#263238;line-height:1.35;}
+#mcv-root .mcv-pop-t i{font-style:normal;font-size:.72rem;color:#78909c;}
+#mcv-root .mcv-pop .mcv-chips{gap:5px;}
+#mcv-root .mcv-pop .mcv-memo{margin-top:7px;padding-top:7px;border-top:1px solid #eef1f4;}
+
+/* ═══ 지도 내부는 SDK 계산값을 그대로 둔다. 단, 우리가 만든 mcv- 요소는 예외에서 제외 ═══ */
+#mcv-root #mcv-map *:not([class*="mcv-"]){box-sizing:content-box;max-width:none;max-height:none;}
+#mcv-root #mcv-map div:not([class*="mcv-"]),#mcv-root #mcv-map span:not([class*="mcv-"]),
+#mcv-root #mcv-map canvas,#mcv-root #mcv-map img,#mcv-root #mcv-map svg,
+#mcv-root #mcv-map p:not([class*="mcv-"]),#mcv-root #mcv-map table,#mcv-root #mcv-map tr,
+#mcv-root #mcv-map td,#mcv-root #mcv-map a:not([class*="mcv-"]){
+  margin:revert;padding:revert;border:revert;background:revert;box-shadow:revert;
+  float:none;position:revert;line-height:normal;font-size:revert;}
+#mcv-root #mcv-map img{max-width:none !important;height:auto;}
+
+/* ═══ 지도 위 우리 오버레이 — 지도 안이라도 카드 스타일을 유지 ═══ */
+#mcv-root #mcv-map .mcv-kinfo{position:relative;background:rgba(255,255,255,.75);border:1px solid rgba(176,190,197,.75);
+  border-radius:14px;padding:16px 38px 16px 18px;box-shadow:0 10px 30px rgba(38,50,56,.26);white-space:normal;
+  font-size:.83rem;line-height:1.6;color:#263238;max-width:320px;
+  -webkit-backdrop-filter:blur(10px) saturate(1.25);backdrop-filter:blur(10px) saturate(1.25);}
+#mcv-root #mcv-map .mcv-kinfo:after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-9px;
+  border:9px solid transparent;border-top-color:rgba(255,255,255,.75);border-bottom:0;}
+#mcv-root #mcv-map .mcv-kinfo .mcv-x{position:absolute;top:9px;right:11px;cursor:pointer;color:#90a4ae;
+  font-size:16px;font-weight:700;line-height:1;background:none;border:0;padding:2px 4px;border-radius:6px;}
+#mcv-root #mcv-map .mcv-kinfo .mcv-x:hover{background:rgba(96,125,139,.12);color:#546e7a;}
+#mcv-root #mcv-map .mcv-pop{min-width:186px;}
+#mcv-root #mcv-map .mcv-pop-h{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+#mcv-root #mcv-map .mcv-pop-t{display:flex;flex-direction:column;min-width:0;}
+#mcv-root #mcv-map .mcv-pop-t b{font-size:.92rem;font-weight:700;color:#263238;line-height:1.35;}
+#mcv-root #mcv-map .mcv-pop-t i{font-style:normal;font-size:.72rem;color:#78909c;}
+#mcv-root #mcv-map .mcv-chips{display:flex;flex-wrap:wrap;gap:7px;}
+#mcv-root #mcv-map .mcv-c{display:inline-block;font-size:.76rem;border-radius:7px;padding:5px 10px;
+  white-space:nowrap;line-height:1.5;font-variant-numeric:tabular-nums;}
+#mcv-root #mcv-map .mcv-c-go{background:#e6f1fb;color:#185fa5;font-weight:700;}
+#mcv-root #mcv-map .mcv-c-back{background:#fdeee1;color:#9a5b1b;font-weight:700;}
+#mcv-root #mcv-map .mcv-c-time{background:#fceaea;color:#a32d2d;font-weight:700;}
+#mcv-root #mcv-map .mcv-c-sub{background:#f1f4f7;color:#546e7a;}
+#mcv-root #mcv-map .mcv-c-sup{background:#eaf3de;color:#3b6d11;}
+#mcv-root #mcv-map .mcv-memo{font-size:.78rem;color:#607d8b;margin-top:11px;padding-top:10px;
+  border-top:1px solid rgba(207,216,220,.7);line-height:1.6;}
+#mcv-root #mcv-map .mcv-titleicon{width:26px;height:26px;border-radius:8px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:13px;color:#fff;flex:none;}
+#mcv-root #mcv-map .mcv-kpoi{width:28px;height:28px;border-radius:50%;border:2px solid #fff;
+  box-shadow:0 1px 6px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:#fff;cursor:pointer;}
+#mcv-root #mcv-map .mcv-kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
+#mcv-root #mcv-map .mcv-kstart{background:#2e7d32;color:#fff;border:2px solid #fff;border-radius:9px;
+  padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+#mcv-root #mcv-map .mcv-kturn{background:#f57c00;color:#fff;border:2px solid #fff;border-radius:9px;
+  padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer;}
+
+#mcv-root #mcv-map .mcv-kinfo{background:rgba(255,255,255,.75) !important;
+  border:1px solid rgba(176,190,197,.75) !important;
+  box-shadow:0 10px 30px rgba(38,50,56,.26) !important;border-radius:14px !important;opacity:1 !important;}
+#mcv-root #mcv-map .mcv-pop{background:none;}
+#mcv-root .leaflet-popup-content-wrapper{background:rgba(255,255,255,.75) !important;
+  box-shadow:0 10px 30px rgba(38,50,56,.26) !important;border-radius:14px !important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.25);backdrop-filter:blur(10px) saturate(1.25);}
+#mcv-root .leaflet-popup-tip{background:rgba(255,255,255,.75) !important;}
+#mcv-root .leaflet-popup-content{margin:16px 18px !important;}
+
+/* ── 상단 요약 압축 (지도가 주인공이 되도록) ── */
+#mcv-root header{padding:12px 16px !important;border-radius:12px !important;margin-bottom:10px !important;}
+#mcv-root header h1{font-size:1.12rem !important;margin-bottom:2px !important;}
+#mcv-root header p{font-size:.78rem !important;}
+#mcv-root .mcv-stats{gap:6px !important;margin-top:9px !important;}
+#mcv-root .mcv-stat{padding:5px 10px !important;font-size:.7rem !important;border-radius:8px !important;
+  line-height:1.35 !important;background:rgba(255,255,255,.16) !important;}
+#mcv-root .mcv-stat b{font-size:.92rem !important;display:block !important;margin-top:1px !important;}
+#mcv-root .mcv-card{margin-bottom:12px !important;}
+#mcv-root .mcv-card>h2{padding:10px 14px !important;font-size:.95rem !important;}
+#mcv-root #mcv-map{height:clamp(340px,58vh,620px) !important;}
+#mcv-root .mcv-note{padding:8px 16px 10px !important;font-size:.73rem !important;}
+
+/* ── 제한시간 표 ── */
+#mcv-root .mcv-limit{border:1px solid #e0e4e8;border-radius:10px;overflow:hidden;background:#fff;}
+#mcv-root .mcv-limit-h{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f7f9fb;
+  border-bottom:1px solid #e8edf1;font-size:.8rem;font-weight:700;color:#263238;}
+#mcv-root .mcv-limit-h span{margin-left:auto;font-weight:400;font-size:.73rem;color:#607d8b;}
+#mcv-root .mcv-limit table{width:100%;border-collapse:collapse;font-size:.78rem;}
+#mcv-root .mcv-limit th{background:#fbfcfd;color:#78909c;font-weight:700;font-size:.72rem;
+  padding:6px 10px;border-bottom:1px solid #eef1f4;text-align:left;white-space:nowrap;}
+#mcv-root .mcv-limit td{padding:7px 10px;border-bottom:1px solid #f2f5f8;color:#37474f;
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+#mcv-root .mcv-limit tr:last-child td{border-bottom:0;}
+#mcv-root .mcv-limit .mcv-lt-n{font-weight:700;color:#263238;}
+#mcv-root .mcv-limit .mcv-lt-e{color:#a32d2d;font-weight:700;}
+#mcv-root #mcv-limitNoteEl{padding:0 16px 14px !important;color:inherit !important;font-weight:400 !important;}
+@container (max-width:520px){
+  #mcv-root .mcv-limit th:nth-child(2),#mcv-root .mcv-limit td:nth-child(2){display:none;}
+}
+#mcv-root .mcv-legend{gap:6px;}
+#mcv-root .mcv-chip{display:inline-flex !important;align-items:center;gap:6px;background:#f0f3f6;
+  border:1px solid #dfe5ea;border-radius:20px;padding:4px 11px;font-size:.75rem;color:#37474f;
+  cursor:pointer;line-height:1.4;transition:.12s;}
+#mcv-root .mcv-chip:hover{background:#e4ebf1;border-color:#c3ced6;}
+#mcv-root .mcv-chip-off{background:transparent;color:#b0bec5;border-style:dashed;}
+#mcv-root .mcv-chip-off .mcv-dot{filter:grayscale(1);opacity:.45;}
+#mcv-root .mcv-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none;}
+#mcv-root #mcv-map .my-dot,#mcv-root #mcv-map .mcv-my-dot{width:16px;height:16px;background:#1976d2;
+  border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+#mcv-root .mcv-kinfo{padding:16px 38px 16px 18px !important;white-space:normal !important;border-radius:14px !important;}
+#mcv-root .leaflet-popup-content{margin:12px 14px !important;}
+
+
+#mcv-root .mcv-cat{background:#fff;border:1px solid #e0e4e8;border-radius:12px;overflow:hidden;}
+#mcv-root .mcv-cat-h{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid #eef1f4;background:#fafbfc;}
+#mcv-root .mcv-cat-h b{font-size:.95rem;font-weight:700;color:#263238;}
+#mcv-root .mcv-cat-h .mcv-n{margin-left:auto;font-size:.74rem;color:#607d8b;background:#eceff1;border-radius:20px;padding:2px 9px;font-variant-numeric:tabular-nums;}
+#mcv-root .mcv-item{padding:10px 14px;border-bottom:1px solid #f2f5f8;cursor:pointer;transition:background .12s;}
+#mcv-root .mcv-item:last-child{border-bottom:0;}
+#mcv-root .mcv-item:hover{background:#f2f8ff;}
+#mcv-root .mcv-nm{font-weight:700;font-size:.9rem;color:#263238;margin-bottom:6px;line-height:1.4;}
+#mcv-root .mcv-chips{display:flex;flex-wrap:wrap;gap:5px;}
+#mcv-root .mcv-c{font-size:.75rem;border-radius:6px;padding:3px 8px;white-space:nowrap;
+  font-variant-numeric:tabular-nums;line-height:1.5;}
+#mcv-root .mcv-c-go{background:#e6f1fb;color:#185fa5;font-weight:700;}
+#mcv-root .mcv-c-back{background:#fdeee1;color:#9a5b1b;font-weight:700;}
+#mcv-root .mcv-c-time{background:#fceaea;color:#a32d2d;font-weight:700;}
+#mcv-root .mcv-c-sub{background:#f1f4f7;color:#546e7a;}
+#mcv-root .mcv-c-sup{background:#eaf3de;color:#3b6d11;}
+#mcv-root .mcv-memo{font-size:.78rem;color:#607d8b;margin-top:6px;line-height:1.6;}
+#mcv-root .mcv-cat-f{padding:9px 14px;background:#fafbfc;border-top:1px solid #eef1f4;
+  font-size:.76rem;color:#455a64;display:flex;flex-wrap:wrap;gap:4px 14px;}
+#mcv-root .mcv-cat-f b{color:#263238;font-weight:700;}
+@container (max-width:560px){ #mcv-root .mcv-item{padding:9px 11px;} #mcv-root .mcv-cat-h{padding:10px 11px;} }
+
+@media print{
+  #mcv-root .mcv-seg,#mcv-root .mcv-locate-btn{display:none !important;}
+  #mcv-root .mcv-tables{grid-template-columns:1fr 1fr;}
+  #mcv-root .mcv-card{break-inside:avoid;}
+}
+</style>
+<div id="mcv-root">
+<div class="mcv-wrap">
+  <header id="mcv-hdr">
+    <h1><span id="mcv-hTitle">코스도</span><span class="mcv-tag" id="mcv-hTag" style="display:none">관리자용</span></h1>
+    <p id="mcv-hSub"></p>
+    <div class="mcv-stats">
+      <div class="mcv-stat">코스<b id="mcv-stCourse">-</b></div>
+      <div class="mcv-stat">총 거리<b id="mcv-stTotal">-</b></div>
+      <div class="mcv-stat" id="mcv-stTurnBox" style="display:none">반환 지점<b id="mcv-stTurn">-</b></div>
+      <div class="mcv-stat">누적 상승<b id="mcv-stGain">-</b></div>
+      <div class="mcv-stat">최저 고도<b id="mcv-stMin">-</b></div>
+      <div class="mcv-stat">최고 고도<b id="mcv-stMax">-</b></div>
+    </div>
+  </header>
+  <div class="mcv-card">
+    <h2>🗺 코스 지도
+      <span class="mcv-seg mcv-course" id="mcv-courseSeg"></span>
+      <span class="mcv-seg mcv-kk" id="mcv-typeSeg">
+        <button data-t="ROADMAP" class="mcv-on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
+      </span>
+      <span class="mcv-seg mcv-kk" id="mcv-ovSeg"><button data-o="TRAFFIC">교통</button><button data-o="TERRAIN">지형</button></span>
+      <span class="mcv-legend" id="mcv-legend"></span>
+      <button id="mcv-diagBtn" title="표시 상태 확인" style="margin-left:6px;border:1px solid #cfd8dc;background:#fff;color:#607d8b;border-radius:50%;width:22px;height:22px;line-height:1;cursor:pointer;font-size:12px;padding:0">i</button>
+    </h2>
+    <div id="mcv-mapWrap">
+      <div id="mcv-map"></div>
+      <div id="mcv-mapErr"><div class="mcv-in" id="mcv-mapErrIn"></div></div>
+      <button class="mcv-locate-btn" id="mcv-locateBtn" title="내 위치 추적">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/>
+          <line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/>
+          <line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mcv-note" id="mcv-mapNoteEl"></div>
+    <div class="mcv-note" id="mcv-limitNoteEl" style="padding-top:0;color:#455a64;font-weight:700"></div>
+  </div>
+  <div class="mcv-card" id="mcv-paceCard" style="display:none">
+    <h2>⏱ 구간별 통과 예상 시각 <span id="mcv-paceLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span>
+      <span style="margin-left:auto;display:flex;gap:6px;align-items:center;font-size:.75rem;font-weight:400">
+        간격 <select id="mcv-paceStep" style="padding:4px 7px;font-size:.75rem;border:1px solid var(--line);border-radius:7px">
+          <option value="1">1 km</option><option value="2">2 km</option><option value="5" selected>5 km</option></select>
+        <label><input type="checkbox" id="mcv-paceOnlyPoi"> 시설 지점만</label>
+      </span>
+    </h2>
+    <div class="mcv-tables" id="mcv-paceTable" style="grid-template-columns:1fr"></div>
+    <div class="mcv-note">출발 시각 기준 예상 통과 시각 (관리자용)</div>
+  </div>
+  <div class="mcv-card">
+    <h2>⛰ 고저도 <span style="font-size:.75rem;color:#78909c;font-weight:400">마우스를 올리면 지점별 상세 정보가 표시됩니다</span></h2>
+    <div id="mcv-chartBox"><canvas id="mcv-elev"></canvas><div id="mcv-tooltip"></div></div>
+  </div>
+  <div class="mcv-card">
+    <h2><span id="mcv-tblTitleEl">📋 코스 시설 안내</span> <span id="mcv-tblCourseLabel" style="font-size:.78rem;color:#2e7d32;font-weight:700"></span></h2>
+    <div class="mcv-tables" id="mcv-tables"></div>
+    <div class="mcv-note" id="mcv-tblNoteEl"></div>
+  </div>
+  <div class="mcv-card" id="mcv-supCard" style="display:none">
+    <h2>🧰 물자 집계 <span id="mcv-supLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span></h2>
+    <div class="mcv-sumchips" id="mcv-supChips"></div>
+    <div class="mcv-tables" id="mcv-supTable"></div>
+    <div class="mcv-note">관리자용 자료입니다. 참가자 배포용 파일에는 포함되지 않습니다.</div>
+  </div>
+</div>
+</div>
+<script>
+const DATA = {"mode":"public","title":"시흥마라톤코스도","texts":{"subtitle":"현장 상황에 따라 변경 될 수 있습니다.","mapNote":"","tableTitle":"📋 코스 시설 안내","tableNote":"표의 행을 클릭하면 지도에서 해당 위치로 이동합니다. 코스를 전환하면 해당 코스 기준 왕/복 거리로 다시 계산됩니다.","colGo":"왕편","colBack":"복편","colName":"명칭","colMemo":"비고","colGap":"간격","colOps":"운영 시간"},"k":"OW9pOG86UGI+OTxrbAQ4bj1qbGkFPDpqODo+BWtvbj8=","cats":[{"id":"water","label":"급수대","icon":"💧","color":"#1976d2","supply":true,"pub":true},{"id":"medic","label":"적십자(의료)","icon":"✚","color":"#d32f2f"},{"id":"amb","label":"구급차","icon":"🚑","color":"#b71c1c"},{"id":"turn","label":"반환점","icon":"↩","color":"#f57c00"},{"id":"cut","label":"컷오프","icon":"⏱","color":"#37474f","hasTime":true},{"id":"staff","label":"스탭","icon":"👤","color":"#6a1b9a"},{"id":"police","label":"교통통제","icon":"🚧","color":"#c2a000"},{"id":"toilet","label":"화장실","icon":"🚻","color":"#00897b"},{"id":"food","label":"간식/보급","icon":"🍌","color":"#2e7d32"},{"id":"photo","label":"촬영포인트","icon":"📷","color":"#5d4037"}],"event":{"start":"08:00","lead":"3:30","last":"9:00"},"limitNote":"제한시간 — 하프 3시간 (종료 11:00) · 평균 8:31/km   |   10K 1시간 40분 (종료 09:40) · 평균 10:00/km   |   5K 1시간 (종료 09:00) · 평균 11:55/km","limits":[{"name":"하프","km":21.13,"limit":"3시간","end":"11:00","pace":"8:31/km"},{"name":"10K","km":10,"limit":"1시간 40분","end":"09:40","pace":"10:00/km"},{"name":"5K","km":5.03,"limit":"1시간","end":"09:00","pace":"11:55/km"}],"startTime":"08:00","cols":{"gap":false,"ops":false,"memo":true,"ele":false},"roundMode":"round","showReturn":true,"returnOffset":14,"allowRetToggle":false,"hideTitle":false,"embed":true,"diag":false,"engine":"kakao","supplies":[],"order":["c2ucm","c35pq","c4rv5"],"start":[37.32878,126.68698],"courses":{"c2ucm":{"name":"하프","color":"#1e88e5","total_km":21.13,"gain":13,"ele_min":0.3,"ele_max":6.3,"hasEle":true,"turnKm":10.556,"participants":0,"limit":"3:00","limitPace":8.520306731042316,"track":[[37.32878,126.68698],[37.329308,126.686123],[37.329837,126.685267],[37.330365,126.68441],[37.330893,126.683553],[37.331422,126.682697],[37.33195,126.68184],[37.331707,126.680957],[37.331463,126.680073],[37.33122,126.67919],[37.33143,126.67911],[37.331137,126.678056],[37.330844,126.677002],[37.330552,126.675948],[37.330259,126.674894],[37.329966,126.673841],[37.329673,126.672787],[37.32938,126.671733],[37.329088,126.670679],[37.328795,126.669625],[37.328502,126.668571],[37.328209,126.667518],[37.327916,126.666464],[37.327623,126.66541],[37.32733,126.664356],[37.327038,126.663302],[37.326745,126.662249],[37.326452,126.661195],[37.326159,126.660141],[37.325866,126.659087],[37.325573,126.658034],[37.32528,126.65698],[37.32509,126.65643],[37.32481,126.65568],[37.32461,126.65505],[37.32447,126.65432],[37.32444,126.65408],[37.324145,126.653018],[37.323849,126.651957],[37.323554,126.650895],[37.323258,126.649833],[37.322962,126.648772],[37.322667,126.64771],[37.322371,126.646648],[37.322076,126.645587],[37.32178,126.644525],[37.321485,126.643463],[37.321189,126.642402],[37.320894,126.64134],[37.320598,126.640279],[37.320302,126.639217],[37.320007,126.638155],[37.319711,126.637094],[37.319415,126.636032],[37.31912,126.634971],[37.318824,126.633909],[37.318528,126.632848],[37.318233,126.631786],[37.317937,126.630725],[37.317641,126.629663],[37.317346,126.628601],[37.31705,126.62754],[37.31696,126.62727],[37.31683,126.62696],[37.31668,126.6266],[37.31658,126.62628],[37.316313,126.62537],[37.316047,126.62446],[37.31578,126.62355],[37.31577,126.62355],[37.31569,126.62315],[37.3156,126.62265],[37.3155,126.62209],[37.31546,126.62192],[37.31517,126.620877],[37.31488,126.619835],[37.31459,126.618792],[37.3143,126.61775],[37.31427,126.61717],[37.314345,126.616535],[37.31442,126.6159],[37.31442,126.61547],[37.31436,126.61515],[37.313994,126.61422],[37.313628,126.61329],[37.313262,126.61236],[37.312896,126.61143],[37.31253,126.6105],[37.31253,126.61049],[37.31237,126.61018],[37.31217,126.60995],[37.31185,126.60968],[37.31161,126.60956],[37.311155,126.60933],[37.3107,126.6091],[37.31041,126.6089],[37.31036,126.60883],[37.31035,126.60883],[37.31001,126.60836],[37.30966,126.60772],[37.30921,126.606953],[37.30876,126.606187],[37.30831,126.60542],[37.307835,126.60454],[37.30736,126.60366],[37.30707,126.60283],[37.30701,126.60271],[37.307,126.60271],[37.306505,126.601853],[37.30601,126.600997],[37.305515,126.60014],[37.30502,126.599283],[37.304525,126.598426],[37.30403,126.59757],[37.303535,126.596713],[37.30304,126.595856],[37.302545,126.595],[37.30205,126.594143],[37.301555,126.593287],[37.30106,126.59243],[37.30106,126.59242],[37.300655,126.591735],[37.30025,126.59105],[37.30025,126.59104],[37.299758,126.590205],[37.299265,126.58937],[37.298773,126.588535],[37.29828,126.5877],[37.297795,126.586855],[37.29731,126.58601],[37.29731,126.586],[37.296843,126.58519],[37.296377,126.58438],[37.29591,126.58357],[37.29591,126.58356],[37.295565,126.582965],[37.29522,126.58237],[37.29522,126.58236],[37.29477,126.58157],[37.29476,126.58156],[37.295263,126.582437],[37.295766,126.583314],[37.296269,126.584191],[37.296771,126.585069],[37.297274,126.585946],[37.297777,126.586823],[37.29828,126.5877],[37.29881,126.588602],[37.29934,126.589503],[37.29987,126.590405],[37.3004,126.591307],[37.30093,126.592208],[37.30146,126.59311],[37.301959,126.593973],[37.302458,126.594835],[37.302957,126.595698],[37.303456,126.596561],[37.303956,126.597423],[37.304455,126.598286],[37.304954,126.599149],[37.305453,126.600012],[37.305952,126.600874],[37.306451,126.601737],[37.30695,126.6026],[37.30707,126.60283],[37.30736,126.60366],[37.30769,126.60427],[37.30802,126.60488],[37.30801,126.60488],[37.30831,126.60542],[37.308625,126.605955],[37.30894,126.60649],[37.3093,126.607105],[37.30966,126.60772],[37.31001,126.60836],[37.31041,126.6089],[37.3107,126.6091],[37.311,126.60925],[37.311425,126.609465],[37.31185,126.60968],[37.31217,126.60995],[37.31237,126.61018],[37.31255,126.61052],[37.312892,126.611376],[37.313234,126.612232],[37.313576,126.613088],[37.313918,126.613944],[37.31426,126.6148],[37.31438,126.61516],[37.31444,126.6155],[37.31444,126.61593],[37.31437,126.61642],[37.31428,126.61719],[37.31432,126.61774],[37.31461,126.61879],[37.3149,126.61984],[37.31519,126.62089],[37.31548,126.62194],[37.31555,126.62233],[37.31555,126.62232],[37.31565,126.62288],[37.31581,126.62363],[37.316087,126.62459],[37.316363,126.62555],[37.31664,126.62651],[37.31671,126.62672],[37.31699,126.62736],[37.31726,126.62833],[37.31753,126.6293],[37.3178,126.63027],[37.31807,126.63124],[37.31807,126.63123],[37.318368,126.632292],[37.318665,126.633355],[37.318963,126.634417],[37.31926,126.63548],[37.31926,126.63547],[37.319545,126.636494],[37.31983,126.637518],[37.320115,126.638541],[37.3204,126.639565],[37.320685,126.640589],[37.32097,126.641613],[37.321255,126.642637],[37.32154,126.643661],[37.321825,126.644685],[37.32211,126.645709],[37.322395,126.646732],[37.32268,126.647756],[37.322965,126.64878],[37.32325,126.649804],[37.323535,126.650828],[37.32382,126.651852],[37.324105,126.652876],[37.32439,126.6539],[37.32439,126.65389],[37.32445,126.6541],[37.32454,126.65468],[37.32461,126.65496],[37.32493,126.65601],[37.32521,126.65678],[37.325488,126.657776],[37.325765,126.658772],[37.326043,126.659767],[37.32632,126.660763],[37.326598,126.661759],[37.326875,126.662755],[37.327153,126.663751],[37.32743,126.664747],[37.327708,126.665742],[37.327985,126.666738],[37.328263,126.667734],[37.32854,126.66873],[37.32853,126.66873],[37.32879,126.66964],[37.32905,126.67055],[37.32931,126.67146],[37.32957,126.67237],[37.32956,126.67237],[37.329829,126.673333],[37.330097,126.674296],[37.330366,126.675259],[37.330634,126.676221],[37.330903,126.677184],[37.331171,126.678147],[37.33144,126.67911],[37.33121,126.6792],[37.33145,126.680077],[37.33169,126.680953],[37.33193,126.68183],[37.33195,126.68184],[37.331422,126.682697],[37.330893,126.683553],[37.330365,126.68441],[37.329837,126.685267],[37.329308,126.686123],[37.32878,126.68698]],"profile":[[0,3.9],[0.05,3.9],[0.1,3.9],[0.15,3.9],[0.2,3.8],[0.25,3.8],[0.3,3.8],[0.35,3.8],[0.4,3.8],[0.45,3.9],[0.5,4],[0.55,4.1],[0.6,4.3],[0.65,4.4],[0.7,4.4],[0.75,4.4],[0.8,4.5],[0.85,4.7],[0.9,4.8],[0.95,4.9],[1,4.9],[1.05,5],[1.1,4.9],[1.15,4.9],[1.2,5],[1.25,5.1],[1.3,5.1],[1.35,5.2],[1.4,5.2],[1.45,5.1],[1.5,5],[1.55,4.9],[1.6,4.8],[1.65,4.7],[1.7,4.7],[1.75,4.7],[1.8,4.8],[1.85,4.7],[1.9,4.6],[1.95,4.5],[2,4.4],[2.05,4.4],[2.1,4.3],[2.15,4.3],[2.2,4.4],[2.25,4.4],[2.3,4.2],[2.35,4.1],[2.4,4.1],[2.45,4],[2.5,3.9],[2.55,3.8],[2.6,3.8],[2.65,3.7],[2.7,3.6],[2.75,3.6],[2.8,3.5],[2.85,3.4],[2.9,3.3],[2.95,3.2],[3,3.2],[3.05,3.1],[3.1,3.1],[3.15,3.1],[3.2,3.1],[3.25,3.2],[3.3,3.2],[3.35,3.3],[3.4,3.3],[3.45,3.4],[3.5,3.4],[3.55,3.5],[3.6,3.5],[3.65,3.6],[3.7,3.7],[3.75,3.7],[3.8,3.7],[3.85,3.8],[3.9,3.8],[3.95,3.9],[4,3.9],[4.05,3.9],[4.1,3.8],[4.15,3.8],[4.2,3.7],[4.25,3.7],[4.3,3.7],[4.35,3.7],[4.4,3.7],[4.45,3.8],[4.5,3.8],[4.55,3.8],[4.6,3.8],[4.65,3.8],[4.7,3.8],[4.75,3.8],[4.8,3.8],[4.85,3.9],[4.9,3.9],[4.95,3.8],[5,3.7],[5.05,3.8],[5.1,3.8],[5.15,3.8],[5.2,3.9],[5.25,3.9],[5.3,4],[5.35,4.1],[5.4,4.2],[5.45,4.3],[5.5,4.4],[5.55,4.5],[5.6,4.5],[5.65,4.5],[5.7,4.5],[5.75,4.5],[5.8,4.6],[5.85,4.5],[5.9,4.4],[5.95,4.4],[6,4.5],[6.05,4.5],[6.1,4],[6.15,3.8],[6.2,3.8],[6.25,3.9],[6.3,4],[6.35,4],[6.4,4],[6.45,4],[6.5,4.1],[6.55,4.1],[6.6,4.1],[6.65,4],[6.7,4.6],[6.75,5.2],[6.8,5.8],[6.85,6],[6.9,6],[6.95,6],[7,5.9],[7.05,5.9],[7.1,5.8],[7.15,5.8],[7.2,5.8],[7.25,5.8],[7.3,6],[7.35,5.9],[7.4,5.3],[7.45,5.1],[7.5,5.2],[7.55,5.3],[7.6,5.9],[7.65,6.1],[7.7,6.2],[7.75,6.2],[7.8,6.2],[7.85,6.2],[7.9,6.2],[7.95,6.2],[8,6.2],[8.05,6.2],[8.1,6.1],[8.15,6.1],[8.2,6.1],[8.25,6],[8.3,6],[8.35,5.9],[8.4,5.9],[8.45,5.9],[8.5,5.9],[8.55,5.8],[8.6,5.8],[8.65,5.8],[8.7,5.8],[8.75,5.8],[8.8,5.8],[8.85,5.8],[8.9,5.8],[8.95,5.9],[9,5.9],[9.05,5.9],[9.1,5.9],[9.15,5.9],[9.2,6],[9.25,6],[9.3,6],[9.35,6],[9.4,5.9],[9.45,5.9],[9.5,5.8],[9.55,5.5],[9.6,5.4],[9.65,5.2],[9.7,5],[9.75,4.9],[9.8,4.7],[9.85,4.4],[9.9,4.2],[9.95,3.9],[10,3.6],[10.05,3.4],[10.1,2.6],[10.15,2.3],[10.2,2],[10.25,1.7],[10.3,1.5],[10.35,0.8],[10.4,0.6],[10.45,0.4],[10.5,0.3],[10.55,0.3],[10.6,0.6],[10.65,0.7],[10.7,1],[10.75,1.2],[10.8,1.4],[10.85,1.7],[10.9,2],[10.95,2.3],[11,2.6],[11.05,2.9],[11.1,3.2],[11.15,3.6],[11.2,3.9],[11.25,4.1],[11.3,4.4],[11.35,4.6],[11.4,4.8],[11.45,5],[11.5,5.2],[11.55,5.3],[11.6,5.5],[11.65,5.6],[11.7,5.7],[11.75,5.8],[11.8,5.8],[11.85,5.9],[11.9,5.9],[11.95,5.9],[12,5.9],[12.05,5.9],[12.1,5.9],[12.15,5.9],[12.2,5.8],[12.25,5.8],[12.3,5.8],[12.35,5.8],[12.4,5.8],[12.45,5.8],[12.5,5.8],[12.55,5.9],[12.6,5.9],[12.65,5.9],[12.7,5.9],[12.75,6],[12.8,6],[12.85,6],[12.9,6.1],[12.95,6.2],[13,6.2],[13.05,6.2],[13.1,6.3],[13.15,6.3],[13.2,6.3],[13.25,6.3],[13.3,6.2],[13.35,6.1],[13.4,6],[13.45,5.8],[13.5,5.7],[13.55,5.5],[13.6,5.2],[13.65,5.1],[13.7,4.9],[13.75,4.7],[13.8,4.5],[13.85,4.4],[13.9,4.3],[13.95,4.3],[14,4.3],[14.05,4.4],[14.1,4.5],[14.15,4.6],[14.2,4.8],[14.25,5.1],[14.3,5.4],[14.35,5.5],[14.4,5.7],[14.45,5.8],[14.5,5.9],[14.55,6],[14.6,6.1],[14.65,6.1],[14.7,6.2],[14.75,6.3],[14.8,6.3],[14.85,6.3],[14.9,6.2],[14.95,5.9],[15,6],[15.05,6],[15.1,6],[15.15,6.1],[15.2,6.1],[15.25,6.1],[15.3,6.1],[15.35,6],[15.4,6],[15.45,6],[15.5,6],[15.55,6],[15.6,6],[15.65,6],[15.7,6],[15.75,5.9],[15.8,5.8],[15.85,5.8],[15.9,5.8],[15.95,5.7],[16,5.7],[16.05,5.7],[16.1,5.7],[16.15,5.7],[16.2,5.7],[16.25,5.7],[16.3,5.7],[16.35,5.7],[16.4,5.6],[16.45,5.6],[16.5,5.6],[16.55,5.6],[16.6,5.5],[16.65,5.5],[16.7,5.5],[16.75,5.5],[16.8,5.5],[16.85,5.5],[16.9,5.5],[16.95,5.5],[17,5.5],[17.05,5.5],[17.1,5.5],[17.15,5.5],[17.2,5.5],[17.25,5.5],[17.3,5.4],[17.35,5.4],[17.4,5.4],[17.45,5.4],[17.5,5.4],[17.55,5.4],[17.6,5.4],[17.65,5.4],[17.7,5.4],[17.75,5.4],[17.8,5.4],[17.85,5.4],[17.9,5.4],[17.95,5.4],[18,5.3],[18.05,5.3],[18.1,5.3],[18.15,5.3],[18.2,5.3],[18.25,5.2],[18.3,5.2],[18.35,5.2],[18.4,5.2],[18.45,5.1],[18.5,5.1],[18.55,5],[18.6,5],[18.65,5],[18.7,4.9],[18.75,4.9],[18.8,4.8],[18.85,4.8],[18.9,4.8],[18.95,4.8],[19,4.8],[19.05,4.8],[19.1,4.7],[19.15,4.7],[19.2,4.7],[19.25,4.7],[19.3,4.7],[19.35,4.8],[19.4,5],[19.45,5.1],[19.5,5.2],[19.55,5.3],[19.6,5.3],[19.65,5.6],[19.7,5.7],[19.75,5.7],[19.8,5.7],[19.85,5.7],[19.9,5.8],[19.95,5.9],[20,5.9],[20.05,5.9],[20.1,5.8],[20.15,5.8],[20.2,5.7],[20.25,5.5],[20.3,5.1],[20.35,5],[20.4,4.9],[20.45,4.9],[20.5,4.8],[20.55,4.4],[20.6,4.2],[20.65,4.2],[20.7,4.1],[20.75,4],[20.8,3.9],[20.85,3.8],[20.9,3.8],[20.95,3.8],[21,3.8],[21.05,3.9],[21.1,3.9],[21.126,3.9]],"pois":[{"cat":"water","name":"5km 1급수","lat":37.32878,"lon":126.68698,"ele":4,"rows":[{"km":0,"d":"go"},{"km":21.13,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 11:00"},{"cat":"amb","name":"구급차 1","lat":37.331227,"lon":126.679233,"ele":5,"rows":[{"km":0.82,"d":"go"},{"km":20.31,"d":"back"}],"time":"","memo":"","gap":0.82,"ops":"08:03 ~ 10:53"},{"cat":"water","name":"H,10KM 1급수","lat":37.326528,"lon":126.661467,"ele":4,"rows":[{"km":2.5,"d":"go"},{"km":18.62,"d":"back"}],"time":"","memo":"","gap":1.68,"ops":"08:09 ~ 10:39"},{"cat":"water","name":"H,10K 2급수","lat":37.319075,"lon":126.634808,"ele":4,"rows":[{"km":5,"d":"go"},{"km":16.12,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 10:17"},{"cat":"amb","name":"구급차 2","lat":37.319075,"lon":126.634808,"ele":4,"rows":[{"km":5,"d":"go"},{"km":16.12,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 10:17"},{"cat":"water","name":"H,10KM 급수","lat":37.311007,"lon":126.609255,"ele":5,"rows":[{"km":7.5,"d":"go"},{"km":13.61,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:26 ~ 09:56"},{"cat":"amb","name":"구급차 3","lat":37.311007,"lon":126.609255,"ele":5,"rows":[{"km":7.5,"d":"go"},{"km":13.61,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:26 ~ 09:56"},{"cat":"water","name":"H,10KM 4급수","lat":37.297685,"lon":126.586664,"ele":4,"rows":[{"km":10,"d":"go"},{"km":11.11,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:35 ~ 09:35"},{"cat":"amb","name":"구급차 4","lat":37.295061,"lon":126.582081,"ele":0,"rows":[{"km":10.5,"d":""}],"time":"","memo":"","gap":0.5,"ops":"08:37 ~ 09:29"}]},"c35pq":{"name":"10K","color":"#43a047","total_km":10,"gain":2,"ele_min":3.1,"ele_max":5.2,"hasEle":true,"turnKm":5,"participants":0,"limit":"1:40","limitPace":10,"track":[[37.32878,126.68698],[37.329308,126.686123],[37.329837,126.685267],[37.330365,126.68441],[37.330893,126.683553],[37.331422,126.682697],[37.33195,126.68184],[37.331707,126.680957],[37.331463,126.680073],[37.33122,126.67919],[37.33143,126.67911],[37.331137,126.678056],[37.330844,126.677002],[37.330552,126.675948],[37.330259,126.674894],[37.329966,126.673841],[37.329673,126.672787],[37.32938,126.671733],[37.329088,126.670679],[37.328795,126.669625],[37.328502,126.668571],[37.328209,126.667518],[37.327916,126.666464],[37.327623,126.66541],[37.32733,126.664356],[37.327038,126.663302],[37.326745,126.662249],[37.326452,126.661195],[37.326159,126.660141],[37.325866,126.659087],[37.325573,126.658034],[37.32528,126.65698],[37.32509,126.65643],[37.32481,126.65568],[37.32461,126.65505],[37.32447,126.65432],[37.32444,126.65408],[37.324145,126.653018],[37.323849,126.651957],[37.323554,126.650895],[37.323258,126.649833],[37.322962,126.648772],[37.322667,126.64771],[37.322371,126.646648],[37.322076,126.645587],[37.32178,126.644525],[37.321485,126.643463],[37.321189,126.642402],[37.320894,126.64134],[37.320598,126.640279],[37.320302,126.639217],[37.320007,126.638155],[37.319711,126.637094],[37.319415,126.636032],[37.31912,126.634971],[37.319075,126.634808],[37.31912,126.634971],[37.319415,126.636032],[37.319711,126.637094],[37.320007,126.638155],[37.320302,126.639217],[37.320598,126.640279],[37.320894,126.64134],[37.321189,126.642402],[37.321485,126.643463],[37.32178,126.644525],[37.322076,126.645587],[37.322371,126.646648],[37.322667,126.64771],[37.322962,126.648772],[37.323258,126.649833],[37.323554,126.650895],[37.323849,126.651957],[37.324145,126.653018],[37.32444,126.65408],[37.32447,126.65432],[37.32461,126.65505],[37.32481,126.65568],[37.32509,126.65643],[37.32528,126.65698],[37.325573,126.658034],[37.325866,126.659087],[37.326159,126.660141],[37.326452,126.661195],[37.326745,126.662249],[37.327038,126.663302],[37.32733,126.664356],[37.327623,126.66541],[37.327916,126.666464],[37.328209,126.667518],[37.328502,126.668571],[37.328795,126.669625],[37.329088,126.670679],[37.32938,126.671733],[37.329673,126.672787],[37.329966,126.673841],[37.330259,126.674894],[37.330552,126.675948],[37.330844,126.677002],[37.331137,126.678056],[37.33143,126.67911],[37.33122,126.67919],[37.331463,126.680073],[37.331707,126.680957],[37.33195,126.68184],[37.331422,126.682697],[37.330893,126.683553],[37.330365,126.68441],[37.329837,126.685267],[37.329308,126.686123],[37.32878,126.68698]],"profile":[[0,3.9],[0.05,3.9],[0.1,3.9],[0.15,3.9],[0.2,3.8],[0.25,3.8],[0.3,3.8],[0.35,3.8],[0.4,3.8],[0.45,3.9],[0.5,4],[0.55,4.1],[0.6,4.3],[0.65,4.4],[0.7,4.4],[0.75,4.4],[0.8,4.5],[0.85,4.7],[0.9,4.8],[0.95,4.9],[1,4.9],[1.05,5],[1.1,4.9],[1.15,4.9],[1.2,5],[1.25,5.1],[1.3,5.1],[1.35,5.2],[1.4,5.2],[1.45,5.1],[1.5,5],[1.55,4.9],[1.6,4.8],[1.65,4.7],[1.7,4.7],[1.75,4.7],[1.8,4.8],[1.85,4.7],[1.9,4.6],[1.95,4.5],[2,4.4],[2.05,4.4],[2.1,4.3],[2.15,4.3],[2.2,4.4],[2.25,4.4],[2.3,4.2],[2.35,4.1],[2.4,4.1],[2.45,4],[2.5,3.9],[2.55,3.8],[2.6,3.8],[2.65,3.7],[2.7,3.6],[2.75,3.6],[2.8,3.5],[2.85,3.4],[2.9,3.3],[2.95,3.2],[3,3.2],[3.05,3.1],[3.1,3.1],[3.15,3.1],[3.2,3.1],[3.25,3.2],[3.3,3.2],[3.35,3.3],[3.4,3.3],[3.45,3.4],[3.5,3.4],[3.55,3.5],[3.6,3.5],[3.65,3.6],[3.7,3.7],[3.75,3.7],[3.8,3.7],[3.85,3.8],[3.9,3.8],[3.95,3.9],[4,3.9],[4.05,3.9],[4.1,3.8],[4.15,3.8],[4.2,3.7],[4.25,3.7],[4.3,3.7],[4.35,3.7],[4.4,3.7],[4.45,3.8],[4.5,3.8],[4.55,3.8],[4.6,3.9],[4.65,3.9],[4.7,3.9],[4.75,3.9],[4.8,4],[4.85,4],[4.9,3.9],[4.95,3.8],[5,3.7],[5.05,3.8],[5.1,3.9],[5.15,4],[5.2,4],[5.25,3.9],[5.3,3.9],[5.35,3.9],[5.4,3.9],[5.45,3.8],[5.5,3.8],[5.55,3.8],[5.6,3.7],[5.65,3.7],[5.7,3.7],[5.75,3.7],[5.8,3.7],[5.85,3.8],[5.9,3.8],[5.95,3.9],[6,3.9],[6.05,3.9],[6.1,3.8],[6.15,3.8],[6.2,3.7],[6.25,3.7],[6.3,3.7],[6.35,3.6],[6.4,3.5],[6.45,3.5],[6.5,3.4],[6.55,3.4],[6.6,3.3],[6.65,3.3],[6.7,3.2],[6.75,3.2],[6.8,3.1],[6.85,3.1],[6.9,3.1],[6.95,3.1],[7,3.2],[7.05,3.2],[7.1,3.3],[7.15,3.4],[7.2,3.5],[7.25,3.6],[7.3,3.6],[7.35,3.7],[7.4,3.8],[7.45,3.8],[7.5,3.9],[7.55,4],[7.6,4.1],[7.65,4.1],[7.7,4.2],[7.75,4.4],[7.8,4.4],[7.85,4.3],[7.9,4.3],[7.95,4.4],[8,4.4],[8.05,4.5],[8.1,4.6],[8.15,4.7],[8.2,4.8],[8.25,4.7],[8.3,4.7],[8.35,4.7],[8.4,4.8],[8.45,4.9],[8.5,5],[8.55,5.1],[8.6,5.2],[8.65,5.2],[8.7,5.1],[8.75,5.1],[8.8,5],[8.85,4.9],[8.9,4.9],[8.95,5],[9,4.9],[9.05,4.9],[9.1,4.8],[9.15,4.7],[9.2,4.5],[9.25,4.4],[9.3,4.4],[9.35,4.4],[9.4,4.3],[9.45,4.1],[9.5,4],[9.55,3.9],[9.6,3.8],[9.65,3.8],[9.7,3.8],[9.75,3.8],[9.8,3.8],[9.85,3.9],[9.9,3.9],[9.95,3.9],[10,3.9]],"pois":[{"cat":"water","name":"5km 1급수","lat":37.32878,"lon":126.68698,"ele":4,"rows":[{"km":0,"d":"go"},{"km":10,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 09:40"},{"cat":"amb","name":"구급차 1","lat":37.331227,"lon":126.679233,"ele":5,"rows":[{"km":0.82,"d":"go"},{"km":9.18,"d":"back"}],"time":"","memo":"","gap":0.82,"ops":"08:03 ~ 09:32"},{"cat":"water","name":"H,10KM 1급수","lat":37.326528,"lon":126.661467,"ele":4,"rows":[{"km":2.5,"d":"go"},{"km":7.5,"d":"back"}],"time":"","memo":"","gap":1.68,"ops":"08:09 ~ 09:15"},{"cat":"water","name":"H,10K 2급수","lat":37.319075,"lon":126.634808,"ele":4,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 08:50"},{"cat":"amb","name":"구급차 2","lat":37.319075,"lon":126.634808,"ele":4,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 08:50"}]},"c4rv5":{"name":"5K","color":"#8e24aa","total_km":5.03,"gain":3,"ele_min":1.6,"ele_max":4.2,"hasEle":true,"turnKm":2.5,"participants":0,"limit":"1:00","limitPace":11.92368839427663,"track":[[37.32878,126.68698],[37.329308,126.686123],[37.329837,126.685267],[37.330365,126.68441],[37.330893,126.683553],[37.331422,126.682697],[37.33195,126.68184],[37.331683,126.680878],[37.331417,126.679917],[37.33115,126.678955],[37.330883,126.677993],[37.330617,126.677032],[37.33035,126.67607],[37.33035,126.67606],[37.33032,126.676],[37.33014,126.67587],[37.33005,126.67586],[37.329455,126.676145],[37.32886,126.67643],[37.328655,126.67583],[37.32845,126.67523],[37.32838,126.67508],[37.327995,126.6742],[37.32761,126.67332],[37.32686,126.67384],[37.32674,126.67385],[37.326325,126.674135],[37.32591,126.67442],[37.32551,126.67472],[37.32527,126.67493],[37.3251,126.67512],[37.32491,126.67527],[37.32473,126.67535],[37.32468,126.67534],[37.32463,126.67536],[37.32442,126.67562],[37.32432,126.67568],[37.32394,126.67581],[37.32362,126.67588],[37.32343,126.67589],[37.32313,126.67592],[37.32296,126.67597],[37.32259,126.67618],[37.32247,126.6763],[37.32222,126.67663],[37.32207,126.67692],[37.32188,126.67735],[37.32185,126.67742],[37.32181,126.67752],[37.32168,126.67781],[37.32154,126.67814],[37.32145,126.67835],[37.3214,126.67845],[37.32133,126.67862],[37.32125,126.67881],[37.32155,126.67823],[37.32185,126.67765],[37.32186,126.67765],[37.32227,126.67672],[37.32235,126.67661],[37.32254,126.67638],[37.32276,126.6762],[37.323,126.67607],[37.32322,126.67602],[37.32328,126.67601],[37.32365,126.67599],[37.32405,126.6759],[37.32446,126.67572],[37.32455,126.67571],[37.32464,126.67572],[37.32469,126.67573],[37.32478,126.6757],[37.32484,126.6756],[37.32485,126.67554],[37.32497,126.67537],[37.32506,126.67527],[37.32572,126.67469],[37.32644,126.67418],[37.32678,126.67394],[37.32674,126.67385],[37.32686,126.67384],[37.3269,126.67382],[37.32751,126.67339],[37.32761,126.67332],[37.32767,126.67346],[37.328,126.67421],[37.328,126.6742],[37.32838,126.67508],[37.32845,126.67523],[37.328655,126.67583],[37.32886,126.67643],[37.329455,126.676145],[37.33005,126.67586],[37.33014,126.67587],[37.33023,126.67593],[37.33022,126.67593],[37.33032,126.676],[37.33038,126.67613],[37.330623,126.677033],[37.330867,126.677937],[37.33111,126.67884],[37.33122,126.67919],[37.331463,126.680073],[37.331707,126.680957],[37.33195,126.68184],[37.331422,126.682697],[37.330893,126.683553],[37.330365,126.68441],[37.329837,126.685267],[37.329308,126.686123],[37.32878,126.68698]],"profile":[[0,3.9],[0.02,3.9],[0.04,3.9],[0.06,3.9],[0.08,3.9],[0.1,3.9],[0.12,3.9],[0.14,3.9],[0.16,3.9],[0.18,3.9],[0.2,3.8],[0.22,3.8],[0.24,3.8],[0.26,3.8],[0.28,3.8],[0.3,3.8],[0.32,3.8],[0.34,3.9],[0.36,3.9],[0.38,3.9],[0.4,3.9],[0.42,3.9],[0.44,3.9],[0.46,3.9],[0.48,3.9],[0.5,3.9],[0.52,4],[0.54,4],[0.56,4],[0.58,4],[0.6,4],[0.62,4],[0.64,4],[0.66,4],[0.68,4],[0.7,4],[0.72,4],[0.74,4],[0.76,4],[0.78,4.1],[0.8,4.1],[0.82,4.1],[0.84,4.1],[0.86,4.1],[0.88,4.1],[0.9,4.1],[0.92,4.1],[0.94,4.1],[0.96,4.1],[0.98,4.1],[1,4.1],[1.02,4.1],[1.04,4.1],[1.06,4.1],[1.08,4.1],[1.1,4.1],[1.12,4.2],[1.14,4.2],[1.16,4.2],[1.18,4.2],[1.2,4.2],[1.22,4.1],[1.24,4.1],[1.26,4.1],[1.28,4.1],[1.3,4.1],[1.32,4.1],[1.34,4.1],[1.36,4.1],[1.38,4],[1.4,4],[1.42,3.9],[1.44,3.8],[1.46,3.8],[1.48,3.8],[1.5,3.7],[1.52,3.7],[1.54,3.7],[1.56,3.6],[1.58,3.6],[1.6,3.6],[1.62,3.6],[1.64,3.5],[1.66,3.5],[1.68,3.5],[1.7,3.4],[1.72,3.3],[1.74,3.2],[1.76,3.2],[1.78,3.1],[1.8,3.1],[1.82,3],[1.84,3],[1.86,2.9],[1.88,2.9],[1.9,2.8],[1.92,2.8],[1.94,2.7],[1.96,2.7],[1.98,2.8],[2,3],[2.02,3.1],[2.04,3.3],[2.06,3.4],[2.08,3.4],[2.1,3.5],[2.12,3.6],[2.14,3.6],[2.16,3.6],[2.18,3.6],[2.2,3.6],[2.22,3.6],[2.24,3.6],[2.26,3.6],[2.28,3.6],[2.3,3.6],[2.32,3.6],[2.34,3.5],[2.36,3.5],[2.38,2.6],[2.4,2.3],[2.42,2.1],[2.44,1.9],[2.46,1.6],[2.48,1.6],[2.5,1.6],[2.52,1.6],[2.54,1.7],[2.56,1.7],[2.58,1.7],[2.6,1.8],[2.62,1.9],[2.64,2.2],[2.66,2.3],[2.68,2.4],[2.7,2.5],[2.72,2.6],[2.74,3.1],[2.76,3.3],[2.78,3.5],[2.8,3.8],[2.82,4],[2.84,4.1],[2.86,4.2],[2.88,4.2],[2.9,4.2],[2.92,4.2],[2.94,4.2],[2.96,4.2],[2.98,4.1],[3,3.9],[3.02,3.5],[3.04,3.4],[3.06,3.4],[3.08,3.3],[3.1,3.3],[3.12,3.3],[3.14,3.3],[3.16,3.3],[3.18,3.3],[3.2,3.3],[3.22,3.3],[3.24,3.3],[3.26,3.3],[3.28,3.3],[3.3,3.3],[3.32,3.4],[3.34,3.5],[3.36,3.6],[3.38,3.6],[3.4,3.7],[3.42,3.8],[3.44,3.9],[3.46,3.9],[3.48,3.9],[3.5,3.9],[3.52,4],[3.54,4],[3.56,4],[3.58,4],[3.6,4],[3.62,4.1],[3.64,4.1],[3.66,4.1],[3.68,4.1],[3.7,4.1],[3.72,4.1],[3.74,4.2],[3.76,4.2],[3.78,4.1],[3.8,4.1],[3.82,4.1],[3.84,4.1],[3.86,4.1],[3.88,4.1],[3.9,4.2],[3.92,4.1],[3.94,4.1],[3.96,4.1],[3.98,4.1],[4,4.1],[4.02,4.1],[4.04,4.1],[4.06,4.1],[4.08,4.1],[4.1,4.1],[4.12,4.1],[4.14,4.1],[4.16,4],[4.18,4],[4.2,4.1],[4.22,4.1],[4.24,4],[4.26,4],[4.28,4],[4.3,4],[4.32,4],[4.34,4],[4.36,4],[4.38,4],[4.4,4],[4.42,4],[4.44,4],[4.46,4],[4.48,3.9],[4.5,3.9],[4.52,3.9],[4.54,3.9],[4.56,3.9],[4.58,3.9],[4.6,3.9],[4.62,3.8],[4.64,3.8],[4.66,3.8],[4.68,3.8],[4.7,3.8],[4.72,3.8],[4.74,3.8],[4.76,3.8],[4.78,3.8],[4.8,3.8],[4.82,3.8],[4.84,3.8],[4.86,3.9],[4.88,3.9],[4.9,3.9],[4.92,3.9],[4.94,3.9],[4.96,3.9],[4.98,3.9],[5,3.9],[5.02,3.9],[5.032,3.9]],"pois":[{"cat":"water","name":"5km 1급수","lat":37.32878,"lon":126.68698,"ele":4,"rows":[{"km":0,"d":"go"},{"km":5.03,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 09:00"},{"cat":"amb","name":"구급차 1","lat":37.331227,"lon":126.679233,"ele":4,"rows":[{"km":0.82,"d":"go"},{"km":4.21,"d":"back"}],"time":"","memo":"","gap":0.82,"ops":"08:03 ~ 08:50"},{"cat":"water","name":"5KM 1급수","lat":37.321551,"lon":126.678113,"ele":2,"rows":[{"km":2.44,"d":""}],"time":"","memo":"","gap":1.62,"ops":"08:09 ~ 08:29"},{"cat":"amb","name":"구급차 1","lat":37.321253,"lon":126.678805,"ele":2,"rows":[{"km":2.51,"d":""}],"time":"","memo":"","gap":0.07,"ops":"08:09 ~ 08:30"}]}}};
+if(window.__MCV_LOADED__){                     /* 같은 조각이 두 번 이상 삽입된 경우 */
+  (function(){
+    var all=document.querySelectorAll('#mcv-root');
+    for(var i=1;i<all.length;i++) all[i].parentNode.removeChild(all[i]);
+    console.warn('[코스도] 조각이 여러 번 삽입되어 중복본을 제거했습니다.');
+  })();
+} else {
+window.__MCV_LOADED__=true;
+(function(){                                   /* 삽입 환경에서 문제가 생기면 화면에 그대로 알려준다 */
+  function box(msg,warn){
+    var r=document.getElementById('mcv-root'); if(!r) return;
+    var d=document.createElement('div');
+    d.setAttribute('style','margin:10px;padding:12px 14px;border:1px solid '+(warn?'#EF9F27':'#E24B4A')+
+      ';background:'+(warn?'#FAEEDA':'#FCEBEB')+';color:'+(warn?'#633806':'#791F1F')+
+      ';border-radius:10px;font:14px/1.65 sans-serif;white-space:pre-wrap');
+    d.textContent=msg;
+    r.insertBefore(d, r.firstChild);
+  }
+  window.addEventListener('error', function(ev){
+    if(ev && ev.filename && ev.filename.indexOf('http')===0 && ev.filename!==location.href) return;
+    box('코스도 스크립트 오류\n'+(ev&&ev.message||'')+(ev&&ev.lineno?(' (line '+ev.lineno+')'):''));
+  });
+  window.MCV_DIAG=function(silent){
+    var cs={};
+    (DATA.order||[]).forEach(function(k){
+      var c=(DATA.courses||{})[k]||{};
+      cs[c.name||k]={트랙점수:(c.track||[]).length, 총거리:c.total_km, 반환:c.turnKm, 시설:(c.pois||[]).length};
+    });
+    var o={엔진:(DATA.engine||'kakao'), 코스수:(DATA.order||[]).length, 코스:cs,
+      지도준비:(typeof kReady!=='undefined')?kReady:false,
+      지도객체수:(typeof kObjs!=='undefined')?kObjs.length:-1,
+      Leaflet:(typeof L!=='undefined'), Kakao:(typeof kakao!=='undefined'),
+      코스버튼:((document.getElementById('mcv-courseSeg')||{}).innerHTML||'').length>0,
+      시설카드:((document.getElementById('mcv-tables')||{}).children||[]).length};
+    console.log('[코스도 진단]', o);
+    if(!silent) box('진단 결과\n'+JSON.stringify(o,null,1), true);
+    return o;
+  };
+  window.MCV_PANEL=function(){
+    var d=window.MCV_DIAG(true), m=document.getElementById('mcv-map');
+    var rows=[];
+    rows.push(['지도 엔진', d['엔진']]);
+    rows.push(['지도 준비', d['지도준비']?'예':'아니오']);
+    rows.push(['지도 크기', m?(m.clientWidth+' × '+m.clientHeight+' px'):'없음']);
+    rows.push(['그려진 지도 객체', d['지도객체수']]);
+    rows.push(['SDK 로드', d['엔진']==='osm'?('Leaflet '+(d['Leaflet']?'O':'X')):('Kakao '+(d['Kakao']?'O':'X'))]);
+    Object.keys(d['코스']||{}).forEach(function(n){
+      var c=d['코스'][n];
+      rows.push([n, '트랙 '+c['트랙점수']+'점 · '+c['총거리']+'km · 시설 '+c['시설']+'개']);
+    });
+    var html='<b style="display:block;margin-bottom:6px">코스도 표시 상태</b>'+
+      rows.map(function(r){ return '<div style="display:flex;gap:10px"><span style="min-width:104px;color:#607d8b">'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join('');
+    var r=document.getElementById('mcv-root'); if(!r) return d;
+    var old=document.getElementById('mcv-diagPanel'); if(old) old.parentNode.removeChild(old);
+    var el=document.createElement('div'); el.id='mcv-diagPanel';
+    el.setAttribute('style','margin:10px;padding:12px 14px;border:1px solid #B5D4F4;background:#E6F1FB;color:#0C447C;border-radius:10px;font:13px/1.7 sans-serif');
+    el.innerHTML=html+'<div style="margin-top:8px;color:#185FA5;font-size:12px">이 내용을 그대로 캡처해 보내주시면 원인을 바로 확인할 수 있습니다.</div>';
+    r.insertBefore(el, r.firstChild);
+    return d;
+  };
+  setTimeout(function(){
+    var b=document.getElementById('mcv-diagBtn');
+    if(!b) return;
+    if(DATA.diag===false){ if(b.parentNode) b.parentNode.removeChild(b); return; }
+    b.onclick=function(){ window.MCV_PANEL(); };
+  }, 100);
+  setTimeout(function(){
+    try{
+      var d=window.MCV_DIAG(true);
+      var bad=[];
+      (DATA.order||[]).forEach(function(k){
+        var c=(DATA.courses||{})[k]||{};
+        if(!c.track || c.track.length<2) bad.push((c.name||k)+' 트랙 좌표 없음');
+      });
+      if(bad.length) box('코스 좌표가 파일에 들어 있지 않습니다\n· '+bad.join('\n· ')+
+        '\n제작기에서 GPX가 등록된 상태로 다시 내보내 주세요.');
+      else if(DATA.diag!==false && d['지도준비'] && d['지도객체수']===0) window.MCV_PANEL();
+    }catch(e){}
+  }, 3500);
+})();
+const CAT={}; DATA.cats.forEach(c=>CAT[c.id]=c);
+const SUP=DATA.supplies||[];
+const T=Object.assign({subtitle:'',mapNote:'',tableTitle:'📋 코스 시설 안내',tableNote:'',colGo:'왕편',colBack:'복편',colName:'명칭',colMemo:'비고'}, DATA.texts||{});
+const ADMIN = DATA.mode==='admin';
+const COLS = Object.assign({gap:false,ops:false,memo:true,ele:false}, DATA.cols||{});
+let RETOFF = (DATA.returnOffset!=null?+DATA.returnOffset:14);
+let RETON = false;                              /* 복편 점선은 사용하지 않는다 */
+const RQ = n => (DATA.roundMode==='ceil'?Math.ceil(n):Math.round(n));
+function boxesOf(item, units){
+  if(!item||!item.boxQty||item.boxQty<=0||!units) return null;
+  const v=units/item.boxQty, r=RQ(v);
+  return (v>0&&r<1)?1:r;
+}
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let curKey=DATA.order[0], C=DATA.courses[curKey];
+if(DATA.hideTitle){
+  const h1=document.getElementById('mcv-hTitle').parentElement;
+  if(h1) h1.style.display='none';
+  document.getElementById('mcv-hSub').style.display='none';
+} else {
+  document.getElementById('mcv-hTitle').textContent=DATA.title;
+  document.getElementById('mcv-hSub').textContent=T.subtitle;
+}
+(function(){ const e=document.getElementById('mcv-mapNoteEl');
+  if(!e) return;
+  if(T.mapNote){ e.textContent=T.mapNote; } else { e.style.display='none'; }
+})();
+document.getElementById('mcv-tblTitleEl').textContent=T.tableTitle;
+document.getElementById('mcv-tblNoteEl').textContent=T.tableNote;
+if(!DATA.embed) document.title=DATA.title+(ADMIN?' (관리자용)':'');
+(function(){
+  const box=document.getElementById('mcv-limitNoteEl'); if(!box) return;
+  const L=DATA.limits||[];
+  if(!L.length){ box.textContent=DATA.limitNote||''; return; }
+  box.innerHTML='<div class="mcv-limit"><div class="mcv-limit-h">⏱ 제한시간'+
+    (DATA.startTime?'<span>출발 '+esc(DATA.startTime)+'</span>':'')+'</div>'+
+    '<table><thead><tr><th>종목</th><th>거리</th><th>제한시간</th><th>종료 시각</th></tr></thead><tbody>'+
+    L.map(r=>'<tr><td class="mcv-lt-n">'+esc(r.name)+'</td><td>'+r.km.toFixed(2)+' km</td>'+
+      '<td>'+esc(r.limit)+'</td><td class="mcv-lt-e">'+esc(r.end)+'</td></tr>').join('')+
+    '</tbody></table></div>';
+})();
+if(ADMIN){
+  document.getElementById('mcv-hdr').classList.add('admin');
+  document.getElementById('mcv-hTag').style.display='inline-block';
+  document.getElementById('mcv-supCard').style.display='block';
+  document.getElementById('mcv-paceCard').style.display='block';
+} else {
+  ['mcv-paceCard','mcv-supCard','mcv-hTag'].forEach(function(id){   /* 참가자용: DOM에서 통째로 제거 */
+    var e=document.getElementById(id);
+    if(e && e.parentNode) e.parentNode.removeChild(e);
+  });
+}
+const dirLabel=d=>d==='go'?T.colGo:(d==='back'?T.colBack:'');
+const passInfo=p=>(p.rows&&p.rows.length)?p.rows:[{km:p.km||0,d:''}];
+const passStr=p=>passInfo(p).map(x=>(x.d?dirLabel(x.d)+' ':'')+x.km.toFixed(2)+' km').join(' · ');
+const turnOf=c=>{ const t=(c&&c.turnKm!=null)?+c.turnKm:null;
+  return (t!=null&&isFinite(t)&&t>0.01&&t<c.total_km-0.01)?t:null; };
+function supStr(p){
+  if(!ADMIN||!p.sup) return '';
+  const arr=SUP.filter(s=>p.sup[s.id]).map(s=>{
+    const b=boxesOf(s,p.sup[s.id]);
+    return esc(s.label)+' '+p.sup[s.id]+esc(s.unit)+(b!=null?'('+b+'박스)':'');
+  });
+  return (p.people?'<br><span style="color:#455a64">👥 통과 '+p.people.toLocaleString()+'명</span>':'')+
+    (arr.length?'<br><span style="color:#455a64">🧰 '+arr.join(', ')+'</span>':'');
+}
+function popCard(icon,color,title,sub,chips,note){
+  return '<div class="mcv-pop">'+
+    '<div class="mcv-pop-h"><span class="mcv-titleicon" style="background:'+color+'">'+icon+'</span>'+
+      '<span class="mcv-pop-t"><b>'+title+'</b>'+(sub?'<i>'+sub+'</i>':'')+'</span></div>'+
+    (chips?'<div class="mcv-chips">'+chips+'</div>':'')+
+    (note?'<div class="mcv-memo">'+note+'</div>':'')+
+  '</div>';
+}
+function poiInfoHtml(p){
+  const c=CAT[p.cat], info=passInfo(p);
+  const go=info.find(x=>x.d!=='back'), back=info.find(x=>x.d==='back');
+  let ch='';
+  if(c.hasTime){
+    ch+='<span class="mcv-c mcv-c-go">'+info[0].km.toFixed(2)+' km</span>';
+    if(p.time) ch+='<span class="mcv-c mcv-c-time">⏱ '+esc(p.time)+'</span>';
+  } else if(go&&back){
+    ch+='<span class="mcv-c mcv-c-go">'+esc(T.colGo)+' '+go.km.toFixed(2)+' km</span>'+
+        '<span class="mcv-c mcv-c-back">'+esc(T.colBack)+' '+back.km.toFixed(2)+' km</span>';
+  } else {
+    ch+='<span class="mcv-c mcv-c-go">'+info[0].km.toFixed(2)+' km</span>';
+  }
+  if(p.ele!=null) ch+='<span class="mcv-c mcv-c-sub">고도 '+p.ele+' m</span>';
+  if(ADMIN&&p.ops) ch+='<span class="mcv-c mcv-c-sub">'+esc(T.colOps||'운영 시간')+' '+esc(p.ops)+'</span>';
+  if(ADMIN&&p.people) ch+='<span class="mcv-c mcv-c-sub">👥 '+p.people.toLocaleString()+'명</span>';
+  if(ADMIN&&p.sup){
+    SUP.filter(x=>p.sup[x.id]).forEach(x=>{
+      const b=boxesOf(x,p.sup[x.id]);
+      ch+='<span class="mcv-c mcv-c-sup">'+esc(x.label)+' '+p.sup[x.id]+esc(x.unit)+(b!=null?' · '+b+'박스':'')+'</span>';
+    });
+  }
+  return popCard(c.icon, c.color, esc(p.name), esc(c.label), ch, p.memo?esc(p.memo):'');
+}
+/* ── 지도 엔진 (카카오맵 / OpenStreetMap) ── */
+const ENGINE=(DATA.engine==='osm')?'osm':'kakao';
+const OSM=(ENGINE==='osm');
+function unmaskKey(b){
+  if(!b) return '';
+  try{
+    const s=decodeURIComponent(escape(atob(b)));
+    let out='';
+    for(let i=0;i<s.length;i++) out+=String.fromCharCode(s.charCodeAt(i)^(0x5a+(i%7)));
+    return out;
+  }catch(e){ return ''; }
+}
+const KKEY=unmaskKey(DATA.k||'');
+let kmap=null,kReady=false,kObjs=[],kInfo=null,kHover=null,kMy=null,cum=[],pendingFocus=null;
+const ovState={TRAFFIC:false,TERRAIN:false};
+function mapErr(reason){
+  document.getElementById('mcv-mapErr').style.display='flex';
+  document.getElementById('mcv-mapErrIn').innerHTML= OSM
+    ? '<b>지도를 불러오지 못했습니다 ('+esc(reason)+')</b><br><br>인터넷 연결을 확인해 주세요.<br>이 코스도는 OpenStreetMap을 사용하며 별도의 키가 필요하지 않습니다.'
+    : '<b>카카오맵을 불러오지 못했습니다 ('+esc(reason)+')</b><br><br>'+
+      '이 파일을 <b>더블클릭(file://)으로 열면</b> 카카오 지도가 동작하지 않습니다.<br>'+
+      '웹 서버에 올린 뒤, 카카오 개발자 콘솔 → 앱 설정 → <b>플랫폼 → Web</b> 에 해당 도메인을 등록해 주세요.<br>'+
+      '(로컬 확인은 <code>python -m http.server 8000</code> 후 <code>http://localhost:8000</code> 등록)';
+}
+function loadAsset(tag, attrs){
+  return new Promise((ok,ng)=>{
+    const el=document.createElement(tag);
+    Object.assign(el, attrs);
+    el.onload=()=>ok(); el.onerror=()=>ng(new Error('로드 실패'));
+    document.head.appendChild(el);
+  });
+}
+(async function bootMap(){
+  try{
+    if(OSM){
+      const CDN=['https://unpkg.com/leaflet@1.9.4/dist/',
+                 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/',
+                 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/'];
+      let ok=false, lastErr=null;
+      for(const base of CDN){
+        try{
+          await loadAsset('link',{rel:'stylesheet', href:base+'leaflet.css'});
+          await loadAsset('script',{src:base+'leaflet.js'});
+          if(typeof L!=='undefined'){ ok=true; break; }
+        }catch(e){ lastErr=e; }
+      }
+      if(!ok) throw (lastErr||new Error('Leaflet 로드 실패'));
+      try{ init(); }catch(e){ console.error('[코스도] init 오류:', e); }
+    } else {
+      await loadAsset('script',{src:'https://dapi.kakao.com/v2/maps/sdk.js?appkey='+encodeURIComponent(KKEY)+'&autoload=false'});
+      kakao.maps.load(function(){ try{ init(); }catch(e){ console.error('[코스도] init 오류:', e); } });
+    }
+  }catch(e){ mapErr(e.message||'스크립트 로드 실패'); }
+  setTimeout(()=>{ if(!kReady) mapErr('응답 없음'); },9000);
+})();
+function wireCommonUI(){}
+function init(){
+  if(OSM){
+    kmap=L.map('mcv-map',{zoomControl:true}).setView(DATA.start, 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> 기여자'}).addTo(kmap);
+    kmap.on('click', ()=>closeInfo());
+    document.getElementById('mcv-typeSeg').style.display='none';
+    document.getElementById('mcv-ovSeg').style.display='none';
+  } else {
+    kmap=new kakao.maps.Map(document.getElementById('mcv-map'),{center:new kakao.maps.LatLng(DATA.start[0],DATA.start[1]),level:7});
+    kakao.maps.event.addListener(kmap,'click',()=>closeInfo());
+    document.getElementById('mcv-typeSeg').onclick=e=>{
+      const b=e.target.closest('button'); if(!b) return;
+      document.querySelectorAll('#mcv-typeSeg button').forEach(x=>x.classList.toggle('mcv-on',x===b));
+      kmap.setMapTypeId(kakao.maps.MapTypeId[b.dataset.t]);
+    };
+    document.getElementById('mcv-ovSeg').onclick=e=>{
+      const b=e.target.closest('button'); if(!b) return;
+      const t=b.dataset.o, id=kakao.maps.MapTypeId[t];
+      if(ovState[t]){ kmap.removeOverlayMapTypeId(id); b.classList.remove('mcv-on'); }
+      else { kmap.addOverlayMapTypeId(id); b.classList.add('mcv-on'); }
+      ovState[t]=!ovState[t];
+    };
+  }
+  kReady=true;
+  wireCommonUI();
+  setCourse(DATA.order[0]);
+  if(pendingFocus){ const f=pendingFocus; pendingFocus=null; mapFocus(f.lat,f.lon); showInfo(f.html,f.lat,f.lon); }
+  watchMapSize();
+}
+/* ── 엔진 공통 그리기 API ── */
+function clearObjs(){ kObjs.forEach(o=>{ try{o.rm();}catch(e){} }); kObjs=[]; }
+function cleanPath(path){                        /* NaN·빈값이 하나라도 섞이면 선이 통째로 안 그려진다 */
+  const out=[];
+  for(let i=0;i<(path||[]).length;i++){
+    const p=path[i]; if(!p) continue;
+    const a=p[0], b=p[1];
+    if(a===null||a===undefined||a===''||b===null||b===undefined||b==='') continue;
+    const la=+a, lo=+b;
+    if(!isFinite(la)||!isFinite(lo)) continue;
+    if(la<-90||la>90||lo<-180||lo>180) continue;
+    if(Math.abs(la)<0.5&&Math.abs(lo)<0.5) continue;      /* (0,0) 널아일랜드 제외 */
+    out.push([la,lo]);
+  }
+  return out;
+}
+function mkPoly(path, o){
+  const pts=cleanPath(path);
+  if(pts.length<2){ console.warn('[코스도] 선 건너뜀 — 유효 좌표', pts.length, '/', (path||[]).length); return null; }
+  if(OSM){
+    const pl=L.polyline(pts,{color:o.color, weight:o.weight, opacity:o.opacity,
+      dashArray:o.dash?'9 8':null, interactive:!!o.onClick}).addTo(kmap);
+    if(o.onClick) pl.on('click', ev=>{ L.DomEvent.stopPropagation(ev); o.onClick(ev.latlng.lat, ev.latlng.lng); });
+    kObjs.push({rm:()=>kmap.removeLayer(pl)});
+    return pl;
+  }
+  const pl=new kakao.maps.Polyline({path:pts.map(a=>new kakao.maps.LatLng(a[0],a[1])),
+    strokeColor:o.color, strokeWeight:o.weight, strokeOpacity:o.opacity,
+    strokeStyle:o.dash?'shortdash':'solid'});
+  pl.setMap(kmap); kObjs.push({rm:()=>pl.setMap(null)});
+  if(o.onClick) kakao.maps.event.addListener(pl,'click', ev=>o.onClick(ev.latLng.getLat(), ev.latLng.getLng()));
+  return pl;
+}
+function kOv(ll, html, z, onClick, yAnchor){
+  if(OSM){
+    const mk=L.marker(ll,{icon:L.divIcon({html:html, className:'mcv-lfIcon', iconSize:[0,0]}),
+      zIndexOffset:(z||0), interactive:true, keyboard:false}).addTo(kmap);
+    if(onClick) mk.on('click', ev=>{ L.DomEvent.stopPropagation(ev); onClick(ev); });
+    const h={setPosition:a=>mk.setLatLng(a), rm:()=>kmap.removeLayer(mk)};
+    kObjs.push(h); return h;
+  }
+  const box=document.createElement('div'); box.innerHTML=html;
+  const node=box.firstElementChild || box;
+  const ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ll[0],ll[1]),content:node,
+    xAnchor:.5,yAnchor:(yAnchor==null?.5:yAnchor),zIndex:z||1,clickable:true});
+  if(onClick) node.addEventListener('click',ev=>{ev.stopPropagation();onClick(ev);});
+  ov.setMap(kmap);
+  const h={setPosition:a=>ov.setPosition(new kakao.maps.LatLng(a[0],a[1])), rm:()=>ov.setMap(null)};
+  kObjs.push(h); return h;
+}
+function closeInfo(){
+  if(!kInfo) return;
+  if(OSM){ kmap.closePopup(kInfo); } else { kInfo.setMap(null); }
+  kInfo=null;
+}
+function showInfo(html,lat,lon){
+  closeInfo();
+  if(OSM){
+    kInfo=L.popup({maxWidth:340, autoPan:true}).setLatLng([lat,lon]).setContent(html).openOn(kmap);
+    return;
+  }
+  const el=document.createElement('div');
+  el.className='mcv-kinfo'; el.innerHTML=html+'<span class="mcv-x">×</span>';
+  const xb=el.querySelector('.mcv-x'); if(xb) xb.addEventListener('click',closeInfo);
+  kInfo=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(lat,lon),content:el,yAnchor:1.45,zIndex:900,clickable:true});
+  kInfo.setMap(kmap);
+}
+function mapFit(path){
+  const pts=cleanPath(path);
+  if(pts.length<2){ console.warn('[코스도] 전체보기 건너뜀 — 유효 좌표', pts.length); return; }
+  let s1=90, w=180, n=-90, e=-180;
+  for(const p of pts){ if(p[0]<s1)s1=p[0]; if(p[0]>n)n=p[0]; if(p[1]<w)w=p[1]; if(p[1]>e)e=p[1]; }
+  if(!(n>s1||e>w)){ console.warn('[코스도] 범위가 한 점입니다'); return; }
+  if(OSM){ kmap.fitBounds([[s1,w],[n,e]], {padding:[26,26]}); return; }
+  kmap.setBounds(new kakao.maps.LatLngBounds(new kakao.maps.LatLng(s1,w), new kakao.maps.LatLng(n,e)));
+}
+function mapFocus(lat,lon){
+  if(OSM){ kmap.setView([lat,lon], Math.max(kmap.getZoom(),17)); return; }
+  kmap.setLevel(3); kmap.setCenter(new kakao.maps.LatLng(lat,lon));
+}
+/* 삽입된 페이지에서는 지도 div 크기가 뒤늦게 정해지는 경우가 많다.
+   그때 카카오/Leaflet의 벡터 레이어가 0×0 으로 굳어 선만 안 보이게 되므로 다시 재도록 한다. */
+function watchMapSize(){
+  const box=document.getElementById('mcv-map'); if(!box) return;
+  let last=box.clientWidth+'x'+box.clientHeight;
+  const redraw=()=>{
+    try{ mapRelayout(); rebuildMap(false); }catch(e){ console.warn('[코스도] 재렌더 실패', e); }
+  };
+  [200, 700, 1500, 3000].forEach(t=>setTimeout(()=>{
+    const now=box.clientWidth+'x'+box.clientHeight;
+    if(now!==last || !kObjs.length){ last=now; redraw(); }
+  }, t));
+  if(window.ResizeObserver){
+    let tm=null;
+    new ResizeObserver(()=>{ clearTimeout(tm); tm=setTimeout(()=>{
+      const now=box.clientWidth+'x'+box.clientHeight;
+      if(now!==last){ last=now; redraw(); }
+    }, 200); }).observe(box);
+  }
+}
+function mapRelayout(){ if(!kmap) return; if(OSM) kmap.invalidateSize(); else kmap.relayout(); }
+function scrollToMap(){
+  const mw=document.getElementById('mcv-mapWrap'); if(!mw) return;
+  try{
+    const r=mw.getBoundingClientRect(), vh=window.innerHeight||document.documentElement.clientHeight;
+    mw.scrollIntoView({behavior:'smooth', block:(r.height<=vh-40)?'center':'start'});
+  }catch(e){ try{ mw.scrollIntoView(true); }catch(e2){} }
+  try{                                            /* 페이지가 내부 컨테이너로 스크롤되는 사이트 대응 */
+    let node=mw.parentNode, guard=0;
+    while(node && node.nodeType===1 && guard++<20){
+      const st=window.getComputedStyle?window.getComputedStyle(node):null;
+      const oy=st?(st.overflowY||''):'';
+      if((oy==='auto'||oy==='scroll') && node.scrollHeight>node.clientHeight+10){
+        node.scrollTop = Math.max(0, node.scrollTop + mw.getBoundingClientRect().top - node.getBoundingClientRect().top - 12);
+        return;
+      }
+      node=node.parentNode;
+    }
+  }catch(e){}
+  try{
+    const r=mw.getBoundingClientRect(), vh=window.innerHeight||document.documentElement.clientHeight;
+    const off=(r.height<=vh-40)?Math.max(16,(vh-r.height)/2):16;
+    window.scrollTo({top:Math.max(0, r.top+(window.pageYOffset||document.documentElement.scrollTop||0)-off), behavior:'smooth'});
+  }catch(e){}
+}
+function computeCum(){
+  cum=[0];
+  const R=6371008.8, rad=Math.PI/180;
+  for(let i=1;i<C.track.length;i++){
+    const a=C.track[i-1],b=C.track[i];
+    const dla=(b[0]-a[0])*rad, dlo=(b[1]-a[1])*rad;
+    const h=Math.sin(dla/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(dlo/2)**2;
+    cum.push(cum[i-1]+2*R*Math.asin(Math.sqrt(h)));
+  }
+}
+function latlngAtKm(km){
+  const d=km*1000; let lo=0,hi=cum.length-1;
+  while(lo<hi){const m=(lo+hi)>>1; cum[m]<d?lo=m+1:hi=m;}
+  const i=Math.max(1,lo),d0=cum[i-1],d1=cum[i],t=d1>d0?(d-d0)/(d1-d0):0;
+  const a=C.track[i-1],b=C.track[i];
+  return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1])];
+}
+/* ── 복편(반환 후) 평행 오프셋 ── */
+function offsetPath(path, meters){
+  const n=path.length, out=[], RADv=Math.PI/180;
+  for(let i=0;i<n;i++){
+    const a=path[Math.max(0,i-1)], b=path[Math.min(n-1,i+1)];
+    const lat=path[i][0], cosL=Math.cos(lat*RADv)||1;
+    const ex=(b[1]-a[1])*cosL, ny=(b[0]-a[0]);
+    const L=Math.sqrt(ex*ex+ny*ny);
+    if(!L){ out.push([path[i][0],path[i][1]]); continue; }
+    const pe=ny/L, pn=-ex/L;
+    out.push([path[i][0]+meters*pn/111320, path[i][1]+meters*pe/(111320*cosL)]);
+  }
+  return out;
+}
+function splitPath(km){
+  if(cum.length!==C.track.length) computeCum();      /* 누적거리가 어긋나면 다시 계산 */
+  const d=km*1000, go=[], back=[];
+  let cut=false;
+  for(let i=0;i<C.track.length;i++){
+    if(!cut && cum[i]<=d){ go.push([C.track[i][0],C.track[i][1]]); continue; }
+    if(!cut){ const t=latlngAtKm(km); go.push(t); back.push(t); cut=true; }
+    back.push([C.track[i][0],C.track[i][1]]);
+  }
+  if(!back.length) back.push(latlngAtKm(km));
+  return {go, back};
+}
+function displayAtKm(km){
+  const ll=latlngAtKm(km), t=turnOf(C);
+  if(!RETON || t==null || km<=t) return ll;
+  const eps=Math.max(0.005, Math.min(0.03, C.total_km/300));
+  const a=latlngAtKm(Math.max(t, km-eps)), b=latlngAtKm(Math.min(C.total_km, km+eps));
+  return offsetPath([a, ll, b], RETOFF)[1];
+}
+const kmSize=k=>k%5===0?22:15;
+function kmHtml(k, back){
+  const big=k%5===0,s=kmSize(k),f=big?9:8,col=back?'#ef6c00':'#e53935';
+  return '<div class="mcv-kkm" style="background:'+(big?col:'#fff')+';color:'+(big?'#fff':col)+
+    ';border:'+(big?'2px solid #fff':'1.5px solid '+col)+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</div>';
+}
+function nudged(k){
+  const ll=displayAtKm(k);
+  for(const p of C.pois){
+    const dy=(ll[0]-p.lat)*111320, dx=(ll[1]-p.lon)*111320*Math.cos(ll[0]*Math.PI/180);
+    if(Math.sqrt(dx*dx+dy*dy)<45) return [ll[0]+0.00035, ll[1]+0.0002];
+  }
+  return ll;
+}
+function rebuildMap(fit){
+  if(!kReady) return;
+  clearObjs(); closeInfo();
+  const col=C.color||'#e53935';
+  const tk=turnOf(C);
+  let polyDrawn=0;
+  if(mkPoly(C.track, {color:col, weight:5, opacity:.9})) polyDrawn++;
+  if(tk!=null){
+    const tp=latlngAtKm(tk);
+    kOv(tp,'<div class="mcv-kturn">↩ 반환 '+tk.toFixed(2)+'km</div>',320,
+      ()=>showInfo(popCard('↩','#f57c00','반환 지점','',
+        '<span class="mcv-c mcv-c-go">'+tk.toFixed(2)+' km</span>'+
+        '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km</span>',''),tp[0],tp[1]));
+  }
+  const st=C.track[0];
+  kOv(st,'<div class="mcv-kstart">출발/도착</div>',300,
+    ()=>showInfo(popCard('🏁','#2e7d32','출발 / 도착','',
+      '<span class="mcv-c mcv-c-go">0.00 km</span>'+
+      '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km</span>',''),st[0],st[1]));
+  for(let k=1;k<C.total_km;k++){
+    const ll=nudged(k);
+    ((kk,l)=>kOv(l,kmHtml(kk,false),40,
+      ()=>showInfo(popCard('📍','#546e7a',kk+' km 지점','',
+        '<span class="mcv-c mcv-c-go">'+kk+'.00 km</span>',''),l[0],l[1])))(k,ll);
+  }
+  const seen={};
+  C.pois.forEach(p=>{
+    if(hiddenCats.has(p.cat)) return;
+    const pos=[p.lat,p.lon];
+    const key=pos[0].toFixed(4)+','+pos[1].toFixed(4);
+    const n=seen[key]||0; seen[key]=n+1;
+    kOv([pos[0],pos[1]+n*0.00038],'<div class="mcv-kpoi" style="background:'+CAT[p.cat].color+'">'+CAT[p.cat].icon+'</div>',200,
+      ()=>{ mapFocus(p.lat,p.lon); showInfo(poiInfoHtml(p),p.lat,p.lon); });
+  });
+  if(fit){
+    const st2=Math.max(1,Math.floor(C.track.length/400));
+    const pts=[];
+    for(let i=0;i<C.track.length;i+=st2) pts.push(C.track[i]);
+    pts.push(C.track[C.track.length-1]);
+    mapFit(pts);
+  }
+  console.log('[코스도] 라인', polyDrawn, '개 · 트랙점', (C.track||[]).length, '· 유효점', cleanPath(C.track).length);
+}
+/* ── 내 위치 ── */
+let watchId=null, firstFix=true;
+const btn=document.getElementById('mcv-locateBtn');
+btn.addEventListener('click',()=>{
+  if(!navigator.geolocation){alert('이 기기에서는 위치 서비스를 사용할 수 없습니다.');return;}
+  if(watchId!==null){ navigator.geolocation.clearWatch(watchId); watchId=null; btn.classList.remove('tracking'); firstFix=true; if(kMy){kMy.rm();kMy=null;} return; }
+  watchId=navigator.geolocation.watchPosition(pos=>{
+    if(!kReady) return;
+    const ll=[pos.coords.latitude,pos.coords.longitude];
+    btn.classList.add('tracking');
+    if(!kMy){ kMy=kOv(ll, '<div class="mcv-my-dot"></div>', 950); }
+    else kMy.setPosition(ll);
+    if(firstFix){ firstFix=false; mapFocus(ll[0],ll[1]); }
+  }, err=>{ btn.classList.remove('tracking'); alert('위치를 가져올 수 없습니다: '+err.message); },
+  {enableHighAccuracy:true,maximumAge:1000,timeout:15000});
+});
+/* ── 고저도 ── */
+const canvas=document.getElementById('mcv-elev'), ctx=canvas.getContext('2d'), tooltip=document.getElementById('mcv-tooltip');
+const PAD={l:46,r:14,t:14,b:26};
+function eleAtKm(km){
+  const P=C.profile;
+  let i=0; while(i<P.length-1&&P[i+1][0]<km) i++;
+  const [k0,e0]=P[i],[k1,e1]=P[Math.min(i+1,P.length-1)];
+  const t=k1>k0?(km-k0)/(k1-k0):0;
+  return e0+t*(e1-e0);
+}
+function drawChart(hoverX){
+  const P=C.profile,total=C.total_km;
+  const dpr=window.devicePixelRatio||1,W=canvas.clientWidth,H=canvas.clientHeight;
+  canvas.width=W*dpr; canvas.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  if(!C.hasEle){ ctx.fillStyle='#90a4ae'; ctx.font='13px sans-serif'; ctx.textAlign='center'; ctx.fillText('고도 정보가 없는 코스입니다',W/2,H/2); return null; }
+  let eMin=Math.floor(C.ele_min/10)*10, eMax=Math.ceil(C.ele_max/10)*10+10;
+  if(eMax-eMin<30) eMax=eMin+30;
+  const iw=W-PAD.l-PAD.r, ih=H-PAD.t-PAD.b;
+  const x=km=>PAD.l+iw*km/total, y=e=>PAD.t+ih*(1-(e-eMin)/(eMax-eMin));
+  const eStep=(eMax-eMin)>120?50:((eMax-eMin)>60?25:10);
+  ctx.font='10px sans-serif'; ctx.fillStyle='#90a4ae'; ctx.strokeStyle='#eceff1'; ctx.lineWidth=1;
+  for(let e=eMin;e<=eMax;e+=eStep){
+    ctx.beginPath();ctx.moveTo(PAD.l,y(e));ctx.lineTo(W-PAD.r,y(e));ctx.stroke();
+    ctx.textAlign='right';ctx.fillText(e+'m',PAD.l-6,y(e)+3);
+  }
+  const kStep=total>25?5:(total>8?2:1);
+  for(let k=0;k<=total;k+=kStep){
+    ctx.beginPath();ctx.moveTo(x(k),PAD.t);ctx.lineTo(x(k),H-PAD.b);ctx.stroke();
+    ctx.textAlign='center';ctx.fillText(k+'km',x(k),H-8);
+  }
+  const tk=turnOf(C);
+  if(tk!=null){
+    ctx.beginPath();ctx.moveTo(x(tk),PAD.t);ctx.lineTo(x(tk),H-PAD.b);
+    ctx.strokeStyle='#f57c00';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#ef6c00';ctx.textAlign='center';ctx.font='bold 10px sans-serif';
+    ctx.fillText('↩ 반환',x(tk),PAD.t+10); ctx.font='10px sans-serif';
+  }
+  const grad=ctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
+  grad.addColorStop(0,'rgba(25,118,210,.45)');grad.addColorStop(1,'rgba(25,118,210,.05)');
+  ctx.beginPath(); ctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) ctx.lineTo(x(k),y(e));
+  ctx.lineTo(x(P[P.length-1][0]),H-PAD.b); ctx.lineTo(x(P[0][0]),H-PAD.b); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) ctx.lineTo(x(k),y(e));
+  ctx.strokeStyle='#1565c0'; ctx.lineWidth=2; ctx.stroke();
+  C.pois.forEach(p=>passInfo(p).forEach(r=>{
+    ctx.beginPath(); ctx.arc(x(r.km),y(eleAtKm(r.km)),4,0,7);
+    ctx.fillStyle=CAT[p.cat].color; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  }));
+  if(hoverX!=null&&hoverX>=PAD.l&&hoverX<=W-PAD.r){
+    const km=(hoverX-PAD.l)/iw*total, ele=eleAtKm(km);
+    ctx.beginPath();ctx.moveTo(hoverX,PAD.t);ctx.lineTo(hoverX,H-PAD.b);
+    ctx.strokeStyle='rgba(38,50,56,.55)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(hoverX,y(ele),5,0,7);ctx.fillStyle='#e53935';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    return {km,ele};
+  }
+  return null;
+}
+canvas.addEventListener('mousemove',ev=>{
+  const r=canvas.getBoundingClientRect(), res=drawChart(ev.clientX-r.left);
+  if(!res){tooltip.style.display='none';return;}
+  let near='';
+  C.pois.forEach(p=>passInfo(p).forEach(x2=>{
+    if(Math.abs(x2.km-res.km)<=Math.max(0.15,C.total_km*0.006))
+      near+='<br>'+CAT[p.cat].icon+' '+esc(p.name)+(x2.d?' '+dirLabel(x2.d):'')+' ('+x2.km.toFixed(2)+'km)'+(p.time?' · '+esc(p.time):'');
+  }));
+  const P=C.profile;
+  let i=0; while(i<P.length-1&&P[i+1][0]<res.km) i++;
+  const j=Math.min(i+4,P.length-1);
+  const grade=P[j][0]>P[i][0]?((P[j][1]-P[i][1])/((P[j][0]-P[i][0])*1000)*100):0;
+  const tk=turnOf(C);
+  tooltip.innerHTML='<b>'+res.km.toFixed(2)+' km</b>'+(tk!=null?' <span style="color:#ffb74d">'+(res.km>tk?'복편':'왕편')+'</span>':'')+
+    '<br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
+  tooltip.style.display='block';
+  const box=document.getElementById('mcv-chartBox').getBoundingClientRect();
+  let tx=ev.clientX-box.left+14;
+  if(tx+tooltip.offsetWidth>box.width-10) tx=ev.clientX-box.left-tooltip.offsetWidth-14;
+  tooltip.style.left=tx+'px'; tooltip.style.top=(ev.clientY-box.top-10)+'px';
+  if(kReady&&kmap){
+    const ll=displayAtKm(res.km);
+    if(!kHover) kHover=kOv(ll,'<div style="width:16px;height:16px;background:#e53935;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>',800);
+    else kHover.setPosition(ll);
+  }
+});
+canvas.addEventListener('mouseleave',()=>{
+  drawChart(null); tooltip.style.display='none';
+  if(kHover){kHover.rm();kHover=null;}
+});
+window.addEventListener('resize',()=>{ drawChart(null); mapRelayout(); });
+/* ── 표 ── */
+function renderTables(){
+  const box=document.getElementById('mcv-tables'); box.innerHTML='';
+  DATA.cats.forEach(cat=>{
+    const items=C.pois.filter(p=>p.cat===cat.id);
+    if(!items.length) return;
+    const supIds=ADMIN?SUP.filter(s=>items.some(p=>(p.sup||{})[s.id])).map(s=>s.id):[];
+    let h='<div class="mcv-cat"><div class="mcv-cat-h">'+
+      '<span class="mcv-titleicon" style="background:'+cat.color+'">'+cat.icon+'</span>'+
+      '<b>'+esc(cat.label)+'</b><span class="mcv-n">'+items.length+'</span></div>';
+    items.forEach(p=>{
+      const info=passInfo(p), idx=C.pois.indexOf(p);
+      const go=info.find(x=>x.d!=='back'), back=info.find(x=>x.d==='back');
+      let c='';
+      if(cat.hasTime){
+        c+='<span class="mcv-c mcv-c-go">'+info[0].km.toFixed(2)+' km</span>';
+        if(p.time) c+='<span class="mcv-c mcv-c-time">⏱ '+esc(p.time)+'</span>';
+      } else if(go && back){
+        c+='<span class="mcv-c mcv-c-go">'+esc(T.colGo)+' '+go.km.toFixed(2)+' km</span>'+
+           '<span class="mcv-c mcv-c-back">'+esc(T.colBack)+' '+back.km.toFixed(2)+' km</span>';
+      } else if(back){
+        c+='<span class="mcv-c mcv-c-back">'+esc(T.colBack)+' '+back.km.toFixed(2)+' km</span>';
+      } else if(go){
+        c+='<span class="mcv-c mcv-c-go">'+(info.length>1?esc(T.colGo)+' ':'')+go.km.toFixed(2)+' km</span>';
+      }
+      if(COLS.gap && p.gap!=null && p.gap>0) c+='<span class="mcv-c mcv-c-sub">'+esc(T.colGap||'간격')+' +'+p.gap.toFixed(2)+'</span>';
+      if(COLS.ele && C.hasEle && p.ele!=null) c+='<span class="mcv-c mcv-c-sub">고도 '+p.ele+' m</span>';
+      if(COLS.ops && p.ops) c+='<span class="mcv-c mcv-c-sub">'+esc(T.colOps||'운영 시간')+' '+esc(p.ops)+'</span>';
+      if(ADMIN && p.people) c+='<span class="mcv-c mcv-c-sub">👥 '+p.people.toLocaleString()+'명</span>';
+      supIds.forEach(sid=>{
+        const o=SUP.find(v=>v.id===sid), u=(p.sup||{})[sid]||0;
+        if(!u) return;
+        const b=boxesOf(o,u);
+        c+='<span class="mcv-c mcv-c-sup">'+esc(o.label)+' '+u.toLocaleString()+esc(o.unit)+(b!=null?' · '+b+'박스':'')+'</span>';
+      });
+      h+='<div class="mcv-item" data-i="'+idx+'"><div class="mcv-nm">'+esc(p.name)+'</div>'+
+         '<div class="mcv-chips">'+c+'</div>'+
+         (COLS.memo&&p.memo?'<div class="mcv-memo">'+esc(p.memo)+'</div>':'')+'</div>';
+    });
+    if(supIds.length){
+      h+='<div class="mcv-cat-f">'+supIds.map(sid=>{
+        const o=SUP.find(v=>v.id===sid);
+        const u=items.reduce((a,p)=>a+((p.sup||{})[sid]||0),0), b=boxesOf(o,u);
+        return '<span><b>'+esc(o.label)+'</b> '+u.toLocaleString()+esc(o.unit)+(b!=null?' ('+b+'박스)':'')+'</span>';
+      }).join('')+'</div>';
+    }
+    h+='</div>';
+    const wrap=document.createElement('div'); wrap.innerHTML=h;
+    wrap.querySelectorAll('.mcv-item').forEach(el=>{
+      el.addEventListener('click',()=>{
+        const p=C.pois[+el.dataset.i];
+        if(kReady){ mapFocus(p.lat,p.lon); showInfo(poiInfoHtml(p),p.lat,p.lon); }
+        else pendingFocus={lat:p.lat, lon:p.lon, html:poiInfoHtml(p)};
+        scrollToMap();
+      });
+    });
+    box.appendChild(wrap);
+  });
+  if(!box.children.length) box.innerHTML='<div style="padding:24px;color:#90a4ae;font-size:.85rem">이 코스에는 등록된 시설이 없습니다.</div>';
+}
+function renderSupplies(){
+  if(!ADMIN) return;
+  const totals={};
+  C.pois.forEach(p=>Object.entries(p.sup||{}).forEach(([k,v])=>{totals[k]=(totals[k]||0)+v;}));
+  const keys=SUP.filter(s=>totals[s.id]);
+  document.getElementById('mcv-supChips').innerHTML=keys.length
+    ? keys.map(s=>{const b=boxesOf(s,totals[s.id]);
+        return '<div class="mcv-sumchip">'+esc(s.label)+'<b>'+totals[s.id].toLocaleString()+' '+esc(s.unit)+
+          (b!=null?'<br><span style="font-size:.72rem;color:#546e7a">'+b+'박스'+(s.boxNote?' ('+esc(s.boxNote)+')':'')+'</span>':'')+'</b></div>';}).join('')
+    : '<div style="color:#90a4ae;font-size:.85rem;padding-bottom:10px">입력된 물자가 없습니다.</div>';
+  const box=document.getElementById('mcv-supTable'); box.innerHTML='';
+  if(!keys.length) return;
+  let h='<div><table><thead><tr><th>지점</th><th>'+esc(T.colName)+'</th><th style="text-align:right">통과 인원</th><th>'+esc(T.colOps||'운영 시간')+'</th>'+
+    keys.map(s=>'<th style="text-align:right">'+esc(s.label)+'<br><span style="font-weight:400">'+esc(s.unit)+(s.boxNote?' · '+esc(s.boxNote):'')+'</span></th>').join('')+'</tr></thead><tbody>';
+  C.pois.forEach(p=>{
+    if(!p.sup||!Object.keys(p.sup).length) return;
+    h+='<tr><td class="mcv-km">'+passInfo(p)[0].km.toFixed(2)+' km</td><td>'+CAT[p.cat].icon+' '+esc(p.name)+'</td>'+
+      '<td class="mcv-qty">'+(p.people?p.people.toLocaleString():'—')+'</td>'+
+      '<td class="mcv-ops">'+esc(p.ops||'—')+'</td>'+
+      keys.map(s=>{const u=p.sup[s.id]||0, b=boxesOf(s,u);
+        return '<td class="mcv-qty">'+(u?u.toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#90a4ae">'+b+'박스</div>':''):'')+'</td>';}).join('')+'</tr>';
+  });
+  h+='</tbody><tfoot><tr><td colspan="4">합계'+(C.participants?' · 참가 '+C.participants.toLocaleString()+'명':'')+'</td>'+
+    keys.map(s=>{const b=boxesOf(s,totals[s.id]);
+      return '<td class="mcv-qty">'+totals[s.id].toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#546e7a">'+b+'박스</div>':'')+'</td>';}).join('')+'</tr></tfoot></table></div>';
+  box.innerHTML=h;
+}
+/* 구간별 통과 예상 시각 (관리자용) */
+function hm(str){ const m=String(str||'').match(/^(\d{1,2}):([0-5]\d)$/); return m?(+m[1])*60+(+m[2]):null; }
+function paceMin(str){ const m=String(str||'').match(/^(\d+):([0-5]?\d)$/); return m?(+m[1])+(+m[2])/60:null; }
+function toHm(mins){ let t=Math.round(mins); t=((t%1440)+1440)%1440; return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function paceStr(p){ const s=Math.round(p*60); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function renderPace(){
+  if(!ADMIN) return;
+  const ev=DATA.event||{start:'08:00',lead:'3:30',last:'9:00'};
+  const st=hm(ev.start)||0, lead=paceMin(ev.lead)||3.5, lim=C.limitPace||null;
+  const bands=[{label:'선두 '+ev.lead, pace:lead}];
+  if(lim&&lim>lead){
+    for(let i=1;i<=3;i++){ const p=lead+(lim-lead)*i/4; bands.push({label:paceStr(p), pace:p}); }
+    bands.push({label:'제한 '+paceStr(lim), pace:lim, limit:true});
+  } else { [4.5,5.5,6.5,paceMin(ev.last)||9].forEach(p=>{ if(p>lead) bands.push({label:paceStr(p), pace:p}); }); }
+  document.getElementById('mcv-paceLabel').textContent='— '+C.name+' · 출발 '+ev.start+(C.limit?' · 제한 '+C.limit:'');
+  const step=+document.getElementById('mcv-paceStep').value, onlyPoi=document.getElementById('mcv-paceOnlyPoi').checked;
+  const tk=turnOf(C);
+  const marks=[];
+  if(onlyPoi){
+    C.pois.forEach(p=>passInfo(p).forEach(r=>marks.push({km:r.km, label:CAT[p.cat].icon+' '+p.name+(r.d?' '+dirLabel(r.d):'')})));
+    marks.sort((a,b)=>a.km-b.km);
+  } else {
+    for(let k=step;k<C.total_km;k+=step) marks.push({km:k,label:''});
+    if(tk!=null) marks.push({km:tk,label:'↩ 반환'});
+    marks.push({km:C.total_km,label:'피니시'});
+    marks.sort((a,b)=>a.km-b.km);
+  }
+  let h='<div><table><thead><tr><th>거리</th><th>지점</th>'+
+    bands.map(b=>'<th style="text-align:right'+(b.limit?';color:#c62828':'')+'">'+esc(b.label)+'</th>').join('')+'</tr></thead><tbody>';
+  marks.forEach(m=>{
+    const isTurn=(tk!=null&&Math.abs(m.km-tk)<1e-6);
+    h+='<tr'+(isTurn?' style="background:#fff8e1"':'')+'><td class="mcv-km">'+m.km.toFixed(2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label)+'</td>'+
+      bands.map(b=>'<td class="mcv-qty"'+(b.limit?' style="color:#c62828;font-weight:700"':'')+'>'+toHm(st+m.km*b.pace)+'</td>').join('')+'</tr>';
+  });
+  h+='</tbody></table></div>';
+  document.getElementById('mcv-paceTable').innerHTML=h;
+}
+if(ADMIN){
+  document.getElementById('mcv-paceStep').onchange=renderPace;
+  document.getElementById('mcv-paceOnlyPoi').onchange=renderPace;
+}
+const hiddenCats=new Set();
+function renderLegend(){
+  const used=[...new Set(C.pois.map(p=>p.cat))];
+  const box=document.getElementById('mcv-legend'); if(!box) return;
+  box.innerHTML=used.map(id=>{
+    const c=CAT[id], off=hiddenCats.has(id);
+    return '<button type="button" class="mcv-chip'+(off?' mcv-chip-off':'')+'" data-cat="'+id+'" '+
+      'title="지도에서 '+esc(c.label)+' 켜기/끄기" aria-pressed="'+(!off)+'">'+
+      '<span class="mcv-dot" style="background:'+c.color+'"></span>'+esc(c.label)+'</button>';
+  }).join('');
+  box.querySelectorAll('[data-cat]').forEach(b=>{
+    b.onclick=()=>{
+      const id=b.dataset.cat;
+      if(hiddenCats.has(id)) hiddenCats.delete(id); else hiddenCats.add(id);
+      renderLegend(); rebuildMap(false);
+    };
+  });
+}
+function renderStats(){
+  const tk=turnOf(C);
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  const sty=(id,v)=>{ const e=document.getElementById(id); if(e) e.style.display=v; };
+  set('mcv-stCourse', C.name);
+  set('mcv-stTotal', C.total_km.toFixed(2)+' km');
+  sty('mcv-stTurnBox', tk!=null?'block':'none');
+  set('mcv-stTurn', tk!=null?tk.toFixed(2)+' km':'—');
+  set('mcv-stGain', C.hasEle?'+'+C.gain+' m':'—');
+  set('mcv-stMin', C.hasEle?C.ele_min.toFixed(0)+' m':'—');
+  set('mcv-stMax', C.hasEle?C.ele_max.toFixed(0)+' m':'—');
+  set('mcv-tblCourseLabel', '— '+C.name+' 기준'+(tk!=null?' · ↩ '+tk.toFixed(2)+'km 반환':''));
+  set('mcv-supLabel', '— '+C.name+' 기준');
+}
+const courseSeg=document.getElementById('mcv-courseSeg');
+courseSeg.innerHTML=DATA.order.map((id,i)=>'<button data-c="'+id+'"'+(i===0?' class="mcv-on"':'')+'>'+esc(DATA.courses[id].name)+'</button>').join('');
+function mcvSafe(name, fn){
+  try{ fn(); }
+  catch(e){ console.error('[코스도] '+name+' 오류:', e); }
+}
+function setCourse(key){
+  curKey=key; C=DATA.courses[key];
+  courseSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('mcv-on',b.dataset.c===key));
+  mcvSafe('거리계산', computeCum);
+  mcvSafe('지도', ()=>rebuildMap(true));
+  mcvSafe('고저도', ()=>drawChart(null));
+  mcvSafe('시설표', renderTables);
+  mcvSafe('물자', renderSupplies);
+  mcvSafe('페이스', renderPace);
+  mcvSafe('범례', renderLegend);
+  mcvSafe('통계', renderStats);
+}
+courseSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCourse(b.dataset.c)));
+mcvSafe('거리계산', computeCum); mcvSafe('고저도', ()=>drawChart(null)); mcvSafe('시설표', renderTables);
+mcvSafe('물자', renderSupplies); mcvSafe('페이스', renderPace); mcvSafe('범례', renderLegend); mcvSafe('통계', renderStats);
+}   /* __MCV_LOADED__ 가드 끝 */
+</script>
