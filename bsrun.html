@@ -1,0 +1,2667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>부산마라톤 코스(미정)</title>
+
+</head>
+<body style="margin:0;background:#f5f5f7">
+<!--MCV_FRAGMENT_START-->
+<style>#mcv-root{--blue:#1976d2;--dark:#263238;--bg:#f4f6f8;--card:#fff;--line:#e0e4e8;}
+#mcv-root, #mcv-root *{margin:0;padding:0;box-sizing:border-box;}
+#mcv-root{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--bg);color:var(--dark);}
+#mcv-root .mcv-wrap{max-width:1100px;margin:0 auto;padding:16px;}
+#mcv-root header{background:linear-gradient(135deg,#0d47a1,#1976d2);color:#fff;border-radius:14px;padding:22px 24px;margin-bottom:16px;}
+#mcv-root header.admin{background:linear-gradient(135deg,#263238,#455a64);}
+#mcv-root header h1{font-size:1.5rem;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#mcv-root header .mcv-tag{font-size:.7rem;background:rgba(255,255,255,.22);border-radius:20px;padding:3px 11px;font-weight:700;}
+#mcv-root header p{opacity:.9;font-size:.9rem;}
+#mcv-root .mcv-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center;}
+#mcv-root .mcv-stat{background:rgba(255,255,255,.15);border-radius:10px;padding:8px 14px;font-size:.85rem;}
+#mcv-root .mcv-stat b{font-size:1.05rem;display:block;}
+#mcv-root .mcv-kakao-open{margin-left:auto;background:#fee500;color:#191919;font-weight:700;border-radius:10px;padding:10px 16px;font-size:.85rem;text-decoration:none;}
+#mcv-root .mcv-card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:16px;overflow:hidden;}
+#mcv-root .mcv-card h2{font-size:1.05rem;padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#mcv-root .mcv-seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:.75rem;font-weight:400;}
+#mcv-root .mcv-seg button{padding:6px 12px;border:none;background:#fff;cursor:pointer;font-size:.75rem;color:#455a64;}
+#mcv-root .mcv-seg button:not(:last-child){border-right:1px solid var(--line);}
+#mcv-root .mcv-seg button.mcv-on{background:var(--blue);color:#fff;font-weight:700;}
+#mcv-root .mcv-seg.mcv-course button.mcv-on{background:#2e7d32;}
+#mcv-root .mcv-seg.mcv-kk button.mcv-on{background:#fee500;color:#191919;}
+#mcv-root #mcv-mapWrap{position:relative;}
+#mcv-root #mcv-map{height:520px;width:100%;background:#e8edf2;}
+#mcv-root #mcv-mapErr{position:absolute;inset:0;background:rgba(244,246,248,.97);display:none;align-items:center;justify-content:center;padding:24px;text-align:center;z-index:1500;}
+#mcv-root #mcv-mapErr .mcv-in{max-width:520px;font-size:.85rem;line-height:1.8;color:#455a64;}
+#mcv-root #mcv-mapErr code{background:#e8edf2;border-radius:4px;padding:2px 6px;}
+#mcv-root .mcv-legend{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;font-size:.75rem;font-weight:400;}
+#mcv-root .mcv-chip{display:inline-flex;align-items:center;gap:5px;background:#f0f3f6;border-radius:20px;padding:3px 10px;}
+#mcv-root .mcv-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+#mcv-root .mcv-locate-btn{position:absolute;z-index:1200;bottom:26px;right:18px;width:52px;height:52px;background:#fff;border:none;border-radius:50%;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;color:#546e7a;transition:.2s;}
+.leaflet-container{font:inherit;background:#e8edf2;}
+#mcv-root .mcv-lfIcon{background:none!important;border:none!important;}
+#mcv-root .mcv-lfIcon>*{position:absolute;transform:translate(-50%,-50%);}
+.leaflet-popup-content{margin:11px 13px;font-size:.83rem;line-height:1.6;}
+.leaflet-popup-content-wrapper{border-radius:10px;}
+#mcv-root .mcv-locate-btn:hover{transform:scale(1.08);}
+#mcv-root .mcv-locate-btn svg{width:24px;height:24px;stroke:currentColor;}
+#mcv-root .mcv-locate-btn.tracking{background:var(--blue);color:#fff;}
+#mcv-root .mcv-my-dot{width:16px;height:16px;background:#1976d2;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+#mcv-root #mcv-chartBox{position:relative;padding:10px 14px 14px;}
+#mcv-root #mcv-elev{width:100%;height:230px;display:block;cursor:crosshair;}
+#mcv-root #mcv-tooltip{position:absolute;pointer-events:none;background:rgba(38,50,56,.94);color:#fff;padding:8px 11px;border-radius:8px;font-size:.78rem;line-height:1.5;display:none;white-space:nowrap;z-index:10;}
+#mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;padding:16px;}
+#mcv-root .mcv-tables>div{min-width:0;overflow-x:auto;}
+#mcv-root table{width:100%;border-collapse:collapse;font-size:.85rem;}
+#mcv-root th{background:#f7f9fb;text-align:left;padding:9px 11px;border-bottom:2px solid var(--line);font-size:.77rem;color:#607d8b;white-space:nowrap;}
+#mcv-root td{padding:9px 11px;border-bottom:1px solid #eef1f4;}
+#mcv-root tr.mcv-row{cursor:pointer;}
+#mcv-root tr.mcv-row:hover{background:#eef6ff;}
+#mcv-root td.mcv-km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
+#mcv-root td.mcv-qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;}
+#mcv-root tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
+#mcv-root .mcv-titleicon{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
+#mcv-root .mcv-note{font-size:.75rem;color:#78909c;padding:10px 18px 14px;line-height:1.6;}
+#mcv-root .mcv-kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
+#mcv-root .mcv-kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
+/* km 표시 — 점은 코스 선 위 정확한 지점, 숫자는 화면상으로만 비켜서 겹침을 피한다 */
+#mcv-root .mcv-kmMark{position:relative !important;width:0 !important;height:0 !important;overflow:visible !important;}
+#mcv-root .mcv-kmDot{position:absolute !important;left:0 !important;top:0 !important;
+  width:7px !important;height:7px !important;margin:0 !important;padding:0 !important;
+  transform:translate(-50%,-50%) !important;border-radius:50% !important;background:#fff !important;
+  border:2px solid var(--kc,#e53935) !important;box-shadow:0 0 0 1px rgba(0,0,0,.3) !important;}
+#mcv-root .mcv-kmLine{position:absolute !important;margin:0 !important;padding:0 !important;
+  background:var(--kc,#e53935) !important;opacity:.75 !important;pointer-events:none !important;}
+#mcv-root .mcv-kmMark .mcv-kkm{position:absolute !important;left:0 !important;top:0 !important;margin:0 !important;
+  transform:translate(-50%,-50%) translate(var(--kx,0px), var(--ky,-20px)) !important;}
+#mcv-root .mcv-kstart{background:#2e7d32;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;}
+#mcv-root .mcv-kturn{background:#f57c00;color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.4);border:2px solid #fff;cursor:pointer;}
+#mcv-root .mcv-kLane{background:#fff;color:var(--lc,#e53935);border:2px solid var(--lc,#e53935);
+  border-radius:999px;padding:2px 8px 2px 7px;font-size:12px;font-weight:700;letter-spacing:-.1px;
+  line-height:1.35;white-space:nowrap;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2);
+  font-variant-numeric:tabular-nums;}
+#mcv-root .mcv-kLane b{font-weight:800;font-size:12px;margin-right:2px;letter-spacing:-.5px;}
+#mcv-root .mcv-kLane i{font-style:normal;font-weight:600;font-size:10px;opacity:.75;margin-left:1px;}
+#mcv-root .mcv-kLane.p1{border-style:dashed;}
+#mcv-root .mcv-kLane.p2{border-style:dotted;}
+#mcv-root .mcv-kLane.p3{border-style:double;border-width:3px;}
+#mcv-root .mcv-kinfo{position:relative;background:#fff;border:1px solid #cfd8dc;border-radius:10px;padding:11px 28px 11px 13px;font-size:.83rem;line-height:1.6;box-shadow:0 4px 16px rgba(0,0,0,.28);white-space:nowrap;}
+#mcv-root .mcv-kinfo:after{content:'';position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0;}
+#mcv-root .mcv-kinfo .mcv-x{position:absolute;top:4px;right:7px;cursor:pointer;color:#90a4ae;font-size:14px;font-weight:700;}
+#mcv-root .mcv-sumchips{display:flex;gap:9px;flex-wrap:wrap;padding:16px 16px 0;}
+#mcv-root .mcv-sumchip{background:#eceff1;border-radius:10px;padding:9px 14px;font-size:.78rem;color:#455a64;}
+#mcv-root .mcv-sumchip b{display:block;font-size:1.05rem;color:#263238;margin-top:2px;}
+#mcv-root .mcv-printbtn{background:#37474f;color:#fff;border:none;border-radius:9px;padding:7px 13px;font-size:.75rem;font-weight:700;cursor:pointer;}
+#mcv-root .mcv-ops{white-space:nowrap;font-variant-numeric:tabular-nums;color:#455a64;}
+@media (max-width:900px){
+  #mcv-root #mcv-map{height:62dvh;min-height:300px;}
+  #mcv-root .mcv-wrap{padding:12px;}
+  #mcv-root .mcv-tables{grid-template-columns:1fr;}
+}
+@media (max-width:640px){
+  #mcv-root #mcv-elev{height:180px;}
+  #mcv-root table{font-size:.8rem;}
+  #mcv-root th, #mcv-root td{padding:8px;}
+  #mcv-root .mcv-card h2{padding:12px;gap:8px;}
+  #mcv-root .mcv-legend{margin-left:0;}
+  /* 휴대전화 — 화면 폭에 맞춰 접는다 */
+  #mcv-root .mcv-wrap{padding:9px;}
+  #mcv-root header{padding:15px 16px;border-radius:12px;margin-bottom:10px;}
+  #mcv-root header h1{font-size:1.18rem;gap:7px;}
+  #mcv-root header p{font-size:.82rem;}
+  #mcv-root #mcv-map{height:58dvh;min-height:270px;}
+  #mcv-root .mcv-card{margin-bottom:10px;}
+  #mcv-root .mcv-tables{padding:10px;gap:10px;}
+  #mcv-root .mcv-tables>div{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  #mcv-root .mcv-sumchips{padding:10px 10px 0;gap:6px;}
+  #mcv-root .mcv-sumchip{padding:8px 11px;font-size:.74rem;}
+  #mcv-root .mcv-seg button{padding:9px 12px;font-size:.75rem;}
+  #mcv-root .mcv-printbtn{padding:9px 13px;}
+  /* 인라인 크기·리셋보다 뒤에 오도록 강제 — 16px 미만이면 iOS가 화면을 확대한다 */
+  #mcv-root input,#mcv-root select,#mcv-root textarea{font-size:16px !important;}
+}
+@media (pointer:coarse){
+  #mcv-root .mcv-seg button{min-height:36px;}
+  #mcv-root .mcv-printbtn{min-height:36px;}
+}
+@media print{
+  #mcv-root .mcv-wrap{max-width:none;padding:0;}
+  #mcv-root .mcv-card{break-inside:avoid;box-shadow:none;border-color:#bbb;margin-bottom:10px;}
+  #mcv-root .mcv-seg,#mcv-root .mcv-locate-btn,#mcv-root #mcv-ovSeg,#mcv-root #mcv-typeSeg,
+  #mcv-root #mcv-retSeg,#mcv-root #mcv-retRangeBox,#mcv-root #mcv-diagBtn{display:none !important;}
+  #mcv-root header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #mcv-root .mcv-tables{grid-template-columns:1fr 1fr;}
+  #mcv-root #mcv-map{height:380px !important;}
+  #mcv-root th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+#mcv-root{container-type:inline-size;box-sizing:border-box;text-align:left;font-size:16px;
+  font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;color:#263238;
+  background:var(--mcv-bg,#f4f6f8);padding:0;margin:0;line-height:1.6;-webkit-text-size-adjust:100%;}
+#mcv-root *,#mcv-root *:before,#mcv-root *:after{box-sizing:border-box;}
+#mcv-root h1,#mcv-root h2,#mcv-root h3,#mcv-root h4,#mcv-root p,#mcv-root div,#mcv-root span,
+#mcv-root table,#mcv-root thead,#mcv-root tbody,#mcv-root tfoot,#mcv-root tr,#mcv-root th,#mcv-root td,
+#mcv-root label,#mcv-root canvas{margin:0;padding:0;border:0;background:none;float:none;
+  font-family:inherit;letter-spacing:normal;text-transform:none;text-shadow:none;box-shadow:none;}
+#mcv-root button,#mcv-root select,#mcv-root input{font-family:inherit;font-size:100%;margin:0;
+  text-transform:none;letter-spacing:normal;box-shadow:none;text-shadow:none;min-height:0;line-height:1.4;}
+#mcv-root a{text-decoration:none;}
+#mcv-root table{border-collapse:collapse;border-spacing:0;width:100%;}
+#mcv-root img,#mcv-root canvas,#mcv-root svg{max-width:100%;}
+#mcv-root .mcv-wrap{max-width:var(--mcv-max,1240px);margin:0 auto;padding:16px;}
+#mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));
+  gap:14px;padding:16px;align-items:start;}
+#mcv-root .mcv-tables>div{min-width:0;max-width:100%;overflow-x:auto;}
+#mcv-root .mcv-tables table{min-width:max-content;}
+#mcv-root #mcv-map{height:clamp(300px,46vh,540px);}
+#mcv-root #mcv-elev{height:clamp(170px,24vh,240px);}
+@container (max-width:560px){
+  #mcv-root .mcv-wrap{padding:10px;}
+  #mcv-root .mcv-tables{padding:10px;gap:10px;}
+  #mcv-root .mcv-card>h2{padding:12px;gap:8px;}
+  #mcv-root .mcv-stat{padding:7px 11px;font-size:.8rem;}
+  #mcv-root table{font-size:.8rem;} #mcv-root th,#mcv-root td{padding:8px;}
+}
+@container (min-width:1100px){ #mcv-root .mcv-tables{gap:16px;} }
+@container (min-width:1420px){ #mcv-root .mcv-tables{grid-template-columns:repeat(4,minmax(0,1fr));} }
+/* ═══ 삽입한 홈페이지의 CSS가 덮어써도 레이아웃이 무너지지 않도록 고정 ═══ */
+#mcv-root .mcv-seg{display:inline-flex !important;visibility:visible !important;opacity:1 !important;
+  float:none !important;position:static !important;width:auto !important;height:auto !important;overflow:hidden !important;}
+#mcv-root .mcv-seg button{display:inline-block !important;visibility:visible !important;opacity:1 !important;
+  width:auto !important;height:auto !important;min-width:0 !important;min-height:0 !important;max-width:none !important;
+  float:none !important;position:static !important;text-indent:0 !important;white-space:nowrap !important;
+  border-radius:0 !important;line-height:1.4 !important;}
+#mcv-root .mcv-card,#mcv-root .mcv-cat,#mcv-root .mcv-item{display:block !important;visibility:visible !important;opacity:1 !important;float:none !important;}
+#mcv-root .mcv-card>h2{display:flex !important;flex-wrap:wrap !important;align-items:center !important;}
+#mcv-root .mcv-cat-h,#mcv-root .mcv-chips,#mcv-root .mcv-stats,#mcv-root .mcv-cat-f{display:flex !important;flex-wrap:wrap !important;}
+#mcv-root .mcv-tables{display:grid !important;}
+#mcv-root #mcv-map{display:block !important;width:100% !important;min-height:280px !important;}
+#mcv-root #mcv-mapWrap{position:relative !important;display:block !important;}
+#mcv-root .mcv-c{display:inline-block !important;}
+#mcv-root header,#mcv-root .mcv-wrap{display:block !important;visibility:visible !important;}
+#mcv-root .mcv-pop{min-width:180px;max-width:280px;}
+#mcv-root .mcv-pop-h{display:flex !important;align-items:center;gap:8px;margin-bottom:8px;}
+#mcv-root .mcv-pop-t{display:flex;flex-direction:column;min-width:0;}
+#mcv-root .mcv-pop-t b{font-size:.92rem;font-weight:700;color:#263238;line-height:1.35;}
+#mcv-root .mcv-pop-t i{font-style:normal;font-size:.72rem;color:#78909c;}
+#mcv-root .mcv-pop .mcv-chips{gap:5px;}
+#mcv-root .mcv-pop .mcv-memo{margin-top:7px;padding-top:7px;border-top:1px solid #eef1f4;}
+
+/* ═══ 지도 내부는 SDK 계산값을 그대로 둔다. 단, 우리가 만든 mcv- 요소는 예외에서 제외 ═══ */
+#mcv-root #mcv-map *:not([class*="mcv-"]){box-sizing:content-box;max-width:none;max-height:none;}
+#mcv-root #mcv-map div:not([class*="mcv-"]),#mcv-root #mcv-map span:not([class*="mcv-"]),
+#mcv-root #mcv-map canvas,#mcv-root #mcv-map img,#mcv-root #mcv-map svg,
+#mcv-root #mcv-map p:not([class*="mcv-"]),#mcv-root #mcv-map table,#mcv-root #mcv-map tr,
+#mcv-root #mcv-map td,#mcv-root #mcv-map a:not([class*="mcv-"]){
+  margin:revert;padding:revert;border:revert;background:revert;box-shadow:revert;
+  float:none;position:revert;line-height:normal;font-size:revert;}
+#mcv-root #mcv-map img{max-width:none !important;height:auto;}
+
+/* ═══ 지도 위 우리 오버레이 — 지도 안이라도 카드 스타일을 유지 ═══ */
+#mcv-root #mcv-map .mcv-kinfo{position:relative;background:rgba(255,255,255,.75);border:1px solid rgba(176,190,197,.75);
+  border-radius:14px;padding:16px 38px 16px 18px;box-shadow:0 10px 30px rgba(38,50,56,.26);white-space:normal;
+  font-size:.83rem;line-height:1.6;color:#263238;max-width:320px;
+  -webkit-backdrop-filter:blur(10px) saturate(1.25);backdrop-filter:blur(10px) saturate(1.25);}
+#mcv-root #mcv-map .mcv-kinfo:after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-9px;
+  border:9px solid transparent;border-top-color:rgba(255,255,255,.75);border-bottom:0;}
+#mcv-root #mcv-map .mcv-kinfo .mcv-x{position:absolute;top:9px;right:11px;cursor:pointer;color:#90a4ae;
+  font-size:16px;font-weight:700;line-height:1;background:none;border:0;padding:2px 4px;border-radius:6px;}
+#mcv-root #mcv-map .mcv-kinfo .mcv-x:hover{background:rgba(96,125,139,.12);color:#546e7a;}
+#mcv-root #mcv-map .mcv-pop{min-width:186px;}
+#mcv-root #mcv-map .mcv-pop-h{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+#mcv-root #mcv-map .mcv-pop-t{display:flex;flex-direction:column;min-width:0;}
+#mcv-root #mcv-map .mcv-pop-t b{font-size:.92rem;font-weight:700;color:#263238;line-height:1.35;}
+#mcv-root #mcv-map .mcv-pop-t i{font-style:normal;font-size:.72rem;color:#78909c;}
+#mcv-root #mcv-map .mcv-chips{display:flex;flex-wrap:wrap;gap:7px;}
+#mcv-root #mcv-map .mcv-c{display:inline-block;font-size:.76rem;border-radius:7px;padding:5px 10px;
+  white-space:nowrap;line-height:1.5;font-variant-numeric:tabular-nums;}
+#mcv-root #mcv-map .mcv-c-go{background:#e6f1fb;color:#185fa5;font-weight:700;}
+#mcv-root #mcv-map .mcv-c-back{background:#fdeee1;color:#9a5b1b;font-weight:700;}
+#mcv-root #mcv-map .mcv-c-time{background:#fceaea;color:#a32d2d;font-weight:700;}
+#mcv-root #mcv-map .mcv-c-sub{background:#f1f4f7;color:#546e7a;}
+#mcv-root #mcv-map .mcv-c-sup{background:#eaf3de;color:#3b6d11;}
+#mcv-root #mcv-map .mcv-memo{font-size:.78rem;color:#607d8b;margin-top:11px;padding-top:10px;
+  border-top:1px solid rgba(207,216,220,.7);line-height:1.6;}
+#mcv-root #mcv-map .mcv-titleicon{width:26px;height:26px;border-radius:8px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:13px;color:#fff;flex:none;}
+#mcv-root #mcv-map .mcv-kpoi{width:28px;height:28px;border-radius:50%;border:2px solid #fff;
+  box-shadow:0 1px 6px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:#fff;cursor:pointer;}
+#mcv-root #mcv-map .mcv-kkm{border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer;}
+#mcv-root #mcv-map .mcv-kmMark{position:relative !important;width:0 !important;height:0 !important;overflow:visible !important;}
+#mcv-root #mcv-map .mcv-kmMark .mcv-kkm{position:absolute !important;left:0 !important;top:0 !important;margin:0 !important;
+  transform:translate(-50%,-50%) translate(var(--kx,0px), var(--ky,-20px)) !important;}
+#mcv-root #mcv-map .mcv-kstart{background:#2e7d32;color:#fff;border:2px solid #fff;border-radius:9px;
+  padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+#mcv-root #mcv-map .mcv-kturn{background:#f57c00;color:#fff;border:2px solid #fff;border-radius:9px;
+  padding:4px 10px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.4);cursor:pointer;}
+#mcv-root #mcv-map .mcv-kstart,#mcv-root #mcv-map .mcv-kturn{background:#fff;color:#1d1d1f;border:1.5px solid rgba(0,0,0,.18);border-radius:7px;
+  padding:4px 10px 4px 9px;font-size:12px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.22);display:inline-flex;align-items:center;gap:6px;}
+#mcv-root #mcv-map .mcv-kstart::before,#mcv-root #mcv-map .mcv-kturn::before{content:'';width:10px;height:10px;border-radius:50%;
+  background:#1d6f42;border:2px solid #fff;box-shadow:0 0 0 1.5px currentColor;flex:none;}
+#mcv-root #mcv-map .mcv-kstart{color:#1d6f42;} #mcv-root #mcv-map .mcv-kstart.fin{color:#c62828;} #mcv-root #mcv-map .mcv-kstart.fin::before{background:#c62828;}
+#mcv-root #mcv-map .mcv-kturn{color:#c2600a;} #mcv-root #mcv-map .mcv-kturn::before{background:#c2600a;}
+
+/* (반투명·블러 강제 규칙은 아래 '시설 정보 카드' 절에서 정리했다) */
+#mcv-root .leaflet-popup-content-wrapper{background:rgba(255,255,255,.75) !important;
+  box-shadow:0 10px 30px rgba(38,50,56,.26) !important;border-radius:14px !important;
+  -webkit-backdrop-filter:blur(10px) saturate(1.25);backdrop-filter:blur(10px) saturate(1.25);}
+#mcv-root .leaflet-popup-tip{background:rgba(255,255,255,.75) !important;}
+#mcv-root .leaflet-popup-content{margin:16px 18px !important;}
+
+/* ── 상단 요약 압축 (지도가 주인공이 되도록) ── */
+#mcv-root header{padding:12px 16px !important;border-radius:12px !important;margin-bottom:10px !important;}
+#mcv-root header h1{font-size:1.12rem !important;margin-bottom:2px !important;}
+#mcv-root header p{font-size:.78rem !important;}
+#mcv-root .mcv-stats{gap:6px !important;margin-top:9px !important;}
+#mcv-root .mcv-stat{padding:5px 10px !important;font-size:.7rem !important;border-radius:8px !important;
+  line-height:1.35 !important;background:rgba(255,255,255,.16) !important;}
+#mcv-root .mcv-stat b{font-size:.92rem !important;display:block !important;margin-top:1px !important;}
+#mcv-root .mcv-card{margin-bottom:12px !important;}
+#mcv-root .mcv-card>h2{padding:10px 14px !important;font-size:.95rem !important;}
+#mcv-root #mcv-map{height:clamp(340px,58vh,620px) !important;}
+#mcv-root .mcv-note{padding:8px 16px 10px !important;font-size:.73rem !important;}
+
+/* ── 제한시간 표 ── 뷰어 토큰으로 통일 (옛 청회색 팔레트 제거) */
+#mcv-root .mcv-limit{border:1px solid var(--line2);border-radius:var(--r-md);overflow:hidden;
+  background:#ffffff;}
+#mcv-root .mcv-limit-h{display:flex;align-items:center;gap:8px;padding:11px 16px;
+  background:var(--pearl);border-bottom:1px solid var(--line);
+  font-size:15px;font-weight:600;letter-spacing:-.24px;color:var(--dark);}
+#mcv-root .mcv-limit-h span{margin-left:auto;font-weight:400;font-size:13px;color:var(--sub);
+  letter-spacing:0;font-variant-numeric:tabular-nums;}
+#mcv-root .mcv-limit table{width:100%;border-collapse:collapse;font-size:14px;}
+#mcv-root .mcv-limit th{background:#ffffff;color:var(--sub);font-weight:600;font-size:12px;
+  letter-spacing:0;padding:9px 16px;border-bottom:1px solid var(--line2);
+  text-align:left;white-space:nowrap;}
+#mcv-root .mcv-limit td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--dark);
+  font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.224px;line-height:1.4;}
+#mcv-root .mcv-limit tr:last-child td{border-bottom:0;}
+#mcv-root .mcv-limit .mcv-lt-n{font-weight:600;color:var(--dark);}
+#mcv-root .mcv-limit .mcv-lt-e{color:#b3261e;font-weight:600;}
+#mcv-root #mcv-limitNoteEl{padding:0 16px 16px !important;color:inherit !important;font-weight:400 !important;}
+/* 좁은 화면에서는 '거리'를 접는다 — 종목·제한시간·종료 시각이 핵심 */
+@container (max-width:520px){
+  #mcv-root .mcv-limit th:nth-child(2),#mcv-root .mcv-limit td:nth-child(2){display:none;}
+  #mcv-root .mcv-limit th,#mcv-root .mcv-limit td{padding-left:14px;padding-right:14px;}
+}
+@media (max-width:520px){
+  #mcv-root .mcv-limit th:nth-child(2),#mcv-root .mcv-limit td:nth-child(2){display:none;}
+}
+#mcv-root .mcv-legend{gap:6px;}
+#mcv-root .mcv-chip{display:inline-flex !important;align-items:center;gap:6px;background:#f0f3f6;
+  border:1px solid #dfe5ea;border-radius:20px;padding:4px 11px;font-size:.75rem;color:#37474f;
+  cursor:pointer;line-height:1.4;transition:.12s;}
+#mcv-root .mcv-chip:hover{background:#e4ebf1;border-color:#c3ced6;}
+#mcv-root .mcv-chip-off{background:transparent;color:#b0bec5;border-style:dashed;}
+#mcv-root .mcv-chip-off .mcv-dot{filter:grayscale(1);opacity:.45;}
+#mcv-root .mcv-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none;}
+#mcv-root #mcv-map .my-dot,#mcv-root #mcv-map .mcv-my-dot{width:16px;height:16px;background:#1976d2;
+  border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+#mcv-root .mcv-kinfo{padding:16px 38px 16px 18px !important;white-space:normal !important;border-radius:14px !important;}
+#mcv-root .leaflet-popup-content{margin:12px 14px !important;}
+
+
+#mcv-root .mcv-cat{background:#fff;border:1px solid #e0e4e8;border-radius:12px;overflow:hidden;}
+#mcv-root .mcv-cat-h{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid #eef1f4;background:#fafbfc;}
+#mcv-root .mcv-cat-h b{font-size:.95rem;font-weight:700;color:#263238;}
+#mcv-root .mcv-cat-h .mcv-n{margin-left:auto;font-size:.74rem;color:#607d8b;background:#eceff1;border-radius:20px;padding:2px 9px;font-variant-numeric:tabular-nums;}
+#mcv-root .mcv-item{padding:10px 14px;border-bottom:1px solid #f2f5f8;cursor:pointer;transition:background .12s;}
+#mcv-root .mcv-item:last-child{border-bottom:0;}
+#mcv-root .mcv-item:hover{background:#f2f8ff;}
+#mcv-root .mcv-nm{font-weight:700;font-size:.9rem;color:#263238;margin-bottom:6px;line-height:1.4;}
+#mcv-root .mcv-chips{display:flex;flex-wrap:wrap;gap:5px;}
+#mcv-root .mcv-c{font-size:.75rem;border-radius:6px;padding:3px 8px;white-space:nowrap;
+  font-variant-numeric:tabular-nums;line-height:1.5;}
+#mcv-root .mcv-c-go{background:#e6f1fb;color:#185fa5;font-weight:700;}
+#mcv-root .mcv-c-back{background:#fdeee1;color:#9a5b1b;font-weight:700;}
+#mcv-root .mcv-c-time{background:#fceaea;color:#a32d2d;font-weight:700;}
+#mcv-root .mcv-c-sub{background:#f1f4f7;color:#546e7a;}
+#mcv-root .mcv-c-sup{background:#eaf3de;color:#3b6d11;}
+#mcv-root .mcv-memo{font-size:.78rem;color:#607d8b;margin-top:6px;line-height:1.6;}
+#mcv-root .mcv-cat-f{padding:9px 14px;background:#fafbfc;border-top:1px solid #eef1f4;
+  font-size:.76rem;color:#455a64;display:flex;flex-wrap:wrap;gap:4px 14px;}
+#mcv-root .mcv-cat-f b{color:#263238;font-weight:700;}
+@container (max-width:560px){ #mcv-root .mcv-item{padding:9px 11px;} #mcv-root .mcv-cat-h{padding:10px 11px;} }
+
+@media print{
+  #mcv-root .mcv-seg,#mcv-root .mcv-locate-btn{display:none !important;}
+  #mcv-root .mcv-tables{grid-template-columns:1fr 1fr;}
+  #mcv-root .mcv-card{break-inside:avoid;}
+}
+/* ══════════════ Apple Reference Design System 준수 (기본 규칙 위에 덮어쓴다)
+   · 인터랙티브 색은 Action Blue 하나  · UI 그림자 금지
+   · 라디우스 0/5/8/11/18/pill        · weight 500 금지
+   · 본문 17px / 1.47 / -0.374px      · 장식 그라디언트 금지            */
+#mcv-root{
+  --blue:#0071e3; --link:#0066cc; --link-dark:#2997ff;
+  --dark:#1d1d1f; --bg:#f5f5f7; --card:#ffffff; --pearl:#fafafc;
+  --line:rgba(0,0,0,.08); --line2:#e0e0e0; --divider:#f0f0f0;
+  --muted:#6e6e73; --sub:#515154; --dim:#7a7a7a;
+  --r:18px; --r-md:11px; --r-sm:8px; --r-xs:5px; --pill:9999px;
+  --ease:cubic-bezier(.28,.11,.32,1);
+  font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,system-ui,
+    'Apple SD Gothic Neo',Pretendard,'Malgun Gothic','Noto Sans KR',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  font-size:17px; line-height:1.47; letter-spacing:-.374px;
+}
+/* 발행 코스도는 보는 사람의 다크모드를 따라가지 않는다 — 언제나 밝은 면.
+   참가자·스탭이 제각각인 기기로 열고, 인쇄·캡처해서 돌려 보는 문서이기 때문이다.
+   (다크모드를 따라가던 때 실측: 제한시간 제목 1.06:1 · 표 내용 1.60:1 — 사실상 안 보였다) */
+#mcv-root{ color-scheme:light; }
+/* 진행 방향 화살표 */
+#mcv-root .mcv-arrow{display:flex;align-items:center;justify-content:center;pointer-events:none;line-height:0;}
+#mcv-root .mcv-arrow svg{display:block;}
+/* 전 코스 보기 */
+#mcv-root .mcv-allBtn{border:1px solid var(--line);background:#fff;color:var(--dark);
+  border-radius:999px;padding:7px 15px;font-size:.8rem;font-weight:600;cursor:pointer;
+  white-space:nowrap;letter-spacing:-.2px;
+  transition:background .18s ease, border-color .18s ease, color .18s ease, transform .12s ease;}
+#mcv-root .mcv-allBtn:hover{background:var(--pearl);}
+#mcv-root .mcv-allBtn:active{transform:scale(.95);}
+#mcv-root .mcv-allBtn.mcv-on{background:#0071e3;border-color:#0071e3;color:#fff;}
+#mcv-root .mcv-allNote{display:none;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:9px 14px;margin:0 0 2px;background:var(--pearl);border-radius:12px;
+  font-size:.78rem;color:var(--sub);line-height:1.5;}
+#mcv-root .mcv-allNote.mcv-on{display:flex;}
+#mcv-root .mcv-allNote i{display:inline-block;width:18px;height:4px;border-radius:2px;flex:none;}
+#mcv-root #mcv-laneNote .mcv-lk{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;}
+#mcv-root #mcv-laneNote .mcv-lk svg{display:block;flex:none;}
+#mcv-root #mcv-laneNote .mcv-rn{display:inline-block;font-weight:800;font-size:13px;}
+#mcv-root .mcv-allChip{display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+  border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;
+  font-size:.78rem;color:var(--sub);font-family:inherit;
+  transition:border-color .18s ease, background .18s ease, transform .12s ease;}
+#mcv-root .mcv-allChip:hover{background:var(--pearl);}
+#mcv-root .mcv-allChip:active{transform:scale(.95);}
+#mcv-root .mcv-allChip.mcv-on{border-color:#0071e3;color:var(--dark);}
+#mcv-root .mcv-allChip b{font-weight:700;color:#0071e3;}
+#mcv-root .mcv-allNote b{color:var(--dark);font-weight:700;}
+#mcv-root .mcv-wrap{max-width:1120px;padding:24px 20px 48px;}
+/* 헤더 — 색 띠·그라디언트 없이 타이포로만 */
+#mcv-root header,#mcv-root header.admin{
+  background:var(--card);color:var(--dark);border:1px solid var(--line2);
+  border-radius:var(--r);padding:32px;margin-bottom:24px;box-shadow:none;}
+#mcv-root header h1{font-size:40px;font-weight:600;line-height:1.1;letter-spacing:0;margin-bottom:10px;}
+#mcv-root header p{opacity:1;color:var(--muted);font-size:17px;line-height:1.47;letter-spacing:-.374px;}
+#mcv-root header .mcv-tag{background:var(--divider);color:var(--sub);font-weight:600;
+  font-size:14px;letter-spacing:-.224px;padding:4px 12px;border-radius:var(--pill);}
+#mcv-root header.admin .mcv-tag{background:var(--dark);color:var(--card);}
+#mcv-root .mcv-stats{gap:8px;margin-top:24px;}
+#mcv-root .mcv-stat{background:var(--bg);border-radius:var(--r-md);padding:10px 16px;
+  font-size:12px;color:var(--muted);letter-spacing:0;}
+#mcv-root .mcv-stat b{font-size:21px;font-weight:600;line-height:1.19;letter-spacing:-.231px;
+  color:var(--dark);margin-top:3px;}
+#mcv-root .mcv-kakao-open{border-radius:var(--pill);padding:11px 22px;font-weight:400;
+  font-size:17px;letter-spacing:-.374px;}
+/* 카드 — 흰 면 · 1px 헤어라인 · 18px · 그림자 없음 */
+#mcv-root .mcv-card{border-radius:var(--r);border:1px solid var(--line2);box-shadow:none;margin-bottom:24px;}
+#mcv-root .mcv-card h2{font-size:17px;font-weight:600;line-height:1.24;letter-spacing:-.374px;padding:17px 24px;}
+/* 세그먼트 — configurator chip (알약 · 선택 시 2px Action Blue) */
+#mcv-root .mcv-seg{border:none;background:transparent;border-radius:0;overflow:visible;
+  display:inline-flex;gap:6px;flex-wrap:wrap;}
+#mcv-root .mcv-seg button{background:var(--card);border:1px solid var(--line2);border-radius:var(--pill);
+  padding:7px 15px;color:var(--dark);font-size:14px;font-weight:400;letter-spacing:-.224px;
+  transition:border-color .18s var(--ease), background .18s var(--ease), transform .12s var(--ease);}
+#mcv-root .mcv-seg button:not(:last-child){border-right:1px solid var(--line2);}
+#mcv-root .mcv-seg button:hover{background:var(--bg);}
+#mcv-root .mcv-seg button:active{transform:scale(.95);}
+#mcv-root .mcv-seg button.mcv-on,
+#mcv-root .mcv-seg.mcv-course button.mcv-on,
+#mcv-root .mcv-seg.mcv-kk button.mcv-on{background:var(--card);color:var(--dark);
+  border:2px solid var(--blue);padding:6px 14px;font-weight:600;box-shadow:none;}
+/* 지도 */
+#mcv-root #mcv-map{height:600px;background:var(--bg);}
+#mcv-root #mcv-mapErr{background:color-mix(in srgb, var(--card) 90%, transparent);
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);}
+#mcv-root #mcv-mapErr .mcv-in{color:var(--muted);font-size:17px;line-height:1.47;}
+#mcv-root #mcv-mapErr code{background:var(--divider);border-radius:var(--r-xs);}
+/* 칩 · 범례 */
+#mcv-root .mcv-chip{background:var(--card);border:1px solid var(--line2);border-radius:var(--pill);
+  padding:6px 14px;color:var(--dark);cursor:pointer;font-size:14px;letter-spacing:-.224px;
+  transition:border-color .18s var(--ease), background .18s var(--ease);}
+#mcv-root .mcv-chip:hover{background:var(--bg);}
+#mcv-root .mcv-chip-off{opacity:.4;border-style:dashed;}
+#mcv-root .mcv-sumchip{background:var(--bg);border-radius:var(--r-md);border:none;}
+/* 표 */
+#mcv-root table{font-size:14px;letter-spacing:-.224px;}
+#mcv-root th{background:var(--bg);color:var(--muted);font-weight:600;font-size:12px;letter-spacing:0;
+  border-bottom:1px solid var(--line);padding:11px 14px;}
+#mcv-root td{border-bottom:1px solid var(--line);padding:10px 14px;color:var(--dark);}
+#mcv-root tbody tr:hover td{background:var(--bg);}
+#mcv-root tfoot td{background:var(--bg);font-weight:600;}
+#mcv-root .mcv-titleicon{border-radius:var(--r-sm);}
+/* 항목 카드 (참가자용) */
+#mcv-root .mcv-item{border-radius:var(--r-md);border:1px solid var(--line2);box-shadow:none;
+  transition:border-color .18s var(--ease), background .18s var(--ease);}
+#mcv-root .mcv-item:hover{background:var(--bg);}
+#mcv-root .mcv-nm{font-size:17px;font-weight:600;letter-spacing:-.374px;}
+#mcv-root .mcv-c{border-radius:var(--pill);font-weight:600;font-size:14px;letter-spacing:-.224px;}
+#mcv-root .mcv-memo,#mcv-root .mcv-note,#mcv-root .mcv-ops{color:var(--muted);font-size:14px;letter-spacing:-.224px;}
+/* 지도 마커 — 지도 위 요소는 translucent chip 문법 */
+#mcv-root .mcv-kstart{border-radius:var(--pill);padding:4px 12px;font-weight:600;
+  background:#1d6f42;box-shadow:none;letter-spacing:0;}
+#mcv-root .mcv-kturn{border-radius:var(--pill);padding:4px 12px;font-weight:600;
+  background:#c2600a;box-shadow:none;letter-spacing:0;}
+#mcv-root .mcv-kpoi{border:2px solid #fff;box-shadow:none;}
+/* ── 시설 정보 카드 — 지도 가운데, 카드 한 장, 불투명 ──
+   앞서 세 군데에서 .mcv-kinfo 와 .mcv-pop 에 각각 배경을 칠해 카드가 두 겹으로 보였고,
+   rgba(255,255,255,.75) + blur 라 뒤 지도가 비쳐 글자가 읽히지 않았다. 여기서 정리한다. */
+#mcv-root .mcv-infoLayer{position:absolute;inset:0;z-index:950;
+  display:flex;align-items:center;justify-content:center;padding:16px;}
+#mcv-root .mcv-infoScrim{position:absolute;inset:0;background:rgba(0,0,0,.32);
+  animation:mcvFade .18s ease both;}
+#mcv-root .mcv-kinfo,
+#mcv-root #mcv-map .mcv-kinfo{
+  position:relative;white-space:normal;
+  background:var(--card) !important;                 /* 불투명 — 뒤 지도가 비치지 않는다 */
+  border:1px solid var(--line2) !important;
+  border-radius:var(--r) !important;
+  box-shadow:rgba(0,0,0,.22) 0 8px 40px 0 !important;
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  padding:20px 20px 18px !important;
+  width:min(340px, 100%);max-width:min(340px, 100%);
+  max-height:100%;overflow-y:auto;overscroll-behavior:contain;
+  color:var(--dark);font-size:14px;line-height:1.5;letter-spacing:-.224px;
+  animation:mcvPop .22s cubic-bezier(.34,1.32,.48,1) both;}
+/* 안쪽 덩어리는 배경을 갖지 않는다 — 카드는 한 장뿐 */
+#mcv-root .mcv-pop,#mcv-root #mcv-map .mcv-pop{background:none !important;border:none !important;
+  box-shadow:none !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  padding:0 !important;min-width:0 !important;}
+/* 말풍선 꼬리 제거 — 이제 마커에 매달리지 않는다 */
+#mcv-root .mcv-kinfo:after,#mcv-root #mcv-map .mcv-kinfo:after{display:none !important;content:none !important;}
+#mcv-root .mcv-kinfo .mcv-x,#mcv-root #mcv-map .mcv-kinfo .mcv-x{
+  position:absolute;top:10px;right:10px;width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  border:none;background:var(--pearl);color:var(--sub);
+  border-radius:var(--pill);font-size:17px;line-height:1;cursor:pointer;padding:0;
+  transition:background .18s var(--ease);}
+#mcv-root .mcv-kinfo .mcv-x:hover{background:var(--divider);color:var(--dark);}
+#mcv-root .mcv-kinfo .mcv-x:active{transform:scale(.92);}
+#mcv-root .mcv-kinfo .mcv-pop-h{margin-bottom:14px;padding-right:34px;}
+#mcv-root .mcv-kinfo .mcv-pop-t b{font-size:17px;line-height:1.3;letter-spacing:-.374px;color:var(--dark);}
+#mcv-root .mcv-kinfo .mcv-pop-t i{font-size:13px;color:var(--sub);letter-spacing:0;}
+#mcv-root .mcv-kinfo .mcv-titleicon{width:34px;height:34px;border-radius:var(--r-md);font-size:16px;}
+#mcv-root .mcv-kinfo .mcv-c{font-size:13px;border-radius:var(--r-sm);padding:7px 11px;}
+#mcv-root .mcv-kinfo .mcv-memo{font-size:13px;color:var(--sub);margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--line);}
+@keyframes mcvFade{from{opacity:0}to{opacity:1}}
+@keyframes mcvPop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  #mcv-root .mcv-infoScrim,#mcv-root .mcv-kinfo{animation-duration:.001ms !important;}
+}
+#mcv-root .mcv-tooltip,#mcv-root #mcv-tooltip{border-radius:var(--r-md);
+  background:rgba(210,210,215,.82);color:var(--dark);border:none;box-shadow:none;
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);}
+/* 말풍선도 같은 이유로 밝은 면 고정 */
+/* 버튼 — pearl capsule / 잉크 유틸 */
+#mcv-root .mcv-printbtn,#mcv-root .mcv-locate-btn,#mcv-root #mcv-diagBtn{
+  border-radius:var(--r-md);font-weight:400;font-size:14px;letter-spacing:-.224px;
+  border:none;box-shadow:0 0 0 1px rgba(0,0,0,.04);background:var(--pearl);color:var(--dark);
+  transition:background .18s var(--ease), transform .12s var(--ease);}
+#mcv-root .mcv-printbtn:hover,#mcv-root .mcv-locate-btn:hover,#mcv-root #mcv-diagBtn:hover{background:var(--divider);}
+#mcv-root .mcv-printbtn:active,#mcv-root .mcv-locate-btn:active,#mcv-root #mcv-diagBtn:active{transform:scale(.95);}
+#mcv-root .mcv-locate-btn{border-radius:50%;}
+#mcv-root #mcv-limitNoteEl{color:var(--muted);font-size:14px;letter-spacing:-.224px;}
+#mcv-root .mcv-hint{font-size:13px;color:var(--sub);font-weight:400;letter-spacing:0;}
+/* color-scheme 은 상속되므로 뿌리에만 걸면 안쪽 입력칸·스크롤바까지 밝게 유지된다 */
+#mcv-root a{color:var(--link);}
+
+</style>
+<div id="mcv-root">
+<div class="mcv-wrap">
+  <header id="mcv-hdr">
+    <h1><span id="mcv-hTitle">코스도</span><span class="mcv-tag" id="mcv-hTag" style="display:none">관리자용</span></h1>
+    <p id="mcv-hSub"></p>
+    <div class="mcv-stats">
+      <div class="mcv-stat">코스<b id="mcv-stCourse">-</b></div>
+      <div class="mcv-stat">총 거리<b id="mcv-stTotal">-</b></div>
+      <div class="mcv-stat" id="mcv-stTurnBox" style="display:none">반환 지점<b id="mcv-stTurn">-</b></div>
+      <div class="mcv-stat">누적 상승<b id="mcv-stGain">-</b></div>
+      <div class="mcv-stat">최저 고도<b id="mcv-stMin">-</b></div>
+      <div class="mcv-stat">최고 고도<b id="mcv-stMax">-</b></div>
+    </div>
+  </header>
+  <div class="mcv-card">
+    <h2>🗺 코스 지도
+      <span class="mcv-seg mcv-course" id="mcv-courseSeg"></span>
+      <button class="mcv-allBtn" id="mcv-allBtn" title="모든 코스를 한 화면에 함께 봅니다">⛶ 전 코스 보기</button>
+      <span class="mcv-seg mcv-kk" id="mcv-typeSeg">
+        <button data-t="ROADMAP" class="mcv-on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
+      </span>
+      <span class="mcv-seg mcv-kk" id="mcv-ovSeg"><button data-o="TRAFFIC">교통</button><button data-o="TERRAIN">지형</button></span>
+      <span class="mcv-legend" id="mcv-legend"></span>
+      <button id="mcv-diagBtn" title="표시 상태 확인" style="margin-left:6px;border:1px solid #cfd8dc;background:#fff;color:#607d8b;border-radius:50%;width:22px;height:22px;line-height:1;cursor:pointer;font-size:12px;padding:0">i</button>
+    </h2>
+    <div class="mcv-allNote" id="mcv-allNote"></div>
+    <div class="mcv-allNote" id="mcv-laneNote"></div>
+    <div id="mcv-mapWrap">
+      <div id="mcv-map"></div>
+      <div id="mcv-mapErr"><div class="mcv-in" id="mcv-mapErrIn"></div></div>
+      <button class="mcv-locate-btn" id="mcv-locateBtn" title="내 위치 추적">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/>
+          <line x1="12" y1="1.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22.5"/>
+          <line x1="1.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22.5" y2="12"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mcv-note" id="mcv-mapNoteEl"></div>
+    <div class="mcv-note" id="mcv-limitNoteEl" style="padding-top:0;color:#455a64;font-weight:700"></div>
+  </div>
+  <div class="mcv-card" id="mcv-paceCard" style="display:none">
+    <h2>⏱ 구간별 통과 예상 시각 <span id="mcv-paceLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span>
+      <span style="margin-left:auto;display:flex;gap:6px;align-items:center;font-size:.75rem;font-weight:400">
+        간격 <select id="mcv-paceStep" style="padding:4px 7px;font-size:.75rem;border:1px solid var(--line);border-radius:7px">
+          <option value="1">1 km</option><option value="2">2 km</option><option value="5" selected>5 km</option></select>
+        <label><input type="checkbox" id="mcv-paceOnlyPoi"> 시설 지점만</label>
+      </span>
+    </h2>
+    <div class="mcv-tables" id="mcv-paceTable" style="grid-template-columns:1fr"></div>
+    <div class="mcv-note">출발 시각 기준 예상 통과 시각 (관리자용)</div>
+  </div>
+  <div class="mcv-card">
+    <h2>⛰ 고저도 <span class="mcv-hint" id="mcv-elevHint">마우스를 올리면 지점별 상세 정보가 표시됩니다</span></h2>
+    <div id="mcv-chartBox"><canvas id="mcv-elev"></canvas><div id="mcv-tooltip"></div></div>
+  </div>
+  <div class="mcv-card">
+    <h2><span id="mcv-tblTitleEl">📋 코스 시설 안내</span> <span id="mcv-tblCourseLabel" style="font-size:.78rem;color:#2e7d32;font-weight:700"></span></h2>
+    <div class="mcv-tables" id="mcv-tables"></div>
+    <div class="mcv-note" id="mcv-tblNoteEl"></div>
+  </div>
+  <div class="mcv-card" id="mcv-supCard" style="display:none">
+    <h2>🧰 물자 집계 <span id="mcv-supLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span></h2>
+    <div class="mcv-sumchips" id="mcv-supChips"></div>
+    <div class="mcv-tables" id="mcv-supTable"></div>
+    <div class="mcv-note">관리자용 자료입니다. 참가자 배포용 파일에는 포함되지 않습니다.</div>
+  </div>
+</div>
+</div>
+<script>
+const DATA = {"mode":"public","title":"부산마라톤 코스(미정)","texts":{"subtitle":"현장 상황에 따라 변경 될 수 있습니다.","mapNote":"","tableTitle":"📋 코스 시설 안내","tableNote":"표의 행을 클릭하면 지도에서 해당 위치로 이동합니다. 코스를 전환하면 해당 코스 기준 왕/복 거리로 다시 계산됩니다.","colGo":"왕편","colBack":"복편","colName":"명칭","colMemo":"비고","colGap":"간격","colOps":"운영 시간"},"k":"OW9pOG86UGI+OTxrbAQ4bj1qbGkFPDpqODo+BWtvbj8=","cats":[{"id":"water","label":"급수대","icon":"💧","color":"#1976d2","supply":true},{"id":"medic","label":"적십자(의료)","icon":"✚","color":"#d32f2f"},{"id":"amb","label":"구급차","icon":"🚑","color":"#b71c1c"},{"id":"turn","label":"반환점","icon":"↩","color":"#f57c00"},{"id":"cut","label":"컷오프","icon":"⏱","color":"#37474f","hasTime":true},{"id":"staff","label":"스탭","icon":"👤","color":"#6a1b9a"},{"id":"police","label":"교통통제","icon":"🚧","color":"#c2a000"},{"id":"toilet","label":"화장실","icon":"🚻","color":"#00897b"},{"id":"food","label":"간식/보급","icon":"🍌","color":"#2e7d32"},{"id":"photo","label":"촬영포인트","icon":"📷","color":"#5d4037"}],"event":{"start":"08:00","lead":"3:30","last":"9:00"},"limitNote":"제한시간 — 하프 3시간 (종료 11:00) · 평균 8:33/km   |   10K 1시간 40분 (종료 09:40) · 평균 10:00/km   |   5K 1시간 (종료 09:00) · 평균 11:47/km","limits":[{"name":"하프","km":21.04,"limit":"3시간","end":"11:00","pace":"8:33/km"},{"name":"10K","km":10,"limit":"1시간 40분","end":"09:40","pace":"10:00/km"},{"name":"5K","km":5.09,"limit":"1시간","end":"09:00","pace":"11:47/km"}],"startTime":"08:00","cols":{"gap":false,"ops":false,"memo":true,"ele":false},"roundMode":"round","showReturn":true,"returnOffset":14,"allowRetToggle":false,"line":{"w":7,"arrow":true,"aRev":false,"aColor":"#ffffff","aGap":90,"aSize":1,"aEdge":true,"fan":true,"fanGap":11,"sepAuto":true,"sepPx":9,"laneColor":false,"retColor":"#1565c0","dash":false,"others":true},"hideTitle":false,"embed":false,"diag":false,"engine":"kakao","supplies":[],"order":["c21qs","c3jlf","c4skm"],"start":[35.211976,128.98765],"courses":{"c21qs":{"name":"하프","color":"#7b1fa2","total_km":21.04,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":10.518,"turns":[10.518],"turnNames":["반환점"],"arrowEdits":[],"arrowRuns":{},"segs":[[0,10.518,"go"],[10.518,21.036,"back"]],"shape":"outback","shapeText":"왕복","laps":1,"closed":true,"participants":0,"limit":"3:00","limitPace":8.556759840273816,"track":[[35.211976,128.98765],[35.211212,128.987118],[35.210845,128.986823],[35.210365,128.986383],[35.209457,128.985302],[35.208854,128.984164],[35.208467,128.983474],[35.208039,128.982783],[35.207544,128.982008],[35.207187,128.981425],[35.206249,128.979808],[35.205262,128.978022],[35.204862,128.977287],[35.20457,128.976811],[35.203642,128.975572],[35.203148,128.974893],[35.202441,128.97377],[35.201354,128.972225],[35.200698,128.971357],[35.199831,128.970084],[35.198917,128.968939],[35.197415,128.967226],[35.196295,128.966008],[35.195798,128.965554],[35.195163,128.964982],[35.194665,128.964563],[35.194311,128.964308],[35.193954,128.964069],[35.193247,128.96364],[35.192436,128.963209],[35.191565,128.962738],[35.191025,128.962453],[35.190669,128.962299],[35.188818,128.961547],[35.188745,128.961479],[35.188619,128.961317],[35.188543,128.961298],[35.18829,128.961317],[35.187619,128.961139],[35.186866,128.960915],[35.185593,128.960557],[35.185087,128.960425],[35.184553,128.96028],[35.184195,128.960201],[35.183826,128.960096],[35.183367,128.959972],[35.183187,128.959881],[35.182869,128.959697],[35.182609,128.959563],[35.182352,128.959452],[35.182056,128.959362],[35.18185,128.959314],[35.181606,128.959282],[35.180995,128.959222],[35.180086,128.959106],[35.179589,128.959047],[35.17925,128.959016],[35.179099,128.959004],[35.178355,128.959052],[35.177938,128.959091],[35.177723,128.959063],[35.177619,128.959074],[35.177514,128.959107],[35.176412,128.959548],[35.176154,128.959652],[35.175011,128.960061],[35.173956,128.96047],[35.173786,128.960523],[35.173616,128.960589],[35.172146,128.960884],[35.171408,128.960958],[35.169568,128.960897],[35.168799,128.960854],[35.168229,128.96078],[35.167812,128.960729],[35.16725,128.960629],[35.166762,128.960532],[35.165805,128.960297],[35.164834,128.960011],[35.163514,128.959528],[35.162812,128.959285],[35.162264,128.959094],[35.161155,128.958646],[35.16006,128.958163],[35.157771,128.957195],[35.156598,128.956695],[35.155702,128.956325],[35.155065,128.95605],[35.154643,128.955845],[35.154106,128.955524],[35.153892,128.955408],[35.153728,128.955341],[35.153038,128.955061],[35.152795,128.954963],[35.151562,128.954456],[35.150649,128.954068],[35.149885,128.953743],[35.148159,128.953001],[35.147252,128.952602],[35.145988,128.952064],[35.14329,128.950841],[35.142485,128.950493],[35.14158,128.950069],[35.140924,128.949755],[35.140315,128.949469],[35.13969,128.949171],[35.139205,128.948931],[35.138783,128.948724],[35.138401,128.948545],[35.137802,128.94825],[35.137196,128.947952],[35.136405,128.947551],[35.136054,128.947392],[35.135224,128.946957],[35.13437,128.946514],[35.133526,128.946084],[35.13273,128.945647],[35.131551,128.94502],[35.130415,128.944396],[35.129446,128.943847],[35.129427,128.943891],[35.13039,128.944435],[35.131609,128.945117],[35.133854,128.946309],[35.135977,128.947404],[35.140562,128.949636],[35.141829,128.950253],[35.143428,128.95098],[35.145162,128.95177],[35.147153,128.952624],[35.149095,128.953469],[35.150404,128.95403],[35.151623,128.954541],[35.153882,128.955443],[35.15473,128.95593],[35.15607,128.95653],[35.158319,128.957505],[35.160395,128.958375],[35.162179,128.959121],[35.164475,128.959936],[35.165643,128.960309],[35.167483,128.960743],[35.168837,128.960913],[35.169402,128.960943],[35.170789,128.960984],[35.171388,128.960982],[35.172142,128.960918],[35.173622,128.960619],[35.173971,128.960504],[35.174316,128.960369],[35.174649,128.960243],[35.176137,128.9597],[35.177624,128.959121],[35.177716,128.959126],[35.177885,128.959139],[35.178148,128.95914],[35.178851,128.959082],[35.179246,128.95908],[35.179475,128.95911],[35.179955,128.959159],[35.180626,128.959234],[35.181342,128.959301],[35.181721,128.959355],[35.182052,128.95942],[35.182354,128.959516],[35.182641,128.959628],[35.183188,128.959946],[35.183362,128.960031],[35.183779,128.96015],[35.18422,128.96027],[35.185923,128.960696],[35.186472,128.960842],[35.187336,128.961102],[35.188284,128.96138],[35.188531,128.961346],[35.18861,128.961358],[35.188705,128.96151],[35.188799,128.961589],[35.190516,128.962294],[35.190867,128.962438],[35.191923,128.962996],[35.192586,128.963348],[35.192899,128.963508],[35.193689,128.963935],[35.194116,128.964215],[35.194601,128.964574],[35.195163,128.965054],[35.196293,128.966118],[35.197118,128.96699],[35.19865,128.968706],[35.19978,128.970114],[35.200204,128.970738],[35.200725,128.971485],[35.201255,128.972148],[35.201598,128.972643],[35.202512,128.973967],[35.202947,128.974658],[35.2031,128.974896],[35.203796,128.975868],[35.204477,128.976796],[35.204708,128.977134],[35.205006,128.977642],[35.205769,128.979032],[35.206612,128.980551],[35.207071,128.981331],[35.207347,128.981757],[35.207974,128.98281],[35.208415,128.983488],[35.208841,128.984278],[35.209384,128.985312],[35.209719,128.985775],[35.210003,128.986084],[35.210285,128.986364],[35.210773,128.986831],[35.211086,128.987082],[35.211519,128.987427],[35.211988,128.987735]],"profile":[[0,0],[0.05,0],[0.1,0],[0.15,0],[0.2,0],[0.25,0],[0.3,0],[0.35,0],[0.4,0],[0.45,0],[0.5,0],[0.55,0],[0.6,0],[0.65,0],[0.7,0],[0.75,0],[0.8,0],[0.85,0],[0.9,0],[0.95,0],[1,0],[1.05,0],[1.1,0],[1.15,0],[1.2,0],[1.25,0],[1.3,0],[1.35,0],[1.4,0],[1.45,0],[1.5,0],[1.55,0],[1.6,0],[1.65,0],[1.7,0],[1.75,0],[1.8,0],[1.85,0],[1.9,0],[1.95,0],[2,0],[2.05,0],[2.1,0],[2.15,0],[2.2,0],[2.25,0],[2.3,0],[2.35,0],[2.4,0],[2.45,0],[2.5,0],[2.55,0],[2.6,0],[2.65,0],[2.7,0],[2.75,0],[2.8,0],[2.85,0],[2.9,0],[2.95,0],[3,0],[3.05,0],[3.1,0],[3.15,0],[3.2,0],[3.25,0],[3.3,0],[3.35,0],[3.4,0],[3.45,0],[3.5,0],[3.55,0],[3.6,0],[3.65,0],[3.7,0],[3.75,0],[3.8,0],[3.85,0],[3.9,0],[3.95,0],[4,0],[4.05,0],[4.1,0],[4.15,0],[4.2,0],[4.25,0],[4.3,0],[4.35,0],[4.4,0],[4.45,0],[4.5,0],[4.55,0],[4.6,0],[4.65,0],[4.7,0],[4.75,0],[4.8,0],[4.85,0],[4.9,0],[4.95,0],[5,0],[5.05,0],[5.1,0],[5.15,0],[5.2,0],[5.25,0],[5.3,0],[5.35,0],[5.4,0],[5.45,0],[5.5,0],[5.55,0],[5.6,0],[5.65,0],[5.7,0],[5.75,0],[5.8,0],[5.85,0],[5.9,0],[5.95,0],[6,0],[6.05,0],[6.1,0],[6.15,0],[6.2,0],[6.25,0],[6.3,0],[6.35,0],[6.4,0],[6.45,0],[6.5,0],[6.55,0],[6.6,0],[6.65,0],[6.7,0],[6.75,0],[6.8,0],[6.85,0],[6.9,0],[6.95,0],[7,0],[7.05,0],[7.1,0],[7.15,0],[7.2,0],[7.25,0],[7.3,0],[7.35,0],[7.4,0],[7.45,0],[7.5,0],[7.55,0],[7.6,0],[7.65,0],[7.7,0],[7.75,0],[7.8,0],[7.85,0],[7.9,0],[7.95,0],[8,0],[8.05,0],[8.1,0],[8.15,0],[8.2,0],[8.25,0],[8.3,0],[8.35,0],[8.4,0],[8.45,0],[8.5,0],[8.55,0],[8.6,0],[8.65,0],[8.7,0],[8.75,0],[8.8,0],[8.85,0],[8.9,0],[8.95,0],[9,0],[9.05,0],[9.1,0],[9.15,0],[9.2,0],[9.25,0],[9.3,0],[9.35,0],[9.4,0],[9.45,0],[9.5,0],[9.55,0],[9.6,0],[9.65,0],[9.7,0],[9.75,0],[9.8,0],[9.85,0],[9.9,0],[9.95,0],[10,0],[10.05,0],[10.1,0],[10.15,0],[10.2,0],[10.25,0],[10.3,0],[10.35,0],[10.4,0],[10.45,0],[10.5,0],[10.55,0],[10.6,0],[10.65,0],[10.7,0],[10.75,0],[10.8,0],[10.85,0],[10.9,0],[10.95,0],[11,0],[11.05,0],[11.1,0],[11.15,0],[11.2,0],[11.25,0],[11.3,0],[11.35,0],[11.4,0],[11.45,0],[11.5,0],[11.55,0],[11.6,0],[11.65,0],[11.7,0],[11.75,0],[11.8,0],[11.85,0],[11.9,0],[11.95,0],[12,0],[12.05,0],[12.1,0],[12.15,0],[12.2,0],[12.25,0],[12.3,0],[12.35,0],[12.4,0],[12.45,0],[12.5,0],[12.55,0],[12.6,0],[12.65,0],[12.7,0],[12.75,0],[12.8,0],[12.85,0],[12.9,0],[12.95,0],[13,0],[13.05,0],[13.1,0],[13.15,0],[13.2,0],[13.25,0],[13.3,0],[13.35,0],[13.4,0],[13.45,0],[13.5,0],[13.55,0],[13.6,0],[13.65,0],[13.7,0],[13.75,0],[13.8,0],[13.85,0],[13.9,0],[13.95,0],[14,0],[14.05,0],[14.1,0],[14.15,0],[14.2,0],[14.25,0],[14.3,0],[14.35,0],[14.4,0],[14.45,0],[14.5,0],[14.55,0],[14.6,0],[14.65,0],[14.7,0],[14.75,0],[14.8,0],[14.85,0],[14.9,0],[14.95,0],[15,0],[15.05,0],[15.1,0],[15.15,0],[15.2,0],[15.25,0],[15.3,0],[15.35,0],[15.4,0],[15.45,0],[15.5,0],[15.55,0],[15.6,0],[15.65,0],[15.7,0],[15.75,0],[15.8,0],[15.85,0],[15.9,0],[15.95,0],[16,0],[16.05,0],[16.1,0],[16.15,0],[16.2,0],[16.25,0],[16.3,0],[16.35,0],[16.4,0],[16.45,0],[16.5,0],[16.55,0],[16.6,0],[16.65,0],[16.7,0],[16.75,0],[16.8,0],[16.85,0],[16.9,0],[16.95,0],[17,0],[17.05,0],[17.1,0],[17.15,0],[17.2,0],[17.25,0],[17.3,0],[17.35,0],[17.4,0],[17.45,0],[17.5,0],[17.55,0],[17.6,0],[17.65,0],[17.7,0],[17.75,0],[17.8,0],[17.85,0],[17.9,0],[17.95,0],[18,0],[18.05,0],[18.1,0],[18.15,0],[18.2,0],[18.25,0],[18.3,0],[18.35,0],[18.4,0],[18.45,0],[18.5,0],[18.55,0],[18.6,0],[18.65,0],[18.7,0],[18.75,0],[18.8,0],[18.85,0],[18.9,0],[18.95,0],[19,0],[19.05,0],[19.1,0],[19.15,0],[19.2,0],[19.25,0],[19.3,0],[19.35,0],[19.4,0],[19.45,0],[19.5,0],[19.55,0],[19.6,0],[19.65,0],[19.7,0],[19.75,0],[19.8,0],[19.85,0],[19.9,0],[19.95,0],[20,0],[20.05,0],[20.1,0],[20.15,0],[20.2,0],[20.25,0],[20.3,0],[20.35,0],[20.4,0],[20.45,0],[20.5,0],[20.55,0],[20.6,0],[20.65,0],[20.7,0],[20.75,0],[20.8,0],[20.85,0],[20.9,0],[20.95,0],[21,0],[21.036,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0,"d":"go"},{"km":21.03,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 11:00"},{"cat":"water","name":"1급수대","lat":35.197275,"lon":128.967074,"off":false,"ele":null,"rows":[{"km":2.5,"d":"go"},{"km":18.53,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:09 ~ 10:39"},{"cat":"water","name":"2급수대","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":"go"},{"km":16.03,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 10:17"},{"cat":"amb","name":"구급차 2","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":"go"},{"km":16.03,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 10:17"},{"cat":"water","name":"3급수대","lat":35.15468,"lon":128.955863,"off":false,"ele":null,"rows":[{"km":7.5,"d":"go"},{"km":13.53,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:26 ~ 09:56"},{"cat":"amb","name":"구급차 3","lat":35.15468,"lon":128.955863,"off":false,"ele":null,"rows":[{"km":7.5,"d":"go"},{"km":13.53,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:26 ~ 09:56"},{"cat":"water","name":"4급수대","lat":35.133657,"lon":128.946151,"off":false,"ele":null,"rows":[{"km":10,"d":"go"},{"km":11.03,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:35 ~ 09:34"},{"cat":"amb","name":"구급차 4","lat":35.129552,"lon":128.943907,"off":false,"ele":null,"rows":[{"km":10.5,"d":""}],"time":"","memo":"","gap":0.5,"ops":"08:37 ~ 09:30"}]},"c3jlf":{"name":"10K","color":"#43a047","total_km":10,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":5,"turns":[5],"turnNames":["반환점"],"arrowEdits":[],"arrowRuns":{},"segs":[[0,4.98,"go"],[4.98,10,"back"]],"shape":"outback","shapeText":"왕복","laps":1,"closed":true,"participants":0,"limit":"1:40","limitPace":10,"track":[[35.211976,128.98765],[35.211212,128.987118],[35.210845,128.986823],[35.210365,128.986383],[35.209457,128.985302],[35.208854,128.984164],[35.208467,128.983474],[35.208039,128.982783],[35.207544,128.982008],[35.207187,128.981425],[35.206249,128.979808],[35.205262,128.978022],[35.204862,128.977287],[35.20457,128.976811],[35.203642,128.975572],[35.203148,128.974893],[35.202441,128.97377],[35.201354,128.972225],[35.200698,128.971357],[35.199831,128.970084],[35.198917,128.968939],[35.197415,128.967226],[35.196295,128.966008],[35.195798,128.965554],[35.195163,128.964982],[35.194665,128.964563],[35.194311,128.964308],[35.193954,128.964069],[35.193247,128.96364],[35.192436,128.963209],[35.191565,128.962738],[35.191025,128.962453],[35.190669,128.962299],[35.188818,128.961547],[35.188745,128.961479],[35.188619,128.961317],[35.188543,128.961298],[35.18829,128.961317],[35.187619,128.961139],[35.186866,128.960915],[35.185593,128.960557],[35.185087,128.960425],[35.184553,128.96028],[35.184195,128.960201],[35.183826,128.960096],[35.183367,128.959972],[35.183187,128.959881],[35.182869,128.959697],[35.182609,128.959563],[35.182352,128.959452],[35.182056,128.959362],[35.18185,128.959314],[35.181606,128.959282],[35.180995,128.959222],[35.180086,128.959106],[35.179589,128.959047],[35.17925,128.959016],[35.179099,128.959004],[35.178355,128.959052],[35.177938,128.959091],[35.177723,128.959063],[35.177619,128.959074],[35.177514,128.959107],[35.176412,128.959548],[35.176395,128.959555],[35.176412,128.959548],[35.177514,128.959107],[35.177619,128.959074],[35.177723,128.959063],[35.177938,128.959091],[35.178355,128.959052],[35.179099,128.959004],[35.17925,128.959016],[35.179589,128.959047],[35.180086,128.959106],[35.180995,128.959222],[35.181606,128.959282],[35.18185,128.959314],[35.182056,128.959362],[35.182352,128.959452],[35.182609,128.959563],[35.182869,128.959697],[35.183187,128.959881],[35.183367,128.959972],[35.183826,128.960096],[35.184195,128.960201],[35.184553,128.96028],[35.185087,128.960425],[35.185593,128.960557],[35.186866,128.960915],[35.187619,128.961139],[35.18829,128.961317],[35.188543,128.961298],[35.188619,128.961317],[35.188745,128.961479],[35.188818,128.961547],[35.190669,128.962299],[35.191025,128.962453],[35.191565,128.962738],[35.192436,128.963209],[35.193247,128.96364],[35.193954,128.964069],[35.194311,128.964308],[35.194665,128.964563],[35.195163,128.964982],[35.195798,128.965554],[35.196295,128.966008],[35.197415,128.967226],[35.198917,128.968939],[35.199831,128.970084],[35.200698,128.971357],[35.201354,128.972225],[35.202441,128.97377],[35.203148,128.974893],[35.203642,128.975572],[35.20457,128.976811],[35.204862,128.977287],[35.205262,128.978022],[35.206249,128.979808],[35.207187,128.981425],[35.207544,128.982008],[35.208039,128.982783],[35.208467,128.983474],[35.208854,128.984164],[35.209457,128.985302],[35.210365,128.986383],[35.210845,128.986823],[35.211212,128.987118],[35.211976,128.98765]],"profile":[[0,0],[0.05,0],[0.1,0],[0.15,0],[0.2,0],[0.25,0],[0.3,0],[0.35,0],[0.4,0],[0.45,0],[0.5,0],[0.55,0],[0.6,0],[0.65,0],[0.7,0],[0.75,0],[0.8,0],[0.85,0],[0.9,0],[0.95,0],[1,0],[1.05,0],[1.1,0],[1.15,0],[1.2,0],[1.25,0],[1.3,0],[1.35,0],[1.4,0],[1.45,0],[1.5,0],[1.55,0],[1.6,0],[1.65,0],[1.7,0],[1.75,0],[1.8,0],[1.85,0],[1.9,0],[1.95,0],[2,0],[2.05,0],[2.1,0],[2.15,0],[2.2,0],[2.25,0],[2.3,0],[2.35,0],[2.4,0],[2.45,0],[2.5,0],[2.55,0],[2.6,0],[2.65,0],[2.7,0],[2.75,0],[2.8,0],[2.85,0],[2.9,0],[2.95,0],[3,0],[3.05,0],[3.1,0],[3.15,0],[3.2,0],[3.25,0],[3.3,0],[3.35,0],[3.4,0],[3.45,0],[3.5,0],[3.55,0],[3.6,0],[3.65,0],[3.7,0],[3.75,0],[3.8,0],[3.85,0],[3.9,0],[3.95,0],[4,0],[4.05,0],[4.1,0],[4.15,0],[4.2,0],[4.25,0],[4.3,0],[4.35,0],[4.4,0],[4.45,0],[4.5,0],[4.55,0],[4.6,0],[4.65,0],[4.7,0],[4.75,0],[4.8,0],[4.85,0],[4.9,0],[4.95,0],[5,0],[5.05,0],[5.1,0],[5.15,0],[5.2,0],[5.25,0],[5.3,0],[5.35,0],[5.4,0],[5.45,0],[5.5,0],[5.55,0],[5.6,0],[5.65,0],[5.7,0],[5.75,0],[5.8,0],[5.85,0],[5.9,0],[5.95,0],[6,0],[6.05,0],[6.1,0],[6.15,0],[6.2,0],[6.25,0],[6.3,0],[6.35,0],[6.4,0],[6.45,0],[6.5,0],[6.55,0],[6.6,0],[6.65,0],[6.7,0],[6.75,0],[6.8,0],[6.85,0],[6.9,0],[6.95,0],[7,0],[7.05,0],[7.1,0],[7.15,0],[7.2,0],[7.25,0],[7.3,0],[7.35,0],[7.4,0],[7.45,0],[7.5,0],[7.55,0],[7.6,0],[7.65,0],[7.7,0],[7.75,0],[7.8,0],[7.85,0],[7.9,0],[7.95,0],[8,0],[8.05,0],[8.1,0],[8.15,0],[8.2,0],[8.25,0],[8.3,0],[8.35,0],[8.4,0],[8.45,0],[8.5,0],[8.55,0],[8.6,0],[8.65,0],[8.7,0],[8.75,0],[8.8,0],[8.85,0],[8.9,0],[8.95,0],[9,0],[9.05,0],[9.1,0],[9.15,0],[9.2,0],[9.25,0],[9.3,0],[9.35,0],[9.4,0],[9.45,0],[9.5,0],[9.55,0],[9.6,0],[9.65,0],[9.7,0],[9.75,0],[9.8,0],[9.85,0],[9.9,0],[9.95,0],[10,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0,"d":"go"},{"km":10,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 09:40"},{"cat":"water","name":"1급수대","lat":35.197275,"lon":128.967074,"off":false,"ele":null,"rows":[{"km":2.5,"d":"go"},{"km":7.5,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:09 ~ 09:15"},{"cat":"water","name":"2급수대","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 08:50"},{"cat":"amb","name":"구급차 2","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 08:50"}]},"c4skm":{"name":"5K","color":"#ed8c1d","total_km":5.09,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":null,"turns":[],"turnNames":[],"arrowEdits":[],"arrowRuns":{},"segs":[[0,5.094,"go"]],"shape":"loop","shapeText":"순환","laps":1,"closed":true,"participants":0,"limit":"1:00","limitPace":11.77856301531213,"track":[[35.212018,128.987692],[35.211424,128.987284],[35.210917,128.986884],[35.210329,128.986318],[35.209747,128.985716],[35.209274,128.985019],[35.208981,128.984438],[35.208638,128.983793],[35.208222,128.983074],[35.205791,128.978966],[35.204942,128.977409],[35.200412,128.971028],[35.19939,128.972233],[35.200245,128.973274],[35.200963,128.974537],[35.201294,128.975528],[35.20242,128.978009],[35.204594,128.980098],[35.202555,128.981635],[35.202241,128.982061],[35.202068,128.982469],[35.202075,128.982864],[35.202213,128.982855],[35.202342,128.982951],[35.202502,128.983107],[35.2027,128.983532],[35.202794,128.983738],[35.20285,128.983972],[35.20296,128.9843],[35.203116,128.984713],[35.203192,128.985447],[35.203483,128.985726],[35.204673,128.987396],[35.205102,128.98784],[35.207882,128.985372],[35.208861,128.984248],[35.209077,128.984704],[35.209296,128.985162],[35.209427,128.985366],[35.209719,128.985754],[35.210187,128.98625],[35.210874,128.986928],[35.211994,128.987757]],"profile":[[0,0],[0.02,0],[0.04,0],[0.06,0],[0.08,0],[0.1,0],[0.12,0],[0.14,0],[0.16,0],[0.18,0],[0.2,0],[0.22,0],[0.24,0],[0.26,0],[0.28,0],[0.3,0],[0.32,0],[0.34,0],[0.36,0],[0.38,0],[0.4,0],[0.42,0],[0.44,0],[0.46,0],[0.48,0],[0.5,0],[0.52,0],[0.54,0],[0.56,0],[0.58,0],[0.6,0],[0.62,0],[0.64,0],[0.66,0],[0.68,0],[0.7,0],[0.72,0],[0.74,0],[0.76,0],[0.78,0],[0.8,0],[0.82,0],[0.84,0],[0.86,0],[0.88,0],[0.9,0],[0.92,0],[0.94,0],[0.96,0],[0.98,0],[1,0],[1.02,0],[1.04,0],[1.06,0],[1.08,0],[1.1,0],[1.12,0],[1.14,0],[1.16,0],[1.18,0],[1.2,0],[1.22,0],[1.24,0],[1.26,0],[1.28,0],[1.3,0],[1.32,0],[1.34,0],[1.36,0],[1.38,0],[1.4,0],[1.42,0],[1.44,0],[1.46,0],[1.48,0],[1.5,0],[1.52,0],[1.54,0],[1.56,0],[1.58,0],[1.6,0],[1.62,0],[1.64,0],[1.66,0],[1.68,0],[1.7,0],[1.72,0],[1.74,0],[1.76,0],[1.78,0],[1.8,0],[1.82,0],[1.84,0],[1.86,0],[1.88,0],[1.9,0],[1.92,0],[1.94,0],[1.96,0],[1.98,0],[2,0],[2.02,0],[2.04,0],[2.06,0],[2.08,0],[2.1,0],[2.12,0],[2.14,0],[2.16,0],[2.18,0],[2.2,0],[2.22,0],[2.24,0],[2.26,0],[2.28,0],[2.3,0],[2.32,0],[2.34,0],[2.36,0],[2.38,0],[2.4,0],[2.42,0],[2.44,0],[2.46,0],[2.48,0],[2.5,0],[2.52,0],[2.54,0],[2.56,0],[2.58,0],[2.6,0],[2.62,0],[2.64,0],[2.66,0],[2.68,0],[2.7,0],[2.72,0],[2.74,0],[2.76,0],[2.78,0],[2.8,0],[2.82,0],[2.84,0],[2.86,0],[2.88,0],[2.9,0],[2.92,0],[2.94,0],[2.96,0],[2.98,0],[3,0],[3.02,0],[3.04,0],[3.06,0],[3.08,0],[3.1,0],[3.12,0],[3.14,0],[3.16,0],[3.18,0],[3.2,0],[3.22,0],[3.24,0],[3.26,0],[3.28,0],[3.3,0],[3.32,0],[3.34,0],[3.36,0],[3.38,0],[3.4,0],[3.42,0],[3.44,0],[3.46,0],[3.48,0],[3.5,0],[3.52,0],[3.54,0],[3.56,0],[3.58,0],[3.6,0],[3.62,0],[3.64,0],[3.66,0],[3.68,0],[3.7,0],[3.72,0],[3.74,0],[3.76,0],[3.78,0],[3.8,0],[3.82,0],[3.84,0],[3.86,0],[3.88,0],[3.9,0],[3.92,0],[3.94,0],[3.96,0],[3.98,0],[4,0],[4.02,0],[4.04,0],[4.06,0],[4.08,0],[4.1,0],[4.12,0],[4.14,0],[4.16,0],[4.18,0],[4.2,0],[4.22,0],[4.24,0],[4.26,0],[4.28,0],[4.3,0],[4.32,0],[4.34,0],[4.36,0],[4.38,0],[4.4,0],[4.42,0],[4.44,0],[4.46,0],[4.48,0],[4.5,0],[4.52,0],[4.54,0],[4.56,0],[4.58,0],[4.6,0],[4.62,0],[4.64,0],[4.66,0],[4.68,0],[4.7,0],[4.72,0],[4.74,0],[4.76,0],[4.78,0],[4.8,0],[4.82,0],[4.84,0],[4.86,0],[4.88,0],[4.9,0],[4.92,0],[4.94,0],[4.96,0],[4.98,0],[5,0],[5.02,0],[5.04,0],[5.06,0],[5.08,0],[5.094,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0.01,"d":""},{"km":5.09,"d":""}],"time":"","memo":"","gap":0.01,"ops":"08:00 ~ 09:00"},{"cat":"water","name":"5급수대","lat":35.199429,"lon":128.972187,"off":false,"ele":null,"rows":[{"km":2.16,"d":""}],"time":"","memo":"","gap":2.15,"ops":"08:08 ~ 08:25"}]}}};
+if(window.__MCV_LOADED__){                     /* 같은 조각이 두 번 이상 삽입된 경우 */
+  (function(){
+    var all=document.querySelectorAll('#mcv-root');
+    for(var i=1;i<all.length;i++) all[i].parentNode.removeChild(all[i]);
+    console.warn('[코스도] 조각이 여러 번 삽입되어 중복본을 제거했습니다.');
+  })();
+} else {
+window.__MCV_LOADED__=true;
+(function(){                                   /* 삽입 환경에서 문제가 생기면 화면에 그대로 알려준다 */
+  function box(msg,warn){
+    var r=document.getElementById('mcv-root'); if(!r) return;
+    var d=document.createElement('div');
+    d.setAttribute('style','margin:10px;padding:12px 14px;border:1px solid '+(warn?'#EF9F27':'#E24B4A')+
+      ';background:'+(warn?'#FAEEDA':'#FCEBEB')+';color:'+(warn?'#633806':'#791F1F')+
+      ';border-radius:10px;font:14px/1.65 sans-serif;white-space:pre-wrap');
+    d.textContent=msg;
+    r.insertBefore(d, r.firstChild);
+  }
+  window.addEventListener('error', function(ev){
+    if(ev && ev.filename && ev.filename.indexOf('http')===0 && ev.filename!==location.href) return;
+    box('코스도 스크립트 오류\n'+(ev&&ev.message||'')+(ev&&ev.lineno?(' (line '+ev.lineno+')'):''));
+  });
+  /* 진단: km 자리로 지도를 옮기고 화면 화살표의 각도가 진행 방향과 몇 도 어긋나는지 (검사용) */
+  window.MCV_ARROWS=function(kmCenter, half){
+    try{
+      var cm=vCum(C); var k=0; while(k<cm.length-1 && cm[k]<kmCenter*1000) k++;
+      var p0=C.track[k], h=half||0.0012;
+      var b=new kakao.maps.LatLngBounds(); b.extend(new kakao.maps.LatLng(p0[0]-h,p0[1]-h*1.3)); b.extend(new kakao.maps.LatLng(p0[0]+h,p0[1]+h*1.3)); kmap.setBounds(b);
+      rebuildMap(); drawArrows();
+      var VDP=vCourseDisp(C, vSepM(RETOFF)); if(!VDP) return {n:0, list:[]};
+      var list=[];
+      arrowObjs.forEach(function(h2){
+        var el=h2.el||h2.node||null; var pos=h2.pos||h2.ll||null;
+        var html=(h2.html)||(el&&el.outerHTML)||''; var m=/rotate\(([-\d.]+)deg\)/.exec(html); if(!m) return;
+        var ll=pos||(h2.ov&&h2.ov.getPosition&&[h2.ov.getPosition().getLat(),h2.ov.getPosition().getLng()]); if(!ll) return;
+        var bd=1e9, bi=0; for(var i=0;i<VDP.length;i++){ var d=Math.hypot((VDP[i][0]-ll[0])*111320,(VDP[i][1]-ll[1])*111320*0.81); if(d<bd){ bd=d; bi=i; } }
+        var km=VDP.cum[bi]/1000;
+        var q1=vDispAt(C,VDP,km*1000-15), q2=vDispAt(C,VDP,km*1000+15);
+        var a1=vPx(q1[0],q1[1]), a2=vPx(q2[0],q2[1]); if(!a1||!a2) return;
+        var dir=Math.atan2(a2[1]-a1[1], a2[0]-a1[0])*180/Math.PI+90;
+        list.push({km:+km.toFixed(2), d:Math.round((((+m[1]-dir)%360)+360)%360)});
+      });
+      return {n:arrowObjs.length, list:list};
+    }catch(e){ return {err:String(e)}; }
+  };
+  window.MCV_DIAG=function(silent){
+    var cs={};
+    (DATA.order||[]).forEach(function(k){
+      var c=(DATA.courses||{})[k]||{};
+      cs[c.name||k]={트랙점수:(c.track||[]).length, 총거리:c.total_km, 반환:c.turnKm, 시설:(c.pois||[]).length};
+    });
+    var o={엔진:(DATA.engine||'kakao'), 코스수:(DATA.order||[]).length, 코스:cs,
+      지도준비:(typeof kReady!=='undefined')?kReady:false,
+      지도객체수:(typeof kObjs!=='undefined')?kObjs.length:-1,
+      Leaflet:(typeof L!=='undefined'), Kakao:(typeof kakao!=='undefined'),
+      코스버튼:((document.getElementById('mcv-courseSeg')||{}).innerHTML||'').length>0,
+      보는코스:(typeof curKey!=='undefined')?curKey:null,
+      배율_m당:(typeof vMPerPx==='function')?vMPerPx():null,
+      벌림_m:(typeof vSepM==='function')?vSepM(14):null,
+      전코스보기:(typeof showAll!=='undefined')?showAll:false,
+      겹쳐그린선:(typeof allObjs!=='undefined')?allObjs.length:-1,
+      화살표:(typeof arrowObjs!=='undefined')?arrowObjs.length:-1,
+      화살표반대:!!(DATA.line&&DATA.line.aRev),
+      화살표각:(function(){ try{ return arrowStops([[0,0],[100,0],[200,0]], 40, null, 5, LS.aRev).map(function(a){ return Math.round(a[2]); }); }catch(e){ return []; } })(),
+      겹침구간:(function(){ try{ var r=vPassRuns(C); return r?r.length:0; }catch(e){ return -1; } })(),
+      최대회차:(function(){ try{ var r=vPassRuns(C); if(!r) return 0;
+        var m=0; r.forEach(function(x){ if(x.pass>m) m=x.pass; }); return m; }catch(e){ return -1; } })(),
+      회차선모양:(function(){ try{
+        var c=C, out=[];
+        (window.__kstub?__kstub.polylines:[]).forEach(function(p){ if(p._map && p.o.strokeColor===(c.color||'#e53935'))
+          out.push(p.o.strokeStyle||'solid'); });
+        return out.filter(function(v,i,a){ return a.indexOf(v)===i; }); }catch(e){ return []; } })(),
+      회차딱지:document.querySelectorAll('#mcv-map .mcv-kLane, .mcv-kLane').length,
+      시설카드:((document.getElementById('mcv-tables')||{}).children||[]).length};
+    console.log('[코스도 진단]', o);
+    if(!silent) box('진단 결과\n'+JSON.stringify(o,null,1), true);
+    return o;
+  };
+  window.MCV_PANEL=function(){
+    var d=window.MCV_DIAG(true), m=document.getElementById('mcv-map');
+    var rows=[];
+    rows.push(['지도 엔진', d['엔진']]);
+    rows.push(['지도 준비', d['지도준비']?'예':'아니오']);
+    rows.push(['지도 크기', m?(m.clientWidth+' × '+m.clientHeight+' px'):'없음']);
+    rows.push(['그려진 지도 객체', d['지도객체수']]);
+    rows.push(['SDK 로드', d['엔진']==='osm'?('Leaflet '+(d['Leaflet']?'O':'X')):('Kakao '+(d['Kakao']?'O':'X'))]);
+    Object.keys(d['코스']||{}).forEach(function(n){
+      var c=d['코스'][n];
+      rows.push([n, '트랙 '+c['트랙점수']+'점 · '+c['총거리']+'km · 시설 '+c['시설']+'개']);
+    });
+    var html='<b style="display:block;margin-bottom:6px">코스도 표시 상태</b>'+
+      rows.map(function(r){ return '<div style="display:flex;gap:10px"><span style="min-width:104px;color:#607d8b">'+r[0]+'</span><b>'+r[1]+'</b></div>'; }).join('');
+    var r=document.getElementById('mcv-root'); if(!r) return d;
+    var old=document.getElementById('mcv-diagPanel'); if(old) old.parentNode.removeChild(old);
+    var el=document.createElement('div'); el.id='mcv-diagPanel';
+    el.setAttribute('style','margin:10px;padding:12px 14px;border:1px solid #B5D4F4;background:#E6F1FB;color:#0C447C;border-radius:10px;font:13px/1.7 sans-serif');
+    el.innerHTML=html+'<div style="margin-top:8px;color:#185FA5;font-size:12px">이 내용을 그대로 캡처해 보내주시면 원인을 바로 확인할 수 있습니다.</div>';
+    r.insertBefore(el, r.firstChild);
+    return d;
+  };
+  setTimeout(function(){
+    var b=document.getElementById('mcv-diagBtn');
+    if(!b) return;
+    if(DATA.diag===false){ if(b.parentNode) b.parentNode.removeChild(b); return; }
+    b.onclick=function(){ window.MCV_PANEL(); };
+  }, 100);
+  setTimeout(function(){
+    try{
+      var d=window.MCV_DIAG(true);
+      var bad=[];
+      (DATA.order||[]).forEach(function(k){
+        var c=(DATA.courses||{})[k]||{};
+        if(!c.track || c.track.length<2) bad.push((c.name||k)+' 트랙 좌표 없음');
+      });
+      if(bad.length) box('코스 좌표가 파일에 들어 있지 않습니다\n· '+bad.join('\n· ')+
+        '\n제작기에서 GPX가 등록된 상태로 다시 내보내 주세요.');
+      else if(DATA.diag!==false && d['지도준비'] && d['지도객체수']===0) window.MCV_PANEL();
+    }catch(e){}
+  }, 3500);
+})();
+const CAT={}; DATA.cats.forEach(c=>CAT[c.id]=c);
+const SUP=DATA.supplies||[];
+const T=Object.assign({subtitle:'',mapNote:'',tableTitle:'📋 코스 시설 안내',tableNote:'',colGo:'왕편',colBack:'복편',colName:'명칭',colMemo:'비고'}, DATA.texts||{});
+const ADMIN = DATA.mode==='admin';
+const COLS = Object.assign({gap:false,ops:false,memo:true,ele:false}, DATA.cols||{});
+const LS = Object.assign({w:5, arrow:true, aRev:false, aColor:'#ffffff', aGap:90, aSize:1, aEdge:true,
+                          fan:true, fanGap:11, sepAuto:true, sepPx:10,
+                          laneColor:false, retColor:'#1565c0', dash:false}, DATA.line||{});
+/* 회차별 색 — 제작기와 같은 규칙 (1회차 종목 색 · 2회차 정한 색 · 3회차부터 색상환 회전) */
+function vHexToHsl(hex){
+  const h=String(hex||'').replace('#',''); if(h.length<6) return null;
+  const r=parseInt(h.slice(0,2),16)/255, g=parseInt(h.slice(2,4),16)/255, b=parseInt(h.slice(4,6),16)/255;
+  if(!isFinite(r)||!isFinite(g)||!isFinite(b)) return null;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), l=(mx+mn)/2; let hh=0, ss=0;
+  if(mx!==mn){ const d=mx-mn; ss=l>0.5?d/(2-mx-mn):d/(mx+mn);
+    if(mx===r) hh=((g-b)/d+(g<b?6:0)); else if(mx===g) hh=(b-r)/d+2; else hh=(r-g)/d+4; hh*=60; }
+  return [hh,ss,l];
+}
+function vHslToHex(h,s,l){
+  h=((h%360)+360)%360; const c=(1-Math.abs(2*l-1))*s, x=c*(1-Math.abs((h/60)%2-1)), m=l-c/2;
+  let r=0,g=0,b=0;
+  if(h<60){r=c;g=x;} else if(h<120){r=x;g=c;} else if(h<180){g=c;b=x;} else if(h<240){g=x;b=c;} else if(h<300){r=x;b=c;} else {r=c;b=x;}
+  const q=v=>('0'+Math.round((v+m)*255).toString(16)).slice(-2);
+  return '#'+q(r)+q(g)+q(b);
+}
+function vLanePalette(base, ret, upTo){
+  const out=[base, ret];
+  const hb=vHexToHsl(base), hr=vHexToHsl(ret);
+  if(!hr) { for(let p=2;p<=upTo;p++) out.push(ret); return out; }
+  /* 2회차 색을 종목 색과 같은 계열로 골랐으면 구분이 안 된다 — 반대편 색상으로 돌린다 */
+  if(hb && Math.abs(((hr[0]-hb[0])%360+540)%360-180) < 30){
+    hr[0]=(hr[0]+150)%360; out[1]=vHslToHex(hr[0], Math.max(0.5,hr[1]), Math.min(0.46,Math.max(0.32,hr[2])));
+  }
+  const used=[hb?hb[0]:null, hr[0]].filter(v=>v!=null);
+  const far=(h)=>used.every(u=>{ const d=Math.abs(((h-u)%360+540)%360-180); return d>=40; });
+  let h=hr[0];
+  for(let p=2;p<=upTo;p++){
+    let pick=null;
+    for(let k=1;k<=12 && pick==null;k++){ const cand=(h+72*k)%360; if(far(cand)) pick=cand; }
+    if(pick==null) pick=(h+72*(p-1))%360;
+    used.push(pick); h=pick;
+    out.push(vHslToHex(pick, Math.max(0.5, hr[1]), Math.min(0.46, Math.max(0.32, hr[2]))));
+  }
+  return out;
+}
+function vLaneColor(base, pass){
+  if(!pass || LS.laneColor===false) return base;
+  const ret=LS.retColor||'#1565c0';
+  const key=base+'|'+ret;
+  if(vLaneColor._k!==key){ vLaneColor._k=key; vLaneColor._p=vLanePalette(base, ret, 8); }
+  const pal=vLaneColor._p;
+  return pal[Math.min(pass, pal.length-1)];
+}
+let RETOFF = (DATA.returnOffset!=null?+DATA.returnOffset:14);
+/* 반환이 있는 코스는 복편 구간을 나란한 점선으로 자동 표시한다 (버튼 없음) */
+let RETON = (DATA.showReturn !== false) && ((DATA.returnOffset==null) ? true : (+DATA.returnOffset > 0));
+const RQ = n => (DATA.roundMode==='ceil'?Math.ceil(n):Math.round(n));
+function boxesOf(item, units){
+  if(!item||!item.boxQty||item.boxQty<=0||!units) return null;
+  return Math.ceil(units/item.boxQty);          // 박스는 항상 올림 — 편집기와 동일
+}
+/* 합계 박스 = 지점마다 올림한 박스의 합 (편집기 boxSum 과 동일) */
+function boxSum(item, pois){
+  if(!item||!item.boxQty||item.boxQty<=0) return null;
+  let n=0;
+  (pois||[]).forEach(p=>{ const q=(p&&p.sup||{})[item.id]||0; if(q) n+=Math.ceil(q/item.boxQty); });
+  return n;
+}
+const esc=s=>String(s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+let curKey=DATA.order[0], C=DATA.courses[curKey];
+if(DATA.hideTitle){
+  const h1=document.getElementById('mcv-hTitle').parentElement;
+  if(h1) h1.style.display='none';
+  document.getElementById('mcv-hSub').style.display='none';
+} else {
+  document.getElementById('mcv-hTitle').textContent=DATA.title;
+  document.getElementById('mcv-hSub').textContent=T.subtitle;
+}
+(function(){ const e=document.getElementById('mcv-mapNoteEl');
+  if(!e) return;
+  if(T.mapNote){ e.textContent=T.mapNote; } else { e.style.display='none'; }
+})();
+(function(){   /* 휴대전화에는 마우스가 없다 — 안내문을 기기에 맞춰 바꾼다 */
+  var h=document.getElementById('mcv-elevHint');
+  if(h && window.matchMedia && window.matchMedia('(pointer:coarse)').matches)
+    h.textContent='그래프를 누르면 지점별 상세 정보가 표시됩니다';
+})();
+document.getElementById('mcv-tblTitleEl').textContent=T.tableTitle;
+document.getElementById('mcv-tblNoteEl').textContent=T.tableNote;
+if(!DATA.embed) document.title=DATA.title+(ADMIN?' (관리자용)':'');
+(function(){
+  const box=document.getElementById('mcv-limitNoteEl'); if(!box) return;
+  const L=DATA.limits||[];
+  if(!L.length){ box.textContent=DATA.limitNote||''; return; }
+  box.innerHTML='<div class="mcv-limit"><div class="mcv-limit-h">⏱ 제한시간'+
+    (DATA.startTime?'<span>출발 '+esc(DATA.startTime)+'</span>':'')+'</div>'+
+    '<table><thead><tr><th>종목</th><th>거리</th><th>제한시간</th><th>종료 시각</th></tr></thead><tbody>'+
+    L.map(r=>'<tr><td class="mcv-lt-n">'+esc(r.name)+'</td><td>'+r.km.toFixed(2)+' km</td>'+
+      '<td>'+esc(r.limit)+'</td><td class="mcv-lt-e">'+esc(r.end)+'</td></tr>').join('')+
+    '</tbody></table></div>';
+})();
+if(ADMIN){
+  document.getElementById('mcv-hdr').classList.add('admin');
+  document.getElementById('mcv-hTag').style.display='inline-block';
+  document.getElementById('mcv-supCard').style.display='block';
+  document.getElementById('mcv-paceCard').style.display='block';
+} else {
+  ['mcv-paceCard','mcv-supCard','mcv-hTag'].forEach(function(id){   /* 참가자용: DOM에서 통째로 제거 */
+    var e=document.getElementById(id);
+    if(e && e.parentNode) e.parentNode.removeChild(e);
+  });
+}
+const dirLabel=d=>d==='go'?T.colGo:(d==='back'?T.colBack:'');
+const passInfo=p=>(p.rows&&p.rows.length)?p.rows:[{km:p.km||0,d:''}];
+const passStr=p=>p.off ? ('코스 밖 · '+passInfo(p)[0].km.toFixed(2)+' km 부근')
+  : passInfo(p).map(x=>(x.d?dirLabel(x.d)+' ':'')+x.km.toFixed(2)+' km').join(' · ');
+const turnsOf=c=>{
+  if(!c||!(c.total_km>0)) return [];
+  let t=(c.turns&&c.turns.length)?c.turns:(c.turnKm!=null?[c.turnKm]:[]);
+  t=t.map(Number).filter(v=>isFinite(v)&&v>0.01&&v<c.total_km-0.01).sort((a,b)=>a-b);
+  const o=[]; t.forEach(v=>{ if(!o.length||v-o[o.length-1]>0.02) o.push(v); });
+  return o;
+};
+const turnOf=c=>{ const t=turnsOf(c); return t.length?t[0]:null; };
+/* 왕/복 구간 — 내보낼 때 계산해 둔 값을 그대로 쓴다 */
+const segsOf=c=>{
+  if(c&&c.segs&&c.segs.length) return c.segs.map(a=>({from:+a[0], to:+a[1], dir:a[2]}));
+  const T=turnsOf(c), b=[0].concat(T).concat([c.total_km]), out=[];
+  for(let i=0;i<b.length-1;i++) if(b[i+1]>b[i]+1e-9) out.push({from:b[i], to:b[i+1], dir:(i%2?'back':'go')});
+  return out;
+};
+const dirAtKm=(c,km)=>{ const sg=segsOf(c); if(sg.length<2) return 'go';
+  for(const x of sg) if(km<=x.to+1e-9) return x.dir; return sg[sg.length-1].dir; };
+function slicePathKm(c, from, to){
+  /* 누적거리가 현재 코스와 어긋나 있으면 다시 계산한다 (코스 전환 중 예외 대비) */
+  if(cum.length!==C.track.length) computeCum();
+  const d0=from*1000, d1=to*1000, out=[latlngAtKm(from)];
+  for(let i=0;i<c.track.length;i++){ const d=cum[i]; if(d>d0+0.5&&d<d1-0.5) out.push([c.track[i][0],c.track[i][1]]); }
+  out.push(latlngAtKm(to));
+  return out;
+}
+function supStr(p){
+  if(!ADMIN||!p.sup) return '';
+  const arr=SUP.filter(s=>p.sup[s.id]).map(s=>{
+    const b=boxesOf(s,p.sup[s.id]);
+    return esc(s.label)+' '+p.sup[s.id]+esc(s.unit)+(b!=null?'('+b+'박스)':'');
+  });
+  return (p.people?'<br><span style="color:#455a64">👥 통과 '+p.people.toLocaleString()+'명</span>':'')+
+    (arr.length?'<br><span style="color:#455a64">🧰 '+arr.join(', ')+'</span>':'');
+}
+function popCard(icon,color,title,sub,chips,note){
+  return '<div class="mcv-pop">'+
+    '<div class="mcv-pop-h"><span class="mcv-titleicon" style="background:'+color+'">'+icon+'</span>'+
+      '<span class="mcv-pop-t"><b>'+title+'</b>'+(sub?'<i>'+sub+'</i>':'')+'</span></div>'+
+    (chips?'<div class="mcv-chips">'+chips+'</div>':'')+
+    (note?'<div class="mcv-memo">'+note+'</div>':'')+
+  '</div>';
+}
+function poiInfoHtml(p){
+  const c=CAT[p.cat], info=passInfo(p);
+  const go=info.find(x=>x.d!=='back'), back=info.find(x=>x.d==='back');
+  let ch='';
+  if(c.hasTime){
+    ch+='<span class="mcv-c mcv-c-go">'+info[0].km.toFixed(2)+' km</span>';
+    if(p.time) ch+='<span class="mcv-c mcv-c-time">⏱ '+esc(p.time)+'</span>';
+  } else if(go&&back){
+    ch+='<span class="mcv-c mcv-c-go">'+esc(T.colGo)+' '+go.km.toFixed(2)+' km</span>'+
+        '<span class="mcv-c mcv-c-back">'+esc(T.colBack)+' '+back.km.toFixed(2)+' km</span>';
+  } else {
+    ch+='<span class="mcv-c mcv-c-go">'+info[0].km.toFixed(2)+' km</span>';
+  }
+  if(p.ele!=null) ch+='<span class="mcv-c mcv-c-sub">고도 '+p.ele+' m</span>';
+  if(ADMIN&&p.ops) ch+='<span class="mcv-c mcv-c-sub">'+esc(T.colOps||'운영 시간')+' '+esc(p.ops)+'</span>';
+  if(ADMIN&&p.people) ch+='<span class="mcv-c mcv-c-sub">👥 '+p.people.toLocaleString()+'명</span>';
+  if(ADMIN&&p.sup){
+    SUP.filter(x=>p.sup[x.id]).forEach(x=>{
+      const b=boxesOf(x,p.sup[x.id]);
+      ch+='<span class="mcv-c mcv-c-sup">'+esc(x.label)+' '+p.sup[x.id]+esc(x.unit)+(b!=null?' · '+b+'박스':'')+'</span>';
+    });
+  }
+  return popCard(c.icon, c.color, esc(p.name), esc(c.label), ch, p.memo?esc(p.memo):'');
+}
+/* ── 지도 엔진 (카카오맵 / OpenStreetMap) ── */
+const ENGINE=(DATA.engine==='osm')?'osm':'kakao';
+const OSM=(ENGINE==='osm');
+function unmaskKey(b){
+  if(!b) return '';
+  try{
+    const s=decodeURIComponent(escape(atob(b)));
+    let out='';
+    for(let i=0;i<s.length;i++) out+=String.fromCharCode(s.charCodeAt(i)^(0x5a+(i%7)));
+    return out;
+  }catch(e){ return ''; }
+}
+const KKEY=unmaskKey(DATA.k||'');
+let kmap=null,kReady=false,kObjs=[],kInfo=null,kHover=null,kMy=null,cum=[],pendingFocus=null;
+const ovState={TRAFFIC:false,TERRAIN:false};
+function mapErr(reason){
+  document.getElementById('mcv-mapErr').style.display='flex';
+  document.getElementById('mcv-mapErrIn').innerHTML= OSM
+    ? '<b>지도를 불러오지 못했습니다 ('+esc(reason)+')</b><br><br>인터넷 연결을 확인해 주세요.<br>이 코스도는 OpenStreetMap을 사용하며 별도의 키가 필요하지 않습니다.'
+    : '<b>카카오맵을 불러오지 못했습니다 ('+esc(reason)+')</b><br><br>'+
+      '이 파일을 <b>더블클릭(file://)으로 열면</b> 카카오 지도가 동작하지 않습니다.<br>'+
+      '웹 서버에 올린 뒤, 카카오 개발자 콘솔 → 앱 설정 → <b>플랫폼 → Web</b> 에 해당 도메인을 등록해 주세요.<br>'+
+      '(로컬 확인은 <code>python -m http.server 8000</code> 후 <code>http://localhost:8000</code> 등록)';
+}
+function loadAsset(tag, attrs){
+  return new Promise((ok,ng)=>{
+    const el=document.createElement(tag);
+    Object.assign(el, attrs);
+    el.onload=()=>ok(); el.onerror=()=>ng(new Error('로드 실패'));
+    document.head.appendChild(el);
+  });
+}
+(async function bootMap(){
+  try{
+    if(OSM){
+      const CDN=['https://unpkg.com/leaflet@1.9.4/dist/',
+                 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/',
+                 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/'];
+      let ok=false, lastErr=null;
+      for(const base of CDN){
+        try{
+          await loadAsset('link',{rel:'stylesheet', href:base+'leaflet.css'});
+          await loadAsset('script',{src:base+'leaflet.js'});
+          if(typeof L!=='undefined'){ ok=true; break; }
+        }catch(e){ lastErr=e; }
+      }
+      if(!ok) throw (lastErr||new Error('Leaflet 로드 실패'));
+      try{ init(); }catch(e){ console.error('[코스도] init 오류:', e); }
+    } else {
+      await loadAsset('script',{src:'https://dapi.kakao.com/v2/maps/sdk.js?appkey='+encodeURIComponent(KKEY)+'&autoload=false'});
+      kakao.maps.load(function(){ try{ init(); }catch(e){ console.error('[코스도] init 오류:', e); } });
+    }
+  }catch(e){ mapErr(e.message||'스크립트 로드 실패'); }
+  setTimeout(()=>{ if(!kReady) mapErr('응답 없음'); },9000);
+})();
+function wireCommonUI(){}
+function init(){
+  if(OSM){
+    kmap=L.map('mcv-map',{zoomControl:true}).setView(DATA.start, 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {maxZoom:19, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> 기여자'}).addTo(kmap);
+    kmap.on('click', ()=>closeInfo());
+    kmap.on('moveend zoomend', ()=>{ scheduleArrows(); scheduleSep(); });
+    document.getElementById('mcv-typeSeg').style.display='none';
+    document.getElementById('mcv-ovSeg').style.display='none';
+  } else {
+    kmap=new kakao.maps.Map(document.getElementById('mcv-map'),{center:new kakao.maps.LatLng(DATA.start[0],DATA.start[1]),level:7});
+    kakao.maps.event.addListener(kmap,'click',()=>closeInfo());
+    kakao.maps.event.addListener(kmap,'idle',()=>{ scheduleArrows(); scheduleSep(); });
+    document.getElementById('mcv-typeSeg').onclick=e=>{
+      const b=e.target.closest('button'); if(!b) return;
+      document.querySelectorAll('#mcv-typeSeg button').forEach(x=>x.classList.toggle('mcv-on',x===b));
+      kmap.setMapTypeId(kakao.maps.MapTypeId[b.dataset.t]);
+    };
+    document.getElementById('mcv-ovSeg').onclick=e=>{
+      const b=e.target.closest('button'); if(!b) return;
+      const t=b.dataset.o, id=kakao.maps.MapTypeId[t];
+      if(ovState[t]){ kmap.removeOverlayMapTypeId(id); b.classList.remove('mcv-on'); }
+      else { kmap.addOverlayMapTypeId(id); b.classList.add('mcv-on'); }
+      ovState[t]=!ovState[t];
+    };
+  }
+  kReady=true;
+  wireCommonUI();
+  setCourse(DATA.order[0]);
+  if(pendingFocus){ const f=pendingFocus; pendingFocus=null; mapFocus(f.lat,f.lon); showInfo(f.html,f.lat,f.lon); }
+  watchMapSize();
+}
+/* ── 엔진 공통 그리기 API ── */
+function clearObjs(){ kObjs.forEach(o=>{ try{o.rm();}catch(e){} }); kObjs=[]; }
+function cleanPath(path){                        /* NaN·빈값이 하나라도 섞이면 선이 통째로 안 그려진다 */
+  const out=[];
+  for(let i=0;i<(path||[]).length;i++){
+    const p=path[i]; if(!p) continue;
+    const a=p[0], b=p[1];
+    if(a===null||a===undefined||a===''||b===null||b===undefined||b==='') continue;
+    const la=+a, lo=+b;
+    if(!isFinite(la)||!isFinite(lo)) continue;
+    if(la<-90||la>90||lo<-180||lo>180) continue;
+    if(Math.abs(la)<0.5&&Math.abs(lo)<0.5) continue;      /* (0,0) 널아일랜드 제외 */
+    out.push([la,lo]);
+  }
+  return out;
+}
+function mkHalo(path, w, op){
+  const pts=cleanPath(path); if(pts.length<2) return null;
+  if(OSM){ const pl=L.polyline(pts,{color:'#ffffff', weight:w, opacity:op==null?.92:op, interactive:false}).addTo(kmap);
+    kObjs.push({rm:()=>kmap.removeLayer(pl)}); return pl; }
+  const pl=new kakao.maps.Polyline({path:pts.map(a=>new kakao.maps.LatLng(a[0],a[1])), strokeColor:'#ffffff',
+    strokeWeight:w, strokeOpacity:op==null?.92:op, zIndex:10});
+  pl.setMap(kmap); kObjs.push({rm:()=>pl.setMap(null)}); return pl;
+}
+function mkPoly(path, o){
+  const pts=cleanPath(path);
+  if(pts.length<2){ console.warn('[코스도] 선 건너뜀 — 유효 좌표', pts.length, '/', (path||[]).length); return null; }
+  /* dash: true(복편 점선) 또는 'shortdash'/'shortdot'/'shortdashdot' (회차별) */
+  const DA={shortdash:'9 7', shortdot:'2.5 6', shortdashdot:'9 5 2 5', shortdashdotdot:'9 5 2 5 2 5'};
+  const dashArr = o.dash===true ? '9 8' : (typeof o.dash==='string' ? (DA[o.dash]||null) : null);
+  const dashKak = o.dash===true ? 'shortdash' : (typeof o.dash==='string' ? (o.dash==='solid'?'solid':o.dash) : 'solid');
+  if(OSM){
+    const pl=L.polyline(pts,{color:o.color, weight:o.weight, opacity:o.opacity,
+      dashArray:dashArr, interactive:!!o.onClick}).addTo(kmap);
+    if(o.onClick) pl.on('click', ev=>{ L.DomEvent.stopPropagation(ev); o.onClick(ev.latlng.lat, ev.latlng.lng); });
+    kObjs.push({rm:()=>kmap.removeLayer(pl)});
+    return pl;
+  }
+  const pl=new kakao.maps.Polyline({path:pts.map(a=>new kakao.maps.LatLng(a[0],a[1])),
+    strokeColor:o.color, strokeWeight:o.weight, strokeOpacity:o.opacity,
+    strokeStyle:dashKak, zIndex:o.z||20});
+  pl.setMap(kmap); kObjs.push({rm:()=>pl.setMap(null)});
+  if(o.onClick) kakao.maps.event.addListener(pl,'click', ev=>o.onClick(ev.latLng.getLat(), ev.latLng.getLng()));
+  return pl;
+}
+/* ── 진행 방향 화살표 ──
+   지도 위에 얹는 작은 다트. 확대·축소하면 간격을 다시 잡아 늘 보기 좋은 밀도로 둔다. */
+let arrowObjs=[];
+function clearArrows(){ arrowObjs.forEach(h=>{ try{ h.rm(); }catch(e){} }); arrowObjs=[]; }
+function vRect(){ const el=document.getElementById('mcv-map'); return el?el.getBoundingClientRect():null; }
+/* 겹치는 선을 화면에서 몇 px 벌릴지 — 미터로 두면 멀리서 볼 때 선 밑에 숨는다 */
+function vMPerPx(){
+  try{
+    const rc=vRect(); if(!rc || rc.width<40) return null;
+    const b=kmap && kmap.getBounds && kmap.getBounds(); if(!b) return null;
+    let sw,ne;
+    if(OSM){ sw=b.getSouthWest(); ne=b.getNorthEast(); }
+    else { sw=b.getSouthWest(); ne=b.getNorthEast(); }
+    const dLon=(OSM?ne.lng-sw.lng:ne.getLng()-sw.getLng());
+    const lat=(OSM?(sw.lat+ne.lat)/2:(sw.getLat()+ne.getLat())/2);
+    if(!(dLon>0)) return null;
+    const m=dLon*111320*Math.cos(lat*Math.PI/180)/rc.width;
+    return (isFinite(m)&&m>0)?m:null;
+  }catch(e){ return null; }
+}
+/* 발행본 자료에는 누적거리가 담겨 오지 않는다 — 처음 쓸 때 한 번 만들어 두고 계속 쓴다.
+   이게 없으면 아래 겹침 계산이 전부 조용히 멎어, 지도에서는 아무 일도 일어나지 않는다. */
+function vCum(c){
+  if(!c || !c.track || c.track.length<2) return null;
+  if(c.cum && c.cum.length===c.track.length) return c.cum;
+  /* 제작기와 같은 자로 재야 한다 — 평면 근사로 재면 1km 마다 1.1m 씩 어긋나
+     42km 끝에서 시설 핀과 km 표시가 50m 가까이 벌어진다 */
+  try{
+    if(c===C && typeof cum!=='undefined' && cum && cum.length===c.track.length){ c.cum=cum; return c.cum; }
+    const R=6371008.8, rad=Math.PI/180, out=[0];
+    for(let i=1;i<c.track.length;i++){
+      const a=c.track[i-1], b=c.track[i];
+      const dla=(b[0]-a[0])*rad, dlo=(b[1]-a[1])*rad;
+      const h=Math.sin(dla/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(dlo/2)**2;
+      out.push(out[i-1]+2*R*Math.asin(Math.min(1,Math.sqrt(h))));
+    }
+    c.cum=out;
+  }catch(e){ return null; }
+  return c.cum;
+}
+/* ══════════════════════════════════════════════════════════════════════════════
+   겹침·차선 엔진 — 같은 길을 여러 번 지나는 코스를 '나란한 차선' 으로 그리기 위한 계산.
+   제작기와 발행본(뷰어 틀)에 같은 글이 두 번 들어 있다. 한쪽만 고치면 지도와 발행본이
+   서로 다르게 그려지므로, 고칠 때는 두 사본을 함께 고칠 것 (test/lane-engine.js 가 원본).
+
+   왜 이렇게 하는가 —
+   · 경로 서버·그리기 도구가 만든 GPX 는 점 간격이 2~70m 로 들쑥날쑥하다. 점끼리의 거리로
+     '같은 자리' 를 재면 간격이 벌어진 곳마다 겹침 판정이 깜빡여 차선이 서로 가로질렀다.
+     → 코스를 STEP m 간격으로 잘게 나눈 사본 위에서, 점과 '앞서 지난 토막(선분)' 의 거리로 잰다.
+   · 왕복의 갈 때 선과 올 때 선은 몇 m 씩 어긋난 채 그려져 있다. 각자 제 선에서 밀면 두 차선이
+     나란하지 않고 어디서는 벌어지고 어디서는 꼬인다.
+     → 두 번째 이후 통과는 첫 통과의 선 위로 옮겨 놓고(snap) 그 선의 법선으로 민다.
+   ══════════════════════════════════════════════════════════════════════════════ */
+function makeLaneEngine(){
+  const RAD=Math.PI/180;
+  const R=26;          /* 이 안이면 같은 자리 */
+  const MINARC=220;    /* 코스 거리로 이만큼 떨어진 통과만 별개로 */
+  const SEAM=260;      /* 순환 코스 출발↔도착 이음매 */
+  const STEP=10;       /* 잘게 나눈 사본의 점 간격(m) */
+  const MAXN=14000;    /* 사본 최대 점 수 (초장거리 대비) */
+  const MINRUN=60;     /* 이보다 짧은 회차 토막은 이웃에 흡수 */
+  const BLEND=60;      /* 옮겨 붙인 선에서 원래 자리로 돌아오는(또는 그 반대) 거리 — 완만하게(smoothstep) */
+
+  function metric(pts){
+    const lat0=pts[Math.floor(pts.length/2)][0];
+    return {kx:111320*Math.cos(lat0*RAD)||1, ky:110540};
+  }
+  /* 교차로에서 경로 서버가 만드는 짧은 되돌이(몇 m 나갔다 돌아오는 가시)를 접는다 — 점 개수는 그대로 */
+  function despur(pts){
+    const n=pts.length; if(n<4) return pts;
+    const SPUR=45, RET=8, {kx,ky}=metric(pts);
+    const d=(a,b)=>Math.hypot((a[1]-b[1])*kx,(a[0]-b[0])*ky);
+    const out=pts.map(p=>p);
+    let i=0;
+    while(i<n-2){
+      let found=-1, len=0;
+      for(let j=i+2;j<Math.min(n,i+14);j++){
+        len+=d(pts[j-1],pts[j]); if(len>SPUR*2) break;
+        if(d(pts[i],pts[j])<RET){ found=j; break; }
+      }
+      if(found>0){
+        let far=0; for(let k=i+1;k<found;k++) far=Math.max(far, d(pts[i],pts[k]));
+        /* 되돌아온 뒤 계속 같은 쪽으로 가야 가시다 — 왔던 길로 되돌아가면 반환점(∪) 이지 가시가 아니다 */
+        const a=pts[Math.max(0,i-2)], b=pts[Math.min(n-1,found+2)];
+        const ux=(pts[i][1]-a[1])*kx, uy=(pts[i][0]-a[0])*ky, vx=(b[1]-pts[found][1])*kx, vy=(b[0]-pts[found][0])*ky;
+        const uturn = (ux*vx+uy*vy) < -0.3*Math.hypot(ux,uy)*Math.hypot(vx,vy);
+        if(!uturn && far>=3 && far<=SPUR){ for(let k=i+1;k<found;k++) out[k]=[pts[i][0],pts[i][1]]; i=found; continue; }
+      }
+      i++;
+    }
+    return out;
+  }
+  /* STEP m 간격 사본 — 원래 점은 모두 남기고 사이를 채운다. cum 은 원래 누적거리를 그대로 나눠 가진다 */
+  function densify(pts, cum){
+    const n=pts.length, total=cum[n-1];
+    const step=Math.max(STEP, total/MAXN), {kx:kx0,ky:ky0}=metric(pts);
+    const P=[], C=[], orig=new Int32Array(n);
+    for(let i=0;i<n;i++){
+      if(i>0){
+        const L=cum[i]-cum[i-1], k=Math.floor(L/step);
+        for(let s=1;s<=k;s++){
+          const t=s*step/L; if(t>=1-1e-9) break;
+          P.push([pts[i-1][0]+(pts[i][0]-pts[i-1][0])*t, pts[i-1][1]+(pts[i][1]-pts[i-1][1])*t]);
+          C.push(cum[i-1]+L*t);
+        }
+      }
+      /* 출발선에 서 있던 GPX 는 같은 자리에 점이 수천 개다 — 앞 점 1.5m 안의 점은 대표 하나로 (색인은 대표를 가리킨다).
+         마지막 점은 남긴다 (도착 표시 자리) */
+      if(i>0 && i<n-1 && P.length){
+        const q=P[P.length-1];
+        if(Math.hypot((pts[i][1]-q[1])*kx0,(pts[i][0]-q[0])*ky0)<1.5){ orig[i]=P.length-1; continue; }
+      }
+      orig[i]=P.length; P.push([pts[i][0],pts[i][1]]); C.push(cum[i]);
+    }
+    const m=P.length, {kx,ky}=metric(pts);
+    const X=new Float64Array(m), Y=new Float64Array(m);
+    for(let i=0;i<m;i++){ X[i]=P[i][1]*kx; Y[i]=P[i][0]*ky; }
+    return {pts:P, cum:Float64Array.from(C), orig, X, Y, kx, ky, n:m};
+  }
+  /* 앞뒤 2점(사본에서 약 40m) 으로 진행 방향 */
+  function dirs(X,Y){
+    const n=X.length, DX=new Float32Array(n), DY=new Float32Array(n);
+    for(let i=0;i<n;i++){
+      const a=Math.max(0,i-2), b=Math.min(n-1,i+2);
+      const dx=X[b]-X[a], dy=Y[b]-Y[a], L=Math.hypot(dx,dy);
+      if(L>=3){ DX[i]=dx/L; DY[i]=dy/L; }
+    }
+    return {DX,DY};
+  }
+  /* 선분 격자 — 토막 j(j→j+1) 를 그 상자가 닿는 칸마다 넣는다 */
+  function segGrid(){
+    const g=new Map();
+    return {
+      add(j,x0,y0,x1,y1){
+        if(Math.hypot(x1-x0,y1-y0)<0.3) return;
+        const ax=Math.floor(Math.min(x0,x1)/R), bx=Math.floor(Math.max(x0,x1)/R);
+        const ay=Math.floor(Math.min(y0,y1)/R), by=Math.floor(Math.max(y0,y1)/R);
+        for(let a=ax;a<=bx;a++) for(let b=ay;b<=by;b++){
+          const k=a+'|'+b; let arr=g.get(k); if(!arr){ arr=[]; g.set(k,arr); }
+          if(arr.length<900) arr.push(j);
+        }
+      },
+      near(x,y,fn){
+        const gx=Math.floor(x/R), gy=Math.floor(y/R);
+        for(let a=gx-1;a<=gx+1;a++) for(let b=gy-1;b<=gy+1;b++){
+          const arr=g.get(a+'|'+b); if(!arr) continue;
+          for(let q=0;q<arr.length;q++) fn(arr[q]);
+        }
+      }
+    };
+  }
+  /* 점 (x,y) 를 토막 (x0,y0)-(x1,y1) 에 내린 자리 */
+  function proj(x,y,x0,y0,x1,y1){
+    const vx=x1-x0, vy=y1-y0, L2=vx*vx+vy*vy;
+    let t=L2>0 ? ((x-x0)*vx+(y-y0)*vy)/L2 : 0; t=t<0?0:(t>1?1:t);
+    const qx=x0+vx*t, qy=y0+vy*t;
+    return {t, qx, qy, d:Math.hypot(x-qx,y-qy)};
+  }
+  /* 사본의 점마다 '앞서 몇 번 지난 자리인가' — 앞서 지난 토막과의 거리로 */
+  function passIndex(D){
+    const {X,Y,cum,n}=D, {DX,DY}=dirs(X,Y);
+    const pass=new Int16Array(n), same=new Int16Array(n), total=cum[n-1];
+    const closed=Math.hypot(X[n-1]-X[0], Y[n-1]-Y[0])<130;
+    const grid=segGrid(), hits=[];
+    const SX=new Float32Array(n), SY=new Float32Array(n);
+    for(let j=0;j<n-1;j++){ const dx=X[j+1]-X[j], dy=Y[j+1]-Y[j], L=Math.hypot(dx,dy); if(L>0){ SX[j]=dx/L; SY[j]=dy/L; } }
+    for(let i=0;i<n;i++){
+      hits.length=0;
+      const dxi=DX[i], dyi=DY[i];
+      grid.near(X[i],Y[i], j=>{
+        const p=proj(X[i],Y[i],X[j],Y[j],X[j+1],Y[j+1]); if(p.d>R) return;
+        const arc=cum[j]+(cum[j+1]-cum[j])*p.t;
+        const dot=dxi*SX[j]+dyi*SY[j];
+        const opp = dot < -0.7 && (dxi||dyi);            /* 되돌아오는 방향(135° 넘게) 만 '반대' */
+        if(cum[i]-arc < MINARC && !opp) return;          /* 같은 길을 그대로 오는 중 */
+        if(closed && arc < SEAM && cum[i] > total-SEAM && !opp) return;   /* 출발↔도착 이음매 */
+        hits.push({arc, sx:SX[j], sy:SY[j]});
+      });
+      let runs=0, sm=0;
+      if(hits.length){
+        hits.sort((a,b)=>a.arc-b.arc); runs=1;
+        const sameDir=h=>(dxi*h.sx+dyi*h.sy)>0;
+        if(sameDir(hits[0])) sm=1;
+        for(let k=1;k<hits.length;k++){
+          const h=hits[k], g=hits[k-1];
+          if(h.arc-g.arc > MINARC || h.sx*g.sx+h.sy*g.sy < -0.7){ runs++; if(sameDir(h)) sm++; }
+        }
+      }
+      pass[i]=runs; same[i]=sm;
+      if(i>0) grid.add(i-1, X[i-1],Y[i-1],X[i],Y[i]);
+    }
+    pass.same=same;
+    return pass;
+  }
+  /* 회차가 같은 토막끼리 묶고, 짧은 토막은 더 긴 이웃에 흡수 */
+  function runsOf(pass, cum, minLen){
+    const n=pass.length, L=minLen||MINRUN, runs=[];
+    let a=0;
+    for(let i=1;i<=n;i++) if(i===n || pass[i]!==pass[a]){ runs.push({i0:a, i1:i-1, pass:pass[a]}); a=i; }
+    const len=r=>cum[r.i1]-cum[r.i0];
+    let guard=0;
+    while(runs.length>1 && guard++ < 8000){
+      let k=-1, best=Infinity;
+      for(let i=0;i<runs.length;i++){ const v=len(runs[i]); if(v<L && v<best){ best=v; k=i; } }
+      if(k<0) break;
+      const prev = k>0 ? runs[k-1] : null, next = k<runs.length-1 ? runs[k+1] : null;
+      if(prev && (!next || len(prev)>=len(next))) prev.i1=runs[k].i1;
+      else next.i0=runs[k].i0;
+      runs.splice(k,1);
+      for(let i=1;i<runs.length;i++)
+        if(runs[i].pass===runs[i-1].pass){ runs[i-1].i1=runs[i].i1; runs.splice(i,1); i--; }
+    }
+    return runs;
+  }
+  /* 코스 하나의 겹침 모형 — pts/cum 은 원래 점, 나머지는 사본 기준 */
+  function build(pts, cum){
+    if(!pts || pts.length<3 || !cum || cum.length!==pts.length) return null;
+    const D=densify(despur(pts), cum);
+    const raw=passIndex(D);
+    const runsD=runsOf(raw, D.cum);
+    /* 같은 회차 두 토막 사이에 낀 짧은 낮은 회차(400m 안, 앞선 통과의 선에서 60m 안) — 갈 때와 올 때가 잠깐
+       30m 넘게 벌어진 것(다리·굴다리·건너편 길)이다. 그대로 두면 그 자리에서 차선이 서로 가로지른다 → 이웃 회차로 이어 붙인다 */
+    {
+      const {X,Y,cum:C,n}=D, CELL=60, pg=new Map();
+      for(let i=0;i<n;i++){ const k=Math.floor(X[i]/CELL)+'|'+Math.floor(Y[i]/CELL); let a=pg.get(k); if(!a){ a=[]; pg.set(k,a); } a.push(i); }
+      const passAt=new Int16Array(n);
+      const refresh=()=>runsD.forEach(r=>{ for(let i=r.i0;i<=r.i1;i++) passAt[i]=r.pass; });
+      const nearLower=(i,p,maxD)=>{
+        const gx=Math.floor(X[i]/CELL), gy=Math.floor(Y[i]/CELL); let best=Infinity;
+        for(let a=gx-1;a<=gx+1;a++) for(let b=gy-1;b<=gy+1;b++){ const arr=pg.get(a+'|'+b); if(!arr) continue;
+          for(let q=0;q<arr.length;q++){ const j=arr[q]; if(j>=i || C[i]-C[j]<MINARC || passAt[j]>=p) continue;
+            const d=Math.hypot(X[i]-X[j],Y[i]-Y[j]); if(d<best) best=d; } }
+        return best<=maxD;
+      };
+      for(let guard=0; guard<200; guard++){
+        refresh();
+        let k=-1;
+        for(let i=1;i<runsD.length-1;i++){
+          const r=runsD[i], p=runsD[i-1].pass;
+          if(!(p>r.pass && runsD[i+1].pass===p && C[r.i1]-C[r.i0] < 400)) continue;
+          let ok=true; for(let j=r.i0;j<=r.i1;j+=2) if(!nearLower(j,p,60)){ ok=false; break; }
+          if(ok){ k=i; break; }
+        }
+        if(k<0) break;
+        runsD[k-1].i1=runsD[k+1].i1; runsD.splice(k,2);
+      }
+    }
+    /* 반환점: 회차가 바뀌는 자리에서 진행 방향이 뒤집히면, 경계를 실제 꼭짓점(가장 멀리 나간 점)으로 옮긴다.
+       거기서는 민 폭을 부드럽게 잇지 않고 바로 다음 차선으로 건너간다 — 그래야 ∪ 모양이 된다 */
+    {
+      const {X,Y,n}=D, {DX,DY}=dirs(X,Y);
+      for(let k=1;k<runsD.length;k++){
+        /* 방향은 경계에서 넉넉히(8점 ≈ 80m) 떨어진 곳에서 잰다 — 경계 바로 옆은 꼭짓점을 걸쳐 방향이 0 이 된다 */
+        const b=runsD[k].i0, p=Math.max(runsD[k-1].i0, b-8), q=Math.min(runsD[k].i1, b+8);
+        const dot=DX[p]*DX[q]+DY[p]*DY[q];
+        /* 거의 정반대(150° 넘게) 로 돌아서고, 앞뒤 80m 지점이 같은 길 위(40m 안) 여야 반환점 — 갈림길의 급한 꺾임은 아니다 */
+        if(!(DX[p]||DY[p]) || !(DX[q]||DY[q]) || dot > -0.85 || Math.hypot(X[p]-X[q],Y[p]-Y[q]) > 55) continue;
+        const lo=Math.max(runsD[k-1].i0+1, b-10), hi=Math.min(runsD[k].i1-1, b+10);
+        let c=b, best=-Infinity;
+        for(let i=lo;i<=hi;i++){ const v=X[i]*DX[p]+Y[i]*DY[p]; if(v>best){ best=v; c=i; } }
+        runsD[k-1].i1=c; runsD[k].i0=c+1; runsD[k].turnIn=true; runsD[k-1].turnOut=true;
+      }
+    }
+    const clean=new Int16Array(D.n);
+    runsD.forEach(r=>{ for(let i=r.i0;i<=r.i1;i++) clean[i]=r.pass; });
+    let max=0; for(let i=0;i<D.n;i++) if(clean[i]>max) max=clean[i];
+    /* 원래 점 기준 회차 (딱지·범례 등 옛 소비자용) */
+    const n=pts.length, passOrig=new Int16Array(n);
+    for(let i=0;i<n;i++) passOrig[i]=clean[D.orig[i]];
+    /* 원래 점 색인으로도 알려 주되, 정확한 자리는 m0/m1 (m 단위) 이다 */
+    let oi=0;
+    const runs=runsD.map(r=>{
+      while(oi<n-1 && D.orig[oi+1]<=r.i0) oi++;
+      let i1=oi; while(i1<n-1 && D.orig[i1+1]<=r.i1) i1++;
+      return {pass:r.pass, i0:oi, i1, m0:D.cum[r.i0], m1:D.cum[r.i1], m1x:D.cum[Math.min(r.i1+1, D.n-1)], d0:r.i0, d1:r.i1, turnIn:!!r.turnIn, turnOut:!!r.turnOut};
+    });
+    return {D, clean, runs, passOrig, max, same:raw.same};
+  }
+  /* 두 번째 이후 통과를 첫 통과의 선 위로 옮긴다 (사본 좌표, m).
+     토막(회차 구간) 단위로: ① 점마다 앞선 통과의 가장 가까운 선분에 내리고 ② 못 내린 사이 점은
+     앞뒤로 내린 자리 사이를 그 선을 따라 채우고 ③ 이웃 점이 다른 선분에 내렸으면 그 사이 꼭짓점(모퉁이)을 지나게 하고
+     ④ 구간 들머리·날머리 BLEND m 는 원래 자리와 섞어 튀지 않게 한다 (반환점 쪽은 바로 붙인다) */
+  function snapLater(model){
+    const {D, clean, runs}=model, {X,Y,cum,n}=D;
+    const BX=Float64Array.from(X), BY=Float64Array.from(Y);
+    const {DX,DY}=dirs(X,Y);
+    const grid=segGrid();
+    const addRun=r=>{ for(let i=Math.max(1,r.d0);i<=r.d1;i++) grid.add(i-1, BX[i-1],BY[i-1],BX[i],BY[i]); if(r.d1<n-1) grid.add(r.d1, BX[r.d1],BY[r.d1],BX[r.d1+1],BY[r.d1+1]); };
+    const SJ=new Int32Array(n).fill(-1), ST=new Float64Array(n), PX=new Float64Array(n), PY=new Float64Array(n);
+    const dvX=new Float64Array(n), dvY=new Float64Array(n), def=new Uint8Array(n), SG=new Int8Array(n);
+    let lastDef=-1;
+    /* a 와 b 사이(둘 다 옮긴 점, 또는 -1/n) 의 옮기지 않은 점들: 가까우면(2·BLEND 안) 두 옮김을 잇고, 멀면 각각 BLEND 안에서 0 으로 거둔다 */
+    const resolve=(a,b)=>{
+      const L=(a>=0 && b<n) ? cum[b]-cum[a] : Infinity;
+      for(let i=a+1;i<b;i++){
+        let dx=0, dy=0;
+        const ss=t=>{ t=Math.max(0,Math.min(1,t)); return t*t*(3-2*t); };     /* 급히 꺾이지 않게 */
+        if(L<=2*BLEND){ const f=ss((cum[i]-cum[a])/L); dx=dvX[a]*(1-f)+dvX[b]*f; dy=dvY[a]*(1-f)+dvY[b]*f; }
+        else {
+          if(a>=0){ const g=1-ss((cum[i]-cum[a])/BLEND); dx+=dvX[a]*g; dy+=dvY[a]*g; }
+          if(b<n){ const g=1-ss((cum[b]-cum[i])/BLEND); dx+=dvX[b]*g; dy+=dvY[b]*g; }
+        }
+        BX[i]=X[i]+dx; BY[i]=Y[i]+dy;
+      }
+    };
+    runs.forEach(r=>{
+      const p=r.pass;
+      if(!(p>0)){ for(let i=r.d0;i<=r.d1;i++) SG[i]=1; addRun(r); return; }
+      let prevSeg=-1;
+      for(let i=r.d0;i<=r.d1;i++){
+        let best=null, bs=Infinity;
+        const dxi=DX[i], dyi=DY[i];
+        grid.near(X[i],Y[i], j=>{
+          if(j+1>=i) return;
+          if(Math.min(clean[j],clean[j+1]) >= p) return;            /* 나보다 앞선 통과의 토막만 */
+          const sx=BX[j+1]-BX[j], sy=BY[j+1]-BY[j], L=Math.hypot(sx,sy); if(L<0.3) return;
+          const dot=(dxi*sx+dyi*sy)/L;
+          if(cum[i]-cum[j+1] < MINARC && dot > -0.7) return;         /* 제 길 */
+          if(Math.abs(dot) < 0.5) return;                            /* 가로지르는 길은 아니다 */
+          const q=proj(X[i],Y[i],BX[j],BY[j],BX[j+1],BY[j+1]); if(q.d>R) return;
+          const score=q.d + (prevSeg>=0 && Math.abs(j-prevSeg)>4 ? 10 : 0);
+          if(score<bs){ bs=score; best={j, t:q.t, qx:q.qx, qy:q.qy, dot}; }
+        });
+        /* 쪽은 '첫 통과 선' 기준이다 — 두 번째 통과의 선에 붙었으면 그 선의 쪽을 물려받는다 */
+        if(best){ SJ[i]=best.j; ST[i]=best.t; PX[i]=best.qx; PY[i]=best.qy; prevSeg=best.j; SG[i]=(best.dot>0?1:-1)*(SG[best.j]||1); }
+        else { PX[i]=X[i]; PY[i]=Y[i]; prevSeg=-1; }
+      }
+      /* 구간의 쪽(같은 방향 +1 · 반대 −1) — 못 정한 점은 구간 다수결을 따른다 */
+      { let pos=0, neg=0; for(let i=r.d0;i<=r.d1;i++){ if(SG[i]>0) pos++; else if(SG[i]<0) neg++; }
+        const maj = neg>pos ? -1 : 1; for(let i=r.d0;i<=r.d1;i++) if(!SG[i]) SG[i]=maj; r.side=maj; }
+      /* ② 사이 빈 점 — 앞뒤로 내린 자리 사이를 앞선 통과의 선을 따라 채운다 */
+      let a=-1;
+      for(let i=r.d0;i<=r.d1+1;i++){
+        const on = i<=r.d1 && SJ[i]>=0;
+        if(on){
+          if(a>=0 && i-a>1){
+            const ja=SJ[a], jb=SJ[i];
+            if(Math.abs(jb-ja)<=80 && cum[i]-cum[a]<=450){
+              const path=[[PX[a],PY[a]]];
+              if(ja<jb){ for(let v=ja+1;v<=jb;v++) path.push([BX[v],BY[v]]); }
+              else if(ja>jb){ for(let v=ja;v>=jb+1;v--) path.push([BX[v],BY[v]]); }
+              path.push([PX[i],PY[i]]);
+              const pc=[0]; for(let k=1;k<path.length;k++) pc.push(pc[k-1]+Math.hypot(path[k][0]-path[k-1][0],path[k][1]-path[k-1][1]));
+              const L=pc[pc.length-1];
+              for(let k=a+1;k<i;k++){
+                const f=(cum[k]-cum[a])/(cum[i]-cum[a]), d=f*L;
+                let s=0; while(s<pc.length-2 && pc[s+1]<d) s++;
+                const seg=pc[s+1]-pc[s], t=seg>0?(d-pc[s])/seg:0;
+                PX[k]=path[s][0]+(path[s+1][0]-path[s][0])*t; PY[k]=path[s][1]+(path[s+1][1]-path[s][1])*t;
+                SJ[k]=-2;                                            /* 채운 점 (모퉁이 처리는 건너뛴다) */
+              }
+            }
+          }
+          a=i;
+        }
+      }
+      /* ③ 이웃 점이 다른 선분에 내렸으면 그 사이 꼭짓점을 지난다 — 진짜 모퉁이(10° 넘게 꺾임)일 때만, 가까운 점을 옮긴다 */
+      const moved=new Uint8Array(n);
+      for(let i=r.d0+1;i<=r.d1;i++){
+        const ja=SJ[i-1], jb=SJ[i];
+        if(ja<0 || jb<0 || ja===jb || Math.abs(jb-ja)>3) continue;
+        let v=-1, vt=1;
+        const lo=Math.min(ja,jb)+1, hi=Math.max(ja,jb);
+        for(let k=lo;k<=hi;k++){
+          if(k<1 || k>=n-1) continue;
+          const ux=BX[k]-BX[k-1], uy=BY[k]-BY[k-1], wx=BX[k+1]-BX[k], wy=BY[k+1]-BY[k];
+          const L1=Math.hypot(ux,uy), L2=Math.hypot(wx,wy); if(!L1||!L2) continue;
+          const c=(ux*wx+uy*wy)/(L1*L2); if(c<vt){ vt=c; v=k; }
+        }
+        if(v<0 || vt>0.985) continue;
+        const dA=Math.hypot(BX[v]-PX[i-1],BY[v]-PY[i-1]), dB=Math.hypot(BX[v]-PX[i],BY[v]-PY[i]);
+        if(dA<=dB && dA<=STEP*1.5 && !moved[i-1]){ PX[i-1]=BX[v]; PY[i-1]=BY[v]; moved[i-1]=1; }
+        else if(dB<=STEP*1.5 && !moved[i]){ PX[i]=BX[v]; PY[i]=BY[v]; moved[i]=1; }
+      }
+      /* ④ 옮긴 점은 그 자리로, 못 옮긴 점(구간 밖·들머리·날머리)은 옆의 옮긴 만큼을 BLEND m 에 걸쳐 거둔다.
+         반환점 꼭짓점은 제자리에 못 박는다 — 거기까지 거두어 들이면 ∪ 가 고리로 꼬인다 */
+      if(r.turnIn && r.d0>0 && !def[r.d0-1]){ def[r.d0-1]=1; dvX[r.d0-1]=0; dvY[r.d0-1]=0; if(lastDef<r.d0-1){ resolve(lastDef, r.d0-1); lastDef=r.d0-1; } }
+      let last=lastDef;
+      for(let i=r.d0;i<=r.d1;i++){
+        if(SJ[i]===-1) continue;
+        dvX[i]=PX[i]-X[i]; dvY[i]=PY[i]-Y[i]; def[i]=1; BX[i]=PX[i]; BY[i]=PY[i];
+        if(i-last>1) resolve(last, i);
+        last=i;
+      }
+      if(r.turnOut && !def[r.d1]){ def[r.d1]=1; dvX[r.d1]=0; dvY[r.d1]=0; if(last<r.d1){ resolve(last, r.d1); last=r.d1; } }
+      lastDef=last;
+      addRun(r);
+    });
+    resolve(lastDef, n);
+    /* 출발·도착 표시는 실제 좌표에 찍힌다 — 양 끝 45m 는 옮긴 만큼을 거두어 선이 표시 위에서 끝나게 */
+    { const T=45, total=cum[n-1];
+      for(let i=0;i<n;i++){ const f=Math.min(1, cum[i]/T, (total-cum[i])/T); if(f<1){ const g=Math.max(0,f); BX[i]=X[i]+(BX[i]-X[i])*g; BY[i]=Y[i]+(BY[i]-Y[i])*g; } } }
+    const out=new Array(n);
+    for(let i=0;i<n;i++) out[i]=[BY[i]/D.ky, BX[i]/D.kx];
+    out.side=SG;
+    /* 점마다 '첫 통과 선의 어느 점 위에 옮겨졌는가' (root) — 차선 순서를 정할 때 같은 길 구간을 찾는 열쇠.
+       두 번째 통과 선에 붙었으면 그 점의 root 를 물려받는다. 사이를 채운 점은 앞뒤 root 사이를 고르게 */
+    const root=new Int32Array(n).fill(-1);
+    for(let i=0;i<n;i++){ const j=SJ[i]; if(j>=0) root[i]=(clean[j]===0)?j:(root[j]>=0?root[j]:-1); }
+    runs.forEach(r=>{ if(!(r.pass>0)) return;
+      let a=-1;
+      for(let i=r.d0;i<=r.d1+1;i++){
+        const def = i<=r.d1 && root[i]>=0;
+        if(def){ if(a>=0 && i-a>1 && i-a<=60 && Math.abs(root[i]-root[a])<=90){ for(let k=a+1;k<i;k++) root[k]=Math.round(root[a]+(root[i]-root[a])*(k-a)/(i-a)); } a=i; }
+      } });
+    out.root=root; out.BX=BX; out.BY=BY;
+    return out;
+  }
+  /* 앞뒤 H m 창의 평균으로 잔떨림을 지운다 — 점 개수 그대로, 양 끝은 고정 */
+  function smoothPath(path, H){
+    const n=path.length; if(n<5 || !(H>0)) return path;
+    const {kx,ky}=metric(path);
+    const cum=new Float64Array(n);
+    for(let i=1;i<n;i++) cum[i]=cum[i-1]+Math.hypot((path[i][1]-path[i-1][1])*kx,(path[i][0]-path[i-1][0])*ky);
+    const out=new Array(n); let a=0, b=0, sx=0, sy=0;
+    for(let i=0;i<n;i++){
+      while(a<n && cum[a]<cum[i]-H){ sx-=path[a][0]; sy-=path[a][1]; a++; }
+      while(b<n && cum[b]<=cum[i]+H){ sx+=path[b][0]; sy+=path[b][1]; b++; }
+      const m=b-a;
+      out[i]=(i===0||i===n-1||m<2) ? [path[i][0],path[i][1]] : [sx/m, sy/m];
+    }
+    return out;
+  }
+  /* ── 선을 옆으로 미는 올바른 방법 (miter) ──
+     토막마다 평행선을 만들고 이웃 토막의 평행선끼리 만나는 점을 모퉁이로 쓴다. 미는 폭이 점마다 달라도 된다.
+     되돌아오는 급한 꺾임(반환점)은 만나는 점이 무한히 멀어지므로 두 평행선 끝의 가운데로 둔다.
+     법선은 이웃 토막(앞뒤 smoothW/2 m, 최소 2토막)과 '방향이 30° 안쪽으로 비슷할 때만' 평균한다 —
+     잔떨림은 지우되 진짜 모퉁이는 그대로 날카롭게. */
+  function offsetVarPath(pts, off, smoothW){
+    const n=pts.length, out=new Array(n);
+    if(n<2){ for(let i=0;i<n;i++) out[i]=[pts[i][0],pts[i][1]]; return out; }
+    const {kx:KX,ky:KY}=metric(pts);
+    const X=new Float64Array(n), Y=new Float64Array(n);
+    for(let i=0;i<n;i++){ X[i]=pts[i][1]*KX; Y[i]=pts[i][0]*KY; }
+    const m=n-1, sx=new Float64Array(m), sy=new Float64Array(m), sl=new Float64Array(m), ok=new Uint8Array(m);
+    for(let k=0;k<m;k++){ const dx=X[k+1]-X[k], dy=Y[k+1]-Y[k], L=Math.hypot(dx,dy); sl[k]=L; if(L>1e-9){ sx[k]=dx/L; sy[k]=dy/L; ok[k]=1; } }
+    for(let k=0;k<m;k++) if(!ok[k]){ let j=k-1; while(j>=0 && !ok[j]) j--; if(j>=0){ sx[k]=sx[j]; sy[k]=sy[j]; ok[k]=1; } }
+    for(let k=m-1;k>=0;k--) if(!ok[k]){ let j=k+1; while(j<m && !ok[j]) j++; if(j<m){ sx[k]=sx[j]; sy[k]=sy[j]; ok[k]=1; } }
+    const nx=new Float64Array(m), ny=new Float64Array(m);
+    const H=(+smoothW||0)/2;
+    for(let k=0;k<m;k++){
+      let vx=sx[k]*Math.max(sl[k],0.1), vy=sy[k]*Math.max(sl[k],0.1);
+      if(H>0){
+        let acc=0;
+        for(let j=k-1;j>=0 && (acc<H || k-j<=2);j--){ acc+=sl[j]; if(sx[j]*sx[k]+sy[j]*sy[k]>0.866){ vx+=sx[j]*Math.max(sl[j],0.1); vy+=sy[j]*Math.max(sl[j],0.1); } }
+        acc=0;
+        for(let j=k+1;j<m && (acc<H || j-k<=2);j++){ acc+=sl[j]; if(sx[j]*sx[k]+sy[j]*sy[k]>0.866){ vx+=sx[j]*Math.max(sl[j],0.1); vy+=sy[j]*Math.max(sl[j],0.1); } }
+      }
+      const L=Math.hypot(vx,vy)||1;
+      nx[k]=vy/L; ny[k]=-vx/L;
+    }
+    const put=(i,x,y)=>{ out[i]=[y/KY, x/KX]; };
+    const d0=off[0]||0, dl=off[n-1]||0;
+    put(0, X[0]+nx[0]*d0, Y[0]+ny[0]*d0);
+    put(n-1, X[n-1]+nx[m-1]*dl, Y[n-1]+ny[m-1]*dl);
+    for(let i=1;i<n-1;i++){
+      const d=off[i]||0;
+      if(!d){ put(i, X[i], Y[i]); continue; }
+      const k1=i-1, k2=i;
+      const bx=X[i]+nx[k1]*d, by=Y[i]+ny[k1]*d, ax=X[i]+nx[k2]*d, ay=Y[i]+ny[k2]*d;
+      const ux=-ny[k1], uy=nx[k1], vx=-ny[k2], vy=nx[k2];
+      const den=ux*vy-uy*vx, cosT=ux*vx+uy*vy;
+      if(Math.abs(den)<1e-6 || cosT<-0.45){ put(i, (bx+ax)/2, (by+ay)/2); continue; }
+      const wx=ax-bx, wy=ay-by, t=(wx*vy-wy*vx)/den;
+      const qx=bx+ux*t, qy=by+uy*t;
+      if(Math.hypot(qx-X[i], qy-Y[i]) > Math.abs(d)*2.6+0.5) put(i, (bx+ax)/2, (by+ay)/2);
+      else put(i, qx, qy);
+    }
+    unfoldOffset(pts, out);
+    return out;
+  }
+  /* 옆으로 민 선은 안쪽 모퉁이에서 제 몸을 가로지른다 — 거꾸로 가는 토막을 모퉁이 점에 붙여 잘라낸다. 점 개수 그대로 */
+  function unfoldOffset(src, out){
+    const n=out.length; if(n<3) return out;
+    const {kx:KX,ky:KY}=metric(src);
+    const sx=i=>src[i][1]*KX, sy=i=>src[i][0]*KY, ox=i=>out[i][1]*KX, oy=i=>out[i][0]*KY;
+    const rev=i=>{
+      const ax=sx(i)-sx(i-1), ay=sy(i)-sy(i-1), bx=ox(i)-ox(i-1), by=oy(i)-oy(i-1);
+      return ax*bx+ay*by < -1e-9;
+    };
+    for(let c=1;c<n-1;c++){
+      const ux=sx(c)-sx(c-1), uy=sy(c)-sy(c-1), vx=sx(c+1)-sx(c), vy=sy(c+1)-sy(c);
+      const L1=Math.hypot(ux,uy), L2=Math.hypot(vx,vy); if(!L1||!L2) continue;
+      const cosT=(ux*vx+uy*vy)/(L1*L2);
+      if(cosT>0.985) continue;
+      const q=[out[c][0], out[c][1]];
+      for(let j=c;j>=1 && rev(j);j--) out[j-1]=[q[0],q[1]];
+      for(let j=c+1;j<n && rev(j);j++) out[j]=[q[0],q[1]];
+    }
+    for(let pass=0; pass<3; pass++){
+      let fixed=0;
+      for(let i=1;i<n;i++) if(rev(i)){ out[i]=[out[i-1][0], out[i-1][1]]; fixed++; }
+      if(!fixed) break;
+    }
+    return out;
+  }
+  /* 복도별 차선 순서 → 점마다 (제 오른쪽 기준) 칸 값. [{i, off}] */
+  function laneOrder(model, base){
+    const {D, clean, runs}=model, {X,Y,n}=D, root=base.root, side=base.side, BX=base.BX, BY=base.BY;
+    const out=[];
+    if(!root) return out;
+    const runOf=new Int16Array(n).fill(-1); runs.forEach((r,k)=>{ for(let i=r.d0;i<=r.d1;i++) runOf[i]=k; });
+    /* 회차별 점유 구간 (첫 통과 선의 색인 범위) — 60m 넘게 이어지는 것만 */
+    const occ=[];   /* {run, j0, j1} */
+    runs.forEach((r,k)=>{
+      if(!(r.pass>0)) return;
+      const js=[]; for(let i=r.d0;i<=r.d1;i++) if(root[i]>=0) js.push(root[i]);
+      if(!js.length) return;
+      js.sort((a,b)=>a-b);
+      let s0=js[0], prev=js[0];
+      for(let q=1;q<=js.length;q++){
+        if(q===js.length || js[q]-prev>15){ if(prev-s0>=6) occ.push({run:k, j0:s0, j1:prev}); if(q<js.length) s0=js[q]; }
+        if(q<js.length) prev=js[q];
+      }
+    });
+    if(!occ.length) return out;
+    const cuts=new Set(); occ.forEach(o=>{ cuts.add(o.j0); cuts.add(o.j1+1); });
+    const bps=[...cuts].sort((a,b)=>a-b);
+    /* 기본 복도 = 이웃한 경계 사이. 짧은 것(30m 안)은 이웃에 붙인다 */
+    let cors=[];
+    for(let q=0;q<bps.length-1;q++){
+      const J0=bps[q], J1=bps[q+1]-1; if(J1<J0) continue;
+      const set=occ.filter(o=>o.j0<=J0 && o.j1>=J1).map(o=>o.run);
+      if(!set.length) continue;
+      cors.push({J0, J1, set});
+    }
+    /* 같은 집합이 이어지면 합치고, 너무 짧은 복도는 버린다 */
+    const merged=[];
+    cors.forEach(c=>{ const p=merged[merged.length-1];
+      if(p && p.J1+1===c.J0 && p.set.length===c.set.length && p.set.every(v=>c.set.includes(v))) p.J1=c.J1; else merged.push({J0:c.J0, J1:c.J1, set:c.set.slice()}); });
+    cors=merged.filter(c=>c.J1-c.J0>=3);
+    const dirAt=j=>{ const a=Math.max(0,j-3), b=Math.min(n-1,j+3); const dx=X[b]-X[a], dy=Y[b]-Y[a], L=Math.hypot(dx,dy)||1; return [dx/L, dy/L]; };
+    const assigned=new Set();
+    let prevPos=null;
+    cors.forEach(c=>{
+      const baseRun=runOf[c.J0]; if(baseRun<0) return;
+      /* 차선 목록: 첫 통과(기준선) + 함께 지나는 회차 */
+      const lanes=[{k:baseRun, s:1, a:c.J0, b:c.J1}];
+      c.set.forEach(k=>{ const r=runs[k]; let a=-1, b=-1, pos=0, neg=0;
+        for(let i=r.d0;i<=r.d1;i++){ const j=root[i]; if(j>=c.J0 && j<=c.J1){ if(a<0) a=i; b=i; if(side[i]<0) neg++; else pos++; } }
+        if(a>=0) lanes.push({k, s:(neg>pos?-1:1), a, b}); });
+      const K=lanes.length; if(K<2) return;
+      /* 양 끝에서 각 차선의 연결 쪽: 'L' | 'R' | 'S'(곧장) | {U:partnerLaneIndex} | null */
+      const endInfo=(ln, fwd)=>{
+        const r=runs[ln.k];
+        const exitHere = fwd ? (ln.s>0) : (ln.s<0);          /* 이 끝이 이 차선의 '나가는' 쪽인가 */
+        const idx = exitHere ? ln.b : ln.a;
+        const J = fwd ? c.J1 : c.J0;
+        const dB=dirAt(J);
+        /* 복도 끝에서 40~120m 바깥의 점들 중 가장 크게 벗어난 쪽 — 모퉁이 바로 옆은 아직 안 벌어졌을 수 있다 */
+        /* 반환점이면 짝 차선과 ∪ 로 잇는다 (복도 안에서 서로 안쪽으로 겹치게) */
+        if(exitHere ? r.turnOut : r.turnIn){
+          const pk = exitHere ? ln.k+1 : ln.k-1;
+          const pi=lanes.findIndex(z=>z.k===pk); if(pi>=0) return {U:pi};
+        }
+        let best=0;
+        for(let d=4; d<=20; d+=4){
+          const probe = exitHere ? idx+d : idx-d;             /* 구간 경계를 넘어 코스를 따라 계속 본다 (갈림길 언저리 200m) */
+          if(probe<0 || probe>=n) break;
+          const vx=BX[probe]-X[J], vy=BY[probe]-Y[J];
+          const cr=dB[0]*vy-dB[1]*vx;
+          if(Math.abs(cr)>Math.abs(best)) best=cr;
+        }
+        if(Math.abs(best)<12) return 'S';
+        return best>0 ? 'L' : 'R';
+      };
+      const E=lanes.map(ln=>[endInfo(ln,false), endInfo(ln,true)]);
+      const cost=perm=>{                       /* perm[p] = lane index at position p (왼쪽→오른쪽) */
+        let cst=0;
+        const posOf=new Array(K); perm.forEach((li,p)=>posOf[li]=p);
+        for(let e=0;e<2;e++){
+          for(let x=0;x<K;x++) for(let y=x+1;y<K;y++){
+            const A=E[perm[x]][e], B=E[perm[y]][e];
+            if(A==='R' && B==='L') cst+=1;
+          }
+          for(let li=0;li<K;li++){ const A=E[li][e]; if(!A || typeof A!=='object') continue; const pj=A.U; if(pj<=li) continue;
+            const lo=Math.min(posOf[li],posOf[pj]), hi=Math.max(posOf[li],posOf[pj]);
+            for(let p=lo+1;p<hi;p++){ const z=perm[p], Z=E[z][e];
+              if(Z && typeof Z==='object'){ const zp=posOf[Z.U]; if(zp>lo && zp<hi) continue; }
+              cst+=1; }
+          }
+        }
+        /* 우측통행: 같은 방향(s>0) 이 반대 방향(s<0) 의 왼쪽에 있으면 조금 감점 */
+        for(let x=0;x<K;x++) for(let y=x+1;y<K;y++) if(lanes[perm[x]].s>0 && lanes[perm[y]].s<0) cst+=0.1;
+        /* 앞 복도와 함께 쓰는 차선은 앞 복도의 좌우 순서를 되도록 지킨다 (복도가 바뀔 때 차선이 서로 자리를 바꾸지 않게) */
+        if(prevPos){ for(let x=0;x<K;x++) for(let y=x+1;y<K;y++){ const px=prevPos[lanes[perm[x]].k], py=prevPos[lanes[perm[y]].k];
+          if(px!=null && py!=null && px>py) cst+=0.5; } }
+        return cst;
+      };
+      let best=null, bc=Infinity;
+      const perm=[]; const used=new Array(K).fill(false);
+      const rec=()=>{ if(perm.length===K){ const v=cost(perm); if(v<bc-1e-9){ bc=v; best=perm.slice(); } return; }
+        for(let i=0;i<K;i++) if(!used[i]){ used[i]=true; perm.push(i); rec(); perm.pop(); used[i]=false; } };
+      if(K<=7) rec(); else { best=lanes.map((_,i)=>i).sort((a,b)=>(lanes[a].s-lanes[b].s)); }
+      const posOf=new Array(K); best.forEach((li,p)=>posOf[li]=p);
+      lanes.forEach((ln,li)=>{
+        const offBase=posOf[li]-(K-1)/2;         /* 기준선 오른쪽이 + */
+        const r=runs[ln.k];
+        if(!r.slotMap) r.slotMap={}; r.slotMap[c.J0]=posOf[li];
+        if(ln.k===baseRun){ for(let i=c.J0;i<=c.J1;i++){ if(!assigned.has(i)){ out.push({i, off:offBase}); assigned.add(i); } } }
+        else { for(let i=ln.a;i<=ln.b;i++){ const j=root[i]; if(j>=c.J0 && j<=c.J1 && !assigned.has(i)){ out.push({i, off:ln.s*offBase}); assigned.add(i); } } }
+      });
+      c.order=best.map(li=>runs[lanes[li].k].pass);
+      prevPos={}; lanes.forEach((ln,li)=>{ prevPos[ln.k]=posOf[li]; });
+      c.ends=E;
+    });
+    model.corridors=cors;
+    /* root 가 없는 점(들머리·날머리 거둠 구간)은 같은 구간 안 이웃 값을 잇는다 */
+    const val=new Float64Array(n).fill(NaN); out.forEach(o=>{ val[o.i]=o.off; });
+    runs.forEach(r=>{
+      let last=NaN, lastI=-1;
+      for(let i=r.d0;i<=r.d1;i++){ if(!isNaN(val[i])){ if(lastI>=0 && i-lastI>1){ for(let k=lastI+1;k<i;k++){ const f=(k-lastI)/(i-lastI); val[k]=last*(1-f)+val[i]*f; } } last=val[i]; lastI=i; } }
+    });
+    const res=[]; for(let i=0;i<n;i++) if(!isNaN(val[i])) res.push({i, off:val[i]});
+    return res;
+  }
+  /* 통과 횟수만큼 옆으로 민 '보이는 경로' — 사본 점 수이며 .cum 을 지닌다 */
+  function disp(model, gapM, smoothM){
+    if(!model || !(gapM>0) || !(model.max>0)) return null;
+    const {D, clean}=model, {cum,n}=D;
+    /* 옮겨 붙인 선은 벌리는 폭과 무관하다 — 한 번만 만들고 확대·축소마다 다시 쓰지 않는다 */
+    if(!model.base) model.base=snapLater(model);
+    const base=model.base, side=base.side;
+    const W=Math.max(60, Math.min(600, +smoothM || gapM*3));
+    /* ── 차선 순서 ──
+       같은 길을 여러 회차가 함께 쓰는 구간(복도)마다, 갈림길에서 서로 가로지르지 않게 차선 순서를 정한다.
+       · 복도 = 첫 통과 선 위에서 '함께 지나는 회차의 집합' 이 같은 구간
+       · 복도의 양 끝에서 각 차선이 왼쪽으로 빠지는지 오른쪽으로 빠지는지(첫 통과 선 기준) 를 보고,
+         왼쪽으로 빠지는 차선은 왼쪽에, 오른쪽으로 빠지는 차선은 오른쪽에 (반환점 ∪ 는 서로 안쪽으로 겹치게)
+       · 같은 값이면 우측통행(같은 방향은 오른쪽, 반대 방향은 왼쪽)
+       · 차선 묶음은 길 가운데를 중심으로 고르게 벌린다 (k개면 −(k−1)/2 … +(k−1)/2 칸) */
+    const off=new Float64Array(n);
+    if(!model.order) model.order=laneOrder(model, base);      /* 순서는 벌리는 폭과 무관 — 한 번만 */
+    model.order.forEach(o=>{ off[o.i]=o.off*gapM; });
+    /* 반환점(turnIn) 에서는 창을 끊는다 — 그 앞뒤가 서로 섞이면 반환점이 ∪ 가 아니라 고리·가시로 그려진다 */
+    const sm=new Float64Array(n);
+    const bars=[0]; model.runs.forEach(r=>{ if(r.turnIn && r.d0>0) bars.push(r.d0); }); bars.push(n);
+    for(let s=0;s<bars.length-1;s++){
+      const s0=bars[s], s1=bars[s+1];
+      let a=s0, b=s0, sum=0;
+      for(let i=s0;i<s1;i++){
+        while(a<s1 && cum[a] < cum[i]-W){ sum-=off[a]; a++; }
+        while(b<s1 && cum[b] <= cum[i]+W){ sum+=off[b]; b++; }
+        sm[i]=sum/Math.max(1,(b-a));
+      }
+    }
+    /* 출발·도착 표시는 실제 좌표에 찍힌다 — 마지막 45m 에서 민 폭을 0 으로 거둔다 */
+    const T=45, total=cum[n-1];
+    for(let i=0;i<n;i++){ const f=Math.min(1, cum[i]/T, (total-cum[i])/T); if(f<1) sm[i]*=Math.max(0,f); }
+    const out=smoothPath(offsetVarPath(base, sm, 16), 20);
+    out.cum=cum;
+    return out;
+  }
+  /* 거리 d(m) 의 자리 — 경로가 제 cum 을 지니면 그것을, 아니면 준 cum 을 쓴다 */
+  function ptAt(path, cum, d){
+    const n=path?path.length:0; if(n<2 || !cum) return null;
+    if(d<=0) return [path[0][0], path[0][1]];
+    if(d>=cum[n-1]) return [path[n-1][0], path[n-1][1]];
+    let lo=0, hi=n-1;
+    while(lo<hi-1){ const m=(lo+hi)>>1; if(cum[m]<=d) lo=m; else hi=m; }
+    const seg=cum[hi]-cum[lo], t=seg>0?(d-cum[lo])/seg:0;
+    return [path[lo][0]+t*(path[hi][0]-path[lo][0]), path[lo][1]+t*(path[hi][1]-path[lo][1])];
+  }
+  function slice(path, cum, fromKm, toKm){
+    const d0=fromKm*1000, d1=toKm*1000;
+    const p0=ptAt(path,cum,d0), p1=ptAt(path,cum,d1); if(!p0||!p1) return [];
+    const out=[p0];
+    let lo=0, hi=path.length-1;
+    while(lo<hi){ const m=(lo+hi)>>1; if(cum[m]<=d0+0.5) lo=m+1; else hi=m; }
+    for(let i=lo;i<path.length && cum[i]<d1-0.5;i++) out.push([path[i][0], path[i][1]]);
+    out.push(p1);
+    return out;
+  }
+  return {build, disp, ptAt, slice, despur, smoothPath, offsetVarPath, unfoldOffset, runsOf, R, MINARC, STEP};
+}
+const VLANE=makeLaneEngine();
+function vLaneModel(c){
+  const pts=c.track, cum=vCum(c);
+  if(!pts || pts.length<3 || !cum) return null;
+  const key=pts.length+'|'+c.total_km;
+  if(c.__passKey===key && c.__model) return c.__model;
+  c.__model=VLANE.build(pts, cum); c.__passKey=key;
+  return c.__model;
+}
+/* 같은 자리를 몇 번째 지나는가 — 제작기와 같은 엔진 */
+function vPassIndex(c){ const m=vLaneModel(c); return m ? m.passOrig : null; }
+const vCleanPassOf = vPassIndex;
+function vCourseDisp(c, gapM){
+  const m=vLaneModel(c);
+  if(!m || !(gapM>0) || !(m.max>0)) return null;
+  const key=c.__passKey+'|'+gapM.toFixed(2);
+  if(c.__dispKey===key && c.__disp) return c.__disp;
+  const out=VLANE.disp(m, gapM, 60);
+  c.__disp=out; c.__dispKey=key;
+  return out;
+}
+const vDespur=pts=>VLANE.despur(pts);
+const vSmoothPath=(path,H)=>VLANE.smoothPath(path,H);
+const vOffsetVarPath=(pts,off,sw)=>VLANE.offsetVarPath(pts,off,sw);
+const vUnfoldOffset=(src,out)=>VLANE.unfoldOffset(src,out);
+function vDispAt(c, disp, d){ const cum=disp&&disp.cum||vCum(c); return (disp&&cum) ? VLANE.ptAt(disp, cum, d) : null; }
+function vSliceDisp(c, disp, from, to){ const cum=disp&&disp.cum||vCum(c); return (disp&&cum) ? VLANE.slice(disp, cum, from, to) : []; }
+function vPassRuns(c){ const m=vLaneModel(c); return m ? m.runs : null; }
+function vRunSpanKm(c, r){
+  if(r.m0!=null) return [r.m0/1000, r.m1x/1000];
+  const cum=vCum(c), n=cum.length;
+  return [cum[r.i0]/1000, cum[Math.min(r.i1+1, n-1)]/1000];
+}
+const V_PASS_STYLE=['solid','shortdash','shortdot','shortdashdot','shortdashdotdot'];
+const vPassStyle = p => (!p || !LS.dash) ? 'solid' : V_PASS_STYLE[Math.min(p, V_PASS_STYLE.length-1)];
+const V_CIRCLED='①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳';
+const vPassMark = p => V_CIRCLED[Math.min(p, 19)];
+const V_PASS_ORD=['첫 번째','두 번째','세 번째','네 번째','다섯 번째'];
+const vPassWord = p => V_PASS_ORD[Math.min(p, V_PASS_ORD.length-1)];
+/* 겹치는 구간 표기 안내 — 참가자에게도 무슨 뜻인지 한 줄로 일러둔다 */
+function vMaxPass(c){ try{ const m=vLaneModel(c); return m ? m.max : 0; }catch(e){ return 0; } }
+function vLaneNote(maxP, color){
+  const el=document.getElementById('mcv-laneNote'); if(!el) return;
+  if(!(maxP>0)){ el.className='mcv-allNote'; el.innerHTML=''; return; }
+  const DA=['', '9 7', '2.5 6', '9 5 2 5', '9 5 2 5 2 5'];
+  const col=color||'#e53935';
+  const bit=p=>{ const c=vLaneColor(col, p);
+    return '<span class="mcv-lk"><span class="mcv-rn" style="color:'+c+'">'+vPassMark(p)+'</span>'+
+    '<svg width="30" height="8" viewBox="0 0 30 8"><path d="M1 4H29" stroke="'+c+
+    '" stroke-width="'+(p?3:4)+'" stroke-linecap="round"'+
+    ((LS.dash && DA[Math.min(p,4)])?' stroke-dasharray="'+DA[Math.min(p,4)]+'"':'')+'/></svg>'+
+    vPassWord(p)+' 통과</span>'; };
+  let out='<b>같은 길을 여러 번 지나는 구간</b>이 있어 나란히 벌려 그렸습니다 —';
+  for(let p=0;p<=Math.min(maxP,4);p++) out+=' '+bit(p)+(p<Math.min(maxP,4)?' ·':'');
+  out+=' <span style="opacity:.85">· 선 옆 딱지의 숫자가 그 자리의 거리입니다.</span>';
+  if(LS.laneColor===false && !LS.dash) out+=' <span style="opacity:.85">(회차는 딱지의 번호로 구분합니다)</span>';
+  el.innerHTML=out; el.className='mcv-allNote mcv-on';
+}
+/* 같은 길을 여러 번 지나는 구간에 '몇 번째 통과 · 몇 km' 딱지를 붙인다 */
+function vLaneChips(c, DP, runs, col){
+  if(!runs || !DP) return;
+  const rc=vRect(); if(!rc || rc.width<40) return;
+  const cum=vCum(c); if(!cum) return;
+  const tot=cum[cum.length-1], RD=Math.PI/180;
+  const inView=(x,y)=> x>-30 && y>-30 && x<rc.width+30 && y<rc.height+30;
+  const put=[], CW=62, CH=26;
+  const free=(x,y)=>{ for(let i=0;i<put.length;i++)
+    if(Math.abs(put[i][0]-x)<CW && Math.abs(put[i][1]-y)<CH) return false; return true; };
+  /* 지도가 아직 코스에 맞춰지지 않았을 때(세계 전체)는 붙이지 않는다 — 딱지가 수백 km 밖으로 날아간다 */
+  const mpp=vMPerPx();
+  if(!(mpp>0) || mpp>250) return;
+  const sep=(function(){ const b=Math.max(LS.w+4, +LS.sepPx||9), m=vMPerPx();
+    if(m==null) return b;
+    return b*Math.max(0.85, Math.min(1.9, Math.pow(3.0/Math.max(0.05,m), 0.22))); })();
+  let maxP=0; runs.forEach(r=>{ if(r.pass>maxP) maxP=r.pass; });
+  const laneGrid=new Map(), GS=32;
+  {
+    const nD=DP.length, stq=Math.max(1, Math.ceil(nD/4000));
+    for(let i=0;i<nD;i+=stq){
+      const pp=vPx(DP[i][0], DP[i][1]); if(!pp || !inView(pp[0],pp[1])) continue;
+      const k=((pp[0]/GS)|0)+'|'+((pp[1]/GS)|0);
+      let arr=laneGrid.get(k); if(!arr){ arr=[]; laneGrid.set(k,arr); }
+      arr.push(pp);
+    }
+  }
+  const HW=30, HH=12;
+  const laneFree=(x,y)=>{
+    const x0=((x-HW)/GS)|0, x1=((x+HW)/GS)|0, y0=((y-HH)/GS)|0, y1=((y+HH)/GS)|0;
+    for(let gx=x0;gx<=x1;gx++) for(let gy=y0;gy<=y1;gy++){
+      const arr=laneGrid.get(gx+'|'+gy); if(!arr) continue;
+      for(let i=0;i<arr.length;i++)
+        if(Math.abs(arr[i][0]-x)<HW+3 && Math.abs(arr[i][1]-y)<HH+3) return false;
+    }
+    return true;
+  };
+  let left=24;
+  runs.forEach(r=>{
+    if(left<=0) return;
+    const a=r.m0!=null?r.m0:cum[r.i0], b=r.m1!=null?r.m1:cum[r.i1], L=b-a;
+    if(L<120) return;
+    const marks=[a+Math.min(90, L*0.18)];
+    if(L>520)  marks.push(a+L*0.55);
+    if(L>1500) marks.push(a+L*0.86);
+    marks.forEach(d=>{
+      if(left<=0) return;
+      const q=vDispAt(c, DP, d); if(!q) return;
+      const e=8;
+      const p0=vDispAt(c, DP, Math.max(0, d-e))||q, p1=vDispAt(c, DP, Math.min(tot, d+e))||q;
+      const cosL=Math.cos(q[0]*RD)||1;
+      const ex=(p1[1]-p0[1])*cosL, ny=(p1[0]-p0[0]), LL=Math.hypot(ex,ny);
+      const pe=LL?ny/LL:0, pn=LL?-ex/LL:0;
+      /* 어떤 경우에도 제 선에서 400m 넘게 떨어지지 않는다 */
+      const shift=m0=>{ const m=Math.max(-400, Math.min(400, m0));
+        return [q[0]+m*pn/111320, q[1]+m*pe/(111320*cosL)]; };
+      let ext=14;
+      const s0=vPx(p0[0],p0[1]), s1=vPx(p1[0],p1[1]);
+      if(s0 && s1){
+        const dx=s1[0]-s0[0], dy=s1[1]-s0[1], SL=Math.hypot(dx,dy);
+        if(SL>0.01) ext=Math.abs(-dy/SL)*31 + Math.abs(dx/SL)*13;
+      }
+      const base = r.pass ? ((maxP-r.pass)*sep + ext + 5) : -(sep*0.5 + ext + 4);
+      let at=null, px=null;
+      const cands=[];
+      for(const k of [1, 1.5, 2.1, 2.9]) cands.push(base*k);
+      for(const k of [1, 1.5, 2.1, 2.9]) cands.push(-Math.sign(base||1)*(Math.abs(base)*k+sep));
+      for(const off of cands){
+        const cand = LL ? shift(off*mpp) : q;
+        const pp = vPx(cand[0], cand[1]);
+        if(!pp || !inView(pp[0],pp[1]) || !free(pp[0],pp[1]) || !laneFree(pp[0],pp[1])) continue;
+        at=cand; px=pp; break;
+      }
+      if(!at){ left--; return; }
+      put.push(px);
+      const km=d/1000;
+      const lc=vLaneColor(col, r.pass);
+      kOv(at, '<div class="mcv-kLane'+((r.pass&&LS.dash)?' p'+Math.min(r.pass,3):'')+'" style="--lc:'+lc+'">'+
+        '<b>'+vPassMark(r.pass)+'</b>'+km.toFixed(1)+'<i>km</i></div>', 260,
+        ()=>showInfo(popCard(vPassMark(r.pass),'#455a64', km.toFixed(2)+' km 지점','',
+          '<span class="mcv-c mcv-c-go">'+vPassWord(r.pass)+' 통과</span>'+
+          (r.pass?'<span class="mcv-c mcv-c-sub">같은 자리를 이미 '+r.pass+'번 지나왔습니다</span>':''),''), q[0], q[1]));
+      if(at!==q) mkPoly([q, at], {color:lc, weight:1.4, opacity:.6});
+      left--;
+    });
+  });
+}
+function vSepM(fallback){
+  if(LS.sepAuto===false) return fallback;
+  const m=vMPerPx(); if(m==null) return fallback;
+  const base=Math.max(LS.w+4, +LS.sepPx||9);
+  const f=Math.max(0.85, Math.min(1.9, Math.pow(3.0/Math.max(0.05,m), 0.22)));
+  return Math.max(1.2, Math.min(600, base*f*m));
+}
+function vPx(lat, lon){
+  try{
+    if(OSM && kmap && kmap.latLngToContainerPoint){
+      const q=kmap.latLngToContainerPoint([lat,lon]);
+      return (isFinite(q.x)&&isFinite(q.y))?[q.x,q.y]:null;
+    }
+    if(kmap && kmap.getProjection){
+      const pr=kmap.getProjection();
+      if(pr && pr.containerPointFromCoords){
+        const q=pr.containerPointFromCoords(new kakao.maps.LatLng(lat,lon));
+        if(q && isFinite(q.x) && isFinite(q.y)) return [q.x,q.y];
+      }
+    }
+  }catch(e){}
+  /* SDK 가 컨테이너 좌표 변환을 안 주는 경우 — 보이는 범위로 직접 환산한다 */
+  try{
+    const rc=vRect(), b=kmap&&kmap.getBounds&&kmap.getBounds();
+    if(rc && b && !OSM){
+      const sw=b.getSouthWest(), ne=b.getNorthEast();
+      const y0=mercY(sw.getLat()), y1=mercY(ne.getLat());
+      if(ne.getLng()>sw.getLng() && y1>y0 && isFinite(y0) && isFinite(y1))
+        return [ (lon-sw.getLng())/(ne.getLng()-sw.getLng())*rc.width,
+                 (y1-mercY(lat))/(y1-y0)*rc.height ];
+    }
+  }catch(e){}
+  return null;
+}
+function vLL(x, y){
+  try{
+    if(OSM && kmap && kmap.containerPointToLatLng){
+      const q=kmap.containerPointToLatLng([x,y]);
+      return (q&&isFinite(q.lat))?[q.lat,q.lng]:null;
+    }
+    if(kmap && kmap.getProjection){
+      const pr=kmap.getProjection();
+      if(pr && pr.coordsFromContainerPoint){
+        const q=pr.coordsFromContainerPoint(new kakao.maps.Point(x,y));
+        if(q && isFinite(q.getLat())) return [q.getLat(), q.getLng()];
+      }
+    }
+  }catch(e){}
+  try{
+    const rc=vRect(), b=kmap&&kmap.getBounds&&kmap.getBounds();
+    if(rc && b && !OSM){
+      const sw=b.getSouthWest(), ne=b.getNorthEast();
+      const y0=mercY(sw.getLat()), y1=mercY(ne.getLat());
+      if(ne.getLng()>sw.getLng() && y1>y0 && isFinite(y0) && isFinite(y1)){
+        const lon=sw.getLng()+(x/rc.width)*(ne.getLng()-sw.getLng());
+        const lat=(Math.atan(Math.exp(y1-(y/rc.height)*(y1-y0)))*2-Math.PI/2)*180/Math.PI;
+        if(isFinite(lat)&&isFinite(lon)) return [lat,lon];
+      }
+    }
+  }catch(e){}
+  return null;
+}
+const mercY = la => Math.log(Math.tan(Math.PI/4 + Math.max(-85,Math.min(85,la))*Math.PI/360));
+function arrowStops(px, gap, clip, cap, rev){
+  const out=[];
+  if(!px || px.length<2) return out;
+  const G=Math.max(30, gap||90);
+  const flip=rev?180:0;                       /* 화살표만 거꾸로 (코스 자료는 그대로) */
+  let acc=G*0.55, prev=null;
+  for(let i=0;i<px.length;i++){
+    const q=px[i];
+    if(!q){ prev=null; continue; }
+    if(prev){
+      const dx=q[0]-prev[0], dy=q[1]-prev[1], d=Math.hypot(dx,dy);
+      if(d>0.01){
+        let t=0;
+        while(acc+(d-t) >= G){
+          t += (G-acc); acc=0;
+          const x=prev[0]+dx*(t/d), y=prev[1]+dy*(t/d);
+          if(!clip || clip(x,y)) out.push([x, y, Math.atan2(dy,dx)*180/Math.PI + 90 + flip, i, t/d]);
+          if(cap && out.length>=cap) return out;
+        }
+        acc += (d-t);
+      }
+    }
+    prev=q;
+  }
+  return out;
+}
+function drawArrows(){
+  clearArrows();
+  if(!LS.arrow || !kReady || !kmap) return;
+  const rc=vRect(); if(!rc || rc.width<40 || rc.height<40) return;
+  const lanes = (arrowLaneList && arrowLaneList.length) ? arrowLaneList
+    : (segDisp && segDisp.length) ? segDisp.map(sg=>({pts:sg.pts, kms:sg.cum.map(v=>sg.from+v/1000), key:'all'}))
+    : (C && C.track ? [{pts:C.track, kms:(vCum(C)||[]).map(v=>v/1000), key:'all'}] : []);
+  const size=Math.max(9, 13*Math.max(0.6, Math.min(2, +LS.aSize||1)));
+  const clip=(x,y)=> x>-24 && y>-24 && x<rc.width+24 && y<rc.height+24;
+  const mpp=vMPerPx()||1, tolKm=Math.max(0.01, (LS.aGap||90)*0.5*mpp/1000);
+  const edits=(C&&C.arrowEdits)||[], runsFlip=(C&&C.arrowRuns)||{};
+  const editAt=km=>{ let best=null, bd=Infinity; for(const e of edits){ const d=Math.abs(e.km-km); if(d<bd && d<=tolKm){ bd=d; best=e; } } return best; };
+  let left=240;
+  lanes.forEach(L=>{
+    const path=L.pts;
+    if(left<=0 || !path || path.length<2) return;
+    const nP=path.length, stq=Math.max(1, Math.ceil(nP/1200)), px=[], kx=[];
+    for(let i=0;i<nP;i+=stq){ px.push(vPx(path[i][0], path[i][1])); kx.push(L.kms?L.kms[i]:null); }
+    if((nP-1)%stq){ px.push(vPx(path[nP-1][0], path[nP-1][1])); kx.push(L.kms?L.kms[nP-1]:null); }
+    const runFlip=!!runsFlip[L.key];
+    arrowStops(px, LS.aGap, clip, left, LS.aRev !== runFlip).forEach(a=>{
+      const ll=vLL(a[0], a[1]); if(!ll) return;
+      const i=a[3], t=a[4]||0, km=(kx[i-1]!=null&&kx[i]!=null) ? kx[i-1]+t*(kx[i]-kx[i-1]) : null;
+      const e=(km!=null)?editAt(km):null;
+      if(e && e.hide) return;
+      const ang=a[2]+((e&&e.flip)?180:0);
+      /* OSM(Leaflet) 은 아이콘 가운데 맞춤을 CSS transform 으로 하는데,
+         인라인 transform 이 그걸 덮어써서 화살표가 오른쪽 아래로 밀렸다 — 여기서 같이 적는다 */
+      const html='<div class="mcv-arrow" style="transform:'+(OSM?'translate(-50%,-50%) ':'')+
+        'rotate('+ang.toFixed(1)+'deg)">'+
+        '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24">'+
+        '<path d="M12 3.2 L19.6 20 L12 16.1 L4.4 20 Z" fill="'+LS.aColor+'"'+
+        (LS.aEdge!==false?' stroke="rgba(0,0,0,.35)" stroke-width="1.1" stroke-linejoin="round"':'')+
+        '/></svg></div>';
+      const h=kOv(ll, html, 120);
+      /* kOv 는 kObjs 에 넣어 두지만 화살표는 우리가 직접 지운다 — 양쪽에 두면 영영 안 지워진다 */
+      if(kObjs[kObjs.length-1]===h) kObjs.pop();
+      arrowObjs.push(h);
+      left--;
+    });
+  });
+}
+let arrRaf=0;
+function scheduleArrows(){
+  if(arrRaf) return;
+  arrRaf=requestAnimationFrame(()=>{ arrRaf=0; drawArrows(); });
+}
+/* 배율이 달라지면 벌린 폭(미터)도 달라져야 한다 — 눈에 띄게 바뀐 때만 다시 그린다 */
+let vSepShown=null, vSepT=0;
+function scheduleSep(){
+  if(LS.sepAuto===false) return;
+  clearTimeout(vSepT);
+  vSepT=setTimeout(()=>{
+    const m=vMPerPx(); if(m==null) return;
+    if(vSepShown!=null && Math.abs(m-vSepShown)/vSepShown < 0.08) return;
+    vSepShown=m;
+    const TT=(typeof turnsOf==='function' && C)?turnsOf(C):[];
+    const hasOv=(function(){ try{ const p=vPassIndex(C); if(!p) return false;
+    for(let i=0;i<p.length;i++) if(p[i]>0) return true; return false; }catch(e){ return false; } })();
+  if(!(RETON && (TT.length || hasOv)) && !(showAll && DATA.order.length>1)) return;
+    mcvSafe('지도', ()=>rebuildMap(false));
+  }, 200);
+}
+function kOv(ll, html, z, onClick, yAnchor){
+  if(OSM){
+    const mk=L.marker(ll,{icon:L.divIcon({html:html, className:'mcv-lfIcon', iconSize:[0,0]}),
+      zIndexOffset:(z||0), interactive:true, keyboard:false}).addTo(kmap);
+    if(onClick) mk.on('click', ev=>{ L.DomEvent.stopPropagation(ev); onClick(ev); });
+    const h={setPosition:a=>mk.setLatLng(a), rm:()=>kmap.removeLayer(mk), html, ll:[ll[0],ll[1]]};
+    kObjs.push(h); return h;
+  }
+  const box=document.createElement('div'); box.innerHTML=html;
+  const node=box.firstElementChild || box;
+  const ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ll[0],ll[1]),content:node,
+    xAnchor:.5,yAnchor:(yAnchor==null?.5:yAnchor),zIndex:z||1,clickable:true});
+  if(onClick) node.addEventListener('click',ev=>{ev.stopPropagation();onClick(ev);});
+  ov.setMap(kmap);
+  const h={setPosition:a=>ov.setPosition(new kakao.maps.LatLng(a[0],a[1])), rm:()=>ov.setMap(null), el:node, ll:[ll[0],ll[1]]};
+  kObjs.push(h); return h;
+}
+/* 시설 정보는 마커에 매달린 말풍선이 아니라 지도 가운데 카드 하나로 띄운다.
+   말풍선은 지도 가장자리에서 잘리고, 반투명이라 뒤 지도가 비쳐 읽기 어려웠다.
+   카드 한 장 + 뒤를 덮는 막 — 어느 기기에서 열어도 같은 자리, 같은 대비. */
+function closeInfo(){
+  const lay=document.getElementById('mcv-infoLayer');
+  if(lay && lay.parentNode) lay.parentNode.removeChild(lay);
+  if(!kInfo) return;
+  if(OSM){ if(kmap && kmap.closePopup) kmap.closePopup(kInfo); }
+  else if(kInfo.setMap) kInfo.setMap(null);
+  kInfo=null;
+}
+function showInfo(html,lat,lon){
+  closeInfo();
+  const wrap=document.getElementById('mcv-mapWrap');
+  if(!wrap){ return; }
+  const lay=document.createElement('div');
+  lay.id='mcv-infoLayer'; lay.className='mcv-infoLayer';
+  lay.innerHTML='<div class="mcv-infoScrim"></div>'+
+    '<div class="mcv-kinfo" role="dialog" aria-modal="true">'+html+
+      '<button type="button" class="mcv-x" aria-label="닫기">×</button></div>';
+  wrap.appendChild(lay);
+  lay.querySelector('.mcv-infoScrim').addEventListener('click', closeInfo);
+  lay.querySelector('.mcv-x').addEventListener('click', closeInfo);
+  const card=lay.querySelector('.mcv-kinfo');
+  card.addEventListener('click', function(e){ e.stopPropagation(); });
+  kInfo={dom:true};
+}
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeInfo(); });
+function mapFit(path){
+  const pts=cleanPath(path);
+  if(pts.length<2){ console.warn('[코스도] 전체보기 건너뜀 — 유효 좌표', pts.length); return; }
+  let s1=90, w=180, n=-90, e=-180;
+  for(const p of pts){ if(p[0]<s1)s1=p[0]; if(p[0]>n)n=p[0]; if(p[1]<w)w=p[1]; if(p[1]>e)e=p[1]; }
+  if(!(n>s1||e>w)){ console.warn('[코스도] 범위가 한 점입니다'); return; }
+  if(OSM){ kmap.fitBounds([[s1,w],[n,e]], {padding:[26,26]}); return; }
+  kmap.setBounds(new kakao.maps.LatLngBounds(new kakao.maps.LatLng(s1,w), new kakao.maps.LatLng(n,e)));
+}
+function mapFocus(lat,lon){
+  if(OSM){ kmap.setView([lat,lon], Math.max(kmap.getZoom(),17)); return; }
+  kmap.setLevel(3); kmap.setCenter(new kakao.maps.LatLng(lat,lon));
+}
+/* 삽입된 페이지에서는 지도 div 크기가 뒤늦게 정해지는 경우가 많다.
+   그때 카카오/Leaflet의 벡터 레이어가 0×0 으로 굳어 선만 안 보이게 되므로 다시 재도록 한다. */
+function watchMapSize(){
+  const box=document.getElementById('mcv-map'); if(!box) return;
+  let last=box.clientWidth+'x'+box.clientHeight;
+  const redraw=()=>{
+    try{ mapRelayout(); rebuildMap(false); }catch(e){ console.warn('[코스도] 재렌더 실패', e); }
+  };
+  [200, 700, 1500, 3000].forEach(t=>setTimeout(()=>{
+    const now=box.clientWidth+'x'+box.clientHeight;
+    if(now!==last || !kObjs.length){ last=now; redraw(); }
+  }, t));
+  if(window.ResizeObserver){
+    let tm=null;
+    new ResizeObserver(()=>{ clearTimeout(tm); tm=setTimeout(()=>{
+      const now=box.clientWidth+'x'+box.clientHeight;
+      if(now!==last){ last=now; redraw(); }
+    }, 200); }).observe(box);
+  }
+}
+function mapRelayout(){ if(!kmap) return; if(OSM) kmap.invalidateSize(); else kmap.relayout(); }
+function scrollToMap(){
+  const mw=document.getElementById('mcv-mapWrap'); if(!mw) return;
+  try{
+    const r=mw.getBoundingClientRect(), vh=window.innerHeight||document.documentElement.clientHeight;
+    mw.scrollIntoView({behavior:'smooth', block:(r.height<=vh-40)?'center':'start'});
+  }catch(e){ try{ mw.scrollIntoView(true); }catch(e2){} }
+  try{                                            /* 페이지가 내부 컨테이너로 스크롤되는 사이트 대응 */
+    let node=mw.parentNode, guard=0;
+    while(node && node.nodeType===1 && guard++<20){
+      const st=window.getComputedStyle?window.getComputedStyle(node):null;
+      const oy=st?(st.overflowY||''):'';
+      if((oy==='auto'||oy==='scroll') && node.scrollHeight>node.clientHeight+10){
+        node.scrollTop = Math.max(0, node.scrollTop + mw.getBoundingClientRect().top - node.getBoundingClientRect().top - 12);
+        return;
+      }
+      node=node.parentNode;
+    }
+  }catch(e){}
+  try{
+    const r=mw.getBoundingClientRect(), vh=window.innerHeight||document.documentElement.clientHeight;
+    const off=(r.height<=vh-40)?Math.max(16,(vh-r.height)/2):16;
+    window.scrollTo({top:Math.max(0, r.top+(window.pageYOffset||document.documentElement.scrollTop||0)-off), behavior:'smooth'});
+  }catch(e){}
+}
+function computeCum(){
+  cum=[0];
+  const R=6371008.8, rad=Math.PI/180;
+  for(let i=1;i<C.track.length;i++){
+    const a=C.track[i-1],b=C.track[i];
+    const dla=(b[0]-a[0])*rad, dlo=(b[1]-a[1])*rad;
+    const h=Math.sin(dla/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(dlo/2)**2;
+    cum.push(cum[i-1]+2*R*Math.asin(Math.sqrt(h)));
+  }
+}
+function latlngAtKm(km){
+  const d=km*1000; let lo=0,hi=cum.length-1;
+  while(lo<hi){const m=(lo+hi)>>1; cum[m]<d?lo=m+1:hi=m;}
+  const i=Math.max(1,lo),d0=cum[i-1],d1=cum[i],t=d1>d0?(d-d0)/(d1-d0):0;
+  const a=C.track[i-1],b=C.track[i];
+  return [a[0]+t*(b[0]-a[0]), a[1]+t*(b[1]-a[1])];
+}
+/* ── 복편(반환 후) 평행 오프셋 ── */
+function offsetPath(path, meters){
+  if(!meters || !path || path.length<2) return (path||[]).map(p=>[p[0],p[1]]);
+  const off=new Float64Array(path.length); off.fill(meters);
+  return vOffsetVarPath(path, off);
+}
+function cumOfPath(path){
+  const c=[0], RADv=Math.PI/180;
+  for(let i=1;i<path.length;i++){
+    const dy=(path[i][0]-path[i-1][0])*111320;
+    const dx=(path[i][1]-path[i-1][1])*111320*Math.cos(path[i][0]*RADv);
+    c.push(c[i-1]+Math.sqrt(dx*dx+dy*dy));
+  }
+  return c;
+}
+function ptOnPath(pts, cm, d){
+  const L=cm[cm.length-1];
+  if(!(d>0)) return [pts[0][0],pts[0][1]];
+  if(d>=L) return [pts[pts.length-1][0],pts[pts.length-1][1]];
+  let lo=0,hi=cm.length-1;
+  while(lo<hi){ const m=(lo+hi)>>1; cm[m]<d?lo=m+1:hi=m; }
+  const i=Math.max(1,lo), t=(d-cm[i-1])/((cm[i]-cm[i-1])||1);
+  return [pts[i-1][0]+t*(pts[i][0]-pts[i-1][0]), pts[i-1][1]+t*(pts[i][1]-pts[i-1][1])];
+}
+let segDisp=null;                                   /* 화면에 그려진 왕·복 구간 */
+let arrowLaneList=null;                            /* 화살표를 얹을 차선(회차 구간)과 km */
+function displayAtKm(km){
+  const ll=latlngAtKm(km);
+  if(!RETON) return ll;
+  /* 같은 자리를 여러 번 지나는 구간은 벌려 그린 선 위에 앉힌다 */
+  const q=dispOnLine(km); if(q) return q;
+  if(dirAtKm(C, km)!=='back') return ll;
+  if(segDisp){
+    const sg=segDisp.find(x=>km>x.from-1e-9 && km<=x.to+1e-9);
+    if(sg && sg.pts.length>1 && sg.to>sg.from){
+      const f=Math.max(0,Math.min(1,(km-sg.from)/(sg.to-sg.from)));
+      return ptOnPath(sg.pts, sg.cum, f*sg.cum[sg.cum.length-1]);
+    }
+  }
+  const eps=Math.max(0.005, Math.min(0.03, C.total_km/300));
+  const a=latlngAtKm(Math.max(0, km-eps)), b=latlngAtKm(Math.min(C.total_km, km+eps));
+  return offsetPath([a, ll, b], vSepM(RETOFF))[1];
+}
+function dispOnLine(km){
+  if(!RETON) return null;
+  const dp=vCourseDisp(C, vSepM(RETOFF));
+  return dp ? vDispAt(C, dp, km*1000) : null;
+}
+const kmSize=k=>k%5===0?22:15;
+/* km 표시 — 정확한 지점에는 점을 찍고 숫자는 화면상으로만 비켜 놓는다.
+   지도 좌표를 건드리지 않으므로 km 위치는 언제나 코스 선 위에 정확히 남는다. */
+function kmHtml(k, back, dir){
+  const big=k%5===0,s=kmSize(k),f=big?9:8;
+  const col=back ? (LS.laneColor!==false ? vLaneColor(C.color||'#e53935',1) : '#ef6c00') : '#e53935';
+  const L=17+s/2, d=dir||0;
+  const off=[[0,-L],[0,L],[L,0],[-L,0]][d];
+  const line=[
+    'left:-0.75px;top:'+(-L)+'px;width:1.5px;height:'+L+'px',
+    'left:-0.75px;top:0;width:1.5px;height:'+L+'px',
+    'left:0;top:-0.75px;width:'+L+'px;height:1.5px',
+    'left:'+(-L)+'px;top:-0.75px;width:'+L+'px;height:1.5px'
+  ][d];
+  return '<div class="mcv-kmMark" style="--kx:'+off[0]+'px;--ky:'+off[1]+'px;--kc:'+col+'">'+
+    '<i class="mcv-kmLine" style="'+line+'"></i><i class="mcv-kmDot"></i>'+
+    '<span class="mcv-kkm" style="background:'+(big?col:'#fff')+';color:'+(big?'#fff':col)+
+      ';border:'+(big?'2px solid #fff':'1.5px solid '+col)+';width:'+s+'px;height:'+s+'px;font-size:'+f+'px;">'+k+'</span></div>';
+}
+/* 가까이에 시설이 있으면 숫자를 반대쪽으로 비켜 놓는다 (점은 그대로) */
+function kmDir(ll){
+  const cosL=Math.cos(ll[0]*Math.PI/180)||1;
+  let bx=0,by=0,hit=false;
+  C.pois.forEach(p=>{
+    if(hiddenCats.has(p.cat)) return;
+    const dy=(p.lat-ll[0])*111320, dx=(p.lon-ll[1])*111320*cosL;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<70){ hit=true; bx+=dx/(d||1); by+=dy/(d||1); }
+  });
+  if(!hit) return 0;
+  if(Math.abs(by)>=Math.abs(bx)) return by>0?1:0;
+  return bx>0?3:2;
+}
+function nudged(k){ return displayAtKm(k); }
+function rebuildMap(fit){
+  if(!kReady) return;
+  clearObjs(); closeInfo();
+  /* 화면을 먼저 맞춘다 — 나중에 맞추면 벌린 폭도 km 딱지도 '맞추기 전 배율' 로 잡혀
+     처음 열었을 때만 엉뚱한 자리에 놓였다 (지도가 세계 전체를 보고 있는 그 순간) */
+  if(fit && C.track && C.track.length>1){
+    const st2=Math.max(1,Math.floor(C.track.length/400));
+    const fpts=[];
+    for(let i=0;i<C.track.length;i+=st2) fpts.push(C.track[i]);
+    fpts.push(C.track[C.track.length-1]);
+    mapFit(fpts);
+  }
+  const col=C.color||'#e53935';
+  const TT=turnsOf(C), tk=TT.length?TT[0]:null;
+  let polyDrawn=0;
+  segDisp=null; arrowLaneList=null;
+  const VDP = RETON ? vCourseDisp(C, vSepM(RETOFF)) : null;
+  if((RETON && TT.length) || VDP){
+    /* 왕편은 실선, 복편은 나란한 점선 — 어느 쪽으로 달리는지 한눈에 보인다 */
+    const D=[];
+    const vRuns = VDP ? vPassRuns(C) : null;
+    const byPass = !!(vRuns && vRuns.length>1);
+    const HALO_W=LS.w+4;
+    (TT.length?segsOf(C):[{from:0, to:C.total_km, dir:'go'}]).forEach(sg=>{
+      const raw=VDP ? vSliceDisp(C, VDP, sg.from, sg.to) : slicePathKm(C, sg.from, sg.to);
+      const path=(!VDP && sg.dir==='back')?offsetPath(raw, vSepM(RETOFF)):raw;
+      D.push({from:sg.from, to:sg.to, dir:sg.dir, pts:path, cum:cumOfPath(path)});
+    });
+    /* 흰 테두리를 먼저 전부 깔고 색선을 얹는다 — 나란한 선이 같은 색이라도 두 줄로 읽힌다 */
+    if(!byPass){
+      D.forEach(sg=>mkHalo(sg.pts, HALO_W));
+      D.forEach(sg=>{ const bk=(sg.dir==='back');
+        if(mkPoly(sg.pts, {color:vLaneColor(col, bk?1:0), weight:LS.w, opacity:.96, dash:vPassStyle(bk?1:0)})) polyDrawn++; });
+    } else {
+      const lanes=[];
+      vRuns.forEach(r=>{ const sp=vRunSpanKm(C, r); const pts=vSliceDisp(C, VDP, sp[0], sp[1]); if(pts.length>=2) lanes.push({pts, pass:r.pass}); });
+      /* 화살표용: 차선마다 km — 제작기에서 화살표를 개별로 뒤집거나 숨긴 설정을 같은 자리에 붙인다 */
+      arrowLaneList=vRuns.map(r=>{
+        const pts=[], kms=[], a=r.m0, b=r.m1x;
+        const p0=vDispAt(C, VDP, a); if(p0){ pts.push(p0); kms.push(a/1000); }
+        for(let i=Math.max(0,r.d0);i<=r.d1 && i<VDP.length;i++){ const d=VDP.cum[i]; if(d>a+0.5 && d<b-0.5){ pts.push(VDP[i]); kms.push(d/1000); } }
+        const p1=vDispAt(C, VDP, b); if(p1){ pts.push(p1); kms.push(b/1000); }
+        return {pts, kms, key:r.pass+'|'+(r.m0/1000).toFixed(2)};
+      }).filter(L2=>L2.pts.length>1);
+      lanes.forEach(L2=>mkHalo(L2.pts, HALO_W));
+      lanes.forEach(L2=>{ if(mkPoly(L2.pts, {color:vLaneColor(col, L2.pass), weight:LS.w, opacity:.96, dash:vPassStyle(L2.pass)})) polyDrawn++; });
+      vLaneChips(C, VDP, vRuns, col);
+    }
+    vLaneNote(VDP ? vMaxPass(C) : 0, col);
+    segDisp=D;
+  } else {
+    vLaneNote(0, col);
+    const plain=vSmoothPath(vDespur(C.track), 5);
+    mkHalo(plain, LS.w+4);
+    if(mkPoly(plain, {color:col, weight:LS.w, opacity:.96})) polyDrawn++;
+  }
+  TT.forEach((t,i)=>{
+    const tp=latlngAtKm(t);
+    const nm=(C.turnNames&&C.turnNames[i])?String(C.turnNames[i]):((TT.length>1?(i+1)+'차 ':'')+'반환점');
+    const lbl=nm+' '+t.toFixed(2)+'km';
+    kOv(tp,'<div class="mcv-kturn">'+esc(lbl)+'</div>',320,
+      ()=>showInfo(popCard('↩','#f57c00',esc(nm),'',
+        '<span class="mcv-c mcv-c-go">'+t.toFixed(2)+' km</span>'+
+        '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km</span>',''),tp[0],tp[1]));
+  });
+  const st=C.track[0], fin=C.track[C.track.length-1];
+  const dSF=(function(){const R=6371008.8,RD=Math.PI/180,a=st,b=fin;
+    const dla=(b[0]-a[0])*RD,dlo=(b[1]-a[1])*RD;
+    const h=Math.sin(dla/2)**2+Math.cos(a[0]*RD)*Math.cos(b[0]*RD)*Math.sin(dlo/2)**2;
+    return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));})();
+  const sameSF=dSF<120;
+  kOv(st,'<div class="mcv-kstart">'+(sameSF?'출발 · 도착':'출발')+'</div>',300,
+    ()=>showInfo(popCard('🏁','#2e7d32',(sameSF?'출발 / 도착':'출발'),'',
+      '<span class="mcv-c mcv-c-go">0.00 km</span>'+
+      '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km'+(C.shapeText?' · '+esc(C.shapeText):'')+'</span>',''),st[0],st[1]));
+  if(!sameSF) kOv(fin,'<div class="mcv-kstart fin">도착</div>',300,
+    ()=>showInfo(popCard('🏁','#c62828','도착','',
+      '<span class="mcv-c mcv-c-go">'+C.total_km.toFixed(2)+' km</span>',''),fin[0],fin[1]));
+  for(let k=1;k<C.total_km;k++){
+    const ll=nudged(k), kdir=kmDir(ll);
+    ((kk,l,dd)=>kOv(l,kmHtml(kk,(TT.length>0&&dirAtKm(C,kk)==='back'),dd),40,
+      ()=>showInfo(popCard('📍','#546e7a',kk+' km 지점','',
+        '<span class="mcv-c mcv-c-go">'+kk+'.00 km</span>',''),l[0],l[1])))(k,ll,kdir);
+  }
+  const seen={};
+  C.pois.forEach(p=>{
+    if(hiddenCats.has(p.cat)) return;
+    let pos=[p.lat,p.lon];
+    const rr=passInfo(p);                       /* 복편에만 있는 시설은 점선 쪽으로 */
+    if(RETON && !p.off && TT.length && rr.length===1 && dirAtKm(C, rr[0].km)==='back'){
+      const dp=displayAtKm(rr[0].km);
+      if(dp) pos=dp;
+    }
+    const key=pos[0].toFixed(4)+','+pos[1].toFixed(4);
+    const n=seen[key]||0; seen[key]=n+1;
+    kOv([pos[0],pos[1]+n*0.00038],'<div class="mcv-kpoi" style="background:'+CAT[p.cat].color+'">'+CAT[p.cat].icon+'</div>',200,
+      ()=>{ mapFocus(p.lat,p.lon); showInfo(poiInfoHtml(p),p.lat,p.lon); });
+  });
+  drawArrows();
+  if(showAll) drawAllCourses();
+  vSepShown=vMPerPx();
+  console.log('[코스도] 라인', polyDrawn, '개 · 트랙점', (C.track||[]).length, '· 유효점', cleanPath(C.track).length);
+}
+/* ── 내 위치 ── */
+let watchId=null, firstFix=true;
+const btn=document.getElementById('mcv-locateBtn');
+btn.addEventListener('click',()=>{
+  if(!navigator.geolocation){alert('이 기기에서는 위치 서비스를 사용할 수 없습니다.');return;}
+  if(watchId!==null){ navigator.geolocation.clearWatch(watchId); watchId=null; btn.classList.remove('tracking'); firstFix=true; if(kMy){kMy.rm();kMy=null;} return; }
+  watchId=navigator.geolocation.watchPosition(pos=>{
+    if(!kReady) return;
+    const ll=[pos.coords.latitude,pos.coords.longitude];
+    btn.classList.add('tracking');
+    if(!kMy){ kMy=kOv(ll, '<div class="mcv-my-dot"></div>', 950); }
+    else kMy.setPosition(ll);
+    if(firstFix){ firstFix=false; mapFocus(ll[0],ll[1]); }
+  }, err=>{ btn.classList.remove('tracking'); alert('위치를 가져올 수 없습니다: '+err.message); },
+  {enableHighAccuracy:true,maximumAge:1000,timeout:15000});
+});
+/* ── 고저도 ── */
+const canvas=document.getElementById('mcv-elev'), ctx=canvas.getContext('2d'), tooltip=document.getElementById('mcv-tooltip');
+const PAD={l:46,r:14,t:14,b:26};
+function eleAtKm(km){
+  const P=C.profile;
+  let i=0; while(i<P.length-1&&P[i+1][0]<km) i++;
+  const [k0,e0]=P[i],[k1,e1]=P[Math.min(i+1,P.length-1)];
+  const t=k1>k0?(km-k0)/(k1-k0):0;
+  return e0+t*(e1-e0);
+}
+function drawChart(hoverX){
+  const P=C.profile,total=C.total_km;
+  const dpr=window.devicePixelRatio||1,W=canvas.clientWidth,H=canvas.clientHeight;
+  canvas.width=W*dpr; canvas.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  if(!C.hasEle){ ctx.fillStyle='#90a4ae'; ctx.font='13px sans-serif'; ctx.textAlign='center'; ctx.fillText('고도 정보가 없는 코스입니다',W/2,H/2); return null; }
+  let eMin=Math.floor(C.ele_min/10)*10, eMax=Math.ceil(C.ele_max/10)*10+10;
+  if(eMax-eMin<30) eMax=eMin+30;
+  const iw=W-PAD.l-PAD.r, ih=H-PAD.t-PAD.b;
+  const x=km=>PAD.l+iw*km/total, y=e=>PAD.t+ih*(1-(e-eMin)/(eMax-eMin));
+  const eStep=(eMax-eMin)>120?50:((eMax-eMin)>60?25:10);
+  ctx.font='10px sans-serif'; ctx.fillStyle='#90a4ae'; ctx.strokeStyle='#eceff1'; ctx.lineWidth=1;
+  for(let e=eMin;e<=eMax;e+=eStep){
+    ctx.beginPath();ctx.moveTo(PAD.l,y(e));ctx.lineTo(W-PAD.r,y(e));ctx.stroke();
+    ctx.textAlign='right';ctx.fillText(e+'m',PAD.l-6,y(e)+3);
+  }
+  const kStep=total>25?5:(total>8?2:1);
+  for(let k=0;k<=total;k+=kStep){
+    ctx.beginPath();ctx.moveTo(x(k),PAD.t);ctx.lineTo(x(k),H-PAD.b);ctx.stroke();
+    ctx.textAlign='center';ctx.fillText(k+'km',x(k),H-8);
+  }
+  const tk=turnOf(C);
+  if(tk!=null){
+    ctx.beginPath();ctx.moveTo(x(tk),PAD.t);ctx.lineTo(x(tk),H-PAD.b);
+    ctx.strokeStyle='#f57c00';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='#ef6c00';ctx.textAlign='center';ctx.font='bold 10px sans-serif';
+    ctx.fillText('↩ '+((C.turnNames&&C.turnNames[0])?String(C.turnNames[0]).slice(0,12):'반환'),x(tk),PAD.t+10); ctx.font='10px sans-serif';
+  }
+  const grad=ctx.createLinearGradient(0,PAD.t,0,H-PAD.b);
+  grad.addColorStop(0,'rgba(25,118,210,.45)');grad.addColorStop(1,'rgba(25,118,210,.05)');
+  ctx.beginPath(); ctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) ctx.lineTo(x(k),y(e));
+  ctx.lineTo(x(P[P.length-1][0]),H-PAD.b); ctx.lineTo(x(P[0][0]),H-PAD.b); ctx.closePath();
+  ctx.fillStyle=grad; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x(P[0][0]),y(P[0][1]));
+  for(const [k,e] of P) ctx.lineTo(x(k),y(e));
+  ctx.strokeStyle='#1565c0'; ctx.lineWidth=2; ctx.stroke();
+  C.pois.forEach(p=>passInfo(p).forEach(r=>{
+    ctx.beginPath(); ctx.arc(x(r.km),y(eleAtKm(r.km)),4,0,7);
+    ctx.fillStyle=CAT[p.cat].color; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+  }));
+  if(hoverX!=null&&hoverX>=PAD.l&&hoverX<=W-PAD.r){
+    const km=(hoverX-PAD.l)/iw*total, ele=eleAtKm(km);
+    ctx.beginPath();ctx.moveTo(hoverX,PAD.t);ctx.lineTo(hoverX,H-PAD.b);
+    ctx.strokeStyle='rgba(38,50,56,.55)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(hoverX,y(ele),5,0,7);ctx.fillStyle='#e53935';ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+    return {km,ele};
+  }
+  return null;
+}
+canvas.addEventListener('mousemove',ev=>{
+  const r=canvas.getBoundingClientRect(), res=drawChart(ev.clientX-r.left);
+  if(!res){tooltip.style.display='none';return;}
+  let near='';
+  C.pois.forEach(p=>passInfo(p).forEach(x2=>{
+    if(Math.abs(x2.km-res.km)<=Math.max(0.15,C.total_km*0.006))
+      near+='<br>'+CAT[p.cat].icon+' '+esc(p.name)+(x2.d?' '+dirLabel(x2.d):'')+' ('+x2.km.toFixed(2)+'km)'+(p.time?' · '+esc(p.time):'');
+  }));
+  const P=C.profile;
+  let i=0; while(i<P.length-1&&P[i+1][0]<res.km) i++;
+  const j=Math.min(i+4,P.length-1);
+  const grade=P[j][0]>P[i][0]?((P[j][1]-P[i][1])/((P[j][0]-P[i][0])*1000)*100):0;
+  const tk=turnOf(C);
+  tooltip.innerHTML='<b>'+res.km.toFixed(2)+' km</b>'+(tk!=null?' <span style="color:#ffb74d">'+(res.km>tk?'복편':'왕편')+'</span>':'')+
+    '<br>고도 '+res.ele.toFixed(0)+' m · 경사 '+grade.toFixed(1)+'%'+near;
+  tooltip.style.display='block';
+  const box=document.getElementById('mcv-chartBox').getBoundingClientRect();
+  let tx=ev.clientX-box.left+14;
+  if(tx+tooltip.offsetWidth>box.width-10) tx=ev.clientX-box.left-tooltip.offsetWidth-14;
+  tooltip.style.left=tx+'px'; tooltip.style.top=(ev.clientY-box.top-10)+'px';
+  if(kReady&&kmap){
+    const ll=displayAtKm(res.km);
+    if(!kHover) kHover=kOv(ll,'<div style="width:16px;height:16px;background:#e53935;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4)"></div>',800);
+    else kHover.setPosition(ll);
+  }
+});
+canvas.addEventListener('mouseleave',()=>{
+  drawChart(null); tooltip.style.display='none';
+  if(kHover){kHover.rm();kHover=null;}
+});
+window.addEventListener('resize',()=>{ drawChart(null); mapRelayout(); });
+/* ── 표 ── */
+function renderTables(){
+  const box=document.getElementById('mcv-tables'); box.innerHTML='';
+  DATA.cats.forEach(cat=>{
+    const items=C.pois.filter(p=>p.cat===cat.id);
+    if(!items.length) return;
+    const supIds=ADMIN?SUP.filter(s=>items.some(p=>(p.sup||{})[s.id])).map(s=>s.id):[];
+    let h='<div class="mcv-cat"><div class="mcv-cat-h">'+
+      '<span class="mcv-titleicon" style="background:'+cat.color+'">'+cat.icon+'</span>'+
+      '<b>'+esc(cat.label)+'</b><span class="mcv-n">'+items.length+'</span></div>';
+    items.forEach(p=>{
+      const info=passInfo(p), idx=C.pois.indexOf(p);
+      const go=info.find(x=>x.d!=='back'), back=info.find(x=>x.d==='back');
+      let c='';
+      if(cat.hasTime){
+        c+='<span class="mcv-c mcv-c-go">'+info[0].km.toFixed(2)+' km</span>';
+        if(p.time) c+='<span class="mcv-c mcv-c-time">⏱ '+esc(p.time)+'</span>';
+      } else if(go && back){
+        c+='<span class="mcv-c mcv-c-go">'+esc(T.colGo)+' '+go.km.toFixed(2)+' km</span>'+
+           '<span class="mcv-c mcv-c-back">'+esc(T.colBack)+' '+back.km.toFixed(2)+' km</span>';
+      } else if(back){
+        c+='<span class="mcv-c mcv-c-back">'+esc(T.colBack)+' '+back.km.toFixed(2)+' km</span>';
+      } else if(go){
+        c+='<span class="mcv-c mcv-c-go">'+(info.length>1?esc(T.colGo)+' ':'')+go.km.toFixed(2)+' km</span>';
+      }
+      if(COLS.gap && p.gap!=null && p.gap>0) c+='<span class="mcv-c mcv-c-sub">'+esc(T.colGap||'간격')+' +'+p.gap.toFixed(2)+'</span>';
+      if(COLS.ele && C.hasEle && p.ele!=null) c+='<span class="mcv-c mcv-c-sub">고도 '+p.ele+' m</span>';
+      if(COLS.ops && p.ops) c+='<span class="mcv-c mcv-c-sub">'+esc(T.colOps||'운영 시간')+' '+esc(p.ops)+'</span>';
+      if(ADMIN && p.people) c+='<span class="mcv-c mcv-c-sub">👥 '+p.people.toLocaleString()+'명</span>';
+      supIds.forEach(sid=>{
+        const o=SUP.find(v=>v.id===sid), u=(p.sup||{})[sid]||0;
+        if(!u) return;
+        const b=boxesOf(o,u);
+        c+='<span class="mcv-c mcv-c-sup">'+esc(o.label)+' '+u.toLocaleString()+esc(o.unit)+(b!=null?' · '+b+'박스':'')+'</span>';
+      });
+      h+='<div class="mcv-item" data-i="'+idx+'"><div class="mcv-nm">'+esc(p.name)+'</div>'+
+         '<div class="mcv-chips">'+c+'</div>'+
+         (COLS.memo&&p.memo?'<div class="mcv-memo">'+esc(p.memo)+'</div>':'')+'</div>';
+    });
+    if(supIds.length){
+      h+='<div class="mcv-cat-f">'+supIds.map(sid=>{
+        const o=SUP.find(v=>v.id===sid);
+        const u=items.reduce((a,p)=>a+((p.sup||{})[sid]||0),0), b=boxSum(o,items);
+        return '<span><b>'+esc(o.label)+'</b> '+u.toLocaleString()+esc(o.unit)+(b!=null?' ('+b+'박스)':'')+'</span>';
+      }).join('')+'</div>';
+    }
+    h+='</div>';
+    const wrap=document.createElement('div'); wrap.innerHTML=h;
+    wrap.querySelectorAll('.mcv-item').forEach(el=>{
+      el.addEventListener('click',()=>{
+        const p=C.pois[+el.dataset.i];
+        if(kReady){ mapFocus(p.lat,p.lon); showInfo(poiInfoHtml(p),p.lat,p.lon); }
+        else pendingFocus={lat:p.lat, lon:p.lon, html:poiInfoHtml(p)};
+        scrollToMap();
+      });
+    });
+    box.appendChild(wrap);
+  });
+  if(!box.children.length) box.innerHTML='<div style="padding:24px;color:#90a4ae;font-size:.85rem">이 코스에는 등록된 시설이 없습니다.</div>';
+}
+function renderSupplies(){
+  if(!ADMIN) return;
+  const totals={};
+  C.pois.forEach(p=>Object.entries(p.sup||{}).forEach(([k,v])=>{totals[k]=(totals[k]||0)+v;}));
+  const keys=SUP.filter(s=>totals[s.id]);
+  document.getElementById('mcv-supChips').innerHTML=keys.length
+    ? keys.map(s=>{const b=boxSum(s,C.pois);
+        return '<div class="mcv-sumchip">'+esc(s.label)+'<b>'+totals[s.id].toLocaleString()+' '+esc(s.unit)+
+          (b!=null?'<br><span style="font-size:.72rem;color:#546e7a">'+b+'박스'+(s.boxNote?' ('+esc(s.boxNote)+')':'')+'</span>':'')+'</b></div>';}).join('')
+    : '<div style="color:#90a4ae;font-size:.85rem;padding-bottom:10px">입력된 물자가 없습니다.</div>';
+  const box=document.getElementById('mcv-supTable'); box.innerHTML='';
+  if(!keys.length) return;
+  let h='<div><table><thead><tr><th>지점</th><th>'+esc(T.colName)+'</th><th style="text-align:right">통과 인원</th><th>'+esc(T.colOps||'운영 시간')+'</th>'+
+    keys.map(s=>'<th style="text-align:right">'+esc(s.label)+'<br><span style="font-weight:400">'+esc(s.unit)+(s.boxNote?' · '+esc(s.boxNote):'')+'</span></th>').join('')+'</tr></thead><tbody>';
+  C.pois.forEach(p=>{
+    if(!p.sup||!Object.keys(p.sup).length) return;
+    h+='<tr><td class="mcv-km">'+passInfo(p)[0].km.toFixed(2)+' km</td><td>'+CAT[p.cat].icon+' '+esc(p.name)+'</td>'+
+      '<td class="mcv-qty">'+(p.people?p.people.toLocaleString():'—')+'</td>'+
+      '<td class="mcv-ops">'+esc(p.ops||'—')+'</td>'+
+      keys.map(s=>{const u=p.sup[s.id]||0, b=boxesOf(s,u);
+        return '<td class="mcv-qty">'+(u?u.toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#90a4ae">'+b+'박스</div>':''):'')+'</td>';}).join('')+'</tr>';
+  });
+  h+='</tbody><tfoot><tr><td colspan="4">합계'+(C.participants?' · 참가 '+C.participants.toLocaleString()+'명':'')+'</td>'+
+    keys.map(s=>{const b=boxSum(s,C.pois);
+      return '<td class="mcv-qty">'+totals[s.id].toLocaleString()+(b!=null?'<div style="font-size:.68rem;color:#546e7a">'+b+'박스</div>':'')+'</td>';}).join('')+'</tr></tfoot></table></div>';
+  box.innerHTML=h;
+}
+/* 구간별 통과 예상 시각 (관리자용) */
+function hm(str){ const m=String(str||'').match(/^(\d{1,2}):([0-5]\d)$/); return m?(+m[1])*60+(+m[2]):null; }
+function paceMin(str){ const m=String(str||'').match(/^(\d+):([0-5]?\d)$/); return m?(+m[1])+(+m[2])/60:null; }
+function toHm(mins){ let t=Math.round(mins); t=((t%1440)+1440)%1440; return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0'); }
+function paceStr(p){ const s=Math.round(p*60); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function renderPace(){
+  if(!ADMIN) return;
+  const ev=DATA.event||{start:'08:00',lead:'3:30',last:'9:00'};
+  const st=hm(ev.start)||0, lead=paceMin(ev.lead)||3.5, lim=C.limitPace||null;
+  const bands=[{label:'선두 '+ev.lead, pace:lead}];
+  if(lim&&lim>lead){
+    for(let i=1;i<=3;i++){ const p=lead+(lim-lead)*i/4; bands.push({label:paceStr(p), pace:p}); }
+    bands.push({label:'제한 '+paceStr(lim), pace:lim, limit:true});
+  } else { [4.5,5.5,6.5,paceMin(ev.last)||9].forEach(p=>{ if(p>lead) bands.push({label:paceStr(p), pace:p}); }); }
+  document.getElementById('mcv-paceLabel').textContent='— '+C.name+' · 출발 '+ev.start+(C.limit?' · 제한 '+C.limit:'');
+  const step=+document.getElementById('mcv-paceStep').value, onlyPoi=document.getElementById('mcv-paceOnlyPoi').checked;
+  const tk=turnOf(C);
+  const marks=[];
+  if(onlyPoi){
+    C.pois.forEach(p=>passInfo(p).forEach(r=>marks.push({km:r.km, label:CAT[p.cat].icon+' '+p.name+(r.d?' '+dirLabel(r.d):'')})));
+    marks.sort((a,b)=>a.km-b.km);
+  } else {
+    for(let k=step;k<C.total_km;k+=step) marks.push({km:k,label:''});
+    if(tk!=null) marks.push({km:tk,label:'↩ '+((C.turnNames&&C.turnNames[0])?String(C.turnNames[0]):'반환')});
+    marks.push({km:C.total_km,label:'피니시'});
+    marks.sort((a,b)=>a.km-b.km);
+  }
+  let h='<div><table><thead><tr><th>거리</th><th>지점</th>'+
+    bands.map(b=>'<th style="text-align:right'+(b.limit?';color:#c62828':'')+'">'+esc(b.label)+'</th>').join('')+'</tr></thead><tbody>';
+  marks.forEach(m=>{
+    const isTurn=(tk!=null&&Math.abs(m.km-tk)<1e-6);
+    h+='<tr'+(isTurn?' style="background:#fff8e1"':'')+'><td class="mcv-km">'+m.km.toFixed(2)+' km</td><td style="color:#607d8b;white-space:nowrap">'+esc(m.label)+'</td>'+
+      bands.map(b=>'<td class="mcv-qty"'+(b.limit?' style="color:#c62828;font-weight:700"':'')+'>'+toHm(st+m.km*b.pace)+'</td>').join('')+'</tr>';
+  });
+  h+='</tbody></table></div>';
+  document.getElementById('mcv-paceTable').innerHTML=h;
+}
+if(ADMIN){
+  document.getElementById('mcv-paceStep').onchange=renderPace;
+  document.getElementById('mcv-paceOnlyPoi').onchange=renderPace;
+}
+const hiddenCats=new Set();
+function renderLegend(){
+  const used=[...new Set(C.pois.map(p=>p.cat))];
+  const box=document.getElementById('mcv-legend'); if(!box) return;
+  box.innerHTML=used.map(id=>{
+    const c=CAT[id], off=hiddenCats.has(id);
+    return '<button type="button" class="mcv-chip'+(off?' mcv-chip-off':'')+'" data-cat="'+id+'" '+
+      'title="지도에서 '+esc(c.label)+' 켜기/끄기" aria-pressed="'+(!off)+'">'+
+      '<span class="mcv-dot" style="background:'+c.color+'"></span>'+esc(c.label)+'</button>';
+  }).join('');
+  box.querySelectorAll('[data-cat]').forEach(b=>{
+    b.onclick=()=>{
+      const id=b.dataset.cat;
+      if(hiddenCats.has(id)) hiddenCats.delete(id); else hiddenCats.add(id);
+      renderLegend(); rebuildMap(false);
+    };
+  });
+}
+function renderStats(){
+  const tk=turnOf(C);
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  const sty=(id,v)=>{ const e=document.getElementById(id); if(e) e.style.display=v; };
+  set('mcv-stCourse', C.name);
+  set('mcv-stTotal', C.total_km.toFixed(2)+' km');
+  sty('mcv-stTurnBox', tk!=null?'block':'none');
+  set('mcv-stTurn', tk!=null?tk.toFixed(2)+' km':'—');
+  set('mcv-stGain', C.hasEle?'+'+C.gain+' m':'—');
+  set('mcv-stMin', C.hasEle?C.ele_min.toFixed(0)+' m':'—');
+  set('mcv-stMax', C.hasEle?C.ele_max.toFixed(0)+' m':'—');
+  set('mcv-tblCourseLabel', '— '+C.name+' 기준'+(tk!=null?' · ↩ '+tk.toFixed(2)+'km 반환':''));
+  set('mcv-supLabel', '— '+C.name+' 기준');
+}
+const courseSeg=document.getElementById('mcv-courseSeg');
+courseSeg.innerHTML=DATA.order.map((id,i)=>'<button data-c="'+id+'"'+(i===0?' class="mcv-on"':'')+'>'+esc(DATA.courses[id].name)+'</button>').join('');
+function mcvSafe(name, fn){
+  try{ fn(); }
+  catch(e){ console.error('[코스도] '+name+' 오류:', e); }
+}
+/* ── 전 코스 함께 보기 ──
+   같은 길을 쓰는 종목이 정확히 포개져 어느 쪽인지 알 수 없던 문제를 함께 푼다.
+   보고 있는 코스는 실제 길 위에 그대로 두고, 나머지만 좌우로 조금씩 벌려 나란히 그린다. */
+let showAll=false, allObjs=[];
+function clearAll(){ allObjs.forEach(h=>{ try{ h.rm(); }catch(e){} }); allObjs=[]; }
+function fanOff(id){
+  if(!LS.fan) return 0;
+  const rest=DATA.order.filter(k=>k!==curKey);
+  const i=rest.indexOf(id);
+  if(i<0) return 0;
+  const k=Math.floor(i/2)+1;
+  return (i%2===0?-1:1) * k * vSepM(+LS.fanGap || 11);
+}
+function drawAllCourses(){
+  clearAll();
+  const note=document.getElementById('mcv-allNote');
+  if(!showAll){ if(note) note.classList.remove('mcv-on'); return; }
+  DATA.order.forEach(k=>{
+    if(k===curKey) return;
+    const c=DATA.courses[k];
+    if(!c || !c.track || c.track.length<2) return;
+    const off=fanOff(k);
+    const path=off ? offsetPath(c.track.map(q=>[q[0],q[1]]), off) : c.track;
+    const pts=cleanPath(path);
+    if(pts.length<2) return;
+    if(OSM){
+      const pl=L.polyline(pts,{color:c.color||'#8e8e93', weight:Math.max(2.5, LS.w-2),
+        opacity:.55, interactive:false}).addTo(kmap);
+      allObjs.push({rm:()=>kmap.removeLayer(pl)});
+    } else {
+      const pl=new kakao.maps.Polyline({path:pts.map(a=>new kakao.maps.LatLng(a[0],a[1])),
+        strokeColor:c.color||'#8e8e93', strokeWeight:Math.max(2.5, LS.w-2), strokeOpacity:.55});
+      pl.setMap(kmap); allObjs.push({rm:()=>pl.setMap(null)});
+    }
+  });
+  if(note){
+    note.innerHTML='<b>전 코스 보기</b>'+DATA.order.map(k=>{
+      const c=DATA.courses[k];
+      return '<button type="button" class="mcv-allChip'+(k===curKey?' mcv-on':'')+'" data-ac="'+k+'">'+
+        '<i style="background:'+(c.color||'#8e8e93')+'"></i>'+esc(c.name)+
+        (k===curKey?' <b>보는 중</b>':'')+'</button>';
+    }).join('')+'<span style="color:var(--mut)">눌러서 그 종목으로 · 같은 길을 쓰는 구간은 나란히 벌려 그렸습니다</span>';
+    note.classList.add('mcv-on');
+    note.querySelectorAll('[data-ac]').forEach(b=>b.onclick=()=>{
+      if(b.dataset.ac!==curKey) setCourse(b.dataset.ac);
+    });
+  }
+}
+/* 모든 코스와 시설을 한 화면에 */
+function fitAllCourses(){
+  const pts=[];
+  DATA.order.forEach(k=>{
+    const c=DATA.courses[k];
+    if(!c||!c.track||!c.track.length) return;
+    const st=Math.max(1, Math.floor(c.track.length/300));
+    for(let i=0;i<c.track.length;i+=st) pts.push(c.track[i]);
+    pts.push(c.track[c.track.length-1]);
+    (c.pois||[]).forEach(p=>{ if(isFinite(p.lat)&&isFinite(p.lon)) pts.push([p.lat,p.lon]); });
+  });
+  if(pts.length>1) mapFit(pts);
+}
+const allBtn=document.getElementById('mcv-allBtn');
+if(allBtn) allBtn.addEventListener('click', ()=>{
+  showAll=!showAll;
+  allBtn.classList.toggle('mcv-on', showAll);
+  allBtn.textContent = showAll ? '⛶ 이 코스만' : '⛶ 전 코스 보기';
+  /* 배율을 먼저 맞추고 그린다 — 벌리는 폭이 배율에 따라 달라지므로
+     순서가 뒤바뀌면 예전 배율 기준으로 그려져 선이 덜 벌어진다 */
+  if(showAll){
+    fitAllCourses();
+    requestAnimationFrame(()=>{ vSepShown=vMPerPx(); drawAllCourses(); scheduleArrows(); });
+  } else {
+    drawAllCourses();
+    mcvSafe('지도', ()=>rebuildMap(true));
+    scheduleArrows();
+  }
+});
+function setCourse(key){
+  curKey=key; C=DATA.courses[key];
+  courseSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('mcv-on',b.dataset.c===key));
+  mcvSafe('거리계산', computeCum);
+  mcvSafe('지도', ()=>rebuildMap(true));
+  mcvSafe('고저도', ()=>drawChart(null));
+  mcvSafe('시설표', renderTables);
+  mcvSafe('물자', renderSupplies);
+  mcvSafe('페이스', renderPace);
+  mcvSafe('범례', renderLegend);
+  mcvSafe('통계', renderStats);
+  if(showAll){ mcvSafe('전코스', drawAllCourses); mcvSafe('맞추기', fitAllCourses); }
+}
+courseSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCourse(b.dataset.c)));
+mcvSafe('거리계산', computeCum); mcvSafe('고저도', ()=>drawChart(null)); mcvSafe('시설표', renderTables);
+mcvSafe('물자', renderSupplies); mcvSafe('페이스', renderPace); mcvSafe('범례', renderLegend); mcvSafe('통계', renderStats);
+}   /* __MCV_LOADED__ 가드 끝 */
+</script>
+<!--MCV_FRAGMENT_END-->
+</body>
+</html>
