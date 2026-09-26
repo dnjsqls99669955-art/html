@@ -610,13 +610,29 @@
 #mcv-root #mcv-rvWrap.mcv-big{left:12px;top:12px;width:auto;height:auto;}
 #mcv-root .mcv-rvBar{display:flex !important;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:#fff;}
 #mcv-root .mcv-rvBar b{font-size:13px;font-weight:800;white-space:nowrap;}
+#mcv-root .mcv-rvBar{cursor:move;touch-action:none;user-select:none;-webkit-user-select:none;}
+#mcv-root .mcv-rvBar .mcv-rvB{cursor:pointer;}
+#mcv-root .mcv-rvGrip{font-style:normal;font-size:11px;color:var(--ink3);letter-spacing:0;white-space:nowrap;opacity:.8;}
+#mcv-root #mcv-rvWrap.mcv-big .mcv-rvBar{cursor:default;}
+#mcv-root #mcv-rvWrap.mcv-big .mcv-rvGrip{display:none;}
+#mcv-root #mcv-rvWrap.rvDragging{box-shadow:0 20px 48px rgba(0,0,0,.32);opacity:.97;}
+#mcv-root #mcv-rvWrap.rvDragging #mcv-rvPano{pointer-events:none;}
+#mcv-root #mcv-rvWrap.mcv-rvFollowing{border-color:var(--signal);box-shadow:0 0 0 2px var(--signal),0 12px 36px rgba(0,0,0,.22);}
+#mcv-root #mcv-rvWrap.mcv-rvFollowing #mcv-rvTitle{color:var(--signal);}
 #mcv-root #mcv-rvInfo{font-size:12px;color:var(--ink3);white-space:nowrap;}
 #mcv-root .mcv-rvBtns{margin-left:auto;display:flex !important;gap:4px;}
 #mcv-root .mcv-rvB{border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:var(--r-sm);padding:4px 9px;font-size:12px;font-weight:700;cursor:pointer;line-height:1.4;}
 #mcv-root .mcv-rvB:hover{background:var(--paper);}
 #mcv-root .mcv-rvB:disabled{opacity:.35;cursor:default;}
 #mcv-root #mcv-rvPano{flex:1;min-height:0;position:relative;background:#1b1d21;}
-#mcv-root #mcv-rvMsg{position:absolute;left:0;right:0;top:40px;bottom:0;display:none;align-items:center;justify-content:center;
+#mcv-root .mcv-rvCtl{display:flex !important;align-items:center;gap:6px;padding:7px 8px;border-top:1px solid var(--line);background:#fff;}
+#mcv-root .mcv-rvCtl .mcv-rvB{padding:6px 10px;white-space:nowrap;}
+#mcv-root .mcv-rvCtl .mcv-rvPlay{min-width:118px;background:var(--ink);border-color:var(--ink);color:#fff;}
+#mcv-root .mcv-rvCtl .mcv-rvPlay:hover{background:#000;}
+#mcv-root .mcv-rvCtl .mcv-rvPlay.mcv-on{background:var(--signal);border-color:var(--signal);color:var(--signalInk);}
+#mcv-root .mcv-rvCtl .mcv-rvSpd{min-width:0;color:var(--ink3);font-weight:600;}
+#mcv-root #mcv-rvRange{flex:1;min-width:60px;height:24px;margin:0 4px;cursor:pointer;accent-color:var(--signal);background:none;}
+#mcv-root #mcv-rvMsg{position:absolute;left:0;right:0;top:40px;bottom:46px;display:none;align-items:center;justify-content:center;
   text-align:center;padding:20px;color:#fff;font-size:13px;line-height:1.6;background:rgba(20,22,26,.72);pointer-events:none;}
 #mcv-root #mcv-rvMsg.mcv-on{display:flex;}
 #mcv-root #mcv-rvTip{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:1310;display:none;
@@ -637,6 +653,10 @@
   #mcv-root .mcv-card>h2,#mcv-root .mcv-card h2{padding:11px 12px !important;}
   #mcv-root #mcv-rvWrap{left:8px;right:8px;bottom:8px;width:auto;height:58%;}
   #mcv-root #mcv-rvWrap.mcv-big{top:8px;height:auto;}
+  #mcv-root .mcv-rvCtl{flex-wrap:wrap;}
+  #mcv-root #mcv-rvRange{order:9;flex-basis:100%;margin:2px 0 0;}
+  #mcv-root .mcv-rvCtl .mcv-rvB{flex:1;}
+  #mcv-root .mcv-rvCtl .mcv-rvSpd{flex:0 0 auto;}
   #mcv-root header h1{font-size:22px !important;}
   #mcv-root .mcv-stat{padding:0 14px 0 10px !important;}
   #mcv-root .mcv-stat b{font-size:18px !important;}
@@ -666,7 +686,7 @@
     <h2>🗺 코스 지도
       <span class="mcv-seg mcv-course" id="mcv-courseSeg"></span>
       <button class="mcv-allBtn" id="mcv-allBtn" title="모든 코스를 한 화면에 함께 봅니다">⛶ 전 코스 보기</button>
-      <button class="mcv-allBtn" id="mcv-rvBtn" title="켜면 로드뷰가 있는 길이 파랗게 보이고, 누른 자리의 로드뷰가 열립니다">🚶 로드뷰</button>
+      <button class="mcv-allBtn" id="mcv-rvBtn" title="코스를 따라 로드뷰로 걸어 봅니다 — 로드뷰가 있는 길은 파랗게, 누른 자리도 열립니다">🚶 로드뷰</button>
       <span class="mcv-seg mcv-kk" id="mcv-typeSeg">
         <button data-t="ROADMAP" class="mcv-on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
       </span>
@@ -680,15 +700,20 @@
       <div id="mcv-map"></div>
       <div id="mcv-rvWrap" aria-label="로드뷰">
         <div class="mcv-rvBar">
-          <b>🚶 로드뷰</b><span id="mcv-rvInfo"></span>
+          <b id="mcv-rvTitle">🚶 로드뷰</b><span id="mcv-rvInfo"></span><i class="mcv-rvGrip" title="제목줄을 잡고 끌면 창이 옮겨집니다 · 두 번 누르면 제자리">⠿ 옮기기</i>
           <span class="mcv-rvBtns">
-            <button type="button" class="mcv-rvB" id="mcv-rvPrev" title="코스를 따라 200m 뒤로">◀ 200m</button>
-            <button type="button" class="mcv-rvB" id="mcv-rvNext" title="코스를 따라 200m 앞으로">200m ▶</button>
             <button type="button" class="mcv-rvB" id="mcv-rvBig" title="크게 / 작게">⤢</button>
-            <button type="button" class="mcv-rvB" id="mcv-rvClose" title="닫기">✕</button>
+            <button type="button" class="mcv-rvB" id="mcv-rvClose" title="닫기 (Esc)">✕</button>
           </span>
         </div>
         <div id="mcv-rvPano"></div>
+        <div class="mcv-rvCtl">
+          <button type="button" class="mcv-rvB" id="mcv-rvPrev" title="코스를 따라 이전 사진 (←)">‹ 이전</button>
+          <button type="button" class="mcv-rvB mcv-rvPlay" id="mcv-rvPlay" title="지도와 함께 코스를 따라 자동으로 걷기 (스페이스)" aria-pressed="false">▶ 코스 따라가기</button>
+          <button type="button" class="mcv-rvB" id="mcv-rvNext" title="코스를 따라 다음 사진 (→)">다음 ›</button>
+          <input type="range" id="mcv-rvRange" min="0" max="1" step="0.01" value="0" aria-label="코스 km — 끌어서 옮기기">
+          <button type="button" class="mcv-rvB mcv-rvSpd" id="mcv-rvSpd" title="따라가기 속도 바꾸기">보통</button>
+        </div>
         <div id="mcv-rvMsg"></div>
       </div>
       <div id="mcv-rvTip"></div>
@@ -2803,38 +2828,158 @@ if(allBtn) allBtn.addEventListener('click', ()=>{
     scheduleArrows();
   }
 });
-/* ══ 로드뷰 (카카오 지도일 때) — 누른 자리 · 시설 카드 · 코스 따라 200m 씩 ══ */
-const vRV={on:false, rv:null, client:null, walker:null, km:null, seq:0, big:false};
+/* 코스 따라 로드뷰 엔진 — 코스를 15 m 간격으로 짚어 가며, 짚은 자리 30 m 안에서 가장 가까운 로드뷰 사진을 찾아 잇는다.
+   · 사진 번호(panoId)가 바뀌는 곳이 「다음 사진」 — 한 장씩 코스를 따라 걷는다 (200 m 씩 뛰지 않는다)
+   · km 는 코스 위 짚은 자리로 정한다 — 같은 길을 여러 번 지나는 코스에서도 다른 통과로 튀지 않는다
+   · 반경이 30 m 라 옆길·고가 아래 같은 먼 길의 사진은 걸러지고, 사진 없는 구간은 건너뛰며 알려 준다 */
+function rvTrackMake(A){
+  const STEP=0.015, R=30, T={STEP, arr:[], wait:new Map(), q:[], busy:0, calls:0};
+  T.n=Math.max(0, Math.floor(A.total()/STEP+1e-9));
+  const pump=()=>{ while(T.busy<4 && T.q.length){ const j=T.q.shift(); T.busy++; j.run(); } };
+  T.probe=i=>{
+    if(i<0 || i>T.n) return Promise.resolve(null);
+    if(T.arr[i]!==undefined) return Promise.resolve(T.arr[i]);
+    if(T.wait.has(i)) return T.wait.get(i);
+    let job=null;
+    const p=new Promise(res=>{ job={i, res, run(){
+      let done=false; T.calls++;
+      const fin=(id, keep)=>{ if(done) return; done=true; T.busy--; T.wait.delete(i);
+        const v=id?String(id):null; if(keep) T.arr[i]=v; res(v); pump(); };
+      const tm=setTimeout(()=>fin(null,false), 8000);
+      try{ const ll=A.at(Math.min(i*STEP, A.total()));
+        A.client().getNearestPanoId(new kakao.maps.LatLng(ll[0], ll[1]), R, id=>{ clearTimeout(tm); fin(id,true); }); }
+      catch(e){ clearTimeout(tm); fin(null,false); }
+    }}; });
+    T.wait.set(i,p); T.q.push(job); pump(); return p;
+  };
+  /* 아직 묻지 않은 줄은 버린다 (멀리 건너뛸 때) */
+  T.flush=()=>{ const q=T.q; T.q=[]; q.forEach(j=>{ T.wait.delete(j.i); j.res(null); }); };
+  /* from 다음 칸부터 dir 쪽으로 lim 칸 안에서, avoid 에 없는 첫 사진 */
+  T.find=async (from, dir, avoid, lim, alive)=>{
+    const end=dir>0?Math.min(T.n, from+lim):Math.max(0, from-lim); let i=from+dir;
+    while(dir>0? i<=end : i>=end){
+      if(alive && !alive()) return null;
+      const b=[]; for(let k=0;k<8;k++){ const j=i+dir*k; if(dir>0? j>end : j<end) break; b.push(j); }
+      const ids=await Promise.all(b.map(T.probe));
+      if(alive && !alive()) return null;
+      for(let k=0;k<b.length;k++) if(ids[k] && avoid.indexOf(ids[k])<0) return {i:b[k], id:ids[k]};
+      i+=dir*b.length;
+    }
+    return null;
+  };
+  T.ahead=(from, dir, cnt)=>{ for(let k=1;k<=cnt;k++) T.probe(from+dir*k); };
+  return T;
+}
+const RV_SPD=[{t:'보통', skip:0, ms:1500},{t:'빠르게', skip:3, ms:1100},{t:'아주 빠르게', skip:10, ms:1000}];
+/* 지도 따라가기 — 걷는 사람이 로드뷰 창에 가리지 않는 빈 쪽 한가운데 오도록, 한 장 넘길 때마다 지도를 부드럽게 민다 */
+function rvCam(map, mapEl, wrap, lat, lon, snap){
+  if(!map || !mapEl || !map.getProjection) return;
+  const M=mapEl.getBoundingClientRect(); if(!(M.width>0 && M.height>0)) return;
+  let tx=M.width/2, ty=M.height/2;
+  if(wrap && wrap.offsetParent!==null){
+    const P=wrap.getBoundingClientRect();
+    const hit=!(P.right<=M.left || P.left>=M.right || P.bottom<=M.top || P.top>=M.bottom);
+    if(hit){
+      const S=[{x0:0,y0:0,x1:P.left-M.left,y1:M.height},{x0:P.right-M.left,y0:0,x1:M.width,y1:M.height},
+               {x0:0,y0:0,x1:M.width,y1:P.top-M.top},{x0:0,y0:P.bottom-M.top,x1:M.width,y1:M.height}]
+        .map(r=>({x0:Math.max(0,r.x0), y0:Math.max(0,r.y0), x1:Math.min(M.width,r.x1), y1:Math.min(M.height,r.y1)}));
+      const area=r=>Math.max(0,r.x1-r.x0)*Math.max(0,r.y1-r.y0);
+      const b=S.sort((p,q)=>area(q)-area(p))[0];
+      if(area(b)>M.width*M.height*0.08){ tx=(b.x0+b.x1)/2; ty=(b.y0+b.y1)/2; }
+    }
+  }
+  try{
+    const pr=map.getProjection(), p=pr.containerPointFromCoords(new kakao.maps.LatLng(lat, lon));
+    const dx=p.x-tx, dy=p.y-ty; if(!snap && Math.hypot(dx,dy)<4) return;
+    const c=pr.coordsFromContainerPoint(new kakao.maps.Point(M.width/2+dx, M.height/2+dy));
+    if(snap || Math.hypot(dx,dy)>Math.max(M.width,M.height)) map.setCenter(c); else map.panTo(c);
+  }catch(e){}
+}
+/* 따라가기를 시작할 때 코스 전체가 보일 만큼 멀리 있으면 걷는 게 보이도록 당겨 본다 */
+function rvZoomIn(map){ try{ if(map && map.getLevel && map.getLevel()>4) map.setLevel(4); }catch(e){} }
+/* 로드뷰 창 옮기기 — 제목줄을 잡고 끈다 · 제목줄을 두 번 누르면 제자리 · 위치는 이 브라우저에 기억 */
+function rvDrag(wrap, bar, key, bigCls){
+  if(!wrap || !bar || bar.__drag) return; bar.__drag=1;
+  const box=()=>wrap.offsetParent || wrap.parentElement;
+  const clear=()=>['left','top','right','bottom'].forEach(k=>wrap.style[k]='');
+  const place=(x,y)=>{ const B=box().getBoundingClientRect(), W=wrap.offsetWidth, H=wrap.offsetHeight;
+    x=Math.max(4, Math.min(B.width-W-4, x)); y=Math.max(4, Math.min(B.height-H-4, y));
+    wrap.style.left=x+'px'; wrap.style.top=y+'px'; wrap.style.right='auto'; wrap.style.bottom='auto'; return [x,y]; };
+  const load=()=>{ try{ return JSON.parse(localStorage.getItem(key)||'null'); }catch(e){ return null; } };
+  const save=v=>{ try{ v ? localStorage.setItem(key, JSON.stringify(v)) : localStorage.removeItem(key); }catch(e){} };
+  let d=null;
+  bar.addEventListener('pointerdown', e=>{
+    if(e.button!==0 || (e.target.closest && e.target.closest('button,input,select,a')) || wrap.classList.contains(bigCls)) return;
+    const B=box().getBoundingClientRect(), R=wrap.getBoundingClientRect();
+    d={sx:e.clientX, sy:e.clientY, x:R.left-B.left, y:R.top-B.top, moved:false, last:null};
+    try{ bar.setPointerCapture(e.pointerId); }catch(_){}
+    e.preventDefault();
+  });
+  bar.addEventListener('pointermove', e=>{
+    if(!d) return; const dx=e.clientX-d.sx, dy=e.clientY-d.sy;
+    if(!d.moved && Math.hypot(dx,dy)<4) return;
+    d.moved=true; wrap.classList.add('rvDragging'); d.last=place(d.x+dx, d.y+dy);
+  });
+  const end=()=>{ if(!d) return;
+    if(d.moved && d.last){ const B=box().getBoundingClientRect(); save({fx:d.last[0]/B.width, fy:d.last[1]/B.height}); if(wrap.__rvMoved) wrap.__rvMoved(); }
+    wrap.classList.remove('rvDragging'); d=null; };
+  bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', end);
+  bar.addEventListener('dblclick', e=>{ if(e.target.closest && e.target.closest('button')) return; clear(); save(null); if(wrap.__rvMoved) wrap.__rvMoved(); });
+  wrap.__rvRestore=()=>{ if(wrap.classList.contains(bigCls)){ clear(); return; }
+    const v=load(); if(!v){ clear(); return; } const B=box().getBoundingClientRect(); if(B.width>0) place(v.fx*B.width, v.fy*B.height); };
+  window.addEventListener('resize', ()=>{ if(wrap.offsetParent!==null) wrap.__rvRestore(); });
+}
+/* ══ 로드뷰 (카카오 지도일 때) — 코스 따라 한 장씩 · 재생 · km 막대 · 누른 자리 · 시설 카드 ══ */
+const vRV={on:false, rv:null, client:null, walker:null, km:null, idx:null, cur:null, recent:[], dir:1,
+  seq:0, big:false, play:false, spd:0, timer:null, tracks:{}, drag:false, trail:null};
+const $rv=id=>document.getElementById(id);
 function vRvOk(){ return !OSM && typeof kakao!=='undefined' && kakao.maps && !!kakao.maps.Roadview && !!kakao.maps.RoadviewClient; }
+function vRvTot(){ return (C && C.total_km) || (cum.length?cum[cum.length-1]/1000:0); }
+function vRvT(){ const k=curKey+'|'+vRvTot().toFixed(4); return vRV.tracks[k] || (vRV.tracks[k]=rvTrackMake({client:()=>vRV.client, at:km=>latlngAtKm(km), total:vRvTot})); }
 function vRvTip(t, ms){
-  const el=document.getElementById('mcv-rvTip'); if(!el) return;
+  const el=$rv('mcv-rvTip'); if(!el) return;
   el.textContent=t||''; el.classList.toggle('mcv-on', !!t);
   clearTimeout(el.__t); if(t) el.__t=setTimeout(()=>el.classList.remove('mcv-on'), ms||3200);
 }
-function vNearKm(lat, lon){
+function vRvMsg(t){ const m=$rv('mcv-rvMsg'); if(!m) return; m.textContent=t||''; m.classList.toggle('mcv-on', !!t); }
+/* 코스 위 가장 가까운 자리 — hint(km) 를 주면 그 앞뒤 0.5 km 안을 먼저 본다 (여러 번 지나는 길에서 튀지 않게) */
+function vNearKm(lat, lon, hint){
   const tr=C && C.track; if(!tr || tr.length<2 || cum.length!==tr.length) return null;
-  const K=111320, cl=Math.cos(lat*Math.PI/180); let best=null;
-  for(let i=1;i<tr.length;i++){
-    const a=tr[i-1], b=tr[i];
-    const ax=(a[1]-lon)*K*cl, ay=(a[0]-lat)*K, bx=(b[1]-lon)*K*cl, by=(b[0]-lat)*K;
-    const dx=bx-ax, dy=by-ay, L2=dx*dx+dy*dy; let t=L2?-(ax*dx+ay*dy)/L2:0; t=t<0?0:(t>1?1:t);
-    const d=Math.hypot(ax+t*dx, ay+t*dy);
-    if(!best || d<best.d) best={d, km:(cum[i-1]+t*(cum[i]-cum[i-1]))/1000};
-  }
-  return best;
+  const K=111320, cl=Math.cos(lat*Math.PI/180);
+  const scan=(lo, hi)=>{ let best=null;
+    for(let i=1;i<tr.length;i++){
+      if(cum[i]<lo || cum[i-1]>hi) continue;
+      const a=tr[i-1], b=tr[i];
+      const ax=(a[1]-lon)*K*cl, ay=(a[0]-lat)*K, bx=(b[1]-lon)*K*cl, by=(b[0]-lat)*K;
+      const dx=bx-ax, dy=by-ay, L2=dx*dx+dy*dy; let t=L2?-(ax*dx+ay*dy)/L2:0; t=t<0?0:(t>1?1:t);
+      const d=Math.hypot(ax+t*dx, ay+t*dy);
+      if(!best || d<best.d) best={d, km:(cum[i-1]+t*(cum[i]-cum[i-1]))/1000};
+    }
+    return best; };
+  if(hint!=null){ const h=scan((hint-0.5)*1000, (hint+0.5)*1000); if(h && h.d<40) return h; }
+  return scan(-Infinity, Infinity);
 }
 function vRvBearing(km){
-  const tot=(C && C.total_km) || (cum.length?cum[cum.length-1]/1000:0);
+  const tot=vRvTot();
   const a=latlngAtKm(Math.max(0, km-0.02)), b=latlngAtKm(Math.min(tot, km+0.04));
   const y=(b[1]-a[1])*Math.cos(a[0]*Math.PI/180), x=b[0]-a[0];
   return ((Math.atan2(y, x)*180/Math.PI)+360)%360;
 }
-function vRvInfo(){
-  const el=document.getElementById('mcv-rvInfo'), on=vRV.km!=null && C;
-  if(el) el.textContent = on ? (C.name||'코스')+' '+vRV.km.toFixed(2)+' km 지점' : '코스 밖';
-  const tot=(C && C.total_km) || 0;
-  const p=document.getElementById('mcv-rvPrev'), n=document.getElementById('mcv-rvNext');
-  if(p) p.disabled=!on || vRV.km<=0.001; if(n) n.disabled=!on || vRV.km>=tot-0.001;
+function vRvInfo(previewKm){
+  if(!C) return;
+  const el=$rv('mcv-rvInfo'), tot=vRvTot(), km=previewKm!=null?previewKm:vRV.km;
+  if(el) el.textContent = km!=null ? (C.name||'코스')+' '+km.toFixed(2)+' km 지점'+(previewKm!=null?'으로':'') : '코스 밖';
+  const fol=vRV.idx!=null, n=fol?vRvT().n:0;
+  const p=$rv('mcv-rvPrev'), x=$rv('mcv-rvNext'), pl=$rv('mcv-rvPlay'), rg=$rv('mcv-rvRange'), sp=$rv('mcv-rvSpd');
+  if(p) p.disabled=!fol || vRV.idx<=0;
+  if(x) x.disabled=!fol || vRV.idx>=n;
+  if(pl){ pl.textContent=vRV.play?'⏸ 멈춤':'▶ 코스 따라가기'; pl.classList.toggle('mcv-on', vRV.play); pl.setAttribute('aria-pressed', vRV.play?'true':'false'); }
+  const tt=$rv('mcv-rvTitle'); if(tt) tt.textContent=vRV.play?'🚶 코스 따라가는 중':'🚶 로드뷰';
+  const ww=$rv('mcv-rvWrap'); if(ww) ww.classList.toggle('mcv-rvFollowing', vRV.play);
+  if(sp) sp.textContent=RV_SPD[vRV.spd].t;
+  if(rg){ rg.max=tot.toFixed(2); if(!vRV.drag && vRV.km!=null) rg.value=vRV.km.toFixed(2);
+    const v=previewKm!=null?previewKm:(vRV.km!=null?vRV.km:+rg.value);
+    rg.style.setProperty('--p', Math.max(0, Math.min(100, v/(tot||1)*100)).toFixed(2)+'%'); }
 }
 function vRvWalker(lat, lon, pan){
   if(!kmap || OSM) return;
@@ -2848,65 +2993,183 @@ function vRvWalker(lat, lon, pan){
   vRV.walker.setPosition(ll); vRV.walker.setMap(kmap);
   if(pan!=null){ const c=vRV.walker.__el.querySelector('.mcv-rvCone'); if(c) c.style.transform='rotate('+pan+'deg)'; }
 }
+function vRvFollow(ll, snap){ rvCam(kmap, $rv('mcv-map'), $rv('mcv-rvWrap'), ll[0], ll[1], snap); }
+/* 지나온 길 — 출발점부터 지금 자리까지 주황으로 */
+function vRvTrail(){
+  const tr=C && C.track;
+  if(!kmap || OSM || vRV.km==null || !tr || tr.length<2 || cum.length!==tr.length){ if(vRV.trail) vRV.trail.setMap(null); return; }
+  const d=vRV.km*1000, path=[];
+  for(let i=0;i<tr.length && cum[i]<=d;i++) path.push(new kakao.maps.LatLng(tr[i][0], tr[i][1]));
+  const e=latlngAtKm(vRV.km); path.push(new kakao.maps.LatLng(e[0], e[1]));
+  if(path.length<2){ if(vRV.trail) vRV.trail.setMap(null); return; }
+  if(!vRV.trail) vRV.trail=new kakao.maps.Polyline({path, strokeWeight:7, strokeColor:'#ff6a13', strokeOpacity:0.92, strokeStyle:'solid', zIndex:6});
+  else vRV.trail.setPath(path);
+  vRV.trail.setMap(kmap);
+}
+function vRvEnsure(){
+  if(!kReady || !vRvOk()){ vRvTip('이 지도에서는 로드뷰를 쓸 수 없습니다'); return false; }
+  const w=$rv('mcv-rvWrap'), was=w.classList.contains('mcv-on');
+  w.classList.add('mcv-on');
+  rvDrag(w, w.querySelector('.mcv-rvBar'), 'mcvRvPos', 'mcv-big');
+  w.__rvMoved=()=>{ if(vRV.km!=null){ const ll=latlngAtKm(vRV.km); vRvFollow(ll); } };
+  if(!was && w.__rvRestore) w.__rvRestore();
+  if(!vRV.rv){
+    vRV.rv=new kakao.maps.Roadview($rv('mcv-rvPano'));
+    vRV.client=new kakao.maps.RoadviewClient();
+    kakao.maps.event.addListener(vRV.rv, 'position_changed', vRvMoved);
+    kakao.maps.event.addListener(vRV.rv, 'viewpoint_changed', ()=>{ const v=vRV.rv.getViewpoint(); if(v && vRV.walker){ const c=vRV.walker.__el.querySelector('.mcv-rvCone'); if(c) c.style.transform='rotate('+v.pan+'deg)'; } });
+  }
+  return true;
+}
+/* 사진이 바뀌었다 — 우리가 연 사진이면 km 는 그대로, 로드뷰 안 화살표로 직접 걸었으면 지금 km 가까이에서 다시 잡는다 */
+function vRvMoved(){
+  const p=vRV.rv.getPosition(); if(!p) return;
+  const lat=p.getLat(), lon=p.getLng(), pid=vRV.rv.getPanoId?vRV.rv.getPanoId():null, id=pid==null?null:String(pid);
+  if(id!=null && id!==vRV.cur){
+    vRvPlay(false);
+    const n=C?vNearKm(lat, lon, vRV.km):null;
+    if(n && n.d<40){ vRV.km=n.km; vRV.idx=Math.min(vRvT().n, Math.round(n.km/vRvT().STEP)); vRV.recent=[id]; }
+    else { vRV.km=null; vRV.idx=null; }
+    vRV.cur=id; vRvTrail();
+    if(vRV.km!=null) vRvFollow([lat, lon]);
+  }
+  vRvWalker(lat, lon, (vRV.rv.getViewpoint()||{}).pan); vRvInfo();
+}
+function vRvShow(i, id){
+  const T=vRvT();
+  vRV.idx=i; vRV.km=Math.min(i*T.STEP, vRvTot()); vRV.cur=id;
+  vRV.recent.push(id); if(vRV.recent.length>4) vRV.recent.shift();
+  const ll=latlngAtKm(vRV.km), pan=vRvBearing(vRV.km);
+  vRvMsg(''); vRvWalker(ll[0], ll[1], pan);
+  vRV.rv.setPanoId(id, new kakao.maps.LatLng(ll[0], ll[1]));
+  vRV.rv.setViewpoint({pan, tilt:0, zoom:0});
+  vRvInfo(); vRvFollow(ll); vRvTrail();
+  setTimeout(()=>{ try{ vRV.rv.relayout(); }catch(e){} }, 30);
+  T.ahead(i+vRV.dir*(vRV.play?RV_SPD[vRV.spd].skip:0), vRV.dir, 12);
+}
+/* 코스 km 자리로 간다 — 그 자리(없으면 앞뒤 300 m)의 코스 위 사진 */
+async function vRvGo(km, zoom){
+  if(!C || !vRvEnsure()) return false;
+  if(zoom) rvZoomIn(kmap);
+  const T=vRvT(); T.flush();
+  const seq=++vRV.seq, alive=()=>seq===vRV.seq, L=Math.round(0.3/T.STEP);
+  vRV.idx=Math.max(0, Math.min(T.n, Math.round(Math.max(0, km)/T.STEP))); vRV.km=Math.min(vRV.idx*T.STEP, vRvTot());
+  vRV.cur=null; vRV.recent=[]; vRV.dir=1;
+  const ll=latlngAtKm(vRV.km); vRvWalker(ll[0], ll[1], vRvBearing(vRV.km)); vRvFollow(ll, !!zoom); vRvTrail(); vRvInfo();
+  vRvMsg('로드뷰를 찾는 중…');
+  const id=await T.probe(vRV.idx); if(!alive()) return false;
+  let r=id?{i:vRV.idx, id}:null;
+  if(!r) r=await T.find(vRV.idx, 1, [], L, alive);
+  if(!r && alive()) r=await T.find(vRV.idx, -1, [], L, alive);
+  if(!alive()) return false;
+  if(!r){ vRvMsg('이 지점 앞뒤 300m 코스 위에는 로드뷰 사진이 없습니다 — 「다음 ›」을 누르면 사진이 있는 곳까지 건너뜁니다'); return false; }
+  vRvShow(r.i, r.id); return true;
+}
+/* 한 장 앞·뒤 (skip 칸은 건너뛰고 찾는다 — 빠른 재생) */
+async function vRvStep(dir, skip){
+  if(vRV.idx==null || !vRV.rv || !C) return false;
+  const T=vRvT(), seq=++vRV.seq, alive=()=>seq===vRV.seq;
+  if(dir!==vRV.dir){ vRV.dir=dir; vRV.recent=[]; }
+  skip=skip||0;
+  const from=dir>0 ? Math.max(vRV.idx, Math.min(T.n-1, vRV.idx+skip)) : Math.min(vRV.idx, Math.max(1, vRV.idx-skip));
+  const avoid=vRV.recent.concat(vRV.cur?[vRV.cur]:[]);
+  const slow=setTimeout(()=>{ if(alive()) vRvMsg('다음 로드뷰 사진을 찾는 중…'); }, 700);
+  const r=await T.find(from, dir, avoid, Math.round(3/T.STEP), alive);
+  clearTimeout(slow);
+  if(!alive()) return false;
+  vRvMsg('');
+  if(!r){
+    const end=dir>0 ? vRV.idx>=T.n-2 : vRV.idx<=1;
+    vRvTip(end ? (dir>0?'도착점까지 왔습니다':'출발점입니다') : (dir>0?'앞으로':'뒤로')+' 3km 안 코스 위에는 로드뷰 사진이 없습니다', 3600);
+    vRvInfo(); return false;
+  }
+  const gap=Math.abs(r.i-vRV.idx)*T.STEP;
+  if(gap>0.15+skip*T.STEP){ const a=Math.min(r.i, vRV.idx)*T.STEP, b=Math.max(r.i, vRV.idx)*T.STEP;
+    vRvTip('로드뷰 사진이 없는 '+a.toFixed(2)+'–'+b.toFixed(2)+' km 를 건너뛰었습니다', 4000); }
+  vRvShow(r.i, r.id); return true;
+}
+function vRvPlay(on){
+  const want=(on==null) ? !vRV.play : !!on;
+  clearTimeout(vRV.timer); vRV.timer=null;
+  if(want===vRV.play && !want){ vRvInfo(); return; }
+  vRV.play=want;
+  if(want){
+    if(!C || !vRvEnsure()){ vRV.play=false; vRvInfo(); return; }
+    const T=vRvT(), s=RV_SPD[vRV.spd];
+    const go=()=>{ if(vRV.play) vRV.timer=setTimeout(vRvTick, s.ms); };
+    if(vRV.idx==null){ const rg=$rv('mcv-rvRange'); vRvGo(rg?+rg.value:0, true).then(go); }
+    else if(vRV.idx>=T.n-1) vRvGo(0, true).then(go);
+    else { vRV.dir=1; rvZoomIn(kmap); vRvFollow(latlngAtKm(vRV.km), true); vRV.timer=setTimeout(vRvTick, 250); }
+  }
+  vRvInfo();
+}
+async function vRvTick(){
+  if(!vRV.play) return;
+  const s=RV_SPD[vRV.spd], ok=await vRvStep(1, s.skip);
+  if(!vRV.play) return;
+  if(!ok){ vRV.play=false; vRvInfo(); return; }
+  vRV.timer=setTimeout(vRvTick, s.ms);
+}
 function vRvToggle(on){
   if(!kReady || !vRvOk()){ vRvTip('이 지도에서는 로드뷰를 쓸 수 없습니다'); return; }
   vRV.on = (on!=null) ? !!on : !vRV.on;
   try{ vRV.on ? kmap.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW) : kmap.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW); }catch(e){}
-  const b=document.getElementById('mcv-rvBtn'); if(b){ b.classList.toggle('mcv-on', vRV.on); b.setAttribute('aria-pressed', vRV.on?'true':'false'); }
-  if(vRV.on) vRvTip('파랗게 칠해진 길을 누르면 그 자리 로드뷰가 열립니다'); else { vRvTip(''); vRvClose(); }
+  const b=$rv('mcv-rvBtn'); if(b){ b.classList.toggle('mcv-on', vRV.on); b.setAttribute('aria-pressed', vRV.on?'true':'false'); }
+  if(vRV.on){
+    vRvTip('출발점 로드뷰 — 「▶ 코스 따라가기」를 누르면 지도와 함께 코스를 따라 걷습니다 · 창은 제목줄을 잡고 옮길 수 있습니다', 5600);
+    vRvGo(vRV.km!=null ? vRV.km : 0, true);
+  } else { vRvTip(''); vRvClose(); }
 }
-function vRvOpen(lat, lon, opt){
-  opt=opt||{};
-  if(!kReady || !vRvOk()){ vRvTip('이 지도에서는 로드뷰를 쓸 수 없습니다'); return; }
-  const wrap=document.getElementById('mcv-rvWrap'), msg=document.getElementById('mcv-rvMsg');
-  wrap.classList.add('mcv-on');
-  if(!vRV.rv){
-    vRV.rv=new kakao.maps.Roadview(document.getElementById('mcv-rvPano'));
-    vRV.client=new kakao.maps.RoadviewClient();
-    kakao.maps.event.addListener(vRV.rv, 'position_changed', ()=>{
-      const p=vRV.rv.getPosition(); if(!p) return;
-      const n=vNearKm(p.getLat(), p.getLng()); vRV.km=(n && n.d<150)?n.km:null;
-      vRvWalker(p.getLat(), p.getLng(), (vRV.rv.getViewpoint()||{}).pan); vRvInfo();
-    });
-    kakao.maps.event.addListener(vRV.rv, 'viewpoint_changed', ()=>{ const v=vRV.rv.getViewpoint(); if(v && vRV.walker){ const c=vRV.walker.__el.querySelector('.mcv-rvCone'); if(c) c.style.transform='rotate('+v.pan+'deg)'; } });
-  }
-  if(opt.km!=null) vRV.km=opt.km; else { const n=vNearKm(lat, lon); vRV.km=(n && n.d<150)?n.km:null; }
-  vRvInfo();
-  msg.textContent='로드뷰를 찾는 중…'; msg.classList.add('mcv-on');
-  const seq=++vRV.seq, R=opt.radius||60, pos=new kakao.maps.LatLng(lat, lon);
-  vRV.client.getNearestPanoId(pos, R, panoId=>{
+/* 지도·시설 카드에서 누른 자리 — 코스 50 m 안이면 코스 따라가기로, 아니면 그 자리 60 m 안의 사진 */
+function vRvOpen(lat, lon){
+  if(!vRvEnsure()) return;
+  vRvPlay(false);
+  const n=C?vNearKm(lat, lon):null;
+  if(n && n.d<50){ vRvGo(n.km); return; }
+  if(C) vRvT().flush();
+  const seq=++vRV.seq, R=60, pos=new kakao.maps.LatLng(lat, lon);
+  vRV.km=null; vRV.idx=null; vRvInfo(); vRvMsg('로드뷰를 찾는 중…'); vRvWalker(lat, lon);
+  vRV.client.getNearestPanoId(pos, R, id=>{
     if(seq!==vRV.seq) return;
-    if(!panoId){ msg.textContent='이 근처 '+R+'m 안에는 로드뷰 사진이 없습니다'; vRvWalker(lat, lon); return; }
-    msg.classList.remove('mcv-on');
-    vRV.rv.setPanoId(panoId, pos);
-    if(vRV.km!=null) vRV.rv.setViewpoint({pan:vRvBearing(vRV.km), tilt:0, zoom:0});
+    if(!id){ vRvMsg('이 근처 '+R+'m 안에는 로드뷰 사진이 없습니다'); return; }
+    vRvMsg(''); vRV.cur=String(id); vRV.rv.setPanoId(id, pos);
     setTimeout(()=>{ try{ vRV.rv.relayout(); }catch(e){} }, 30);
   });
-  vRvWalker(lat, lon);
-}
-function vRvStep(dir){
-  if(vRV.km==null || !C) return;
-  const tot=C.total_km || cum[cum.length-1]/1000;
-  const km=Math.max(0, Math.min(tot, vRV.km+dir*0.2)), ll=latlngAtKm(km);
-  vRvOpen(ll[0], ll[1], {km, radius:80});
-  try{ const L2=new kakao.maps.LatLng(ll[0], ll[1]); if(!kmap.getBounds().contain(L2)) kmap.panTo(L2); }catch(e){}
 }
 function vRvClose(){
-  const w=document.getElementById('mcv-rvWrap'); if(w) w.classList.remove('mcv-on','mcv-big');
-  vRV.big=false; vRV.seq++;
+  vRvPlay(false);
+  const w=$rv('mcv-rvWrap'); if(w) w.classList.remove('mcv-on','mcv-big');
+  vRV.big=false; vRV.seq++; vRvMsg('');
+  if(C) vRvT().flush();
   if(vRV.walker) vRV.walker.setMap(null);
+  if(vRV.trail) vRV.trail.setMap(null);
 }
 (function(){
-  const on=(id,f)=>{ const b=document.getElementById(id); if(b) b.addEventListener('click', f); };
+  const on=(id,f)=>{ const b=$rv(id); if(b) b.addEventListener('click', f); };
   on('mcv-rvBtn', ()=>vRvToggle());
   on('mcv-rvClose', vRvClose);
-  on('mcv-rvPrev', ()=>vRvStep(-1));
-  on('mcv-rvNext', ()=>vRvStep(1));
-  on('mcv-rvBig', ()=>{ vRV.big=!vRV.big; document.getElementById('mcv-rvWrap').classList.toggle('mcv-big', vRV.big); setTimeout(()=>{ try{ vRV.rv && vRV.rv.relayout(); }catch(e){} }, 60); });
-  document.addEventListener('keydown', e=>{ const w=document.getElementById('mcv-rvWrap'); if(e.key==='Escape' && w && w.classList.contains('mcv-on')) vRvClose(); });
-  if(OSM){ const b=document.getElementById('mcv-rvBtn'); if(b) b.style.display='none'; }
+  on('mcv-rvPrev', ()=>{ vRvPlay(false); vRvStep(-1); });
+  on('mcv-rvNext', ()=>{ vRvPlay(false); vRvStep(1); });
+  on('mcv-rvPlay', ()=>vRvPlay());
+  on('mcv-rvSpd', ()=>{ vRV.spd=(vRV.spd+1)%RV_SPD.length; vRvInfo(); vRvTip('따라가기 속도: '+RV_SPD[vRV.spd].t, 1600); });
+  on('mcv-rvBig', ()=>{ vRV.big=!vRV.big; const w=$rv('mcv-rvWrap'); w.classList.toggle('mcv-big', vRV.big); if(w.__rvRestore) w.__rvRestore(); setTimeout(()=>{ try{ vRV.rv && vRV.rv.relayout(); }catch(e){} }, 60); });
+  const rg=$rv('mcv-rvRange');
+  if(rg){
+    rg.addEventListener('input', ()=>{ vRV.drag=true; vRvPlay(false); const km=+rg.value, ll=latlngAtKm(km); vRvWalker(ll[0], ll[1], vRvBearing(km)); vRvInfo(km); });
+    rg.addEventListener('change', ()=>{ vRV.drag=false; vRvGo(+rg.value, true); });
+  }
+  document.addEventListener('keydown', e=>{
+    const w=$rv('mcv-rvWrap'); if(!w || !w.classList.contains('mcv-on')) return;
+    const a=document.activeElement||{}, tg=(a.tagName||'');
+    if(e.key==='Escape'){ vRvClose(); return; }
+    if(/TEXTAREA|SELECT/.test(tg) || a.isContentEditable || (tg==='INPUT' && a.type!=='button')) return;
+    if(e.key==='ArrowRight'){ e.preventDefault(); vRvPlay(false); vRvStep(1); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); vRvPlay(false); vRvStep(-1); }
+    else if(e.key===' ' && tg!=='BUTTON'){ e.preventDefault(); vRvPlay(); }
+  });
+  if(OSM){ const b=$rv('mcv-rvBtn'); if(b) b.style.display='none'; }
   /* 점검용 — 콘솔에서 MCV_RV.state 로 로드뷰 상태를 본다 */
-  window.MCV_RV={state:vRV, bearing:vRvBearing, at:km=>latlngAtKm(km), map:()=>kmap, open:vRvOpen, info:(h,la,lo)=>showInfo(h,la,lo)};
+  window.MCV_RV={state:vRV, cam:vRvFollow, bearing:vRvBearing, at:km=>latlngAtKm(km), map:()=>kmap, open:vRvOpen, go:vRvGo, step:vRvStep, play:vRvPlay, track:()=>vRvT(), info:(h,la,lo)=>showInfo(h,la,lo)};
 })();
 function setCourse(key){
   curKey=key; C=DATA.courses[key];
@@ -2919,7 +3182,8 @@ function setCourse(key){
   mcvSafe('페이스', renderPace);
   mcvSafe('범례', renderLegend);
   mcvSafe('통계', renderStats);
-  mcvSafe('로드뷰', ()=>{ if(vRV.rv && document.getElementById('mcv-rvWrap').classList.contains('mcv-on')){ const p=vRV.rv.getPosition(); if(p){ const n=vNearKm(p.getLat(),p.getLng()); vRV.km=(n&&n.d<150)?n.km:null; vRvInfo(); } } });
+  mcvSafe('로드뷰', ()=>{ if(vRV.rv && document.getElementById('mcv-rvWrap').classList.contains('mcv-on')){ vRvPlay(false); const p=vRV.rv.getPosition(); const n=p?vNearKm(p.getLat(),p.getLng()):null;
+    if(n && n.d<50) vRvGo(n.km); else { vRV.seq++; vRV.km=null; vRV.idx=null; vRvInfo(); } } });
   if(showAll){ mcvSafe('전코스', drawAllCourses); mcvSafe('맞추기', fitAllCourses); }
 }
 courseSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCourse(b.dataset.c)));
