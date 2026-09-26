@@ -7,10 +7,10 @@
 <title>구미 순환코스</title>
 
 </head>
-<body style="margin:0;background:#f5f5f7">
+<body style="margin:0;background:#f4f5f2">
 <!--MCV_FRAGMENT_START-->
 <style>#mcv-root{--blue:#1976d2;--dark:#263238;--bg:#f4f6f8;--card:#fff;--line:#e0e4e8;}
-#mcv-root, #mcv-root *{margin:0;padding:0;box-sizing:border-box;}
+#mcv-root, #mcv-root *:where(:not(#mcv-rvPano *)){margin:0;padding:0;box-sizing:border-box;}
 #mcv-root{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--bg);color:var(--dark);}
 #mcv-root .mcv-wrap{max-width:1100px;margin:0 auto;padding:16px;}
 #mcv-root header{background:linear-gradient(135deg,#0d47a1,#1976d2);color:#fff;border-radius:14px;padding:22px 24px;margin-bottom:16px;}
@@ -53,14 +53,14 @@
 #mcv-root #mcv-tooltip{position:absolute;pointer-events:none;background:rgba(38,50,56,.94);color:#fff;padding:8px 11px;border-radius:8px;font-size:.78rem;line-height:1.5;display:none;white-space:nowrap;z-index:10;}
 #mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;padding:16px;}
 #mcv-root .mcv-tables>div{min-width:0;overflow-x:auto;}
-#mcv-root table{width:100%;border-collapse:collapse;font-size:.85rem;}
-#mcv-root th{background:#f7f9fb;text-align:left;padding:9px 11px;border-bottom:2px solid var(--line);font-size:.77rem;color:#607d8b;white-space:nowrap;}
-#mcv-root td{padding:9px 11px;border-bottom:1px solid #eef1f4;}
-#mcv-root tr.mcv-row{cursor:pointer;}
-#mcv-root tr.mcv-row:hover{background:#eef6ff;}
-#mcv-root td.mcv-km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
-#mcv-root td.mcv-qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;}
-#mcv-root tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
+#mcv-root table:where(:not(#mcv-rvPano *)){width:100%;border-collapse:collapse;font-size:.85rem;}
+#mcv-root th:where(:not(#mcv-rvPano *)){background:#f7f9fb;text-align:left;padding:9px 11px;border-bottom:2px solid var(--line);font-size:.77rem;color:#607d8b;white-space:nowrap;}
+#mcv-root td:where(:not(#mcv-rvPano *)){padding:9px 11px;border-bottom:1px solid #eef1f4;}
+#mcv-root tr:where(:not(#mcv-rvPano *)).mcv-row{cursor:pointer;}
+#mcv-root tr:where(:not(#mcv-rvPano *)).mcv-row:hover{background:#eef6ff;}
+#mcv-root td:where(:not(#mcv-rvPano *)).mcv-km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
+#mcv-root td:where(:not(#mcv-rvPano *)).mcv-qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;}
+#mcv-root tfoot:where(:not(#mcv-rvPano *)) td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
 #mcv-root .mcv-titleicon{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
 #mcv-root .mcv-note{font-size:.75rem;color:#78909c;padding:10px 18px 14px;line-height:1.6;}
 #mcv-root .mcv-kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
@@ -101,8 +101,8 @@
 }
 @media (max-width:640px){
   #mcv-root #mcv-elev{height:180px;}
-  #mcv-root table{font-size:.8rem;}
-  #mcv-root th, #mcv-root td{padding:8px;}
+  #mcv-root table:where(:not(#mcv-rvPano *)){font-size:.8rem;}
+  #mcv-root th:where(:not(#mcv-rvPano *)), #mcv-root td:where(:not(#mcv-rvPano *)){padding:8px;}
   #mcv-root .mcv-card h2{padding:12px;gap:8px;}
   #mcv-root .mcv-legend{margin-left:0;}
   /* 휴대전화 — 화면 폭에 맞춰 접는다 */
@@ -119,7 +119,7 @@
   #mcv-root .mcv-seg button{padding:9px 12px;font-size:.75rem;}
   #mcv-root .mcv-printbtn{padding:9px 13px;}
   /* 인라인 크기·리셋보다 뒤에 오도록 강제 — 16px 미만이면 iOS가 화면을 확대한다 */
-  #mcv-root input,#mcv-root select,#mcv-root textarea{font-size:16px !important;}
+  #mcv-root input:where(:not(#mcv-rvPano *)),#mcv-root select:where(:not(#mcv-rvPano *)),#mcv-root textarea:where(:not(#mcv-rvPano *)){font-size:16px !important;}
 }
 @media (pointer:coarse){
   #mcv-root .mcv-seg button{min-height:36px;}
@@ -133,21 +133,21 @@
   #mcv-root header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   #mcv-root .mcv-tables{grid-template-columns:1fr 1fr;}
   #mcv-root #mcv-map{height:380px !important;}
-  #mcv-root th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #mcv-root th:where(:not(#mcv-rvPano *)){-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
 #mcv-root{container-type:inline-size;box-sizing:border-box;text-align:left;font-size:16px;
   font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;color:#263238;
   background:var(--mcv-bg,#f4f6f8);padding:0;margin:0;line-height:1.6;-webkit-text-size-adjust:100%;}
-#mcv-root *,#mcv-root *:before,#mcv-root *:after{box-sizing:border-box;}
-#mcv-root h1,#mcv-root h2,#mcv-root h3,#mcv-root h4,#mcv-root p,#mcv-root div,#mcv-root span,
-#mcv-root table,#mcv-root thead,#mcv-root tbody,#mcv-root tfoot,#mcv-root tr,#mcv-root th,#mcv-root td,
-#mcv-root label,#mcv-root canvas{margin:0;padding:0;border:0;background:none;float:none;
+#mcv-root *:where(:not(#mcv-rvPano *)),#mcv-root *:where(:not(#mcv-rvPano *)):before,#mcv-root *:where(:not(#mcv-rvPano *)):after{box-sizing:border-box;}
+#mcv-root h1:where(:not(#mcv-rvPano *)),#mcv-root h2:where(:not(#mcv-rvPano *)),#mcv-root h3:where(:not(#mcv-rvPano *)),#mcv-root h4:where(:not(#mcv-rvPano *)),#mcv-root p:where(:not(#mcv-rvPano *)),#mcv-root div:where(:not(#mcv-rvPano *)),#mcv-root span:where(:not(#mcv-rvPano *)),
+#mcv-root table:where(:not(#mcv-rvPano *)),#mcv-root thead:where(:not(#mcv-rvPano *)),#mcv-root tbody:where(:not(#mcv-rvPano *)),#mcv-root tfoot:where(:not(#mcv-rvPano *)),#mcv-root tr:where(:not(#mcv-rvPano *)),#mcv-root th:where(:not(#mcv-rvPano *)),#mcv-root td:where(:not(#mcv-rvPano *)),
+#mcv-root label:where(:not(#mcv-rvPano *)),#mcv-root canvas:where(:not(#mcv-rvPano *)){margin:0;padding:0;border:0;background:none;float:none;
   font-family:inherit;letter-spacing:normal;text-transform:none;text-shadow:none;box-shadow:none;}
-#mcv-root button,#mcv-root select,#mcv-root input{font-family:inherit;font-size:100%;margin:0;
+#mcv-root button:where(:not(#mcv-rvPano *)),#mcv-root select:where(:not(#mcv-rvPano *)),#mcv-root input:where(:not(#mcv-rvPano *)){font-family:inherit;font-size:100%;margin:0;
   text-transform:none;letter-spacing:normal;box-shadow:none;text-shadow:none;min-height:0;line-height:1.4;}
-#mcv-root a{text-decoration:none;}
-#mcv-root table{border-collapse:collapse;border-spacing:0;width:100%;}
-#mcv-root img,#mcv-root canvas,#mcv-root svg{max-width:100%;}
+#mcv-root a:where(:not(#mcv-rvPano *)){text-decoration:none;}
+#mcv-root table:where(:not(#mcv-rvPano *)){border-collapse:collapse;border-spacing:0;width:100%;}
+#mcv-root img:where(:not(#mcv-rvPano *)),#mcv-root canvas:where(:not(#mcv-rvPano *)),#mcv-root svg:where(:not(#mcv-rvPano *)){max-width:100%;}
 #mcv-root .mcv-wrap{max-width:var(--mcv-max,1240px);margin:0 auto;padding:16px;}
 #mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));
   gap:14px;padding:16px;align-items:start;}
@@ -160,7 +160,7 @@
   #mcv-root .mcv-tables{padding:10px;gap:10px;}
   #mcv-root .mcv-card>h2{padding:12px;gap:8px;}
   #mcv-root .mcv-stat{padding:7px 11px;font-size:.8rem;}
-  #mcv-root table{font-size:.8rem;} #mcv-root th,#mcv-root td{padding:8px;}
+  #mcv-root table:where(:not(#mcv-rvPano *)){font-size:.8rem;} #mcv-root th:where(:not(#mcv-rvPano *)),#mcv-root td:where(:not(#mcv-rvPano *)){padding:8px;}
 }
 @container (min-width:1100px){ #mcv-root .mcv-tables{gap:16px;} }
 @container (min-width:1420px){ #mcv-root .mcv-tables{grid-template-columns:repeat(4,minmax(0,1fr));} }
@@ -341,8 +341,8 @@
   --muted:#6e6e73; --sub:#515154; --dim:#7a7a7a;
   --r:18px; --r-md:11px; --r-sm:8px; --r-xs:5px; --pill:9999px;
   --ease:cubic-bezier(.28,.11,.32,1);
-  font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,system-ui,
-    'Apple SD Gothic Neo',Pretendard,'Malgun Gothic','Noto Sans KR',sans-serif;
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,
+    'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
   -webkit-font-smoothing:antialiased;
   font-size:17px; line-height:1.47; letter-spacing:-.374px;
 }
@@ -425,12 +425,12 @@
 #mcv-root .mcv-chip-off{opacity:.4;border-style:dashed;}
 #mcv-root .mcv-sumchip{background:var(--bg);border-radius:var(--r-md);border:none;}
 /* 표 */
-#mcv-root table{font-size:14px;letter-spacing:-.224px;}
-#mcv-root th{background:var(--bg);color:var(--muted);font-weight:600;font-size:12px;letter-spacing:0;
+#mcv-root table:where(:not(#mcv-rvPano *)){font-size:14px;letter-spacing:-.224px;}
+#mcv-root th:where(:not(#mcv-rvPano *)){background:var(--bg);color:var(--muted);font-weight:600;font-size:12px;letter-spacing:0;
   border-bottom:1px solid var(--line);padding:11px 14px;}
-#mcv-root td{border-bottom:1px solid var(--line);padding:10px 14px;color:var(--dark);}
-#mcv-root tbody tr:hover td{background:var(--bg);}
-#mcv-root tfoot td{background:var(--bg);font-weight:600;}
+#mcv-root td:where(:not(#mcv-rvPano *)){border-bottom:1px solid var(--line);padding:10px 14px;color:var(--dark);}
+#mcv-root tbody:where(:not(#mcv-rvPano *)) tr:hover td{background:var(--bg);}
+#mcv-root tfoot:where(:not(#mcv-rvPano *)) td{background:var(--bg);font-weight:600;}
 #mcv-root .mcv-titleicon{border-radius:var(--r-sm);}
 /* 항목 카드 (참가자용) */
 #mcv-root .mcv-item{border-radius:var(--r-md);border:1px solid var(--line2);box-shadow:none;
@@ -506,7 +506,146 @@
 #mcv-root #mcv-limitNoteEl{color:var(--muted);font-size:14px;letter-spacing:-.224px;}
 #mcv-root .mcv-hint{font-size:13px;color:var(--sub);font-weight:400;letter-spacing:0;}
 /* color-scheme 은 상속되므로 뿌리에만 걸면 안쪽 입력칸·스크롤바까지 밝게 유지된다 */
-#mcv-root a{color:var(--link);}
+#mcv-root a:where(:not(#mcv-rvPano *)){color:var(--link);}
+/* ══════════════ 재설계 (2026-09) — 제작기와 같은 톤 ══════════════
+   잉크(검정)·종이·안전 주황 하나. 파란 알약·유리·그라디언트·튀는 모션 없음.
+   숫자는 계기판처럼 크게. 이 구역이 위의 모든 규칙을 덮는다(순서 + 필요한 곳 !important). */
+#mcv-root{
+  --ink:#14161a; --ink2:#2b2f36; --ink3:#5b6069; --ink4:#8b9099;
+  --paper:#f4f5f2; --paper2:#ffffff; --paper4:#e9ebe6; --rule:#cfd3cb;
+  --signal:#ff6a13; --signalInk:#2a1200;
+  --blue:#14161a; --link:#14161a; --dark:#14161a; --bg:#f4f5f2; --card:#ffffff; --pearl:#f4f5f2;
+  --line:rgba(20,22,26,.10); --line2:#cfd3cb; --divider:#e9ebe6; --muted:#5b6069; --sub:#2b2f36; --dim:#8b9099;
+  --r:10px; --r-md:8px; --r-sm:6px; --r-xs:4px;
+  background:var(--paper); color:var(--ink);
+  font-size:16px; line-height:1.5; letter-spacing:-.1px; font-variant-numeric:tabular-nums;}
+#mcv-root a:where(:not(#mcv-rvPano *)){text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--rule);}
+#mcv-root :focus-visible{outline:2px solid #0b57d0;outline-offset:2px;}
+#mcv-root .mcv-wrap{max-width:1180px;padding:20px 20px 48px;}
+/* 머리 — 검은 띠 하나, 계기판 숫자 */
+#mcv-root header,#mcv-root header.admin{background:var(--ink) !important;color:#fff;border:none !important;
+  border-radius:var(--r) !important;padding:24px 26px 22px !important;margin-bottom:16px !important;box-shadow:none !important;}
+#mcv-root header h1{font-size:30px !important;font-weight:800;line-height:1.15;letter-spacing:-.6px;color:#fff;margin-bottom:6px !important;}
+#mcv-root header p{color:rgba(255,255,255,.66);font-size:14px !important;letter-spacing:0;line-height:1.5;}
+#mcv-root header .mcv-tag,#mcv-root header.admin .mcv-tag{background:var(--signal);color:var(--signalInk);
+  border-radius:var(--r-xs);font-size:12px;font-weight:800;letter-spacing:0;padding:3px 8px;}
+#mcv-root .mcv-stats{gap:14px 0 !important;margin-top:20px !important;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);}
+#mcv-root .mcv-stat{background:transparent !important;border-radius:0 !important;border-left:2px solid rgba(255,255,255,.22);
+  padding:0 22px 0 14px !important;color:rgba(255,255,255,.62);font-size:12px !important;letter-spacing:0;line-height:1.3 !important;}
+#mcv-root .mcv-stat:first-child{border-left:none;padding-left:0 !important;}
+#mcv-root header.mcv-noTitle .mcv-stats{margin-top:0 !important;padding-top:0;border-top:none;}
+#mcv-root header.mcv-noTitle{padding:18px 24px !important;}
+#mcv-root .mcv-stat b{color:#fff;font-size:24px !important;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-top:3px !important;}
+#mcv-root .mcv-kakao-open{border-radius:var(--r-md);font-size:14px;font-weight:700;padding:9px 14px;letter-spacing:0;}
+/* 카드 */
+#mcv-root .mcv-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);margin-bottom:16px !important;}
+#mcv-root .mcv-card>h2,#mcv-root .mcv-card h2{font-size:15px !important;font-weight:800;letter-spacing:-.2px;padding:13px 18px !important;border-bottom:1px solid var(--line);gap:8px;}
+/* 세그먼트 — 홈 안에서 한 칸이 켜진다 */
+#mcv-root .mcv-seg{background:var(--paper4) !important;border:none !important;border-radius:var(--r-md) !important;padding:3px !important;gap:2px !important;}
+#mcv-root .mcv-seg button{border:none !important;background:transparent !important;border-radius:var(--r-sm) !important;
+  padding:6px 12px !important;font-size:13px;color:var(--ink2);font-weight:500;letter-spacing:0;}
+#mcv-root .mcv-seg button:hover{background:rgba(255,255,255,.55) !important;}
+#mcv-root .mcv-seg button:active{transform:none;}
+#mcv-root .mcv-seg button.mcv-on,#mcv-root .mcv-seg.mcv-course button.mcv-on,#mcv-root .mcv-seg.mcv-kk button.mcv-on{
+  background:#fff !important;color:var(--ink) !important;font-weight:800;border:none !important;padding:6px 12px !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.14) !important;}
+/* 단추 */
+#mcv-root .mcv-allBtn{border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:var(--r-md);
+  padding:6px 12px;font-size:13px;font-weight:700;letter-spacing:0;}
+#mcv-root .mcv-allBtn:hover{background:var(--paper);}
+#mcv-root .mcv-allBtn:active{transform:none;}
+#mcv-root .mcv-allBtn.mcv-on{background:var(--ink);border-color:var(--ink);color:#fff;}
+#mcv-root #mcv-rvBtn.mcv-on{background:var(--signal);border-color:var(--signal);color:var(--signalInk);}
+#mcv-root .mcv-printbtn,#mcv-root #mcv-diagBtn{border:1px solid var(--rule) !important;background:#fff !important;border-radius:var(--r-md);box-shadow:none;}
+#mcv-root .mcv-printbtn:active,#mcv-root #mcv-diagBtn:active{transform:none;}
+#mcv-root .mcv-locate-btn{background:#fff !important;border:1px solid var(--rule) !important;box-shadow:0 2px 8px rgba(0,0,0,.14) !important;color:var(--ink);}
+#mcv-root .mcv-locate-btn.tracking{background:var(--signal) !important;border-color:var(--signal) !important;color:var(--signalInk);}
+#mcv-root .mcv-locate-btn:active{transform:none;}
+/* 범례 칩 · 안내 */
+#mcv-root .mcv-chip{border-radius:var(--r-sm);border:1px solid var(--rule);background:#fff;font-size:13px;padding:4px 10px;color:var(--ink);}
+#mcv-root .mcv-allChip{border-radius:var(--r-sm);}
+#mcv-root .mcv-allChip.mcv-on{border-color:var(--ink);}
+#mcv-root .mcv-allChip b{color:var(--ink);}
+#mcv-root .mcv-allChip:active{transform:none;}
+#mcv-root .mcv-allNote{border-radius:var(--r-sm);border-left:3px solid var(--rule);background:var(--paper);color:var(--ink3);}
+#mcv-root .mcv-note{color:var(--ink3) !important;font-size:13px !important;}
+#mcv-root .mcv-hint{color:var(--ink3);}
+/* 지도 */
+#mcv-root #mcv-map{background:#e6e8e3;}
+#mcv-root #mcv-mapErr{background:rgba(255,255,255,.96);backdrop-filter:none;-webkit-backdrop-filter:none;}
+#mcv-root #mcv-tooltip,#mcv-root .mcv-tooltip{background:var(--ink) !important;color:#fff !important;border-radius:var(--r-sm);backdrop-filter:none;-webkit-backdrop-filter:none;}
+/* 표 */
+#mcv-root th:where(:not(#mcv-rvPano *)){background:transparent !important;color:var(--ink);font-weight:800;font-size:12px;border-bottom:2px solid var(--ink) !important;}
+#mcv-root td:where(:not(#mcv-rvPano *)){border-bottom:1px solid var(--line);}
+#mcv-root tfoot:where(:not(#mcv-rvPano *)) td{background:transparent;border-top:2px solid var(--ink);font-weight:800;}
+#mcv-root tr:where(:not(#mcv-rvPano *)).mcv-row:hover td,#mcv-root tbody:where(:not(#mcv-rvPano *)) tr:hover td{background:var(--paper);}
+#mcv-root .mcv-limit{border-color:var(--rule);border-radius:var(--r);}
+#mcv-root .mcv-limit-h{background:var(--paper);font-weight:800;font-size:14px;letter-spacing:0;}
+#mcv-root .mcv-limit th{border-bottom:2px solid var(--ink) !important;}
+/* 시설 목록 */
+#mcv-root .mcv-cat{border-color:var(--rule);border-radius:var(--r);}
+#mcv-root .mcv-cat-h{background:var(--paper);}
+#mcv-root .mcv-cat-h .mcv-n{border-radius:var(--r-xs);background:#fff;border:1px solid var(--rule);color:var(--ink2);}
+#mcv-root .mcv-item{border:none;border-bottom:1px solid var(--line);border-radius:0;}
+#mcv-root .mcv-item:hover{background:var(--paper);}
+#mcv-root .mcv-nm{font-size:15px;font-weight:800;letter-spacing:-.2px;}
+#mcv-root .mcv-c{border-radius:var(--r-xs) !important;font-size:12.5px;font-weight:700;letter-spacing:0;}
+#mcv-root .mcv-sumchip{background:var(--paper);border-left:2px solid var(--rule);border-radius:0;}
+/* 정보 카드 */
+#mcv-root .mcv-kinfo,#mcv-root #mcv-map .mcv-kinfo{border-radius:var(--r) !important;border:1px solid var(--rule) !important;
+  box-shadow:0 12px 40px rgba(0,0,0,.22) !important;animation:mcvFade .16s ease both;}
+#mcv-root .mcv-kinfo .mcv-x,#mcv-root #mcv-map .mcv-kinfo .mcv-x{border-radius:var(--r-sm);background:var(--paper);}
+#mcv-root .mcv-kinfo .mcv-x:active{transform:none;}
+#mcv-root .mcv-kinfo .mcv-titleicon{border-radius:var(--r-sm);}
+#mcv-root .mcv-kinfo .mcv-c{border-radius:var(--r-xs) !important;}
+#mcv-root .mcv-infoScrim{background:rgba(20,22,26,.4);}
+#mcv-root .mcv-rvGo{display:block;width:100%;margin-top:14px;border:1px solid var(--ink);background:#fff;color:var(--ink);
+  border-radius:var(--r-md);padding:9px 12px;font-size:14px;font-weight:700;cursor:pointer;}
+#mcv-root .mcv-rvGo:hover{background:var(--paper);}
+/* ── 로드뷰 창 ── */
+#mcv-root #mcv-rvWrap{position:absolute;right:12px;bottom:12px;width:min(50%,640px);height:min(66%,440px);z-index:1300;
+  display:none;flex-direction:column;background:#fff;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;
+  box-shadow:0 12px 36px rgba(0,0,0,.22);}
+#mcv-root #mcv-rvWrap.mcv-on{display:flex !important;}
+#mcv-root #mcv-rvWrap.mcv-big{left:12px;top:12px;width:auto;height:auto;}
+#mcv-root .mcv-rvBar{display:flex !important;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:#fff;}
+#mcv-root .mcv-rvBar b{font-size:13px;font-weight:800;white-space:nowrap;}
+#mcv-root #mcv-rvInfo{font-size:12px;color:var(--ink3);white-space:nowrap;}
+#mcv-root .mcv-rvBtns{margin-left:auto;display:flex !important;gap:4px;}
+#mcv-root .mcv-rvB{border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:var(--r-sm);padding:4px 9px;font-size:12px;font-weight:700;cursor:pointer;line-height:1.4;}
+#mcv-root .mcv-rvB:hover{background:var(--paper);}
+#mcv-root .mcv-rvB:disabled{opacity:.35;cursor:default;}
+#mcv-root #mcv-rvPano{flex:1;min-height:0;position:relative;background:#1b1d21;}
+#mcv-root #mcv-rvMsg{position:absolute;left:0;right:0;top:40px;bottom:0;display:none;align-items:center;justify-content:center;
+  text-align:center;padding:20px;color:#fff;font-size:13px;line-height:1.6;background:rgba(20,22,26,.72);pointer-events:none;}
+#mcv-root #mcv-rvMsg.mcv-on{display:flex;}
+#mcv-root #mcv-rvTip{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:1310;display:none;
+  background:var(--ink);color:#fff;border-radius:var(--r-md);padding:7px 14px;font-size:13px;white-space:nowrap;max-width:calc(100% - 24px);
+  overflow:hidden;text-overflow:ellipsis;pointer-events:none;}
+#mcv-root #mcv-rvTip.mcv-on{display:block;}
+/* 로드뷰 안쪽은 아래 초기화 규칙들에서 :where(:not(#mcv-rvPano *)) 로 빠져 있다 — 카카오 자체 CSS 가 그대로 산다 */
+/* 지도 위 걷는 사람 */
+#mcv-root #mcv-map .mcv-rvWalker{position:relative;width:34px;height:34px;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+#mcv-root #mcv-map .mcv-rvMan{position:relative;z-index:2;width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid #1d6fd6;
+  display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 1px 4px rgba(0,0,0,.35);}
+#mcv-root #mcv-map .mcv-rvCone{position:absolute;left:50%;top:50%;width:0;height:0;margin:-34px 0 0 -14px;
+  border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:34px solid rgba(29,111,214,.38);
+  transform-origin:14px 34px;z-index:1;}
+@container (max-width:720px){
+  #mcv-root .mcv-wrap{padding:10px 10px 32px;}
+  #mcv-root header,#mcv-root header.admin{padding:16px 16px 14px !important;}
+  #mcv-root .mcv-card>h2,#mcv-root .mcv-card h2{padding:11px 12px !important;}
+  #mcv-root #mcv-rvWrap{left:8px;right:8px;bottom:8px;width:auto;height:58%;}
+  #mcv-root #mcv-rvWrap.mcv-big{top:8px;height:auto;}
+  #mcv-root header h1{font-size:22px !important;}
+  #mcv-root .mcv-stat{padding:0 14px 0 10px !important;}
+  #mcv-root .mcv-stat b{font-size:18px !important;}
+}
+@media print{
+  #mcv-root header,#mcv-root header.admin{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #mcv-root #mcv-rvBtn,#mcv-root #mcv-rvWrap,#mcv-root #mcv-rvTip{display:none !important;}
+}
+@media (prefers-reduced-motion:reduce){ #mcv-root .mcv-kinfo{animation:none !important;} }
 
 </style>
 <div id="mcv-root">
@@ -527,6 +666,7 @@
     <h2>🗺 코스 지도
       <span class="mcv-seg mcv-course" id="mcv-courseSeg"></span>
       <button class="mcv-allBtn" id="mcv-allBtn" title="모든 코스를 한 화면에 함께 봅니다">⛶ 전 코스 보기</button>
+      <button class="mcv-allBtn" id="mcv-rvBtn" title="켜면 로드뷰가 있는 길이 파랗게 보이고, 누른 자리의 로드뷰가 열립니다">🚶 로드뷰</button>
       <span class="mcv-seg mcv-kk" id="mcv-typeSeg">
         <button data-t="ROADMAP" class="mcv-on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
       </span>
@@ -538,6 +678,20 @@
     <div class="mcv-allNote" id="mcv-laneNote"></div>
     <div id="mcv-mapWrap">
       <div id="mcv-map"></div>
+      <div id="mcv-rvWrap" aria-label="로드뷰">
+        <div class="mcv-rvBar">
+          <b>🚶 로드뷰</b><span id="mcv-rvInfo"></span>
+          <span class="mcv-rvBtns">
+            <button type="button" class="mcv-rvB" id="mcv-rvPrev" title="코스를 따라 200m 뒤로">◀ 200m</button>
+            <button type="button" class="mcv-rvB" id="mcv-rvNext" title="코스를 따라 200m 앞으로">200m ▶</button>
+            <button type="button" class="mcv-rvB" id="mcv-rvBig" title="크게 / 작게">⤢</button>
+            <button type="button" class="mcv-rvB" id="mcv-rvClose" title="닫기">✕</button>
+          </span>
+        </div>
+        <div id="mcv-rvPano"></div>
+        <div id="mcv-rvMsg"></div>
+      </div>
+      <div id="mcv-rvTip"></div>
       <div id="mcv-mapErr"><div class="mcv-in" id="mcv-mapErrIn"></div></div>
       <button class="mcv-locate-btn" id="mcv-locateBtn" title="내 위치 추적">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
@@ -774,6 +928,7 @@ if(DATA.hideTitle){
   const h1=document.getElementById('mcv-hTitle').parentElement;
   if(h1) h1.style.display='none';
   document.getElementById('mcv-hSub').style.display='none';
+  { const hd=document.getElementById('mcv-hdr'); if(hd) hd.classList.add('mcv-noTitle'); }
 } else {
   document.getElementById('mcv-hTitle').textContent=DATA.title;
   document.getElementById('mcv-hSub').textContent=T.subtitle;
@@ -947,9 +1102,10 @@ function init(){
     kmap.on('moveend zoomend', ()=>{ scheduleArrows(); scheduleSep(); });
     document.getElementById('mcv-typeSeg').style.display='none';
     document.getElementById('mcv-ovSeg').style.display='none';
+    { const b=document.getElementById('mcv-rvBtn'); if(b) b.style.display='none'; }
   } else {
     kmap=new kakao.maps.Map(document.getElementById('mcv-map'),{center:new kakao.maps.LatLng(DATA.start[0],DATA.start[1]),level:7});
-    kakao.maps.event.addListener(kmap,'click',()=>closeInfo());
+    kakao.maps.event.addListener(kmap,'click',e=>{ if(vRV.on && e && e.latLng){ closeInfo(); vRvOpen(e.latLng.getLat(), e.latLng.getLng()); return; } closeInfo(); });
     kakao.maps.event.addListener(kmap,'idle',()=>{ scheduleArrows(); scheduleSep(); });
     document.getElementById('mcv-typeSeg').onclick=e=>{
       const b=e.target.closest('button'); if(!b) return;
@@ -2021,12 +2177,15 @@ function showInfo(html,lat,lon){
   if(!wrap){ return; }
   const lay=document.createElement('div');
   lay.id='mcv-infoLayer'; lay.className='mcv-infoLayer';
+  const rvOk=(typeof vRvOk==='function') && vRvOk() && lat!=null && lon!=null;
   lay.innerHTML='<div class="mcv-infoScrim"></div>'+
     '<div class="mcv-kinfo" role="dialog" aria-modal="true">'+html+
+      (rvOk?'<button type="button" class="mcv-rvGo">🚶 이 자리 로드뷰</button>':'')+
       '<button type="button" class="mcv-x" aria-label="닫기">×</button></div>';
   wrap.appendChild(lay);
   lay.querySelector('.mcv-infoScrim').addEventListener('click', closeInfo);
   lay.querySelector('.mcv-x').addEventListener('click', closeInfo);
+  { const g=lay.querySelector('.mcv-rvGo'); if(g) g.addEventListener('click', function(ev){ ev.stopPropagation(); closeInfo(); vRvOpen(+lat, +lon); }); }
   const card=lay.querySelector('.mcv-kinfo');
   card.addEventListener('click', function(e){ e.stopPropagation(); });
   kInfo={dom:true};
@@ -2644,6 +2803,111 @@ if(allBtn) allBtn.addEventListener('click', ()=>{
     scheduleArrows();
   }
 });
+/* ══ 로드뷰 (카카오 지도일 때) — 누른 자리 · 시설 카드 · 코스 따라 200m 씩 ══ */
+const vRV={on:false, rv:null, client:null, walker:null, km:null, seq:0, big:false};
+function vRvOk(){ return !OSM && typeof kakao!=='undefined' && kakao.maps && !!kakao.maps.Roadview && !!kakao.maps.RoadviewClient; }
+function vRvTip(t, ms){
+  const el=document.getElementById('mcv-rvTip'); if(!el) return;
+  el.textContent=t||''; el.classList.toggle('mcv-on', !!t);
+  clearTimeout(el.__t); if(t) el.__t=setTimeout(()=>el.classList.remove('mcv-on'), ms||3200);
+}
+function vNearKm(lat, lon){
+  const tr=C && C.track; if(!tr || tr.length<2 || cum.length!==tr.length) return null;
+  const K=111320, cl=Math.cos(lat*Math.PI/180); let best=null;
+  for(let i=1;i<tr.length;i++){
+    const a=tr[i-1], b=tr[i];
+    const ax=(a[1]-lon)*K*cl, ay=(a[0]-lat)*K, bx=(b[1]-lon)*K*cl, by=(b[0]-lat)*K;
+    const dx=bx-ax, dy=by-ay, L2=dx*dx+dy*dy; let t=L2?-(ax*dx+ay*dy)/L2:0; t=t<0?0:(t>1?1:t);
+    const d=Math.hypot(ax+t*dx, ay+t*dy);
+    if(!best || d<best.d) best={d, km:(cum[i-1]+t*(cum[i]-cum[i-1]))/1000};
+  }
+  return best;
+}
+function vRvBearing(km){
+  const tot=(C && C.total_km) || (cum.length?cum[cum.length-1]/1000:0);
+  const a=latlngAtKm(Math.max(0, km-0.02)), b=latlngAtKm(Math.min(tot, km+0.04));
+  const y=(b[1]-a[1])*Math.cos(a[0]*Math.PI/180), x=b[0]-a[0];
+  return ((Math.atan2(y, x)*180/Math.PI)+360)%360;
+}
+function vRvInfo(){
+  const el=document.getElementById('mcv-rvInfo'), on=vRV.km!=null && C;
+  if(el) el.textContent = on ? (C.name||'코스')+' '+vRV.km.toFixed(2)+' km 지점' : '코스 밖';
+  const tot=(C && C.total_km) || 0;
+  const p=document.getElementById('mcv-rvPrev'), n=document.getElementById('mcv-rvNext');
+  if(p) p.disabled=!on || vRV.km<=0.001; if(n) n.disabled=!on || vRV.km>=tot-0.001;
+}
+function vRvWalker(lat, lon, pan){
+  if(!kmap || OSM) return;
+  const ll=new kakao.maps.LatLng(lat, lon);
+  if(!vRV.walker){
+    const el=document.createElement('div'); el.className='mcv-rvWalker';
+    el.innerHTML='<i class="mcv-rvCone"></i><b class="mcv-rvMan">🚶</b>';
+    vRV.walker=new kakao.maps.CustomOverlay({position:ll, content:el, xAnchor:0.5, yAnchor:0.5, zIndex:90});
+    vRV.walker.__el=el;
+  }
+  vRV.walker.setPosition(ll); vRV.walker.setMap(kmap);
+  if(pan!=null){ const c=vRV.walker.__el.querySelector('.mcv-rvCone'); if(c) c.style.transform='rotate('+pan+'deg)'; }
+}
+function vRvToggle(on){
+  if(!kReady || !vRvOk()){ vRvTip('이 지도에서는 로드뷰를 쓸 수 없습니다'); return; }
+  vRV.on = (on!=null) ? !!on : !vRV.on;
+  try{ vRV.on ? kmap.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW) : kmap.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW); }catch(e){}
+  const b=document.getElementById('mcv-rvBtn'); if(b){ b.classList.toggle('mcv-on', vRV.on); b.setAttribute('aria-pressed', vRV.on?'true':'false'); }
+  if(vRV.on) vRvTip('파랗게 칠해진 길을 누르면 그 자리 로드뷰가 열립니다'); else { vRvTip(''); vRvClose(); }
+}
+function vRvOpen(lat, lon, opt){
+  opt=opt||{};
+  if(!kReady || !vRvOk()){ vRvTip('이 지도에서는 로드뷰를 쓸 수 없습니다'); return; }
+  const wrap=document.getElementById('mcv-rvWrap'), msg=document.getElementById('mcv-rvMsg');
+  wrap.classList.add('mcv-on');
+  if(!vRV.rv){
+    vRV.rv=new kakao.maps.Roadview(document.getElementById('mcv-rvPano'));
+    vRV.client=new kakao.maps.RoadviewClient();
+    kakao.maps.event.addListener(vRV.rv, 'position_changed', ()=>{
+      const p=vRV.rv.getPosition(); if(!p) return;
+      const n=vNearKm(p.getLat(), p.getLng()); vRV.km=(n && n.d<150)?n.km:null;
+      vRvWalker(p.getLat(), p.getLng(), (vRV.rv.getViewpoint()||{}).pan); vRvInfo();
+    });
+    kakao.maps.event.addListener(vRV.rv, 'viewpoint_changed', ()=>{ const v=vRV.rv.getViewpoint(); if(v && vRV.walker){ const c=vRV.walker.__el.querySelector('.mcv-rvCone'); if(c) c.style.transform='rotate('+v.pan+'deg)'; } });
+  }
+  if(opt.km!=null) vRV.km=opt.km; else { const n=vNearKm(lat, lon); vRV.km=(n && n.d<150)?n.km:null; }
+  vRvInfo();
+  msg.textContent='로드뷰를 찾는 중…'; msg.classList.add('mcv-on');
+  const seq=++vRV.seq, R=opt.radius||60, pos=new kakao.maps.LatLng(lat, lon);
+  vRV.client.getNearestPanoId(pos, R, panoId=>{
+    if(seq!==vRV.seq) return;
+    if(!panoId){ msg.textContent='이 근처 '+R+'m 안에는 로드뷰 사진이 없습니다'; vRvWalker(lat, lon); return; }
+    msg.classList.remove('mcv-on');
+    vRV.rv.setPanoId(panoId, pos);
+    if(vRV.km!=null) vRV.rv.setViewpoint({pan:vRvBearing(vRV.km), tilt:0, zoom:0});
+    setTimeout(()=>{ try{ vRV.rv.relayout(); }catch(e){} }, 30);
+  });
+  vRvWalker(lat, lon);
+}
+function vRvStep(dir){
+  if(vRV.km==null || !C) return;
+  const tot=C.total_km || cum[cum.length-1]/1000;
+  const km=Math.max(0, Math.min(tot, vRV.km+dir*0.2)), ll=latlngAtKm(km);
+  vRvOpen(ll[0], ll[1], {km, radius:80});
+  try{ const L2=new kakao.maps.LatLng(ll[0], ll[1]); if(!kmap.getBounds().contain(L2)) kmap.panTo(L2); }catch(e){}
+}
+function vRvClose(){
+  const w=document.getElementById('mcv-rvWrap'); if(w) w.classList.remove('mcv-on','mcv-big');
+  vRV.big=false; vRV.seq++;
+  if(vRV.walker) vRV.walker.setMap(null);
+}
+(function(){
+  const on=(id,f)=>{ const b=document.getElementById(id); if(b) b.addEventListener('click', f); };
+  on('mcv-rvBtn', ()=>vRvToggle());
+  on('mcv-rvClose', vRvClose);
+  on('mcv-rvPrev', ()=>vRvStep(-1));
+  on('mcv-rvNext', ()=>vRvStep(1));
+  on('mcv-rvBig', ()=>{ vRV.big=!vRV.big; document.getElementById('mcv-rvWrap').classList.toggle('mcv-big', vRV.big); setTimeout(()=>{ try{ vRV.rv && vRV.rv.relayout(); }catch(e){} }, 60); });
+  document.addEventListener('keydown', e=>{ const w=document.getElementById('mcv-rvWrap'); if(e.key==='Escape' && w && w.classList.contains('mcv-on')) vRvClose(); });
+  if(OSM){ const b=document.getElementById('mcv-rvBtn'); if(b) b.style.display='none'; }
+  /* 점검용 — 콘솔에서 MCV_RV.state 로 로드뷰 상태를 본다 */
+  window.MCV_RV={state:vRV, bearing:vRvBearing, at:km=>latlngAtKm(km), map:()=>kmap, open:vRvOpen, info:(h,la,lo)=>showInfo(h,la,lo)};
+})();
 function setCourse(key){
   curKey=key; C=DATA.courses[key];
   courseSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('mcv-on',b.dataset.c===key));
@@ -2655,6 +2919,7 @@ function setCourse(key){
   mcvSafe('페이스', renderPace);
   mcvSafe('범례', renderLegend);
   mcvSafe('통계', renderStats);
+  mcvSafe('로드뷰', ()=>{ if(vRV.rv && document.getElementById('mcv-rvWrap').classList.contains('mcv-on')){ const p=vRV.rv.getPosition(); if(p){ const n=vNearKm(p.getLat(),p.getLng()); vRV.km=(n&&n.d<150)?n.km:null; vRvInfo(); } } });
   if(showAll){ mcvSafe('전코스', drawAllCourses); mcvSafe('맞추기', fitAllCourses); }
 }
 courseSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCourse(b.dataset.c)));

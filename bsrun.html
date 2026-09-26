@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light dark">
-<title>부산마라톤 코스(미정)</title>
+<title>마라톤 코스도</title>
 
 </head>
-<body style="margin:0;background:#f5f5f7">
+<body style="margin:0;background:#f4f5f2">
 <!--MCV_FRAGMENT_START-->
 <style>#mcv-root{--blue:#1976d2;--dark:#263238;--bg:#f4f6f8;--card:#fff;--line:#e0e4e8;}
-#mcv-root, #mcv-root *{margin:0;padding:0;box-sizing:border-box;}
+#mcv-root, #mcv-root *:where(:not(#mcv-rvPano *)){margin:0;padding:0;box-sizing:border-box;}
 #mcv-root{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--bg);color:var(--dark);}
 #mcv-root .mcv-wrap{max-width:1100px;margin:0 auto;padding:16px;}
 #mcv-root header{background:linear-gradient(135deg,#0d47a1,#1976d2);color:#fff;border-radius:14px;padding:22px 24px;margin-bottom:16px;}
@@ -53,14 +53,14 @@
 #mcv-root #mcv-tooltip{position:absolute;pointer-events:none;background:rgba(38,50,56,.94);color:#fff;padding:8px 11px;border-radius:8px;font-size:.78rem;line-height:1.5;display:none;white-space:nowrap;z-index:10;}
 #mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;padding:16px;}
 #mcv-root .mcv-tables>div{min-width:0;overflow-x:auto;}
-#mcv-root table{width:100%;border-collapse:collapse;font-size:.85rem;}
-#mcv-root th{background:#f7f9fb;text-align:left;padding:9px 11px;border-bottom:2px solid var(--line);font-size:.77rem;color:#607d8b;white-space:nowrap;}
-#mcv-root td{padding:9px 11px;border-bottom:1px solid #eef1f4;}
-#mcv-root tr.mcv-row{cursor:pointer;}
-#mcv-root tr.mcv-row:hover{background:#eef6ff;}
-#mcv-root td.mcv-km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
-#mcv-root td.mcv-qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;}
-#mcv-root tfoot td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
+#mcv-root table:where(:not(#mcv-rvPano *)){width:100%;border-collapse:collapse;font-size:.85rem;}
+#mcv-root th:where(:not(#mcv-rvPano *)){background:#f7f9fb;text-align:left;padding:9px 11px;border-bottom:2px solid var(--line);font-size:.77rem;color:#607d8b;white-space:nowrap;}
+#mcv-root td:where(:not(#mcv-rvPano *)){padding:9px 11px;border-bottom:1px solid #eef1f4;}
+#mcv-root tr:where(:not(#mcv-rvPano *)).mcv-row{cursor:pointer;}
+#mcv-root tr:where(:not(#mcv-rvPano *)).mcv-row:hover{background:#eef6ff;}
+#mcv-root td:where(:not(#mcv-rvPano *)).mcv-km{font-weight:700;white-space:nowrap;width:1%;font-variant-numeric:tabular-nums;}
+#mcv-root td:where(:not(#mcv-rvPano *)).mcv-qty{text-align:right;font-variant-numeric:tabular-nums;width:1%;}
+#mcv-root tfoot:where(:not(#mcv-rvPano *)) td{font-weight:800;background:#f7f9fb;border-top:2px solid var(--line);}
 #mcv-root .mcv-titleicon{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;color:#fff;}
 #mcv-root .mcv-note{font-size:.75rem;color:#78909c;padding:10px 18px 14px;line-height:1.6;}
 #mcv-root .mcv-kpoi{border-radius:50%;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff;width:28px;height:28px;cursor:pointer;}
@@ -101,8 +101,8 @@
 }
 @media (max-width:640px){
   #mcv-root #mcv-elev{height:180px;}
-  #mcv-root table{font-size:.8rem;}
-  #mcv-root th, #mcv-root td{padding:8px;}
+  #mcv-root table:where(:not(#mcv-rvPano *)){font-size:.8rem;}
+  #mcv-root th:where(:not(#mcv-rvPano *)), #mcv-root td:where(:not(#mcv-rvPano *)){padding:8px;}
   #mcv-root .mcv-card h2{padding:12px;gap:8px;}
   #mcv-root .mcv-legend{margin-left:0;}
   /* 휴대전화 — 화면 폭에 맞춰 접는다 */
@@ -119,7 +119,7 @@
   #mcv-root .mcv-seg button{padding:9px 12px;font-size:.75rem;}
   #mcv-root .mcv-printbtn{padding:9px 13px;}
   /* 인라인 크기·리셋보다 뒤에 오도록 강제 — 16px 미만이면 iOS가 화면을 확대한다 */
-  #mcv-root input,#mcv-root select,#mcv-root textarea{font-size:16px !important;}
+  #mcv-root input:where(:not(#mcv-rvPano *)),#mcv-root select:where(:not(#mcv-rvPano *)),#mcv-root textarea:where(:not(#mcv-rvPano *)){font-size:16px !important;}
 }
 @media (pointer:coarse){
   #mcv-root .mcv-seg button{min-height:36px;}
@@ -133,21 +133,21 @@
   #mcv-root header{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   #mcv-root .mcv-tables{grid-template-columns:1fr 1fr;}
   #mcv-root #mcv-map{height:380px !important;}
-  #mcv-root th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #mcv-root th:where(:not(#mcv-rvPano *)){-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
 #mcv-root{container-type:inline-size;box-sizing:border-box;text-align:left;font-size:16px;
   font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;color:#263238;
   background:var(--mcv-bg,#f4f6f8);padding:0;margin:0;line-height:1.6;-webkit-text-size-adjust:100%;}
-#mcv-root *,#mcv-root *:before,#mcv-root *:after{box-sizing:border-box;}
-#mcv-root h1,#mcv-root h2,#mcv-root h3,#mcv-root h4,#mcv-root p,#mcv-root div,#mcv-root span,
-#mcv-root table,#mcv-root thead,#mcv-root tbody,#mcv-root tfoot,#mcv-root tr,#mcv-root th,#mcv-root td,
-#mcv-root label,#mcv-root canvas{margin:0;padding:0;border:0;background:none;float:none;
+#mcv-root *:where(:not(#mcv-rvPano *)),#mcv-root *:where(:not(#mcv-rvPano *)):before,#mcv-root *:where(:not(#mcv-rvPano *)):after{box-sizing:border-box;}
+#mcv-root h1:where(:not(#mcv-rvPano *)),#mcv-root h2:where(:not(#mcv-rvPano *)),#mcv-root h3:where(:not(#mcv-rvPano *)),#mcv-root h4:where(:not(#mcv-rvPano *)),#mcv-root p:where(:not(#mcv-rvPano *)),#mcv-root div:where(:not(#mcv-rvPano *)),#mcv-root span:where(:not(#mcv-rvPano *)),
+#mcv-root table:where(:not(#mcv-rvPano *)),#mcv-root thead:where(:not(#mcv-rvPano *)),#mcv-root tbody:where(:not(#mcv-rvPano *)),#mcv-root tfoot:where(:not(#mcv-rvPano *)),#mcv-root tr:where(:not(#mcv-rvPano *)),#mcv-root th:where(:not(#mcv-rvPano *)),#mcv-root td:where(:not(#mcv-rvPano *)),
+#mcv-root label:where(:not(#mcv-rvPano *)),#mcv-root canvas:where(:not(#mcv-rvPano *)){margin:0;padding:0;border:0;background:none;float:none;
   font-family:inherit;letter-spacing:normal;text-transform:none;text-shadow:none;box-shadow:none;}
-#mcv-root button,#mcv-root select,#mcv-root input{font-family:inherit;font-size:100%;margin:0;
+#mcv-root button:where(:not(#mcv-rvPano *)),#mcv-root select:where(:not(#mcv-rvPano *)),#mcv-root input:where(:not(#mcv-rvPano *)){font-family:inherit;font-size:100%;margin:0;
   text-transform:none;letter-spacing:normal;box-shadow:none;text-shadow:none;min-height:0;line-height:1.4;}
-#mcv-root a{text-decoration:none;}
-#mcv-root table{border-collapse:collapse;border-spacing:0;width:100%;}
-#mcv-root img,#mcv-root canvas,#mcv-root svg{max-width:100%;}
+#mcv-root a:where(:not(#mcv-rvPano *)){text-decoration:none;}
+#mcv-root table:where(:not(#mcv-rvPano *)){border-collapse:collapse;border-spacing:0;width:100%;}
+#mcv-root img:where(:not(#mcv-rvPano *)),#mcv-root canvas:where(:not(#mcv-rvPano *)),#mcv-root svg:where(:not(#mcv-rvPano *)){max-width:100%;}
 #mcv-root .mcv-wrap{max-width:var(--mcv-max,1240px);margin:0 auto;padding:16px;}
 #mcv-root .mcv-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));
   gap:14px;padding:16px;align-items:start;}
@@ -160,7 +160,7 @@
   #mcv-root .mcv-tables{padding:10px;gap:10px;}
   #mcv-root .mcv-card>h2{padding:12px;gap:8px;}
   #mcv-root .mcv-stat{padding:7px 11px;font-size:.8rem;}
-  #mcv-root table{font-size:.8rem;} #mcv-root th,#mcv-root td{padding:8px;}
+  #mcv-root table:where(:not(#mcv-rvPano *)){font-size:.8rem;} #mcv-root th:where(:not(#mcv-rvPano *)),#mcv-root td:where(:not(#mcv-rvPano *)){padding:8px;}
 }
 @container (min-width:1100px){ #mcv-root .mcv-tables{gap:16px;} }
 @container (min-width:1420px){ #mcv-root .mcv-tables{grid-template-columns:repeat(4,minmax(0,1fr));} }
@@ -341,8 +341,8 @@
   --muted:#6e6e73; --sub:#515154; --dim:#7a7a7a;
   --r:18px; --r-md:11px; --r-sm:8px; --r-xs:5px; --pill:9999px;
   --ease:cubic-bezier(.28,.11,.32,1);
-  font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,system-ui,
-    'Apple SD Gothic Neo',Pretendard,'Malgun Gothic','Noto Sans KR',sans-serif;
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,
+    'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
   -webkit-font-smoothing:antialiased;
   font-size:17px; line-height:1.47; letter-spacing:-.374px;
 }
@@ -425,12 +425,12 @@
 #mcv-root .mcv-chip-off{opacity:.4;border-style:dashed;}
 #mcv-root .mcv-sumchip{background:var(--bg);border-radius:var(--r-md);border:none;}
 /* 표 */
-#mcv-root table{font-size:14px;letter-spacing:-.224px;}
-#mcv-root th{background:var(--bg);color:var(--muted);font-weight:600;font-size:12px;letter-spacing:0;
+#mcv-root table:where(:not(#mcv-rvPano *)){font-size:14px;letter-spacing:-.224px;}
+#mcv-root th:where(:not(#mcv-rvPano *)){background:var(--bg);color:var(--muted);font-weight:600;font-size:12px;letter-spacing:0;
   border-bottom:1px solid var(--line);padding:11px 14px;}
-#mcv-root td{border-bottom:1px solid var(--line);padding:10px 14px;color:var(--dark);}
-#mcv-root tbody tr:hover td{background:var(--bg);}
-#mcv-root tfoot td{background:var(--bg);font-weight:600;}
+#mcv-root td:where(:not(#mcv-rvPano *)){border-bottom:1px solid var(--line);padding:10px 14px;color:var(--dark);}
+#mcv-root tbody:where(:not(#mcv-rvPano *)) tr:hover td{background:var(--bg);}
+#mcv-root tfoot:where(:not(#mcv-rvPano *)) td{background:var(--bg);font-weight:600;}
 #mcv-root .mcv-titleicon{border-radius:var(--r-sm);}
 /* 항목 카드 (참가자용) */
 #mcv-root .mcv-item{border-radius:var(--r-md);border:1px solid var(--line2);box-shadow:none;
@@ -506,7 +506,146 @@
 #mcv-root #mcv-limitNoteEl{color:var(--muted);font-size:14px;letter-spacing:-.224px;}
 #mcv-root .mcv-hint{font-size:13px;color:var(--sub);font-weight:400;letter-spacing:0;}
 /* color-scheme 은 상속되므로 뿌리에만 걸면 안쪽 입력칸·스크롤바까지 밝게 유지된다 */
-#mcv-root a{color:var(--link);}
+#mcv-root a:where(:not(#mcv-rvPano *)){color:var(--link);}
+/* ══════════════ 재설계 (2026-09) — 제작기와 같은 톤 ══════════════
+   잉크(검정)·종이·안전 주황 하나. 파란 알약·유리·그라디언트·튀는 모션 없음.
+   숫자는 계기판처럼 크게. 이 구역이 위의 모든 규칙을 덮는다(순서 + 필요한 곳 !important). */
+#mcv-root{
+  --ink:#14161a; --ink2:#2b2f36; --ink3:#5b6069; --ink4:#8b9099;
+  --paper:#f4f5f2; --paper2:#ffffff; --paper4:#e9ebe6; --rule:#cfd3cb;
+  --signal:#ff6a13; --signalInk:#2a1200;
+  --blue:#14161a; --link:#14161a; --dark:#14161a; --bg:#f4f5f2; --card:#ffffff; --pearl:#f4f5f2;
+  --line:rgba(20,22,26,.10); --line2:#cfd3cb; --divider:#e9ebe6; --muted:#5b6069; --sub:#2b2f36; --dim:#8b9099;
+  --r:10px; --r-md:8px; --r-sm:6px; --r-xs:4px;
+  background:var(--paper); color:var(--ink);
+  font-size:16px; line-height:1.5; letter-spacing:-.1px; font-variant-numeric:tabular-nums;}
+#mcv-root a:where(:not(#mcv-rvPano *)){text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--rule);}
+#mcv-root :focus-visible{outline:2px solid #0b57d0;outline-offset:2px;}
+#mcv-root .mcv-wrap{max-width:1180px;padding:20px 20px 48px;}
+/* 머리 — 검은 띠 하나, 계기판 숫자 */
+#mcv-root header,#mcv-root header.admin{background:var(--ink) !important;color:#fff;border:none !important;
+  border-radius:var(--r) !important;padding:24px 26px 22px !important;margin-bottom:16px !important;box-shadow:none !important;}
+#mcv-root header h1{font-size:30px !important;font-weight:800;line-height:1.15;letter-spacing:-.6px;color:#fff;margin-bottom:6px !important;}
+#mcv-root header p{color:rgba(255,255,255,.66);font-size:14px !important;letter-spacing:0;line-height:1.5;}
+#mcv-root header .mcv-tag,#mcv-root header.admin .mcv-tag{background:var(--signal);color:var(--signalInk);
+  border-radius:var(--r-xs);font-size:12px;font-weight:800;letter-spacing:0;padding:3px 8px;}
+#mcv-root .mcv-stats{gap:14px 0 !important;margin-top:20px !important;padding-top:16px;border-top:1px solid rgba(255,255,255,.14);}
+#mcv-root .mcv-stat{background:transparent !important;border-radius:0 !important;border-left:2px solid rgba(255,255,255,.22);
+  padding:0 22px 0 14px !important;color:rgba(255,255,255,.62);font-size:12px !important;letter-spacing:0;line-height:1.3 !important;}
+#mcv-root .mcv-stat:first-child{border-left:none;padding-left:0 !important;}
+#mcv-root header.mcv-noTitle .mcv-stats{margin-top:0 !important;padding-top:0;border-top:none;}
+#mcv-root header.mcv-noTitle{padding:18px 24px !important;}
+#mcv-root .mcv-stat b{color:#fff;font-size:24px !important;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-top:3px !important;}
+#mcv-root .mcv-kakao-open{border-radius:var(--r-md);font-size:14px;font-weight:700;padding:9px 14px;letter-spacing:0;}
+/* 카드 */
+#mcv-root .mcv-card{background:#fff;border:1px solid var(--rule);border-radius:var(--r);margin-bottom:16px !important;}
+#mcv-root .mcv-card>h2,#mcv-root .mcv-card h2{font-size:15px !important;font-weight:800;letter-spacing:-.2px;padding:13px 18px !important;border-bottom:1px solid var(--line);gap:8px;}
+/* 세그먼트 — 홈 안에서 한 칸이 켜진다 */
+#mcv-root .mcv-seg{background:var(--paper4) !important;border:none !important;border-radius:var(--r-md) !important;padding:3px !important;gap:2px !important;}
+#mcv-root .mcv-seg button{border:none !important;background:transparent !important;border-radius:var(--r-sm) !important;
+  padding:6px 12px !important;font-size:13px;color:var(--ink2);font-weight:500;letter-spacing:0;}
+#mcv-root .mcv-seg button:hover{background:rgba(255,255,255,.55) !important;}
+#mcv-root .mcv-seg button:active{transform:none;}
+#mcv-root .mcv-seg button.mcv-on,#mcv-root .mcv-seg.mcv-course button.mcv-on,#mcv-root .mcv-seg.mcv-kk button.mcv-on{
+  background:#fff !important;color:var(--ink) !important;font-weight:800;border:none !important;padding:6px 12px !important;
+  box-shadow:0 1px 2px rgba(0,0,0,.14) !important;}
+/* 단추 */
+#mcv-root .mcv-allBtn{border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:var(--r-md);
+  padding:6px 12px;font-size:13px;font-weight:700;letter-spacing:0;}
+#mcv-root .mcv-allBtn:hover{background:var(--paper);}
+#mcv-root .mcv-allBtn:active{transform:none;}
+#mcv-root .mcv-allBtn.mcv-on{background:var(--ink);border-color:var(--ink);color:#fff;}
+#mcv-root #mcv-rvBtn.mcv-on{background:var(--signal);border-color:var(--signal);color:var(--signalInk);}
+#mcv-root .mcv-printbtn,#mcv-root #mcv-diagBtn{border:1px solid var(--rule) !important;background:#fff !important;border-radius:var(--r-md);box-shadow:none;}
+#mcv-root .mcv-printbtn:active,#mcv-root #mcv-diagBtn:active{transform:none;}
+#mcv-root .mcv-locate-btn{background:#fff !important;border:1px solid var(--rule) !important;box-shadow:0 2px 8px rgba(0,0,0,.14) !important;color:var(--ink);}
+#mcv-root .mcv-locate-btn.tracking{background:var(--signal) !important;border-color:var(--signal) !important;color:var(--signalInk);}
+#mcv-root .mcv-locate-btn:active{transform:none;}
+/* 범례 칩 · 안내 */
+#mcv-root .mcv-chip{border-radius:var(--r-sm);border:1px solid var(--rule);background:#fff;font-size:13px;padding:4px 10px;color:var(--ink);}
+#mcv-root .mcv-allChip{border-radius:var(--r-sm);}
+#mcv-root .mcv-allChip.mcv-on{border-color:var(--ink);}
+#mcv-root .mcv-allChip b{color:var(--ink);}
+#mcv-root .mcv-allChip:active{transform:none;}
+#mcv-root .mcv-allNote{border-radius:var(--r-sm);border-left:3px solid var(--rule);background:var(--paper);color:var(--ink3);}
+#mcv-root .mcv-note{color:var(--ink3) !important;font-size:13px !important;}
+#mcv-root .mcv-hint{color:var(--ink3);}
+/* 지도 */
+#mcv-root #mcv-map{background:#e6e8e3;}
+#mcv-root #mcv-mapErr{background:rgba(255,255,255,.96);backdrop-filter:none;-webkit-backdrop-filter:none;}
+#mcv-root #mcv-tooltip,#mcv-root .mcv-tooltip{background:var(--ink) !important;color:#fff !important;border-radius:var(--r-sm);backdrop-filter:none;-webkit-backdrop-filter:none;}
+/* 표 */
+#mcv-root th:where(:not(#mcv-rvPano *)){background:transparent !important;color:var(--ink);font-weight:800;font-size:12px;border-bottom:2px solid var(--ink) !important;}
+#mcv-root td:where(:not(#mcv-rvPano *)){border-bottom:1px solid var(--line);}
+#mcv-root tfoot:where(:not(#mcv-rvPano *)) td{background:transparent;border-top:2px solid var(--ink);font-weight:800;}
+#mcv-root tr:where(:not(#mcv-rvPano *)).mcv-row:hover td,#mcv-root tbody:where(:not(#mcv-rvPano *)) tr:hover td{background:var(--paper);}
+#mcv-root .mcv-limit{border-color:var(--rule);border-radius:var(--r);}
+#mcv-root .mcv-limit-h{background:var(--paper);font-weight:800;font-size:14px;letter-spacing:0;}
+#mcv-root .mcv-limit th{border-bottom:2px solid var(--ink) !important;}
+/* 시설 목록 */
+#mcv-root .mcv-cat{border-color:var(--rule);border-radius:var(--r);}
+#mcv-root .mcv-cat-h{background:var(--paper);}
+#mcv-root .mcv-cat-h .mcv-n{border-radius:var(--r-xs);background:#fff;border:1px solid var(--rule);color:var(--ink2);}
+#mcv-root .mcv-item{border:none;border-bottom:1px solid var(--line);border-radius:0;}
+#mcv-root .mcv-item:hover{background:var(--paper);}
+#mcv-root .mcv-nm{font-size:15px;font-weight:800;letter-spacing:-.2px;}
+#mcv-root .mcv-c{border-radius:var(--r-xs) !important;font-size:12.5px;font-weight:700;letter-spacing:0;}
+#mcv-root .mcv-sumchip{background:var(--paper);border-left:2px solid var(--rule);border-radius:0;}
+/* 정보 카드 */
+#mcv-root .mcv-kinfo,#mcv-root #mcv-map .mcv-kinfo{border-radius:var(--r) !important;border:1px solid var(--rule) !important;
+  box-shadow:0 12px 40px rgba(0,0,0,.22) !important;animation:mcvFade .16s ease both;}
+#mcv-root .mcv-kinfo .mcv-x,#mcv-root #mcv-map .mcv-kinfo .mcv-x{border-radius:var(--r-sm);background:var(--paper);}
+#mcv-root .mcv-kinfo .mcv-x:active{transform:none;}
+#mcv-root .mcv-kinfo .mcv-titleicon{border-radius:var(--r-sm);}
+#mcv-root .mcv-kinfo .mcv-c{border-radius:var(--r-xs) !important;}
+#mcv-root .mcv-infoScrim{background:rgba(20,22,26,.4);}
+#mcv-root .mcv-rvGo{display:block;width:100%;margin-top:14px;border:1px solid var(--ink);background:#fff;color:var(--ink);
+  border-radius:var(--r-md);padding:9px 12px;font-size:14px;font-weight:700;cursor:pointer;}
+#mcv-root .mcv-rvGo:hover{background:var(--paper);}
+/* ── 로드뷰 창 ── */
+#mcv-root #mcv-rvWrap{position:absolute;right:12px;bottom:12px;width:min(50%,640px);height:min(66%,440px);z-index:1300;
+  display:none;flex-direction:column;background:#fff;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;
+  box-shadow:0 12px 36px rgba(0,0,0,.22);}
+#mcv-root #mcv-rvWrap.mcv-on{display:flex !important;}
+#mcv-root #mcv-rvWrap.mcv-big{left:12px;top:12px;width:auto;height:auto;}
+#mcv-root .mcv-rvBar{display:flex !important;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:#fff;}
+#mcv-root .mcv-rvBar b{font-size:13px;font-weight:800;white-space:nowrap;}
+#mcv-root #mcv-rvInfo{font-size:12px;color:var(--ink3);white-space:nowrap;}
+#mcv-root .mcv-rvBtns{margin-left:auto;display:flex !important;gap:4px;}
+#mcv-root .mcv-rvB{border:1px solid var(--rule);background:#fff;color:var(--ink);border-radius:var(--r-sm);padding:4px 9px;font-size:12px;font-weight:700;cursor:pointer;line-height:1.4;}
+#mcv-root .mcv-rvB:hover{background:var(--paper);}
+#mcv-root .mcv-rvB:disabled{opacity:.35;cursor:default;}
+#mcv-root #mcv-rvPano{flex:1;min-height:0;position:relative;background:#1b1d21;}
+#mcv-root #mcv-rvMsg{position:absolute;left:0;right:0;top:40px;bottom:0;display:none;align-items:center;justify-content:center;
+  text-align:center;padding:20px;color:#fff;font-size:13px;line-height:1.6;background:rgba(20,22,26,.72);pointer-events:none;}
+#mcv-root #mcv-rvMsg.mcv-on{display:flex;}
+#mcv-root #mcv-rvTip{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:1310;display:none;
+  background:var(--ink);color:#fff;border-radius:var(--r-md);padding:7px 14px;font-size:13px;white-space:nowrap;max-width:calc(100% - 24px);
+  overflow:hidden;text-overflow:ellipsis;pointer-events:none;}
+#mcv-root #mcv-rvTip.mcv-on{display:block;}
+/* 로드뷰 안쪽은 아래 초기화 규칙들에서 :where(:not(#mcv-rvPano *)) 로 빠져 있다 — 카카오 자체 CSS 가 그대로 산다 */
+/* 지도 위 걷는 사람 */
+#mcv-root #mcv-map .mcv-rvWalker{position:relative;width:34px;height:34px;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+#mcv-root #mcv-map .mcv-rvMan{position:relative;z-index:2;width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid #1d6fd6;
+  display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 1px 4px rgba(0,0,0,.35);}
+#mcv-root #mcv-map .mcv-rvCone{position:absolute;left:50%;top:50%;width:0;height:0;margin:-34px 0 0 -14px;
+  border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:34px solid rgba(29,111,214,.38);
+  transform-origin:14px 34px;z-index:1;}
+@container (max-width:720px){
+  #mcv-root .mcv-wrap{padding:10px 10px 32px;}
+  #mcv-root header,#mcv-root header.admin{padding:16px 16px 14px !important;}
+  #mcv-root .mcv-card>h2,#mcv-root .mcv-card h2{padding:11px 12px !important;}
+  #mcv-root #mcv-rvWrap{left:8px;right:8px;bottom:8px;width:auto;height:58%;}
+  #mcv-root #mcv-rvWrap.mcv-big{top:8px;height:auto;}
+  #mcv-root header h1{font-size:22px !important;}
+  #mcv-root .mcv-stat{padding:0 14px 0 10px !important;}
+  #mcv-root .mcv-stat b{font-size:18px !important;}
+}
+@media print{
+  #mcv-root header,#mcv-root header.admin{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #mcv-root #mcv-rvBtn,#mcv-root #mcv-rvWrap,#mcv-root #mcv-rvTip{display:none !important;}
+}
+@media (prefers-reduced-motion:reduce){ #mcv-root .mcv-kinfo{animation:none !important;} }
 
 </style>
 <div id="mcv-root">
@@ -527,6 +666,7 @@
     <h2>🗺 코스 지도
       <span class="mcv-seg mcv-course" id="mcv-courseSeg"></span>
       <button class="mcv-allBtn" id="mcv-allBtn" title="모든 코스를 한 화면에 함께 봅니다">⛶ 전 코스 보기</button>
+      <button class="mcv-allBtn" id="mcv-rvBtn" title="켜면 로드뷰가 있는 길이 파랗게 보이고, 누른 자리의 로드뷰가 열립니다">🚶 로드뷰</button>
       <span class="mcv-seg mcv-kk" id="mcv-typeSeg">
         <button data-t="ROADMAP" class="mcv-on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
       </span>
@@ -538,6 +678,20 @@
     <div class="mcv-allNote" id="mcv-laneNote"></div>
     <div id="mcv-mapWrap">
       <div id="mcv-map"></div>
+      <div id="mcv-rvWrap" aria-label="로드뷰">
+        <div class="mcv-rvBar">
+          <b>🚶 로드뷰</b><span id="mcv-rvInfo"></span>
+          <span class="mcv-rvBtns">
+            <button type="button" class="mcv-rvB" id="mcv-rvPrev" title="코스를 따라 200m 뒤로">◀ 200m</button>
+            <button type="button" class="mcv-rvB" id="mcv-rvNext" title="코스를 따라 200m 앞으로">200m ▶</button>
+            <button type="button" class="mcv-rvB" id="mcv-rvBig" title="크게 / 작게">⤢</button>
+            <button type="button" class="mcv-rvB" id="mcv-rvClose" title="닫기">✕</button>
+          </span>
+        </div>
+        <div id="mcv-rvPano"></div>
+        <div id="mcv-rvMsg"></div>
+      </div>
+      <div id="mcv-rvTip"></div>
       <div id="mcv-mapErr"><div class="mcv-in" id="mcv-mapErrIn"></div></div>
       <button class="mcv-locate-btn" id="mcv-locateBtn" title="내 위치 추적">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
@@ -579,7 +733,7 @@
 </div>
 </div>
 <script>
-const DATA = {"mode":"public","title":"부산마라톤 코스(미정)","texts":{"subtitle":"현장 상황에 따라 변경 될 수 있습니다.","mapNote":"","tableTitle":"📋 코스 시설 안내","tableNote":"표의 행을 클릭하면 지도에서 해당 위치로 이동합니다. 코스를 전환하면 해당 코스 기준 왕/복 거리로 다시 계산됩니다.","colGo":"왕편","colBack":"복편","colName":"명칭","colMemo":"비고","colGap":"간격","colOps":"운영 시간"},"k":"OW9pOG86UGI+OTxrbAQ4bj1qbGkFPDpqODo+BWtvbj8=","cats":[{"id":"water","label":"급수대","icon":"💧","color":"#1976d2","supply":true},{"id":"medic","label":"적십자(의료)","icon":"✚","color":"#d32f2f"},{"id":"amb","label":"구급차","icon":"🚑","color":"#b71c1c"},{"id":"turn","label":"반환점","icon":"↩","color":"#f57c00"},{"id":"cut","label":"컷오프","icon":"⏱","color":"#37474f","hasTime":true},{"id":"staff","label":"스탭","icon":"👤","color":"#6a1b9a"},{"id":"police","label":"교통통제","icon":"🚧","color":"#c2a000"},{"id":"toilet","label":"화장실","icon":"🚻","color":"#00897b"},{"id":"food","label":"간식/보급","icon":"🍌","color":"#2e7d32"},{"id":"photo","label":"촬영포인트","icon":"📷","color":"#5d4037"}],"event":{"start":"08:00","lead":"3:30","last":"9:00"},"limitNote":"제한시간 — 하프 3시간 (종료 11:00) · 평균 8:33/km   |   10K 1시간 40분 (종료 09:40) · 평균 10:00/km   |   5K 1시간 (종료 09:00) · 평균 11:47/km","limits":[{"name":"하프","km":21.04,"limit":"3시간","end":"11:00","pace":"8:33/km"},{"name":"10K","km":10,"limit":"1시간 40분","end":"09:40","pace":"10:00/km"},{"name":"5K","km":5.09,"limit":"1시간","end":"09:00","pace":"11:47/km"}],"startTime":"08:00","cols":{"gap":false,"ops":false,"memo":true,"ele":false},"roundMode":"round","showReturn":true,"returnOffset":14,"allowRetToggle":false,"line":{"w":7,"arrow":true,"aRev":false,"aColor":"#ffffff","aGap":90,"aSize":1,"aEdge":true,"fan":true,"fanGap":11,"sepAuto":true,"sepPx":9,"laneColor":false,"retColor":"#1565c0","dash":false,"others":true},"hideTitle":false,"embed":false,"diag":false,"engine":"kakao","supplies":[],"order":["c21qs","c3jlf","c4skm"],"start":[35.211976,128.98765],"courses":{"c21qs":{"name":"하프","color":"#7b1fa2","total_km":21.04,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":10.518,"turns":[10.518],"turnNames":["반환점"],"arrowEdits":[],"arrowRuns":{},"segs":[[0,10.518,"go"],[10.518,21.036,"back"]],"shape":"outback","shapeText":"왕복","laps":1,"closed":true,"participants":0,"limit":"3:00","limitPace":8.556759840273816,"track":[[35.211976,128.98765],[35.211212,128.987118],[35.210845,128.986823],[35.210365,128.986383],[35.209457,128.985302],[35.208854,128.984164],[35.208467,128.983474],[35.208039,128.982783],[35.207544,128.982008],[35.207187,128.981425],[35.206249,128.979808],[35.205262,128.978022],[35.204862,128.977287],[35.20457,128.976811],[35.203642,128.975572],[35.203148,128.974893],[35.202441,128.97377],[35.201354,128.972225],[35.200698,128.971357],[35.199831,128.970084],[35.198917,128.968939],[35.197415,128.967226],[35.196295,128.966008],[35.195798,128.965554],[35.195163,128.964982],[35.194665,128.964563],[35.194311,128.964308],[35.193954,128.964069],[35.193247,128.96364],[35.192436,128.963209],[35.191565,128.962738],[35.191025,128.962453],[35.190669,128.962299],[35.188818,128.961547],[35.188745,128.961479],[35.188619,128.961317],[35.188543,128.961298],[35.18829,128.961317],[35.187619,128.961139],[35.186866,128.960915],[35.185593,128.960557],[35.185087,128.960425],[35.184553,128.96028],[35.184195,128.960201],[35.183826,128.960096],[35.183367,128.959972],[35.183187,128.959881],[35.182869,128.959697],[35.182609,128.959563],[35.182352,128.959452],[35.182056,128.959362],[35.18185,128.959314],[35.181606,128.959282],[35.180995,128.959222],[35.180086,128.959106],[35.179589,128.959047],[35.17925,128.959016],[35.179099,128.959004],[35.178355,128.959052],[35.177938,128.959091],[35.177723,128.959063],[35.177619,128.959074],[35.177514,128.959107],[35.176412,128.959548],[35.176154,128.959652],[35.175011,128.960061],[35.173956,128.96047],[35.173786,128.960523],[35.173616,128.960589],[35.172146,128.960884],[35.171408,128.960958],[35.169568,128.960897],[35.168799,128.960854],[35.168229,128.96078],[35.167812,128.960729],[35.16725,128.960629],[35.166762,128.960532],[35.165805,128.960297],[35.164834,128.960011],[35.163514,128.959528],[35.162812,128.959285],[35.162264,128.959094],[35.161155,128.958646],[35.16006,128.958163],[35.157771,128.957195],[35.156598,128.956695],[35.155702,128.956325],[35.155065,128.95605],[35.154643,128.955845],[35.154106,128.955524],[35.153892,128.955408],[35.153728,128.955341],[35.153038,128.955061],[35.152795,128.954963],[35.151562,128.954456],[35.150649,128.954068],[35.149885,128.953743],[35.148159,128.953001],[35.147252,128.952602],[35.145988,128.952064],[35.14329,128.950841],[35.142485,128.950493],[35.14158,128.950069],[35.140924,128.949755],[35.140315,128.949469],[35.13969,128.949171],[35.139205,128.948931],[35.138783,128.948724],[35.138401,128.948545],[35.137802,128.94825],[35.137196,128.947952],[35.136405,128.947551],[35.136054,128.947392],[35.135224,128.946957],[35.13437,128.946514],[35.133526,128.946084],[35.13273,128.945647],[35.131551,128.94502],[35.130415,128.944396],[35.129446,128.943847],[35.129427,128.943891],[35.13039,128.944435],[35.131609,128.945117],[35.133854,128.946309],[35.135977,128.947404],[35.140562,128.949636],[35.141829,128.950253],[35.143428,128.95098],[35.145162,128.95177],[35.147153,128.952624],[35.149095,128.953469],[35.150404,128.95403],[35.151623,128.954541],[35.153882,128.955443],[35.15473,128.95593],[35.15607,128.95653],[35.158319,128.957505],[35.160395,128.958375],[35.162179,128.959121],[35.164475,128.959936],[35.165643,128.960309],[35.167483,128.960743],[35.168837,128.960913],[35.169402,128.960943],[35.170789,128.960984],[35.171388,128.960982],[35.172142,128.960918],[35.173622,128.960619],[35.173971,128.960504],[35.174316,128.960369],[35.174649,128.960243],[35.176137,128.9597],[35.177624,128.959121],[35.177716,128.959126],[35.177885,128.959139],[35.178148,128.95914],[35.178851,128.959082],[35.179246,128.95908],[35.179475,128.95911],[35.179955,128.959159],[35.180626,128.959234],[35.181342,128.959301],[35.181721,128.959355],[35.182052,128.95942],[35.182354,128.959516],[35.182641,128.959628],[35.183188,128.959946],[35.183362,128.960031],[35.183779,128.96015],[35.18422,128.96027],[35.185923,128.960696],[35.186472,128.960842],[35.187336,128.961102],[35.188284,128.96138],[35.188531,128.961346],[35.18861,128.961358],[35.188705,128.96151],[35.188799,128.961589],[35.190516,128.962294],[35.190867,128.962438],[35.191923,128.962996],[35.192586,128.963348],[35.192899,128.963508],[35.193689,128.963935],[35.194116,128.964215],[35.194601,128.964574],[35.195163,128.965054],[35.196293,128.966118],[35.197118,128.96699],[35.19865,128.968706],[35.19978,128.970114],[35.200204,128.970738],[35.200725,128.971485],[35.201255,128.972148],[35.201598,128.972643],[35.202512,128.973967],[35.202947,128.974658],[35.2031,128.974896],[35.203796,128.975868],[35.204477,128.976796],[35.204708,128.977134],[35.205006,128.977642],[35.205769,128.979032],[35.206612,128.980551],[35.207071,128.981331],[35.207347,128.981757],[35.207974,128.98281],[35.208415,128.983488],[35.208841,128.984278],[35.209384,128.985312],[35.209719,128.985775],[35.210003,128.986084],[35.210285,128.986364],[35.210773,128.986831],[35.211086,128.987082],[35.211519,128.987427],[35.211988,128.987735]],"profile":[[0,0],[0.05,0],[0.1,0],[0.15,0],[0.2,0],[0.25,0],[0.3,0],[0.35,0],[0.4,0],[0.45,0],[0.5,0],[0.55,0],[0.6,0],[0.65,0],[0.7,0],[0.75,0],[0.8,0],[0.85,0],[0.9,0],[0.95,0],[1,0],[1.05,0],[1.1,0],[1.15,0],[1.2,0],[1.25,0],[1.3,0],[1.35,0],[1.4,0],[1.45,0],[1.5,0],[1.55,0],[1.6,0],[1.65,0],[1.7,0],[1.75,0],[1.8,0],[1.85,0],[1.9,0],[1.95,0],[2,0],[2.05,0],[2.1,0],[2.15,0],[2.2,0],[2.25,0],[2.3,0],[2.35,0],[2.4,0],[2.45,0],[2.5,0],[2.55,0],[2.6,0],[2.65,0],[2.7,0],[2.75,0],[2.8,0],[2.85,0],[2.9,0],[2.95,0],[3,0],[3.05,0],[3.1,0],[3.15,0],[3.2,0],[3.25,0],[3.3,0],[3.35,0],[3.4,0],[3.45,0],[3.5,0],[3.55,0],[3.6,0],[3.65,0],[3.7,0],[3.75,0],[3.8,0],[3.85,0],[3.9,0],[3.95,0],[4,0],[4.05,0],[4.1,0],[4.15,0],[4.2,0],[4.25,0],[4.3,0],[4.35,0],[4.4,0],[4.45,0],[4.5,0],[4.55,0],[4.6,0],[4.65,0],[4.7,0],[4.75,0],[4.8,0],[4.85,0],[4.9,0],[4.95,0],[5,0],[5.05,0],[5.1,0],[5.15,0],[5.2,0],[5.25,0],[5.3,0],[5.35,0],[5.4,0],[5.45,0],[5.5,0],[5.55,0],[5.6,0],[5.65,0],[5.7,0],[5.75,0],[5.8,0],[5.85,0],[5.9,0],[5.95,0],[6,0],[6.05,0],[6.1,0],[6.15,0],[6.2,0],[6.25,0],[6.3,0],[6.35,0],[6.4,0],[6.45,0],[6.5,0],[6.55,0],[6.6,0],[6.65,0],[6.7,0],[6.75,0],[6.8,0],[6.85,0],[6.9,0],[6.95,0],[7,0],[7.05,0],[7.1,0],[7.15,0],[7.2,0],[7.25,0],[7.3,0],[7.35,0],[7.4,0],[7.45,0],[7.5,0],[7.55,0],[7.6,0],[7.65,0],[7.7,0],[7.75,0],[7.8,0],[7.85,0],[7.9,0],[7.95,0],[8,0],[8.05,0],[8.1,0],[8.15,0],[8.2,0],[8.25,0],[8.3,0],[8.35,0],[8.4,0],[8.45,0],[8.5,0],[8.55,0],[8.6,0],[8.65,0],[8.7,0],[8.75,0],[8.8,0],[8.85,0],[8.9,0],[8.95,0],[9,0],[9.05,0],[9.1,0],[9.15,0],[9.2,0],[9.25,0],[9.3,0],[9.35,0],[9.4,0],[9.45,0],[9.5,0],[9.55,0],[9.6,0],[9.65,0],[9.7,0],[9.75,0],[9.8,0],[9.85,0],[9.9,0],[9.95,0],[10,0],[10.05,0],[10.1,0],[10.15,0],[10.2,0],[10.25,0],[10.3,0],[10.35,0],[10.4,0],[10.45,0],[10.5,0],[10.55,0],[10.6,0],[10.65,0],[10.7,0],[10.75,0],[10.8,0],[10.85,0],[10.9,0],[10.95,0],[11,0],[11.05,0],[11.1,0],[11.15,0],[11.2,0],[11.25,0],[11.3,0],[11.35,0],[11.4,0],[11.45,0],[11.5,0],[11.55,0],[11.6,0],[11.65,0],[11.7,0],[11.75,0],[11.8,0],[11.85,0],[11.9,0],[11.95,0],[12,0],[12.05,0],[12.1,0],[12.15,0],[12.2,0],[12.25,0],[12.3,0],[12.35,0],[12.4,0],[12.45,0],[12.5,0],[12.55,0],[12.6,0],[12.65,0],[12.7,0],[12.75,0],[12.8,0],[12.85,0],[12.9,0],[12.95,0],[13,0],[13.05,0],[13.1,0],[13.15,0],[13.2,0],[13.25,0],[13.3,0],[13.35,0],[13.4,0],[13.45,0],[13.5,0],[13.55,0],[13.6,0],[13.65,0],[13.7,0],[13.75,0],[13.8,0],[13.85,0],[13.9,0],[13.95,0],[14,0],[14.05,0],[14.1,0],[14.15,0],[14.2,0],[14.25,0],[14.3,0],[14.35,0],[14.4,0],[14.45,0],[14.5,0],[14.55,0],[14.6,0],[14.65,0],[14.7,0],[14.75,0],[14.8,0],[14.85,0],[14.9,0],[14.95,0],[15,0],[15.05,0],[15.1,0],[15.15,0],[15.2,0],[15.25,0],[15.3,0],[15.35,0],[15.4,0],[15.45,0],[15.5,0],[15.55,0],[15.6,0],[15.65,0],[15.7,0],[15.75,0],[15.8,0],[15.85,0],[15.9,0],[15.95,0],[16,0],[16.05,0],[16.1,0],[16.15,0],[16.2,0],[16.25,0],[16.3,0],[16.35,0],[16.4,0],[16.45,0],[16.5,0],[16.55,0],[16.6,0],[16.65,0],[16.7,0],[16.75,0],[16.8,0],[16.85,0],[16.9,0],[16.95,0],[17,0],[17.05,0],[17.1,0],[17.15,0],[17.2,0],[17.25,0],[17.3,0],[17.35,0],[17.4,0],[17.45,0],[17.5,0],[17.55,0],[17.6,0],[17.65,0],[17.7,0],[17.75,0],[17.8,0],[17.85,0],[17.9,0],[17.95,0],[18,0],[18.05,0],[18.1,0],[18.15,0],[18.2,0],[18.25,0],[18.3,0],[18.35,0],[18.4,0],[18.45,0],[18.5,0],[18.55,0],[18.6,0],[18.65,0],[18.7,0],[18.75,0],[18.8,0],[18.85,0],[18.9,0],[18.95,0],[19,0],[19.05,0],[19.1,0],[19.15,0],[19.2,0],[19.25,0],[19.3,0],[19.35,0],[19.4,0],[19.45,0],[19.5,0],[19.55,0],[19.6,0],[19.65,0],[19.7,0],[19.75,0],[19.8,0],[19.85,0],[19.9,0],[19.95,0],[20,0],[20.05,0],[20.1,0],[20.15,0],[20.2,0],[20.25,0],[20.3,0],[20.35,0],[20.4,0],[20.45,0],[20.5,0],[20.55,0],[20.6,0],[20.65,0],[20.7,0],[20.75,0],[20.8,0],[20.85,0],[20.9,0],[20.95,0],[21,0],[21.036,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0,"d":"go"},{"km":21.03,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 11:00"},{"cat":"water","name":"1급수대","lat":35.197275,"lon":128.967074,"off":false,"ele":null,"rows":[{"km":2.5,"d":"go"},{"km":18.53,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:09 ~ 10:39"},{"cat":"water","name":"2급수대","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":"go"},{"km":16.03,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 10:17"},{"cat":"amb","name":"구급차 2","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":"go"},{"km":16.03,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 10:17"},{"cat":"water","name":"3급수대","lat":35.15468,"lon":128.955863,"off":false,"ele":null,"rows":[{"km":7.5,"d":"go"},{"km":13.53,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:26 ~ 09:56"},{"cat":"amb","name":"구급차 3","lat":35.15468,"lon":128.955863,"off":false,"ele":null,"rows":[{"km":7.5,"d":"go"},{"km":13.53,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:26 ~ 09:56"},{"cat":"water","name":"4급수대","lat":35.133657,"lon":128.946151,"off":false,"ele":null,"rows":[{"km":10,"d":"go"},{"km":11.03,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:35 ~ 09:34"},{"cat":"amb","name":"구급차 4","lat":35.129552,"lon":128.943907,"off":false,"ele":null,"rows":[{"km":10.5,"d":""}],"time":"","memo":"","gap":0.5,"ops":"08:37 ~ 09:30"}]},"c3jlf":{"name":"10K","color":"#43a047","total_km":10,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":5,"turns":[5],"turnNames":["반환점"],"arrowEdits":[],"arrowRuns":{},"segs":[[0,4.98,"go"],[4.98,10,"back"]],"shape":"outback","shapeText":"왕복","laps":1,"closed":true,"participants":0,"limit":"1:40","limitPace":10,"track":[[35.211976,128.98765],[35.211212,128.987118],[35.210845,128.986823],[35.210365,128.986383],[35.209457,128.985302],[35.208854,128.984164],[35.208467,128.983474],[35.208039,128.982783],[35.207544,128.982008],[35.207187,128.981425],[35.206249,128.979808],[35.205262,128.978022],[35.204862,128.977287],[35.20457,128.976811],[35.203642,128.975572],[35.203148,128.974893],[35.202441,128.97377],[35.201354,128.972225],[35.200698,128.971357],[35.199831,128.970084],[35.198917,128.968939],[35.197415,128.967226],[35.196295,128.966008],[35.195798,128.965554],[35.195163,128.964982],[35.194665,128.964563],[35.194311,128.964308],[35.193954,128.964069],[35.193247,128.96364],[35.192436,128.963209],[35.191565,128.962738],[35.191025,128.962453],[35.190669,128.962299],[35.188818,128.961547],[35.188745,128.961479],[35.188619,128.961317],[35.188543,128.961298],[35.18829,128.961317],[35.187619,128.961139],[35.186866,128.960915],[35.185593,128.960557],[35.185087,128.960425],[35.184553,128.96028],[35.184195,128.960201],[35.183826,128.960096],[35.183367,128.959972],[35.183187,128.959881],[35.182869,128.959697],[35.182609,128.959563],[35.182352,128.959452],[35.182056,128.959362],[35.18185,128.959314],[35.181606,128.959282],[35.180995,128.959222],[35.180086,128.959106],[35.179589,128.959047],[35.17925,128.959016],[35.179099,128.959004],[35.178355,128.959052],[35.177938,128.959091],[35.177723,128.959063],[35.177619,128.959074],[35.177514,128.959107],[35.176412,128.959548],[35.176395,128.959555],[35.176412,128.959548],[35.177514,128.959107],[35.177619,128.959074],[35.177723,128.959063],[35.177938,128.959091],[35.178355,128.959052],[35.179099,128.959004],[35.17925,128.959016],[35.179589,128.959047],[35.180086,128.959106],[35.180995,128.959222],[35.181606,128.959282],[35.18185,128.959314],[35.182056,128.959362],[35.182352,128.959452],[35.182609,128.959563],[35.182869,128.959697],[35.183187,128.959881],[35.183367,128.959972],[35.183826,128.960096],[35.184195,128.960201],[35.184553,128.96028],[35.185087,128.960425],[35.185593,128.960557],[35.186866,128.960915],[35.187619,128.961139],[35.18829,128.961317],[35.188543,128.961298],[35.188619,128.961317],[35.188745,128.961479],[35.188818,128.961547],[35.190669,128.962299],[35.191025,128.962453],[35.191565,128.962738],[35.192436,128.963209],[35.193247,128.96364],[35.193954,128.964069],[35.194311,128.964308],[35.194665,128.964563],[35.195163,128.964982],[35.195798,128.965554],[35.196295,128.966008],[35.197415,128.967226],[35.198917,128.968939],[35.199831,128.970084],[35.200698,128.971357],[35.201354,128.972225],[35.202441,128.97377],[35.203148,128.974893],[35.203642,128.975572],[35.20457,128.976811],[35.204862,128.977287],[35.205262,128.978022],[35.206249,128.979808],[35.207187,128.981425],[35.207544,128.982008],[35.208039,128.982783],[35.208467,128.983474],[35.208854,128.984164],[35.209457,128.985302],[35.210365,128.986383],[35.210845,128.986823],[35.211212,128.987118],[35.211976,128.98765]],"profile":[[0,0],[0.05,0],[0.1,0],[0.15,0],[0.2,0],[0.25,0],[0.3,0],[0.35,0],[0.4,0],[0.45,0],[0.5,0],[0.55,0],[0.6,0],[0.65,0],[0.7,0],[0.75,0],[0.8,0],[0.85,0],[0.9,0],[0.95,0],[1,0],[1.05,0],[1.1,0],[1.15,0],[1.2,0],[1.25,0],[1.3,0],[1.35,0],[1.4,0],[1.45,0],[1.5,0],[1.55,0],[1.6,0],[1.65,0],[1.7,0],[1.75,0],[1.8,0],[1.85,0],[1.9,0],[1.95,0],[2,0],[2.05,0],[2.1,0],[2.15,0],[2.2,0],[2.25,0],[2.3,0],[2.35,0],[2.4,0],[2.45,0],[2.5,0],[2.55,0],[2.6,0],[2.65,0],[2.7,0],[2.75,0],[2.8,0],[2.85,0],[2.9,0],[2.95,0],[3,0],[3.05,0],[3.1,0],[3.15,0],[3.2,0],[3.25,0],[3.3,0],[3.35,0],[3.4,0],[3.45,0],[3.5,0],[3.55,0],[3.6,0],[3.65,0],[3.7,0],[3.75,0],[3.8,0],[3.85,0],[3.9,0],[3.95,0],[4,0],[4.05,0],[4.1,0],[4.15,0],[4.2,0],[4.25,0],[4.3,0],[4.35,0],[4.4,0],[4.45,0],[4.5,0],[4.55,0],[4.6,0],[4.65,0],[4.7,0],[4.75,0],[4.8,0],[4.85,0],[4.9,0],[4.95,0],[5,0],[5.05,0],[5.1,0],[5.15,0],[5.2,0],[5.25,0],[5.3,0],[5.35,0],[5.4,0],[5.45,0],[5.5,0],[5.55,0],[5.6,0],[5.65,0],[5.7,0],[5.75,0],[5.8,0],[5.85,0],[5.9,0],[5.95,0],[6,0],[6.05,0],[6.1,0],[6.15,0],[6.2,0],[6.25,0],[6.3,0],[6.35,0],[6.4,0],[6.45,0],[6.5,0],[6.55,0],[6.6,0],[6.65,0],[6.7,0],[6.75,0],[6.8,0],[6.85,0],[6.9,0],[6.95,0],[7,0],[7.05,0],[7.1,0],[7.15,0],[7.2,0],[7.25,0],[7.3,0],[7.35,0],[7.4,0],[7.45,0],[7.5,0],[7.55,0],[7.6,0],[7.65,0],[7.7,0],[7.75,0],[7.8,0],[7.85,0],[7.9,0],[7.95,0],[8,0],[8.05,0],[8.1,0],[8.15,0],[8.2,0],[8.25,0],[8.3,0],[8.35,0],[8.4,0],[8.45,0],[8.5,0],[8.55,0],[8.6,0],[8.65,0],[8.7,0],[8.75,0],[8.8,0],[8.85,0],[8.9,0],[8.95,0],[9,0],[9.05,0],[9.1,0],[9.15,0],[9.2,0],[9.25,0],[9.3,0],[9.35,0],[9.4,0],[9.45,0],[9.5,0],[9.55,0],[9.6,0],[9.65,0],[9.7,0],[9.75,0],[9.8,0],[9.85,0],[9.9,0],[9.95,0],[10,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0,"d":"go"},{"km":10,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 09:40"},{"cat":"water","name":"1급수대","lat":35.197275,"lon":128.967074,"off":false,"ele":null,"rows":[{"km":2.5,"d":"go"},{"km":7.5,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:09 ~ 09:15"},{"cat":"water","name":"2급수대","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 08:50"},{"cat":"amb","name":"구급차 2","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 08:50"}]},"c4skm":{"name":"5K","color":"#ed8c1d","total_km":5.09,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":null,"turns":[],"turnNames":[],"arrowEdits":[],"arrowRuns":{},"segs":[[0,5.094,"go"]],"shape":"loop","shapeText":"순환","laps":1,"closed":true,"participants":0,"limit":"1:00","limitPace":11.77856301531213,"track":[[35.212018,128.987692],[35.211424,128.987284],[35.210917,128.986884],[35.210329,128.986318],[35.209747,128.985716],[35.209274,128.985019],[35.208981,128.984438],[35.208638,128.983793],[35.208222,128.983074],[35.205791,128.978966],[35.204942,128.977409],[35.200412,128.971028],[35.19939,128.972233],[35.200245,128.973274],[35.200963,128.974537],[35.201294,128.975528],[35.20242,128.978009],[35.204594,128.980098],[35.202555,128.981635],[35.202241,128.982061],[35.202068,128.982469],[35.202075,128.982864],[35.202213,128.982855],[35.202342,128.982951],[35.202502,128.983107],[35.2027,128.983532],[35.202794,128.983738],[35.20285,128.983972],[35.20296,128.9843],[35.203116,128.984713],[35.203192,128.985447],[35.203483,128.985726],[35.204673,128.987396],[35.205102,128.98784],[35.207882,128.985372],[35.208861,128.984248],[35.209077,128.984704],[35.209296,128.985162],[35.209427,128.985366],[35.209719,128.985754],[35.210187,128.98625],[35.210874,128.986928],[35.211994,128.987757]],"profile":[[0,0],[0.02,0],[0.04,0],[0.06,0],[0.08,0],[0.1,0],[0.12,0],[0.14,0],[0.16,0],[0.18,0],[0.2,0],[0.22,0],[0.24,0],[0.26,0],[0.28,0],[0.3,0],[0.32,0],[0.34,0],[0.36,0],[0.38,0],[0.4,0],[0.42,0],[0.44,0],[0.46,0],[0.48,0],[0.5,0],[0.52,0],[0.54,0],[0.56,0],[0.58,0],[0.6,0],[0.62,0],[0.64,0],[0.66,0],[0.68,0],[0.7,0],[0.72,0],[0.74,0],[0.76,0],[0.78,0],[0.8,0],[0.82,0],[0.84,0],[0.86,0],[0.88,0],[0.9,0],[0.92,0],[0.94,0],[0.96,0],[0.98,0],[1,0],[1.02,0],[1.04,0],[1.06,0],[1.08,0],[1.1,0],[1.12,0],[1.14,0],[1.16,0],[1.18,0],[1.2,0],[1.22,0],[1.24,0],[1.26,0],[1.28,0],[1.3,0],[1.32,0],[1.34,0],[1.36,0],[1.38,0],[1.4,0],[1.42,0],[1.44,0],[1.46,0],[1.48,0],[1.5,0],[1.52,0],[1.54,0],[1.56,0],[1.58,0],[1.6,0],[1.62,0],[1.64,0],[1.66,0],[1.68,0],[1.7,0],[1.72,0],[1.74,0],[1.76,0],[1.78,0],[1.8,0],[1.82,0],[1.84,0],[1.86,0],[1.88,0],[1.9,0],[1.92,0],[1.94,0],[1.96,0],[1.98,0],[2,0],[2.02,0],[2.04,0],[2.06,0],[2.08,0],[2.1,0],[2.12,0],[2.14,0],[2.16,0],[2.18,0],[2.2,0],[2.22,0],[2.24,0],[2.26,0],[2.28,0],[2.3,0],[2.32,0],[2.34,0],[2.36,0],[2.38,0],[2.4,0],[2.42,0],[2.44,0],[2.46,0],[2.48,0],[2.5,0],[2.52,0],[2.54,0],[2.56,0],[2.58,0],[2.6,0],[2.62,0],[2.64,0],[2.66,0],[2.68,0],[2.7,0],[2.72,0],[2.74,0],[2.76,0],[2.78,0],[2.8,0],[2.82,0],[2.84,0],[2.86,0],[2.88,0],[2.9,0],[2.92,0],[2.94,0],[2.96,0],[2.98,0],[3,0],[3.02,0],[3.04,0],[3.06,0],[3.08,0],[3.1,0],[3.12,0],[3.14,0],[3.16,0],[3.18,0],[3.2,0],[3.22,0],[3.24,0],[3.26,0],[3.28,0],[3.3,0],[3.32,0],[3.34,0],[3.36,0],[3.38,0],[3.4,0],[3.42,0],[3.44,0],[3.46,0],[3.48,0],[3.5,0],[3.52,0],[3.54,0],[3.56,0],[3.58,0],[3.6,0],[3.62,0],[3.64,0],[3.66,0],[3.68,0],[3.7,0],[3.72,0],[3.74,0],[3.76,0],[3.78,0],[3.8,0],[3.82,0],[3.84,0],[3.86,0],[3.88,0],[3.9,0],[3.92,0],[3.94,0],[3.96,0],[3.98,0],[4,0],[4.02,0],[4.04,0],[4.06,0],[4.08,0],[4.1,0],[4.12,0],[4.14,0],[4.16,0],[4.18,0],[4.2,0],[4.22,0],[4.24,0],[4.26,0],[4.28,0],[4.3,0],[4.32,0],[4.34,0],[4.36,0],[4.38,0],[4.4,0],[4.42,0],[4.44,0],[4.46,0],[4.48,0],[4.5,0],[4.52,0],[4.54,0],[4.56,0],[4.58,0],[4.6,0],[4.62,0],[4.64,0],[4.66,0],[4.68,0],[4.7,0],[4.72,0],[4.74,0],[4.76,0],[4.78,0],[4.8,0],[4.82,0],[4.84,0],[4.86,0],[4.88,0],[4.9,0],[4.92,0],[4.94,0],[4.96,0],[4.98,0],[5,0],[5.02,0],[5.04,0],[5.06,0],[5.08,0],[5.094,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0.01,"d":""},{"km":5.09,"d":""}],"time":"","memo":"","gap":0.01,"ops":"08:00 ~ 09:00"},{"cat":"water","name":"5급수대","lat":35.199429,"lon":128.972187,"off":false,"ele":null,"rows":[{"km":2.16,"d":""}],"time":"","memo":"","gap":2.15,"ops":"08:08 ~ 08:25"}]}}};
+const DATA = {"mode":"public","title":"마라톤 코스도","texts":{"subtitle":"현장 상황에 따라 변경 될 수 있습니다.","mapNote":"","tableTitle":"📋 코스 시설 안내","tableNote":"표의 행을 클릭하면 지도에서 해당 위치로 이동합니다. 코스를 전환하면 해당 코스 기준 왕/복 거리로 다시 계산됩니다.","colGo":"왕편","colBack":"복편","colName":"명칭","colMemo":"비고","colGap":"간격","colOps":"운영 시간"},"k":"OW9pOG86UGI+OTxrbAQ4bj1qbGkFPDpqODo+BWtvbj8=","cats":[{"id":"water","label":"급수대","icon":"💧","color":"#1976d2","supply":true},{"id":"medic","label":"적십자(의료)","icon":"✚","color":"#d32f2f"},{"id":"amb","label":"구급차","icon":"🚑","color":"#b71c1c"},{"id":"turn","label":"반환점","icon":"↩","color":"#f57c00"},{"id":"cut","label":"컷오프","icon":"⏱","color":"#37474f","hasTime":true},{"id":"staff","label":"스탭","icon":"👤","color":"#6a1b9a"},{"id":"police","label":"교통통제","icon":"🚧","color":"#c2a000"},{"id":"toilet","label":"화장실","icon":"🚻","color":"#00897b"},{"id":"food","label":"간식/보급","icon":"🍌","color":"#2e7d32"},{"id":"photo","label":"촬영포인트","icon":"📷","color":"#5d4037"}],"event":{"start":"08:00","lead":"3:30","last":"9:00"},"limitNote":"제한시간 — 하프 3시간 (종료 11:00) · 평균 8:33/km   |   10K 1시간 40분 (종료 09:40) · 평균 10:00/km   |   5K 1시간 (종료 09:00) · 평균 11:47/km","limits":[{"name":"하프","km":21.04,"limit":"3시간","end":"11:00","pace":"8:33/km"},{"name":"10K","km":10,"limit":"1시간 40분","end":"09:40","pace":"10:00/km"},{"name":"5K","km":5.09,"limit":"1시간","end":"09:00","pace":"11:47/km"}],"startTime":"08:00","cols":{"gap":false,"ops":false,"memo":true,"ele":false},"roundMode":"round","showReturn":true,"returnOffset":14,"allowRetToggle":false,"line":{"w":7,"arrow":true,"aRev":false,"aColor":"#ffffff","aGap":90,"aSize":1,"aEdge":true,"fan":true,"fanGap":11,"sepAuto":true,"sepPx":9,"laneColor":false,"retColor":"#1565c0","dash":false,"others":true},"hideTitle":false,"embed":false,"diag":false,"engine":"kakao","supplies":[],"order":["c21qs","c3jlf","c4skm"],"start":[35.211976,128.98765],"courses":{"c21qs":{"name":"하프","color":"#7b1fa2","total_km":21.04,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":10.518,"turns":[10.518],"turnNames":["반환점"],"arrowEdits":[],"arrowRuns":{},"segs":[[0,10.518,"go"],[10.518,21.036,"back"]],"shape":"outback","shapeText":"왕복","laps":1,"closed":true,"participants":0,"limit":"3:00","limitPace":8.556759840273816,"track":[[35.211976,128.98765],[35.211212,128.987118],[35.210845,128.986823],[35.210365,128.986383],[35.209457,128.985302],[35.208854,128.984164],[35.208467,128.983474],[35.208039,128.982783],[35.207544,128.982008],[35.207187,128.981425],[35.206249,128.979808],[35.205262,128.978022],[35.204862,128.977287],[35.20457,128.976811],[35.203642,128.975572],[35.203148,128.974893],[35.202441,128.97377],[35.201354,128.972225],[35.200698,128.971357],[35.199831,128.970084],[35.198917,128.968939],[35.197415,128.967226],[35.196295,128.966008],[35.195798,128.965554],[35.195163,128.964982],[35.194665,128.964563],[35.194311,128.964308],[35.193954,128.964069],[35.193247,128.96364],[35.192436,128.963209],[35.191565,128.962738],[35.191025,128.962453],[35.190669,128.962299],[35.188818,128.961547],[35.188745,128.961479],[35.188619,128.961317],[35.188543,128.961298],[35.18829,128.961317],[35.187619,128.961139],[35.186866,128.960915],[35.185593,128.960557],[35.185087,128.960425],[35.184553,128.96028],[35.184195,128.960201],[35.183826,128.960096],[35.183367,128.959972],[35.183187,128.959881],[35.182869,128.959697],[35.182609,128.959563],[35.182352,128.959452],[35.182056,128.959362],[35.18185,128.959314],[35.181606,128.959282],[35.180995,128.959222],[35.180086,128.959106],[35.179589,128.959047],[35.17925,128.959016],[35.179099,128.959004],[35.178355,128.959052],[35.177938,128.959091],[35.177723,128.959063],[35.177619,128.959074],[35.177514,128.959107],[35.176412,128.959548],[35.176154,128.959652],[35.175011,128.960061],[35.173956,128.96047],[35.173786,128.960523],[35.173616,128.960589],[35.172146,128.960884],[35.171408,128.960958],[35.169568,128.960897],[35.168799,128.960854],[35.168229,128.96078],[35.167812,128.960729],[35.16725,128.960629],[35.166762,128.960532],[35.165805,128.960297],[35.164834,128.960011],[35.163514,128.959528],[35.162812,128.959285],[35.162264,128.959094],[35.161155,128.958646],[35.16006,128.958163],[35.157771,128.957195],[35.156598,128.956695],[35.155702,128.956325],[35.155065,128.95605],[35.154643,128.955845],[35.154106,128.955524],[35.153892,128.955408],[35.153728,128.955341],[35.153038,128.955061],[35.152795,128.954963],[35.151562,128.954456],[35.150649,128.954068],[35.149885,128.953743],[35.148159,128.953001],[35.147252,128.952602],[35.145988,128.952064],[35.14329,128.950841],[35.142485,128.950493],[35.14158,128.950069],[35.140924,128.949755],[35.140315,128.949469],[35.13969,128.949171],[35.139205,128.948931],[35.138783,128.948724],[35.138401,128.948545],[35.137802,128.94825],[35.137196,128.947952],[35.136405,128.947551],[35.136054,128.947392],[35.135224,128.946957],[35.13437,128.946514],[35.133526,128.946084],[35.13273,128.945647],[35.131551,128.94502],[35.130415,128.944396],[35.129446,128.943847],[35.129427,128.943891],[35.13039,128.944435],[35.131609,128.945117],[35.133854,128.946309],[35.135977,128.947404],[35.140562,128.949636],[35.141829,128.950253],[35.143428,128.95098],[35.145162,128.95177],[35.147153,128.952624],[35.149095,128.953469],[35.150404,128.95403],[35.151623,128.954541],[35.153882,128.955443],[35.15473,128.95593],[35.15607,128.95653],[35.158319,128.957505],[35.160395,128.958375],[35.162179,128.959121],[35.164475,128.959936],[35.165643,128.960309],[35.167483,128.960743],[35.168837,128.960913],[35.169402,128.960943],[35.170789,128.960984],[35.171388,128.960982],[35.172142,128.960918],[35.173622,128.960619],[35.173971,128.960504],[35.174316,128.960369],[35.174649,128.960243],[35.176137,128.9597],[35.177624,128.959121],[35.177716,128.959126],[35.177885,128.959139],[35.178148,128.95914],[35.178851,128.959082],[35.179246,128.95908],[35.179475,128.95911],[35.179955,128.959159],[35.180626,128.959234],[35.181342,128.959301],[35.181721,128.959355],[35.182052,128.95942],[35.182354,128.959516],[35.182641,128.959628],[35.183188,128.959946],[35.183362,128.960031],[35.183779,128.96015],[35.18422,128.96027],[35.185923,128.960696],[35.186472,128.960842],[35.187336,128.961102],[35.188284,128.96138],[35.188531,128.961346],[35.18861,128.961358],[35.188705,128.96151],[35.188799,128.961589],[35.190516,128.962294],[35.190867,128.962438],[35.191923,128.962996],[35.192586,128.963348],[35.192899,128.963508],[35.193689,128.963935],[35.194116,128.964215],[35.194601,128.964574],[35.195163,128.965054],[35.196293,128.966118],[35.197118,128.96699],[35.19865,128.968706],[35.19978,128.970114],[35.200204,128.970738],[35.200725,128.971485],[35.201255,128.972148],[35.201598,128.972643],[35.202512,128.973967],[35.202947,128.974658],[35.2031,128.974896],[35.203796,128.975868],[35.204477,128.976796],[35.204708,128.977134],[35.205006,128.977642],[35.205769,128.979032],[35.206612,128.980551],[35.207071,128.981331],[35.207347,128.981757],[35.207974,128.98281],[35.208415,128.983488],[35.208841,128.984278],[35.209384,128.985312],[35.209719,128.985775],[35.210003,128.986084],[35.210285,128.986364],[35.210773,128.986831],[35.211086,128.987082],[35.211519,128.987427],[35.211988,128.987735]],"profile":[[0,0],[0.05,0],[0.1,0],[0.15,0],[0.2,0],[0.25,0],[0.3,0],[0.35,0],[0.4,0],[0.45,0],[0.5,0],[0.55,0],[0.6,0],[0.65,0],[0.7,0],[0.75,0],[0.8,0],[0.85,0],[0.9,0],[0.95,0],[1,0],[1.05,0],[1.1,0],[1.15,0],[1.2,0],[1.25,0],[1.3,0],[1.35,0],[1.4,0],[1.45,0],[1.5,0],[1.55,0],[1.6,0],[1.65,0],[1.7,0],[1.75,0],[1.8,0],[1.85,0],[1.9,0],[1.95,0],[2,0],[2.05,0],[2.1,0],[2.15,0],[2.2,0],[2.25,0],[2.3,0],[2.35,0],[2.4,0],[2.45,0],[2.5,0],[2.55,0],[2.6,0],[2.65,0],[2.7,0],[2.75,0],[2.8,0],[2.85,0],[2.9,0],[2.95,0],[3,0],[3.05,0],[3.1,0],[3.15,0],[3.2,0],[3.25,0],[3.3,0],[3.35,0],[3.4,0],[3.45,0],[3.5,0],[3.55,0],[3.6,0],[3.65,0],[3.7,0],[3.75,0],[3.8,0],[3.85,0],[3.9,0],[3.95,0],[4,0],[4.05,0],[4.1,0],[4.15,0],[4.2,0],[4.25,0],[4.3,0],[4.35,0],[4.4,0],[4.45,0],[4.5,0],[4.55,0],[4.6,0],[4.65,0],[4.7,0],[4.75,0],[4.8,0],[4.85,0],[4.9,0],[4.95,0],[5,0],[5.05,0],[5.1,0],[5.15,0],[5.2,0],[5.25,0],[5.3,0],[5.35,0],[5.4,0],[5.45,0],[5.5,0],[5.55,0],[5.6,0],[5.65,0],[5.7,0],[5.75,0],[5.8,0],[5.85,0],[5.9,0],[5.95,0],[6,0],[6.05,0],[6.1,0],[6.15,0],[6.2,0],[6.25,0],[6.3,0],[6.35,0],[6.4,0],[6.45,0],[6.5,0],[6.55,0],[6.6,0],[6.65,0],[6.7,0],[6.75,0],[6.8,0],[6.85,0],[6.9,0],[6.95,0],[7,0],[7.05,0],[7.1,0],[7.15,0],[7.2,0],[7.25,0],[7.3,0],[7.35,0],[7.4,0],[7.45,0],[7.5,0],[7.55,0],[7.6,0],[7.65,0],[7.7,0],[7.75,0],[7.8,0],[7.85,0],[7.9,0],[7.95,0],[8,0],[8.05,0],[8.1,0],[8.15,0],[8.2,0],[8.25,0],[8.3,0],[8.35,0],[8.4,0],[8.45,0],[8.5,0],[8.55,0],[8.6,0],[8.65,0],[8.7,0],[8.75,0],[8.8,0],[8.85,0],[8.9,0],[8.95,0],[9,0],[9.05,0],[9.1,0],[9.15,0],[9.2,0],[9.25,0],[9.3,0],[9.35,0],[9.4,0],[9.45,0],[9.5,0],[9.55,0],[9.6,0],[9.65,0],[9.7,0],[9.75,0],[9.8,0],[9.85,0],[9.9,0],[9.95,0],[10,0],[10.05,0],[10.1,0],[10.15,0],[10.2,0],[10.25,0],[10.3,0],[10.35,0],[10.4,0],[10.45,0],[10.5,0],[10.55,0],[10.6,0],[10.65,0],[10.7,0],[10.75,0],[10.8,0],[10.85,0],[10.9,0],[10.95,0],[11,0],[11.05,0],[11.1,0],[11.15,0],[11.2,0],[11.25,0],[11.3,0],[11.35,0],[11.4,0],[11.45,0],[11.5,0],[11.55,0],[11.6,0],[11.65,0],[11.7,0],[11.75,0],[11.8,0],[11.85,0],[11.9,0],[11.95,0],[12,0],[12.05,0],[12.1,0],[12.15,0],[12.2,0],[12.25,0],[12.3,0],[12.35,0],[12.4,0],[12.45,0],[12.5,0],[12.55,0],[12.6,0],[12.65,0],[12.7,0],[12.75,0],[12.8,0],[12.85,0],[12.9,0],[12.95,0],[13,0],[13.05,0],[13.1,0],[13.15,0],[13.2,0],[13.25,0],[13.3,0],[13.35,0],[13.4,0],[13.45,0],[13.5,0],[13.55,0],[13.6,0],[13.65,0],[13.7,0],[13.75,0],[13.8,0],[13.85,0],[13.9,0],[13.95,0],[14,0],[14.05,0],[14.1,0],[14.15,0],[14.2,0],[14.25,0],[14.3,0],[14.35,0],[14.4,0],[14.45,0],[14.5,0],[14.55,0],[14.6,0],[14.65,0],[14.7,0],[14.75,0],[14.8,0],[14.85,0],[14.9,0],[14.95,0],[15,0],[15.05,0],[15.1,0],[15.15,0],[15.2,0],[15.25,0],[15.3,0],[15.35,0],[15.4,0],[15.45,0],[15.5,0],[15.55,0],[15.6,0],[15.65,0],[15.7,0],[15.75,0],[15.8,0],[15.85,0],[15.9,0],[15.95,0],[16,0],[16.05,0],[16.1,0],[16.15,0],[16.2,0],[16.25,0],[16.3,0],[16.35,0],[16.4,0],[16.45,0],[16.5,0],[16.55,0],[16.6,0],[16.65,0],[16.7,0],[16.75,0],[16.8,0],[16.85,0],[16.9,0],[16.95,0],[17,0],[17.05,0],[17.1,0],[17.15,0],[17.2,0],[17.25,0],[17.3,0],[17.35,0],[17.4,0],[17.45,0],[17.5,0],[17.55,0],[17.6,0],[17.65,0],[17.7,0],[17.75,0],[17.8,0],[17.85,0],[17.9,0],[17.95,0],[18,0],[18.05,0],[18.1,0],[18.15,0],[18.2,0],[18.25,0],[18.3,0],[18.35,0],[18.4,0],[18.45,0],[18.5,0],[18.55,0],[18.6,0],[18.65,0],[18.7,0],[18.75,0],[18.8,0],[18.85,0],[18.9,0],[18.95,0],[19,0],[19.05,0],[19.1,0],[19.15,0],[19.2,0],[19.25,0],[19.3,0],[19.35,0],[19.4,0],[19.45,0],[19.5,0],[19.55,0],[19.6,0],[19.65,0],[19.7,0],[19.75,0],[19.8,0],[19.85,0],[19.9,0],[19.95,0],[20,0],[20.05,0],[20.1,0],[20.15,0],[20.2,0],[20.25,0],[20.3,0],[20.35,0],[20.4,0],[20.45,0],[20.5,0],[20.55,0],[20.6,0],[20.65,0],[20.7,0],[20.75,0],[20.8,0],[20.85,0],[20.9,0],[20.95,0],[21,0],[21.036,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0,"d":"go"},{"km":21.03,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 11:00"},{"cat":"water","name":"1급수대","lat":35.197275,"lon":128.967074,"off":false,"ele":null,"rows":[{"km":2.5,"d":"go"},{"km":18.53,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:09 ~ 10:39"},{"cat":"water","name":"2급수대","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":"go"},{"km":16.03,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 10:17"},{"cat":"amb","name":"구급차 2","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":"go"},{"km":16.03,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 10:17"},{"cat":"water","name":"3급수대","lat":35.15468,"lon":128.955863,"off":false,"ele":null,"rows":[{"km":7.5,"d":"go"},{"km":13.53,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:26 ~ 09:56"},{"cat":"amb","name":"구급차 3","lat":35.15468,"lon":128.955863,"off":false,"ele":null,"rows":[{"km":7.5,"d":"go"},{"km":13.53,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:26 ~ 09:56"},{"cat":"water","name":"4급수대","lat":35.133657,"lon":128.946151,"off":false,"ele":null,"rows":[{"km":10,"d":"go"},{"km":11.03,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:35 ~ 09:34"},{"cat":"amb","name":"구급차 4","lat":35.129552,"lon":128.943907,"off":false,"ele":null,"rows":[{"km":10.5,"d":""}],"time":"","memo":"","gap":0.5,"ops":"08:37 ~ 09:30"}]},"c3jlf":{"name":"10K","color":"#43a047","total_km":10,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":4.98,"turns":[4.98],"turnNames":["반환점"],"arrowEdits":[],"arrowRuns":{},"segs":[[0,4.98,"go"],[4.98,10,"back"]],"shape":"outback","shapeText":"왕복","laps":1,"closed":true,"participants":0,"limit":"1:40","limitPace":10,"track":[[35.211976,128.98765],[35.211212,128.987118],[35.210845,128.986823],[35.210365,128.986383],[35.209457,128.985302],[35.208854,128.984164],[35.208467,128.983474],[35.208039,128.982783],[35.207544,128.982008],[35.207187,128.981425],[35.206249,128.979808],[35.205262,128.978022],[35.204862,128.977287],[35.20457,128.976811],[35.203642,128.975572],[35.203148,128.974893],[35.202441,128.97377],[35.201354,128.972225],[35.200698,128.971357],[35.199831,128.970084],[35.198917,128.968939],[35.197415,128.967226],[35.196295,128.966008],[35.195798,128.965554],[35.195163,128.964982],[35.194665,128.964563],[35.194311,128.964308],[35.193954,128.964069],[35.193247,128.96364],[35.192436,128.963209],[35.191565,128.962738],[35.191025,128.962453],[35.190669,128.962299],[35.188818,128.961547],[35.188745,128.961479],[35.188619,128.961317],[35.188543,128.961298],[35.18829,128.961317],[35.187619,128.961139],[35.186866,128.960915],[35.185593,128.960557],[35.185087,128.960425],[35.184553,128.96028],[35.184195,128.960201],[35.183826,128.960096],[35.183367,128.959972],[35.183187,128.959881],[35.182869,128.959697],[35.182609,128.959563],[35.182352,128.959452],[35.182056,128.959362],[35.18185,128.959314],[35.181606,128.959282],[35.180995,128.959222],[35.180086,128.959106],[35.179589,128.959047],[35.17925,128.959016],[35.179099,128.959004],[35.178355,128.959052],[35.177938,128.959091],[35.177723,128.959063],[35.177619,128.959074],[35.177514,128.959107],[35.176412,128.959548],[35.176395,128.959555],[35.176412,128.959548],[35.177514,128.959107],[35.177619,128.959074],[35.177723,128.959063],[35.177938,128.959091],[35.178355,128.959052],[35.179099,128.959004],[35.17925,128.959016],[35.179589,128.959047],[35.180086,128.959106],[35.180995,128.959222],[35.181606,128.959282],[35.18185,128.959314],[35.182056,128.959362],[35.182352,128.959452],[35.182609,128.959563],[35.182869,128.959697],[35.183187,128.959881],[35.183367,128.959972],[35.183826,128.960096],[35.184195,128.960201],[35.184553,128.96028],[35.185087,128.960425],[35.185593,128.960557],[35.186866,128.960915],[35.187619,128.961139],[35.18829,128.961317],[35.188543,128.961298],[35.188619,128.961317],[35.188745,128.961479],[35.188818,128.961547],[35.190669,128.962299],[35.191025,128.962453],[35.191565,128.962738],[35.192436,128.963209],[35.193247,128.96364],[35.193954,128.964069],[35.194311,128.964308],[35.194665,128.964563],[35.195163,128.964982],[35.195798,128.965554],[35.196295,128.966008],[35.197415,128.967226],[35.198917,128.968939],[35.199831,128.970084],[35.200698,128.971357],[35.201354,128.972225],[35.202441,128.97377],[35.203148,128.974893],[35.203642,128.975572],[35.20457,128.976811],[35.204862,128.977287],[35.205262,128.978022],[35.206249,128.979808],[35.207187,128.981425],[35.207544,128.982008],[35.208039,128.982783],[35.208467,128.983474],[35.208854,128.984164],[35.209457,128.985302],[35.210365,128.986383],[35.210845,128.986823],[35.211212,128.987118],[35.211976,128.98765]],"profile":[[0,0],[0.05,0],[0.1,0],[0.15,0],[0.2,0],[0.25,0],[0.3,0],[0.35,0],[0.4,0],[0.45,0],[0.5,0],[0.55,0],[0.6,0],[0.65,0],[0.7,0],[0.75,0],[0.8,0],[0.85,0],[0.9,0],[0.95,0],[1,0],[1.05,0],[1.1,0],[1.15,0],[1.2,0],[1.25,0],[1.3,0],[1.35,0],[1.4,0],[1.45,0],[1.5,0],[1.55,0],[1.6,0],[1.65,0],[1.7,0],[1.75,0],[1.8,0],[1.85,0],[1.9,0],[1.95,0],[2,0],[2.05,0],[2.1,0],[2.15,0],[2.2,0],[2.25,0],[2.3,0],[2.35,0],[2.4,0],[2.45,0],[2.5,0],[2.55,0],[2.6,0],[2.65,0],[2.7,0],[2.75,0],[2.8,0],[2.85,0],[2.9,0],[2.95,0],[3,0],[3.05,0],[3.1,0],[3.15,0],[3.2,0],[3.25,0],[3.3,0],[3.35,0],[3.4,0],[3.45,0],[3.5,0],[3.55,0],[3.6,0],[3.65,0],[3.7,0],[3.75,0],[3.8,0],[3.85,0],[3.9,0],[3.95,0],[4,0],[4.05,0],[4.1,0],[4.15,0],[4.2,0],[4.25,0],[4.3,0],[4.35,0],[4.4,0],[4.45,0],[4.5,0],[4.55,0],[4.6,0],[4.65,0],[4.7,0],[4.75,0],[4.8,0],[4.85,0],[4.9,0],[4.95,0],[5,0],[5.05,0],[5.1,0],[5.15,0],[5.2,0],[5.25,0],[5.3,0],[5.35,0],[5.4,0],[5.45,0],[5.5,0],[5.55,0],[5.6,0],[5.65,0],[5.7,0],[5.75,0],[5.8,0],[5.85,0],[5.9,0],[5.95,0],[6,0],[6.05,0],[6.1,0],[6.15,0],[6.2,0],[6.25,0],[6.3,0],[6.35,0],[6.4,0],[6.45,0],[6.5,0],[6.55,0],[6.6,0],[6.65,0],[6.7,0],[6.75,0],[6.8,0],[6.85,0],[6.9,0],[6.95,0],[7,0],[7.05,0],[7.1,0],[7.15,0],[7.2,0],[7.25,0],[7.3,0],[7.35,0],[7.4,0],[7.45,0],[7.5,0],[7.55,0],[7.6,0],[7.65,0],[7.7,0],[7.75,0],[7.8,0],[7.85,0],[7.9,0],[7.95,0],[8,0],[8.05,0],[8.1,0],[8.15,0],[8.2,0],[8.25,0],[8.3,0],[8.35,0],[8.4,0],[8.45,0],[8.5,0],[8.55,0],[8.6,0],[8.65,0],[8.7,0],[8.75,0],[8.8,0],[8.85,0],[8.9,0],[8.95,0],[9,0],[9.05,0],[9.1,0],[9.15,0],[9.2,0],[9.25,0],[9.3,0],[9.35,0],[9.4,0],[9.45,0],[9.5,0],[9.55,0],[9.6,0],[9.65,0],[9.7,0],[9.75,0],[9.8,0],[9.85,0],[9.9,0],[9.95,0],[10,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0,"d":"go"},{"km":10,"d":"back"}],"time":"","memo":"","gap":0,"ops":"08:00 ~ 09:40"},{"cat":"water","name":"1급수대","lat":35.197275,"lon":128.967074,"off":false,"ele":null,"rows":[{"km":2.5,"d":"go"},{"km":7.5,"d":"back"}],"time":"","memo":"","gap":2.5,"ops":"08:09 ~ 09:15"},{"cat":"water","name":"2급수대","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":2.5,"ops":"08:18 ~ 08:50"},{"cat":"amb","name":"구급차 2","lat":35.176395,"lon":128.959555,"off":false,"ele":null,"rows":[{"km":5,"d":""}],"time":"","memo":"","gap":0,"ops":"08:18 ~ 08:50"}]},"c4skm":{"name":"5K","color":"#ed8c1d","total_km":5.09,"gain":0,"ele_min":0,"ele_max":0,"hasEle":false,"turnKm":null,"turns":[],"turnNames":[],"arrowEdits":[],"arrowRuns":{},"segs":[[0,5.094,"go"]],"shape":"loop","shapeText":"순환","laps":1,"closed":true,"participants":0,"limit":"1:00","limitPace":11.77856301531213,"track":[[35.212018,128.987692],[35.211424,128.987284],[35.210917,128.986884],[35.210329,128.986318],[35.209747,128.985716],[35.209274,128.985019],[35.208981,128.984438],[35.208638,128.983793],[35.208222,128.983074],[35.205791,128.978966],[35.204942,128.977409],[35.200412,128.971028],[35.19939,128.972233],[35.200245,128.973274],[35.200963,128.974537],[35.201294,128.975528],[35.20242,128.978009],[35.204594,128.980098],[35.202555,128.981635],[35.202241,128.982061],[35.202068,128.982469],[35.202075,128.982864],[35.202213,128.982855],[35.202342,128.982951],[35.202502,128.983107],[35.2027,128.983532],[35.202794,128.983738],[35.20285,128.983972],[35.20296,128.9843],[35.203116,128.984713],[35.203192,128.985447],[35.203483,128.985726],[35.204673,128.987396],[35.205102,128.98784],[35.207882,128.985372],[35.208861,128.984248],[35.209077,128.984704],[35.209296,128.985162],[35.209427,128.985366],[35.209719,128.985754],[35.210187,128.98625],[35.210874,128.986928],[35.211994,128.987757]],"profile":[[0,0],[0.02,0],[0.04,0],[0.06,0],[0.08,0],[0.1,0],[0.12,0],[0.14,0],[0.16,0],[0.18,0],[0.2,0],[0.22,0],[0.24,0],[0.26,0],[0.28,0],[0.3,0],[0.32,0],[0.34,0],[0.36,0],[0.38,0],[0.4,0],[0.42,0],[0.44,0],[0.46,0],[0.48,0],[0.5,0],[0.52,0],[0.54,0],[0.56,0],[0.58,0],[0.6,0],[0.62,0],[0.64,0],[0.66,0],[0.68,0],[0.7,0],[0.72,0],[0.74,0],[0.76,0],[0.78,0],[0.8,0],[0.82,0],[0.84,0],[0.86,0],[0.88,0],[0.9,0],[0.92,0],[0.94,0],[0.96,0],[0.98,0],[1,0],[1.02,0],[1.04,0],[1.06,0],[1.08,0],[1.1,0],[1.12,0],[1.14,0],[1.16,0],[1.18,0],[1.2,0],[1.22,0],[1.24,0],[1.26,0],[1.28,0],[1.3,0],[1.32,0],[1.34,0],[1.36,0],[1.38,0],[1.4,0],[1.42,0],[1.44,0],[1.46,0],[1.48,0],[1.5,0],[1.52,0],[1.54,0],[1.56,0],[1.58,0],[1.6,0],[1.62,0],[1.64,0],[1.66,0],[1.68,0],[1.7,0],[1.72,0],[1.74,0],[1.76,0],[1.78,0],[1.8,0],[1.82,0],[1.84,0],[1.86,0],[1.88,0],[1.9,0],[1.92,0],[1.94,0],[1.96,0],[1.98,0],[2,0],[2.02,0],[2.04,0],[2.06,0],[2.08,0],[2.1,0],[2.12,0],[2.14,0],[2.16,0],[2.18,0],[2.2,0],[2.22,0],[2.24,0],[2.26,0],[2.28,0],[2.3,0],[2.32,0],[2.34,0],[2.36,0],[2.38,0],[2.4,0],[2.42,0],[2.44,0],[2.46,0],[2.48,0],[2.5,0],[2.52,0],[2.54,0],[2.56,0],[2.58,0],[2.6,0],[2.62,0],[2.64,0],[2.66,0],[2.68,0],[2.7,0],[2.72,0],[2.74,0],[2.76,0],[2.78,0],[2.8,0],[2.82,0],[2.84,0],[2.86,0],[2.88,0],[2.9,0],[2.92,0],[2.94,0],[2.96,0],[2.98,0],[3,0],[3.02,0],[3.04,0],[3.06,0],[3.08,0],[3.1,0],[3.12,0],[3.14,0],[3.16,0],[3.18,0],[3.2,0],[3.22,0],[3.24,0],[3.26,0],[3.28,0],[3.3,0],[3.32,0],[3.34,0],[3.36,0],[3.38,0],[3.4,0],[3.42,0],[3.44,0],[3.46,0],[3.48,0],[3.5,0],[3.52,0],[3.54,0],[3.56,0],[3.58,0],[3.6,0],[3.62,0],[3.64,0],[3.66,0],[3.68,0],[3.7,0],[3.72,0],[3.74,0],[3.76,0],[3.78,0],[3.8,0],[3.82,0],[3.84,0],[3.86,0],[3.88,0],[3.9,0],[3.92,0],[3.94,0],[3.96,0],[3.98,0],[4,0],[4.02,0],[4.04,0],[4.06,0],[4.08,0],[4.1,0],[4.12,0],[4.14,0],[4.16,0],[4.18,0],[4.2,0],[4.22,0],[4.24,0],[4.26,0],[4.28,0],[4.3,0],[4.32,0],[4.34,0],[4.36,0],[4.38,0],[4.4,0],[4.42,0],[4.44,0],[4.46,0],[4.48,0],[4.5,0],[4.52,0],[4.54,0],[4.56,0],[4.58,0],[4.6,0],[4.62,0],[4.64,0],[4.66,0],[4.68,0],[4.7,0],[4.72,0],[4.74,0],[4.76,0],[4.78,0],[4.8,0],[4.82,0],[4.84,0],[4.86,0],[4.88,0],[4.9,0],[4.92,0],[4.94,0],[4.96,0],[4.98,0],[5,0],[5.02,0],[5.04,0],[5.06,0],[5.08,0],[5.094,0]],"pois":[{"cat":"amb","name":"구급차 1","lat":35.211976,"lon":128.98765,"off":false,"ele":null,"rows":[{"km":0.01,"d":""},{"km":5.09,"d":""}],"time":"","memo":"","gap":0.01,"ops":"08:00 ~ 09:00"},{"cat":"water","name":"5급수대","lat":35.199429,"lon":128.972187,"off":false,"ele":null,"rows":[{"km":2.16,"d":""}],"time":"","memo":"","gap":2.15,"ops":"08:08 ~ 08:25"}]}}};
 if(window.__MCV_LOADED__){                     /* 같은 조각이 두 번 이상 삽입된 경우 */
   (function(){
     var all=document.querySelectorAll('#mcv-root');
@@ -774,6 +928,7 @@ if(DATA.hideTitle){
   const h1=document.getElementById('mcv-hTitle').parentElement;
   if(h1) h1.style.display='none';
   document.getElementById('mcv-hSub').style.display='none';
+  { const hd=document.getElementById('mcv-hdr'); if(hd) hd.classList.add('mcv-noTitle'); }
 } else {
   document.getElementById('mcv-hTitle').textContent=DATA.title;
   document.getElementById('mcv-hSub').textContent=T.subtitle;
@@ -947,9 +1102,10 @@ function init(){
     kmap.on('moveend zoomend', ()=>{ scheduleArrows(); scheduleSep(); });
     document.getElementById('mcv-typeSeg').style.display='none';
     document.getElementById('mcv-ovSeg').style.display='none';
+    { const b=document.getElementById('mcv-rvBtn'); if(b) b.style.display='none'; }
   } else {
     kmap=new kakao.maps.Map(document.getElementById('mcv-map'),{center:new kakao.maps.LatLng(DATA.start[0],DATA.start[1]),level:7});
-    kakao.maps.event.addListener(kmap,'click',()=>closeInfo());
+    kakao.maps.event.addListener(kmap,'click',e=>{ if(vRV.on && e && e.latLng){ closeInfo(); vRvOpen(e.latLng.getLat(), e.latLng.getLng()); return; } closeInfo(); });
     kakao.maps.event.addListener(kmap,'idle',()=>{ scheduleArrows(); scheduleSep(); });
     document.getElementById('mcv-typeSeg').onclick=e=>{
       const b=e.target.closest('button'); if(!b) return;
@@ -2021,12 +2177,15 @@ function showInfo(html,lat,lon){
   if(!wrap){ return; }
   const lay=document.createElement('div');
   lay.id='mcv-infoLayer'; lay.className='mcv-infoLayer';
+  const rvOk=(typeof vRvOk==='function') && vRvOk() && lat!=null && lon!=null;
   lay.innerHTML='<div class="mcv-infoScrim"></div>'+
     '<div class="mcv-kinfo" role="dialog" aria-modal="true">'+html+
+      (rvOk?'<button type="button" class="mcv-rvGo">🚶 이 자리 로드뷰</button>':'')+
       '<button type="button" class="mcv-x" aria-label="닫기">×</button></div>';
   wrap.appendChild(lay);
   lay.querySelector('.mcv-infoScrim').addEventListener('click', closeInfo);
   lay.querySelector('.mcv-x').addEventListener('click', closeInfo);
+  { const g=lay.querySelector('.mcv-rvGo'); if(g) g.addEventListener('click', function(ev){ ev.stopPropagation(); closeInfo(); vRvOpen(+lat, +lon); }); }
   const card=lay.querySelector('.mcv-kinfo');
   card.addEventListener('click', function(e){ e.stopPropagation(); });
   kInfo={dom:true};
@@ -2644,6 +2803,111 @@ if(allBtn) allBtn.addEventListener('click', ()=>{
     scheduleArrows();
   }
 });
+/* ══ 로드뷰 (카카오 지도일 때) — 누른 자리 · 시설 카드 · 코스 따라 200m 씩 ══ */
+const vRV={on:false, rv:null, client:null, walker:null, km:null, seq:0, big:false};
+function vRvOk(){ return !OSM && typeof kakao!=='undefined' && kakao.maps && !!kakao.maps.Roadview && !!kakao.maps.RoadviewClient; }
+function vRvTip(t, ms){
+  const el=document.getElementById('mcv-rvTip'); if(!el) return;
+  el.textContent=t||''; el.classList.toggle('mcv-on', !!t);
+  clearTimeout(el.__t); if(t) el.__t=setTimeout(()=>el.classList.remove('mcv-on'), ms||3200);
+}
+function vNearKm(lat, lon){
+  const tr=C && C.track; if(!tr || tr.length<2 || cum.length!==tr.length) return null;
+  const K=111320, cl=Math.cos(lat*Math.PI/180); let best=null;
+  for(let i=1;i<tr.length;i++){
+    const a=tr[i-1], b=tr[i];
+    const ax=(a[1]-lon)*K*cl, ay=(a[0]-lat)*K, bx=(b[1]-lon)*K*cl, by=(b[0]-lat)*K;
+    const dx=bx-ax, dy=by-ay, L2=dx*dx+dy*dy; let t=L2?-(ax*dx+ay*dy)/L2:0; t=t<0?0:(t>1?1:t);
+    const d=Math.hypot(ax+t*dx, ay+t*dy);
+    if(!best || d<best.d) best={d, km:(cum[i-1]+t*(cum[i]-cum[i-1]))/1000};
+  }
+  return best;
+}
+function vRvBearing(km){
+  const tot=(C && C.total_km) || (cum.length?cum[cum.length-1]/1000:0);
+  const a=latlngAtKm(Math.max(0, km-0.02)), b=latlngAtKm(Math.min(tot, km+0.04));
+  const y=(b[1]-a[1])*Math.cos(a[0]*Math.PI/180), x=b[0]-a[0];
+  return ((Math.atan2(y, x)*180/Math.PI)+360)%360;
+}
+function vRvInfo(){
+  const el=document.getElementById('mcv-rvInfo'), on=vRV.km!=null && C;
+  if(el) el.textContent = on ? (C.name||'코스')+' '+vRV.km.toFixed(2)+' km 지점' : '코스 밖';
+  const tot=(C && C.total_km) || 0;
+  const p=document.getElementById('mcv-rvPrev'), n=document.getElementById('mcv-rvNext');
+  if(p) p.disabled=!on || vRV.km<=0.001; if(n) n.disabled=!on || vRV.km>=tot-0.001;
+}
+function vRvWalker(lat, lon, pan){
+  if(!kmap || OSM) return;
+  const ll=new kakao.maps.LatLng(lat, lon);
+  if(!vRV.walker){
+    const el=document.createElement('div'); el.className='mcv-rvWalker';
+    el.innerHTML='<i class="mcv-rvCone"></i><b class="mcv-rvMan">🚶</b>';
+    vRV.walker=new kakao.maps.CustomOverlay({position:ll, content:el, xAnchor:0.5, yAnchor:0.5, zIndex:90});
+    vRV.walker.__el=el;
+  }
+  vRV.walker.setPosition(ll); vRV.walker.setMap(kmap);
+  if(pan!=null){ const c=vRV.walker.__el.querySelector('.mcv-rvCone'); if(c) c.style.transform='rotate('+pan+'deg)'; }
+}
+function vRvToggle(on){
+  if(!kReady || !vRvOk()){ vRvTip('이 지도에서는 로드뷰를 쓸 수 없습니다'); return; }
+  vRV.on = (on!=null) ? !!on : !vRV.on;
+  try{ vRV.on ? kmap.addOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW) : kmap.removeOverlayMapTypeId(kakao.maps.MapTypeId.ROADVIEW); }catch(e){}
+  const b=document.getElementById('mcv-rvBtn'); if(b){ b.classList.toggle('mcv-on', vRV.on); b.setAttribute('aria-pressed', vRV.on?'true':'false'); }
+  if(vRV.on) vRvTip('파랗게 칠해진 길을 누르면 그 자리 로드뷰가 열립니다'); else { vRvTip(''); vRvClose(); }
+}
+function vRvOpen(lat, lon, opt){
+  opt=opt||{};
+  if(!kReady || !vRvOk()){ vRvTip('이 지도에서는 로드뷰를 쓸 수 없습니다'); return; }
+  const wrap=document.getElementById('mcv-rvWrap'), msg=document.getElementById('mcv-rvMsg');
+  wrap.classList.add('mcv-on');
+  if(!vRV.rv){
+    vRV.rv=new kakao.maps.Roadview(document.getElementById('mcv-rvPano'));
+    vRV.client=new kakao.maps.RoadviewClient();
+    kakao.maps.event.addListener(vRV.rv, 'position_changed', ()=>{
+      const p=vRV.rv.getPosition(); if(!p) return;
+      const n=vNearKm(p.getLat(), p.getLng()); vRV.km=(n && n.d<150)?n.km:null;
+      vRvWalker(p.getLat(), p.getLng(), (vRV.rv.getViewpoint()||{}).pan); vRvInfo();
+    });
+    kakao.maps.event.addListener(vRV.rv, 'viewpoint_changed', ()=>{ const v=vRV.rv.getViewpoint(); if(v && vRV.walker){ const c=vRV.walker.__el.querySelector('.mcv-rvCone'); if(c) c.style.transform='rotate('+v.pan+'deg)'; } });
+  }
+  if(opt.km!=null) vRV.km=opt.km; else { const n=vNearKm(lat, lon); vRV.km=(n && n.d<150)?n.km:null; }
+  vRvInfo();
+  msg.textContent='로드뷰를 찾는 중…'; msg.classList.add('mcv-on');
+  const seq=++vRV.seq, R=opt.radius||60, pos=new kakao.maps.LatLng(lat, lon);
+  vRV.client.getNearestPanoId(pos, R, panoId=>{
+    if(seq!==vRV.seq) return;
+    if(!panoId){ msg.textContent='이 근처 '+R+'m 안에는 로드뷰 사진이 없습니다'; vRvWalker(lat, lon); return; }
+    msg.classList.remove('mcv-on');
+    vRV.rv.setPanoId(panoId, pos);
+    if(vRV.km!=null) vRV.rv.setViewpoint({pan:vRvBearing(vRV.km), tilt:0, zoom:0});
+    setTimeout(()=>{ try{ vRV.rv.relayout(); }catch(e){} }, 30);
+  });
+  vRvWalker(lat, lon);
+}
+function vRvStep(dir){
+  if(vRV.km==null || !C) return;
+  const tot=C.total_km || cum[cum.length-1]/1000;
+  const km=Math.max(0, Math.min(tot, vRV.km+dir*0.2)), ll=latlngAtKm(km);
+  vRvOpen(ll[0], ll[1], {km, radius:80});
+  try{ const L2=new kakao.maps.LatLng(ll[0], ll[1]); if(!kmap.getBounds().contain(L2)) kmap.panTo(L2); }catch(e){}
+}
+function vRvClose(){
+  const w=document.getElementById('mcv-rvWrap'); if(w) w.classList.remove('mcv-on','mcv-big');
+  vRV.big=false; vRV.seq++;
+  if(vRV.walker) vRV.walker.setMap(null);
+}
+(function(){
+  const on=(id,f)=>{ const b=document.getElementById(id); if(b) b.addEventListener('click', f); };
+  on('mcv-rvBtn', ()=>vRvToggle());
+  on('mcv-rvClose', vRvClose);
+  on('mcv-rvPrev', ()=>vRvStep(-1));
+  on('mcv-rvNext', ()=>vRvStep(1));
+  on('mcv-rvBig', ()=>{ vRV.big=!vRV.big; document.getElementById('mcv-rvWrap').classList.toggle('mcv-big', vRV.big); setTimeout(()=>{ try{ vRV.rv && vRV.rv.relayout(); }catch(e){} }, 60); });
+  document.addEventListener('keydown', e=>{ const w=document.getElementById('mcv-rvWrap'); if(e.key==='Escape' && w && w.classList.contains('mcv-on')) vRvClose(); });
+  if(OSM){ const b=document.getElementById('mcv-rvBtn'); if(b) b.style.display='none'; }
+  /* 점검용 — 콘솔에서 MCV_RV.state 로 로드뷰 상태를 본다 */
+  window.MCV_RV={state:vRV, bearing:vRvBearing, at:km=>latlngAtKm(km), map:()=>kmap, open:vRvOpen, info:(h,la,lo)=>showInfo(h,la,lo)};
+})();
 function setCourse(key){
   curKey=key; C=DATA.courses[key];
   courseSeg.querySelectorAll('button').forEach(b=>b.classList.toggle('mcv-on',b.dataset.c===key));
@@ -2655,6 +2919,7 @@ function setCourse(key){
   mcvSafe('페이스', renderPace);
   mcvSafe('범례', renderLegend);
   mcvSafe('통계', renderStats);
+  mcvSafe('로드뷰', ()=>{ if(vRV.rv && document.getElementById('mcv-rvWrap').classList.contains('mcv-on')){ const p=vRV.rv.getPosition(); if(p){ const n=vNearKm(p.getLat(),p.getLng()); vRV.km=(n&&n.d<150)?n.km:null; vRvInfo(); } } });
   if(showAll){ mcvSafe('전코스', drawAllCourses); mcvSafe('맞추기', fitAllCourses); }
 }
 courseSeg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setCourse(b.dataset.c)));
