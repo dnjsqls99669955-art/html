@@ -2979,7 +2979,10 @@ function sha256Hex(str){
   return H.map(x=>('00000000'+x.toString(16)).slice(-8)).join('');
 }
 function accNorm(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
-const LIVE_STALE=3*60*1000;
+const LIVE_STALE=3*60*1000;      /* 3분 넘게 신호가 없으면 「자리 비움」 */
+const LIVE_GONE=15*60*1000;      /* 15분 넘게 없거나, 창을 닫았다고(gone) 알려 왔으면 나간 사람 — 목록·지도에서 뺀다 */
+function livePeople(){ const now=Date.now(); return Object.keys(LIVE.people).map(k=>Object.assign({uid:k}, LIVE.people[k])).filter(p=>p && p.name && !(p.gone && p.gone>(+p.at||0)) && now-(+p.at||0)<LIVE_GONE); }
+function liveOnlineN(){ const now=Date.now(); return livePeople().filter(p=>now-(+p.at||0)<LIVE_STALE).length; }
 function liveItems(role){ return (DEP && DEP[role]) ? (DEP[role].items||[]) : []; }
 function liveZones(role){ return (DEP && DEP[role]) ? (DEP[role].zones||[]) : []; }
 function liveAllItems(){ return liveItems('lead').concat(liveItems('amb')).concat(liveItems('water')); }
@@ -3124,6 +3127,10 @@ function liveResume(){
   LIVE.lastSent=0;                    /* 돌아온 직후의 첫 위치는 바로 올린다 */
 }
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible') liveResume(); });
+/* 창을 닫거나 다른 곳으로 가면 「나갔다」고 알린다 — 홈 화면에 나가 있는 것(숨김)과는 다르다. 돌아오면 liveHello 가 gone 을 지운다 */
+function liveGone(){ if(!LIVE.me || !LIVE.root) return; try{ LIVE.root.collection('people').doc(LIVE.me.uid).set({gone:Date.now()},{merge:true}).catch(()=>{}); }catch(e){} }
+window.addEventListener('pagehide', e=>{ if(!(e && e.persisted)) liveGone(); });
+window.addEventListener('beforeunload', liveGone);
 window.addEventListener('pageshow', e=>{ if(e && e.persisted) liveResume(); });
 window.addEventListener('focus', ()=>{ if(LIVE.me && WAKE.want && !WAKE.lock) wakeOn(); });
 /* 구역을 비워 둔 계정 — 로그인한 뒤 이 파일의 구역 중에서 고른다 */
@@ -3208,11 +3215,11 @@ function liveLogout(){
 }
 function liveHello(){
   if(!LIVE.me || !LIVE.root) return;
-  const me=LIVE.me, doc={name:me.name, zone:me.zone||null, role:me.role||ROLE||'admin', sup:!!me.sup, cp:me.cp||'', car:+me.car||0, at:Date.now(), share:!!LIVE.share};
+  const me=LIVE.me, doc={name:me.name, zone:me.zone||null, role:me.role||ROLE||'admin', sup:!!me.sup, cp:me.cp||'', car:+me.car||0, at:Date.now(), share:!!LIVE.share, gone:0};
   if(LIVE.lastLL && LIVE.share){ doc.lat=LIVE.lastLL[0]; doc.lon=LIVE.lastLL[1]; }
   LIVE.root.collection('people').doc(me.uid).set(doc,{merge:true}).catch(e=>{ LIVE.err=liveErrText(e); liveRender(); });
   if(LIVE.hb) clearInterval(LIVE.hb);
-  LIVE.hb=setInterval(()=>{ if(LIVE.me && LIVE.root) LIVE.root.collection('people').doc(LIVE.me.uid).set({at:Date.now()},{merge:true}).catch(()=>{}); }, 30000);
+  LIVE.hb=setInterval(()=>{ if(LIVE.me && LIVE.root) LIVE.root.collection('people').doc(LIVE.me.uid).set({at:Date.now(), gone:0},{merge:true}).catch(()=>{}); }, 30000);
 }
 /* 내 위치 올리기 — 8초 또는 20m 마다 */
 function liveLoc(ll, acc){
@@ -3261,7 +3268,7 @@ function drawPeoplePins(){
   LIVE.pins.forEach(h=>{ try{ h.rm(); }catch(e){} }); LIVE.pins=[];
   if(!kReady || !kmap) return;
   const now=Date.now();
-  Object.keys(LIVE.people).forEach(uid=>{ const p=LIVE.people[uid]; if(!p || p.lat==null || p.lon==null || p.share===false) return;
+  livePeople().forEach(p=>{ const uid=p.uid; if(p.lat==null || p.lon==null || p.share===false) return;
     if(LIVE.me && uid===LIVE.me.uid) return;                       /* 나는 파란 점으로 이미 보인다 */
     const stale=(now-(+p.at||0))>LIVE_STALE, col=liveZoneColor(p);
     const h=liveOv([p.lat,p.lon], '<div class="mcv-kperson'+(stale?' mcv-stale':'')+'" style="background:'+col+'" title="'+esc(p.name||'')+'">'+esc(String(p.name||'?').charAt(0))+'<i>'+esc(p.name||'')+'</i></div>', 300,
@@ -3278,7 +3285,7 @@ function liveRender(){
   if(!LIVECFG){ st.textContent='— 실시간 공유 없이 내보낸 파일입니다'; st.className='mcv-lvStat mcv-bad'; }
   else if(LIVE.err){ st.textContent='— 연결 안 됨: '+LIVE.err; st.className='mcv-lvStat mcv-bad'; }
   else if(navigator.onLine===false){ st.textContent='— 오프라인 (누른 것이 저장되지 않습니다)'; st.className='mcv-lvStat mcv-bad'; }
-  else if(LIVE.on){ const online=Object.values(LIVE.people).filter(p=>Date.now()-(+p.at||0)<LIVE_STALE).length; st.textContent='— 실시간 연결됨 · 접속 '+online+'명 · '+liveFmtS(LIVE.lastAt); st.className='mcv-lvStat mcv-on'; }
+  else if(LIVE.on){ const online=liveOnlineN(); st.textContent='— 실시간 연결됨 · 접속 '+online+'명 · '+liveFmtS(LIVE.lastAt); st.className='mcv-lvStat mcv-on'; }
   else { st.textContent='— 연결 중…'; st.className='mcv-lvStat'; }
   /* 로그인 줄 */
   const roleForZones=ADMIN?null:ROLE;
@@ -3332,7 +3339,7 @@ function liveRender(){
   const zoneHtml=(r,z,mine)=>{
     const its=liveItems(r).filter(i=>(i.zone||null)===(z.id||null)); if(!its.length) return '';
     const d=its.filter(i=>liveDone(i.id)).length, pct=Math.round(d/its.length*100);
-    const here=Object.values(LIVE.people).filter(p=>p.zone===z.id && now-(+p.at||0)<LIVE_STALE).map(p=>p.name+((p.car||p.cp)?'('+[p.car?p.car+'호차':'', p.cp||''].filter(Boolean).join(' · ')+')':''));
+    const here=livePeople().filter(p=>p.zone===z.id && now-(+p.at||0)<LIVE_STALE).map(p=>p.name+((p.car||p.cp)?'('+[p.car?p.car+'호차':'', p.cp||''].filter(Boolean).join(' · ')+')':''));
     const rows=its.filter(i=>!(ADMIN&&LIVE.pendingOnly&&liveDone(i.id))).map(i=>{ const dn=liveDone(i.id), c=LIVE.checks[i.id]||{}; const can=liveCanAct(i.id);
       const meta=[]; if(i.km!=null) meta.push(i.km.toFixed(2)+' km'); if(i.n) meta.push('👥 '+i.n+'명'); if(i.time) meta.push('⏰ '+i.time); if(i.catLabel) meta.push(i.catLabel); if(i.memo) meta.push(i.memo);
       return '<div class="mcv-lvItem'+(dn?' mcv-done':'')+'" data-lv-item="'+esc(i.id)+'">'+
@@ -3357,8 +3364,8 @@ function liveRender(){
     else others.forEach(z=>{ h+=zoneHtml(r,z,false); });
   });
   /* 접속한 사람 */
-  const ppl=Object.keys(LIVE.people).map(k=>Object.assign({uid:k}, LIVE.people[k])).filter(p=>p.name).sort((a,b)=>(+b.at||0)-(+a.at||0));
-  if(ppl.length){ h+='<div class="mcv-lvPeople">'+ppl.map(p=>{ const stale=now-(+p.at||0)>LIVE_STALE; return '<span class="mcv-lvPerson'+(stale?' mcv-stale':'')+'" data-lv-person="'+esc(p.uid)+'" title="'+(p.lat!=null?'지도에서 보기':'위치 없음')+'"><span class="mcv-lvAvatar" style="background:'+liveZoneColor(p)+'">'+esc(String(p.name).charAt(0))+'</span>'+esc(p.name)+' <small>'+esc(liveZoneName(p))+' · '+(stale?'마지막 ':'')+liveFmtT(p.at)+(p.lat==null?' · 위치 없음':'')+'</small></span>'; }).join('')+'</div>'; }
+  const ppl=livePeople().sort((a,b)=>(+b.at||0)-(+a.at||0));
+  if(ppl.length){ h+='<div class="mcv-lvPeople">'+ppl.map(p=>{ const stale=now-(+p.at||0)>LIVE_STALE; return '<span class="mcv-lvPerson'+(stale?' mcv-stale':'')+'" data-lv-person="'+esc(p.uid)+'" title="'+(p.lat!=null?'지도에서 보기':'위치 없음')+'"><span class="mcv-lvAvatar" style="background:'+liveZoneColor(p)+'">'+esc(String(p.name).charAt(0))+'</span>'+esc(p.name)+' <small>'+esc(liveZoneName(p))+' · '+(stale?'자리 비움 · 마지막 ':'')+liveFmtT(p.at)+(p.lat==null?' · 위치 없음':'')+'</small></span>'; }).join('')+'</div>'; }
   bd.innerHTML=h;
   nt.textContent = LIVECFG ? ((ADMIN?'배치용 파일을 받은 담당자가 「배치 완료」를 누르면 여기에 바로 나타납니다. 총관리자로 로그인하면 모든 구역을 직접 켜고 끌 수 있습니다. 위치 공유를 켠 사람은 지도에 이름표로 보입니다.':'내 구역의 항목을 배치한 뒤 「배치 완료」를 누르세요. 총괄 관리자가 바로 확인합니다. 「🧭」은 카카오맵 길찾기입니다.')
                           +' 응급 알림을 놓치지 않으려면 「🔆 화면 켜짐」을 켜 두고 이 화면을 띄워 두세요. 다른 앱에 가 있어도 「🔔 알림 허용」을 했으면 알림이 오고, 돌아오면 밀린 알림이 울립니다 (아이폰은 「홈 화면에 추가」로 연 경우에만 뒤에서 알림이 옵니다).')
@@ -3591,7 +3598,9 @@ function pingUpdate(){
   pingPins();
 }
 function pingCard(p){
-  showInfo(popCard('🚨','#d32f2f', esc(p.zoneName||'응급'), esc(p.msg||''), '<span class="mcv-c mcv-c-sub">'+esc(p.by||'')+' · '+liveFmtT(p.at)+'</span>', '')+
+  showInfo(popCard('🚨','#d32f2f', esc(p.zoneName||'응급'), esc(p.msg||''), '<span class="mcv-c mcv-c-sub">📣 '+esc(p.by||'')+' · '+liveFmtT(p.at)+'</span>'+
+      (p.handledBy?'<span class="mcv-c mcv-c-sub">🚑 '+esc(p.handledBy)+' 처리 · '+liveFmtT(p.handledAt)+'</span>':'')+
+      (p.active===false?'<span class="mcv-c mcv-c-sub">✅ '+esc(p.resolvedBy||'')+' 종료 · '+liveFmtT(p.resolvedAt)+'</span>':''), esc(p.note||''))+
     '<div class="mcv-liveAct"><a class="mcv-lvBtn mcv-sm" href="'+navUrl(p.zoneName||'응급',p.lat,p.lon)+'" target="_blank" rel="noopener">🧭 길찾기</a>'+
     (pingCan()&&p.active!==false&&!p.handledBy?'<button type="button" class="mcv-lvBtn mcv-sm" data-ping-handle2="'+esc(p.id)+'">🚑 내가 처리</button>':'')+
     (pingCan()&&p.active!==false?'<button type="button" class="mcv-lvBtn mcv-sm" data-ping-resolve2="'+esc(p.id)+'">상황 종료</button>':'')+'</div>', p.lat, p.lon);
@@ -3626,8 +3635,10 @@ function emgRender(){
     return '<div class="mcv-emgItem'+(on?' mcv-emgOn':'')+'" data-emg="'+esc(p.id)+'">'+
       '<div class="mcv-emgHead"><span class="mcv-emgSt mcv-st-'+st[0]+'">'+st[1]+'</span><b>🚨 '+esc(p.zoneName||'지도 지점')+'</b>'+(p.msg?'<span>— '+esc(p.msg)+'</span>':'')+'</div>'+
       '<div class="mcv-emgLine"><i>📣</i><span>올림 <b>'+esc(p.by||'')+'</b>'+(p.role?' ('+emgRoleTag(p.role)+')':'')+' · '+logDate(p.at)+' '+liveFmtS(p.at)+'</span></div>'+
-      (p.handledBy?'<div class="mcv-emgLine"><i>🚑</i><span>처리 <b>'+esc(p.handledBy)+'</b>'+(p.handledRole?' ('+emgRoleTag(p.handledRole)+')':'')+' · '+liveFmtS(p.handledAt)+'</span></div>':(on?'<div class="mcv-emgLine"><i>🚑</i><span style="color:#b3261e">아직 아무도 처리에 나서지 않았습니다</span></div>':''))+
-      (!on?'<div class="mcv-emgLine"><i>✅</i><span>종료 <b>'+esc(p.resolvedBy||'')+'</b>'+(p.resolvedRole?' ('+emgRoleTag(p.resolvedRole)+')':'')+' · '+liveFmtS(p.resolvedAt)+(dur!=null?' <small>(올린 지 '+dur+'분)</small>':'')+'</span></div>':'')+
+      (p.handledBy?'<div class="mcv-emgLine"><i>🚑</i><span>처리 <b>'+esc(p.handledBy)+'</b>'+(p.handledRole?' ('+emgRoleTag(p.handledRole)+')':'')+' · '+logDate(p.handledAt)+' '+liveFmtS(p.handledAt)+(p.at?' <small>(올린 지 '+Math.max(0,Math.round((p.handledAt-p.at)/60000))+'분)</small>':'')+'</span></div>'
+                  :(on?'<div class="mcv-emgLine"><i>🚑</i><span style="color:#b3261e">아직 아무도 처리에 나서지 않았습니다 (「🚑 내가 처리」를 누르면 여기에 이름·시각이 남습니다)</span></div>'
+                      :'<div class="mcv-emgLine"><i>🚑</i><span style="color:#8d6e63">처리 버튼을 누른 사람 없음 — 바로 종료됨</span></div>'))+
+      (!on?'<div class="mcv-emgLine"><i>✅</i><span>종료 <b>'+esc(p.resolvedBy||'')+'</b>'+(p.resolvedRole?' ('+emgRoleTag(p.resolvedRole)+')':'')+' · '+logDate(p.resolvedAt)+' '+liveFmtS(p.resolvedAt)+(dur!=null?' <small>(올린 지 '+dur+'분)</small>':'')+'</span></div>':'')+
       (p.note?'<div class="mcv-emgLine"><i>📝</i><span>'+esc(p.note)+' <small>— '+esc(p.noteBy||'')+' '+liveFmtT(p.noteAt)+'</small></span></div>':'')+
       (can?'<div class="mcv-emgNote"><input type="text" data-emg-note="'+esc(p.id)+'" placeholder="처리 내용 (예: 구급차 이송 · 경상, 자력 복귀)" maxlength="200" value="'+esc(p.note||'')+'"><button type="button" class="mcv-lvBtn mcv-sm" data-emg-notesave="'+esc(p.id)+'">📝 저장</button></div>':'')+
       '<div class="mcv-emgAct">'+(p.lat!=null?'<button type="button" class="mcv-lvBtn mcv-sm" data-emg-map="'+esc(p.id)+'">🗺 지도</button><a class="mcv-lvBtn mcv-sm" href="'+navUrl(p.zoneName||'응급',p.lat,p.lon)+'" target="_blank" rel="noopener">🧭 길찾기</a>':'')+
@@ -3650,7 +3661,7 @@ function msgTargets(){
   liveZones('amb').forEach(z=>t.push(['zone:'+z.id, '🚑 '+z.name]));
   liveZones('water').forEach(z=>t.push(['zone:'+z.id, '💧 '+z.name]));
   const now=Date.now();
-  Object.keys(LIVE.people).map(k=>Object.assign({uid:k}, LIVE.people[k])).filter(p=>p.name && (!LIVE.me || p.uid!==LIVE.me.uid)).sort((a,b)=>(+b.at||0)-(+a.at||0)).forEach(p=>t.push(['uid:'+p.uid, '👤 '+p.name+' ('+liveZoneName(p)+(now-(+p.at||0)>LIVE_STALE?' · 자리 비움':'')+')']));
+  livePeople().filter(p=>(!LIVE.me || p.uid!==LIVE.me.uid)).sort((a,b)=>(+b.at||0)-(+a.at||0)).forEach(p=>t.push(['uid:'+p.uid, '👤 '+p.name+' ('+liveZoneName(p)+(now-(+p.at||0)>LIVE_STALE?' · 자리 비움':'')+')']));
   return t;
 }
 function msgMine(m){ const me=LIVE.me; return !!me && (m.byUid===me.uid || (m.by===me.name && (m.byRole||'')===(me.role||''))); }
