@@ -2817,7 +2817,7 @@ function myFix(pos){
 }
 function myErr(err){
   const code=err&&err.code;
-  if(code===1){ myStop(); alert('위치 권한이 꺼져 있습니다. 브라우저 설정에서 이 사이트의 위치 접근을 허용해 주세요.'); return; }
+  if(code===1){ myStop(); MY.denied=true; if(typeof liveToast==='function') liveToast('위치 권한이 꺼져 있습니다 — '+(typeof geoHow==='function'?geoHow():'브라우저 설정에서 허용해 주세요'), 6000); else alert('위치 권한이 꺼져 있습니다. 브라우저 설정에서 이 사이트의 위치 접근을 허용해 주세요.'); if(typeof liveRender==='function'){ try{ LIVE.setupDismiss=false; liveRender(); }catch(e){} } return; }
   /* 신호 없음·시간 초과 — 추적은 계속 두고 알림만 */
   MY.err++;
   myTip(MY.last ? '위치 신호가 약합니다 — 마지막 위치를 보여 줍니다' : '위치를 찾는 중입니다… 하늘이 보이는 곳에서 잠시 기다려 주세요', 4000);
@@ -2826,7 +2826,7 @@ function myStart(){
   if(!navigator.geolocation){ alert('이 기기에서는 위치 서비스를 사용할 수 없습니다.'); return; }
   if(MY.watch!==null){ try{ navigator.geolocation.clearWatch(MY.watch); }catch(e){} }
   MY.follow=true;
-  MY.watch=navigator.geolocation.watchPosition(myFix, myErr, {enableHighAccuracy:true, maximumAge:2000, timeout:20000});
+  MY.denied=false; MY.watch=navigator.geolocation.watchPosition(myFix, myErr, {enableHighAccuracy:true, maximumAge:2000, timeout:20000});
   myBtnSync();
   if(!MY.last) myTip('내 위치를 찾는 중…', 6000);
 }
@@ -3098,7 +3098,7 @@ async function liveBoot(){
     LIVE.unsub.push(LIVE.root.collection('pings').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.pings=o; pingUpdate(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); }));
     LIVE.unsub.push(LIVE.root.collection('msgs').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.msgs=o; msgUpdate(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); }));
     if(LIVE.me) swInit();
-    if(LIVE.me){ liveHello(); logSub(); if(WAKE.want) wakeOn(); }
+    if(LIVE.me){ liveHello(); logSub(); if(WAKE.want) wakeOn(); permRefresh(); }
     logWire();
   }catch(e){ LIVE.err=liveErrText(e); liveRender(); }
   window.addEventListener('online', liveRender); window.addEventListener('offline', liveRender);
@@ -3123,7 +3123,7 @@ function liveLogin(name, pin){
   if(LIVE.root){ const t=Date.now(); Object.keys(LIVE.people).forEach(k=>{ const p=LIVE.people[k]; if(k!==me.uid && p && p.name===me.name && (p.role||'')===(me.role||'') && !(p.out>=(+p.at||0))){ LIVE.root.collection('people').doc(k).set({out:t, gone:t, share:false, lat:null, lon:null},{merge:true}).catch(()=>{}); } }); }   /* 같은 사람의 옛 기기 기록은 로그아웃으로 */
   liveLog('login'); logSub(); navRefresh(); try{ pingUpdate(); }catch(e){} try{ msgUpdate(); }catch(e){}   /* 알림 띠의 「상황 종료」 단추도 로그인 상태에 맞춘다 */
   if(LIVE.share && MY.watch===null && typeof myStart==='function'){ try{ myStart(); }catch(e){} }
-  notifyAsk(); wakeOn(); swInit(); if(SND.want) sndStart();
+  notifyAsk(); wakeOn(); swInit(); if(SND.want) sndStart(); permRefresh();
   return true;
 }
 /* ── 뒤에서도 울리게 · 돌아와도 이어지게 ──
@@ -3207,7 +3207,7 @@ function sndAlarmPlay(){ sndPlayClip(sndAlarmUrl()); }
 function sndMsgPlay(){ sndPlayClip(sndMsgUrl()); }
 function sndStop(){ SND.want=false; SND.clip=null; try{ if(SND.el) SND.el.pause(); }catch(e){} SND.on=false; liveSndSync(); }
 function sndPlaying(){ return !!(SND.el && !SND.el.paused && !SND.el.ended); }
-function liveSndSync(){ const su=document.getElementById('mcv-setup'); if(su && !liveSetupNeeds().length) su.remove(); const b=document.getElementById('mcv-lvSnd'); if(!b) return; const playing=sndPlaying(); b.classList.toggle('mcv-pri', !!SND.on && playing); b.classList.toggle('mcv-ghostPing', !!SND.want && !playing);
+function liveSndSync(){ const su=document.getElementById('mcv-setup'); if(su && !permLines().length) su.remove(); const b=document.getElementById('mcv-lvSnd'); if(!b) return; const playing=sndPlaying(); b.classList.toggle('mcv-pri', !!SND.on && playing); b.classList.toggle('mcv-ghostPing', !!SND.want && !playing);
   b.textContent='🔊 뒤에서도 소리 '+(SND.want?(playing?'켬':'켬 — 화면을 한 번 터치하세요'):'끔'); }
 /* 안 끈 응급 핑이 있으면 30초마다 다시 울린다 (최대 10번) */
 function sndRepeatSync(){
@@ -3222,10 +3222,16 @@ async function wakeOn(){
 }
 async function wakeOff(){ try{ if(WAKE.lock){ const l=WAKE.lock; WAKE.lock=null; await l.release(); } }catch(e){} liveWakeSync(); }
 /* ── 한 번에 켜기 — 위치 공유·알림·뒤에서도 소리·화면 켜짐 중 안 켜진 것이 있으면 로그인 줄 위에 묻는다. 「예」 한 번(터치)으로 전부 요청한다 ── */
+const UA={ios:/iPhone|iPad|iPod/.test(navigator.userAgent), android:/Android/.test(navigator.userAgent), chromeIos:/CriOS/.test(navigator.userAgent), standalone:(navigator.standalone===true)||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)};
+function permRefresh(){
+  try{ if(navigator.permissions && navigator.permissions.query){ navigator.permissions.query({name:'geolocation'}).then(g=>{ LIVE.permGeo=g.state; try{ g.onchange=()=>{ LIVE.permGeo=g.state; liveRender(); }; }catch(e){} liveRender(); }).catch(()=>{}); } }catch(e){}
+}
+function geoHow(){ return UA.ios?(UA.chromeIos?'아이폰 설정 → Chrome → 위치 → 「앱을 사용하는 동안」':'아이폰 설정 → Safari → 위치 → 「허용」 (또는 설정 → 개인정보 보호 → 위치 서비스 → Safari 웹사이트)'):(UA.android?'주소창 왼쪽 자물쇠 → 권한 → 위치 → 허용':'브라우저 주소창의 자물쇠 → 사이트 설정 → 위치 허용'); }
+function notiHow(){ return UA.ios?(UA.standalone?'아이폰 설정 → 알림 → 이 앱 → 알림 허용':'아이폰은 브라우저 탭에서는 배너 알림이 안 됩니다. Safari 공유(□↑) → 「홈 화면에 추가」로 연 뒤 알림을 허용하세요 (소리·진동 알림은 지금도 됩니다)'):(UA.android?'주소창 왼쪽 자물쇠 → 권한 → 알림 → 허용 (sw.js 가 같은 주소에 있어야 합니다)':'브라우저 주소창의 자물쇠 → 사이트 설정 → 알림 허용'); }
 function liveSetupNeeds(){
   if(!LIVE.me) return [];
   const n=[];
-  if(LIVE.share && MY.watch===null && typeof myStart==='function') n.push('geo');
+  if(LIVE.share && MY.watch===null && typeof myStart==='function' && !MY.denied && LIVE.permGeo!=='denied') n.push('geo');
   try{ if(('Notification' in window) && Notification.permission==='default') n.push('noti'); }catch(e){}
   if(SND.want && !sndPlaying()) n.push('snd');
   if(navigator.wakeLock && WAKE.want && !WAKE.lock) n.push('wake');
@@ -3238,12 +3244,28 @@ function liveSetupAll(){
   try{ if(('Notification' in window) && Notification.permission==='default') Notification.requestPermission().then(()=>liveRender()).catch(()=>{}); }catch(e){}
   LIVE.setupDismiss=false; setTimeout(liveRender, 600); setTimeout(liveRender, 2500);
 }
+/* 지금 상태를 있는 그대로 — 허용됨 / 거부됨(어디서 켜는지) / 이 브라우저는 안 됨 */
+function permLines(){
+  const L=[];
+  const geoDen=(LIVE.permGeo==='denied')||MY.denied;
+  if(geoDen) L.push({k:'geo', bad:true, t:'📍 위치: <b>거부됨</b> — '+geoHow()});
+  else if(LIVE.share && MY.watch===null) L.push({k:'geo', t:'📍 위치: 아직 안 켜짐'});
+  else if(LIVE.share && MY.watch!==null && !MY.last) L.push({k:'geo', t:'📍 위치: 찾는 중…'});
+  let np='unsupported'; try{ if('Notification' in window) np=Notification.permission; }catch(e){}
+  if(np==='unsupported') L.push({k:'noti', bad:true, t:'🔔 배너 알림: <b>이 브라우저에서는 안 됨</b> — '+notiHow()});
+  else if(np==='denied') L.push({k:'noti', bad:true, t:'🔔 배너 알림: <b>차단됨</b> — '+notiHow()});
+  else if(np==='default') L.push({k:'noti', t:'🔔 배너 알림: 아직 안 물음'});
+  else if(SW.missing) L.push({k:'noti', bad:true, t:'🔔 배너 알림: 허용됐지만 <b>같은 주소에 sw.js 가 없어</b> 배너가 안 뜹니다 (Worker 파일로 다시 올리세요)'});
+  if(SND.want && !sndPlaying()) L.push({k:'snd', t:'🔊 뒤에서도 소리: 아직 안 켜짐'});
+  if(navigator.wakeLock && WAKE.want && !WAKE.lock) L.push({k:'wake', t:'🔆 화면 켜짐: 아직 안 켜짐'});
+  return L;
+}
 function liveSetupHtml(){
-  const n=liveSetupNeeds(); if(!n.length || LIVE.setupDismiss) return '';
-  const names={geo:'📍 위치 공유', noti:'🔔 알림(배너)', snd:'🔊 뒤에서도 소리', wake:'🔆 화면 켜짐'};
-  return '<div class="mcv-setup" id="mcv-setup"><b>📲 아직 안 켜진 것이 있습니다:</b> '+n.map(k=>names[k]).join(' · ')+
-    '<span class="mcv-setupBtns"><button type="button" class="mcv-lvBtn mcv-sm mcv-pri" id="mcv-setupGo">✅ 예, 모두 켜기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-setupNo">나중에</button></span>'+
-    '<small>「예」를 누르면 휴대폰이 위치·알림 허용을 차례로 묻습니다. 한 번 허용하면 다음부터는 묻지 않습니다. 홈 화면으로 나가 있어도 소리·배너로 알리려면 전부 켜 두세요.</small></div>';
+  const L=permLines(); if(!L.length || LIVE.setupDismiss) return '';
+  const needs=L.some(x=>!x.bad);
+  return '<div class="mcv-setup" id="mcv-setup"><b>📲 알림 준비 상태</b><ul style="margin:0;padding-left:18px;flex-basis:100%">'+L.map(x=>'<li'+(x.bad?' style="color:#b3261e"':'')+'>'+x.t+'</li>').join('')+'</ul>'+
+    '<span class="mcv-setupBtns">'+(needs?'<button type="button" class="mcv-lvBtn mcv-sm mcv-pri" id="mcv-setupGo">✅ 예, 모두 켜기</button>':'')+'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-setupNo">닫기</button></span>'+
+    (needs?'<small>「예」를 누르면 휴대폰이 허용 여부를 묻습니다(이미 허용했거나 거부한 것은 다시 묻지 않습니다 — 그때는 위 안내대로 설정에서 켜 주세요).</small>':'')+'</div>';
 }
 /* ── 로그인 문 — 운영용 파일은 로그인하기 전엔 아무것도 못 쓴다 ── */
 function gateRender(){
