@@ -494,8 +494,45 @@
 #mcv-root .mcv-lvItem .mcv-lvT{flex:1 1 160px;min-width:0;}
 #mcv-root .mcv-lvItem .mcv-lvT b{display:block;}
 #mcv-root .mcv-lvItem .mcv-lvT span{font-size:.76rem;color:#607d8b;}
-#mcv-root .mcv-lvItem .mcv-lvS{font-size:.76rem;font-weight:700;color:#b3261e;flex:0 0 auto;}
-#mcv-root .mcv-lvItem.mcv-done .mcv-lvS{color:#2e7d32;}
+#mcv-root .mcv-lvItem .mcv-lvS{font-size:.8rem;font-weight:800;flex:0 0 auto;border-radius:999px;padding:4px 10px;line-height:1.2;display:inline-flex;flex-direction:column;align-items:center;}
+#mcv-root .mcv-lvItem .mcv-lvS small{display:block;font-size:.68rem;font-weight:500;opacity:.85;}
+#mcv-root .mcv-lvItem .mcv-lvS-no{background:#fdecea;color:#b3261e;}
+#mcv-root .mcv-lvItem .mcv-lvS-ok{background:#e6f4ea;color:#1e7e34;}
+#mcv-root .mcv-lvItem .mcv-lvBtn.mcv-big{min-height:42px;font-size:.95rem;padding:8px 16px;font-weight:800;}
+#mcv-root .mcv-lvZone.mcv-mine{background:#f3f8ff;border-left:4px solid var(--blue);border-radius:10px;}
+#mcv-root .mcv-lvZone.mcv-mine h3{font-size:1.05rem;}
+#mcv-root .mcv-lvZone.mcv-mine .mcv-lvItem .mcv-lvT b{font-size:1rem;}
+/* 내 정보 띠 (머리) */
+#mcv-root .mcv-meBar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:10px 0 2px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);font-size:.9rem;color:#fff;}
+#mcv-root .mcv-meBar .mcv-meAv{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:1rem;flex:0 0 auto;}
+#mcv-root .mcv-meBar .mcv-meT{flex:1 1 160px;min-width:0;line-height:1.3;}
+#mcv-root .mcv-meBar .mcv-meT b{font-size:1.05rem;display:block;}
+#mcv-root .mcv-meBar .mcv-meT span{font-size:.8rem;opacity:.85;}
+#mcv-root .mcv-meBar .mcv-meBtns{display:flex;gap:6px;flex-wrap:wrap;}
+#mcv-root .mcv-meBar .mcv-lvBtn{background:#fff;color:#263238;border-color:#fff;min-height:36px;font-weight:700;}
+#mcv-root .mcv-meBar .mcv-lvBtn.mcv-ping{background:#b3261e;color:#fff;border-color:#b3261e;}
+#mcv-root .mcv-meBar .mcv-meOn{color:#8ce99a;font-weight:700;} #mcv-root .mcv-meBar .mcv-meOff{color:#ffab91;font-weight:700;}
+#mcv-root.mcv-ops .mcv-stats{font-size:.9em;opacity:.9;}
+/* 지도 설정 접기 */
+#mcv-root .mcv-mapMore{display:contents;}
+#mcv-root .mcv-moreBtn{display:none;}
+@media (max-width:760px){
+  #mcv-root .mcv-moreBtn{display:inline-flex;}
+  #mcv-root .mcv-mapMore{display:none;flex-basis:100%;flex-wrap:wrap;gap:6px;align-items:center;}
+  #mcv-root .mcv-mapMore.mcv-open{display:flex;}
+  #mcv-root .mcv-moreBtn[aria-expanded="true"]{background:var(--ink);color:#fff;border-color:var(--ink);}
+}
+/* 처음 쓰는 사람 안내 */
+#mcv-root .mcv-guide{position:fixed;inset:0;z-index:1650;background:rgba(38,50,56,.72);display:flex;align-items:center;justify-content:center;padding:18px;}
+#mcv-root .mcv-guideBox{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:18px 18px 14px;box-shadow:0 16px 48px rgba(0,0,0,.35);font-size:.95rem;line-height:1.55;}
+#mcv-root .mcv-guideBox h2{font-size:1.15rem;margin:0 0 10px;padding:0;border:0;display:block;}
+#mcv-root .mcv-guideBox ol{margin:0 0 12px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:9px;}
+#mcv-root .mcv-guideBox li{display:flex;gap:10px;align-items:flex-start;}
+#mcv-root .mcv-guideBox li i{font-style:normal;flex:0 0 28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;}
+#mcv-root .mcv-guideBox li b{display:block;}
+#mcv-root .mcv-guideBox li span{font-size:.85rem;color:#546e7a;}
+#mcv-root .mcv-guideBox .mcv-guideBtns{display:flex;gap:8px;justify-content:flex-end;align-items:center;flex-wrap:wrap;}
+#mcv-root .mcv-guideBox label{font-size:.82rem;color:#607d8b;margin-right:auto;display:flex;align-items:center;gap:4px;}
 #mcv-root .mcv-lvItem .mcv-lvA{display:flex;gap:5px;flex:0 0 auto;}
 #mcv-root .mcv-lvPeople{padding:10px 18px;font-size:.82rem;color:#455a64;display:flex;flex-wrap:wrap;gap:6px;}
 #mcv-root .mcv-lvPerson{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:20px;padding:3px 10px 3px 4px;background:#fff;cursor:pointer;}
@@ -508,7 +545,9 @@
 #mcv-root .mcv-liveAct a{text-decoration:none;}
 #mcv-root .mcv-lpAddr{font-size:.86rem;line-height:1.5;}
 #mcv-root .mcv-lpAddr small{color:#607d8b;}
-@media (max-width:640px){ #mcv-root .mcv-lvLogin{padding:10px 12px;} #mcv-root .mcv-lvZone{padding:10px 12px;} #mcv-root .mcv-lvItem .mcv-lvA{width:100%;justify-content:flex-end;} }
+@media (max-width:640px){ #mcv-root .mcv-lvLogin{padding:10px 12px;} #mcv-root .mcv-lvZone{padding:10px 12px;} #mcv-root .mcv-lvItem .mcv-lvA{width:100%;justify-content:flex-end;}
+  #mcv-root .mcv-lvItem{font-size:.95rem;padding:11px 0;} #mcv-root .mcv-lvItem .mcv-lvT span{font-size:.82rem;} #mcv-root .mcv-lvItem .mcv-lvNo{width:30px;height:30px;font-size:.86rem;}
+  #mcv-root .mcv-lvBtn.mcv-sm{min-height:38px;font-size:.88rem;padding:7px 12px;} #mcv-root .mcv-lvZone h3{font-size:1rem;} #mcv-root .mcv-lvZone h3 small{font-size:.8rem;} }
 /* 아래 메뉴 — 지도는 늘 위에, 그 아래는 메뉴에서 고른 한 화면만 */
 #mcv-root.mcv-hasNav .mcv-wrap{padding-bottom:84px;}
 #mcv-root .mcv-nav{position:fixed;left:0;right:0;bottom:0;z-index:1400;display:flex;justify-content:center;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0));background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid #d7dde3;box-shadow:0 -4px 16px rgba(0,0,0,.08);overflow-x:auto;}
@@ -854,6 +893,7 @@
   <header id="mcv-hdr">
     <h1><span id="mcv-hTitle">코스도</span><span class="mcv-tag" id="mcv-hTag" style="display:none">관리자용</span></h1>
     <p id="mcv-hSub"></p>
+    <div class="mcv-meBar" id="mcv-meBar" style="display:none"></div>
     <div class="mcv-stats">
       <div class="mcv-stat">코스<b id="mcv-stCourse">-</b></div>
       <div class="mcv-stat">총 거리<b id="mcv-stTotal">-</b></div>
@@ -869,12 +909,15 @@
       <button class="mcv-allBtn" id="mcv-allBtn" title="모든 코스를 한 화면에 함께 봅니다">⛶ 전 코스 보기</button>
       <button class="mcv-allBtn" id="mcv-rvBtn" title="코스를 따라 로드뷰로 걸어 봅니다 — 로드뷰가 있는 길은 파랗게, 누른 자리도 열립니다">🚶 로드뷰</button>
       <button class="mcv-allBtn" id="mcv-staffBtn" title="스탭 배치 지점을 지도에 켜고 끕니다 (관리자용)" style="display:none" aria-pressed="false">👷 스탭 배치</button>
+      <span class="mcv-legend" id="mcv-legend"></span>
+      <button type="button" class="mcv-allBtn mcv-moreBtn" id="mcv-mapMoreBtn" aria-expanded="false" title="지도 종류·교통·지형">⚙ 지도 설정</button>
+      <span class="mcv-mapMore" id="mcv-mapMore">
       <span class="mcv-seg mcv-kk" id="mcv-typeSeg">
         <button data-t="ROADMAP" class="mcv-on">일반</button><button data-t="SKYVIEW">스카이뷰</button><button data-t="HYBRID">하이브리드</button>
       </span>
       <span class="mcv-seg mcv-kk" id="mcv-ovSeg"><button data-o="TRAFFIC">교통</button><button data-o="TERRAIN">지형</button></span>
-      <span class="mcv-legend" id="mcv-legend"></span>
       <button id="mcv-diagBtn" title="표시 상태 확인" style="margin-left:6px;border:1px solid #cfd8dc;background:#fff;color:#607d8b;border-radius:50%;width:22px;height:22px;line-height:1;cursor:pointer;font-size:12px;padding:0">i</button>
+      </span>
     </h2>
     <div class="mcv-allNote" id="mcv-allNote"></div>
     <div class="mcv-allNote" id="mcv-laneNote"></div>
@@ -953,7 +996,7 @@
     <h2>🚨 응급 현황 <span id="mcv-emgLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span></h2>
     <div class="mcv-lvTools" id="mcv-emgTools"></div>
     <div id="mcv-emgList"></div>
-    <div class="mcv-note">지금까지 올라온 응급 핑 전부입니다. 누가 언제 올렸고, 누가 처리에 나섰고(🚑 내가 처리), 누가 언제 상황을 종료했는지, 처리 내용은 무엇인지 남습니다. 「🚑 내가 처리」는 현장으로 가는 사람이 누르고, 「상황 종료」는 처리가 끝났을 때 누릅니다.</div>
+    <div class="mcv-note">지금까지 올라온 응급 신고 전부입니다. 누가 언제 올렸고, 누가 처리에 나섰고(🚑 내가 처리), 누가 언제 상황을 종료했는지, 처리 내용은 무엇인지 남습니다. 「🚑 내가 처리」는 현장으로 가는 사람이 누르고, 「상황 종료」는 처리가 끝났을 때 누릅니다.</div>
   </div>
   <div class="mcv-card" id="mcv-msgCard" style="display:none">
     <h2>💬 메시지 <span id="mcv-msgLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span></h2>
@@ -3150,6 +3193,7 @@ function liveLogin(name, pin){
   liveLog('login'); logSub(); navRefresh(); try{ pingUpdate(); }catch(e){} try{ msgUpdate(); }catch(e){}   /* 알림 띠의 「상황 종료」 단추도 로그인 상태에 맞춘다 */
   if(LIVE.share && MY.watch===null && typeof myStart==='function'){ try{ myStart(); }catch(e){} }
   notifyAsk(); wakeOn(); swInit(); if(SND.want) sndStart(); permRefresh(); pushInit();
+  setTimeout(()=>{ try{ guideShow(false); }catch(e){} }, 700);
   return true;
 }
 /* ── 뒤에서도 울리게 · 돌아와도 이어지게 ──
@@ -3534,8 +3578,45 @@ function drawPeoplePins(){
   });
 }
 /* 현황판 */
+/* ── 내 정보 띠 — 로그인하면 머리에 「누구 · 역할 · 구역 · 연결 상태」와 자주 쓰는 단추를 보여 준다. 처음 보는 사람이 "내가 뭘 하면 되는지"를 바로 알게 ── */
+function meBarRender(){
+  const bar=document.getElementById('mcv-meBar'); if(!bar) return;
+  const root=document.getElementById('mcv-root'); if(root) root.classList.toggle('mcv-ops', !!LIVECFG);
+  if(!LIVECFG || !LIVE.me){ bar.style.display='none'; bar.innerHTML=''; return; }
+  const me=LIVE.me, zn=liveZoneName(me), on=!!LIVE.root && !LIVE.err;
+  const n=livePeople().filter(p=>Date.now()-(+p.at||0)<LIVE_STALE).length;
+  bar.style.display='flex';
+  bar.innerHTML='<span class="mcv-meAv" style="background:'+liveZoneColor(me)+'">'+esc(String(me.name||'?').charAt(0))+'</span>'+
+    '<span class="mcv-meT"><b>'+esc(me.name)+' <small style="font-weight:600;opacity:.9">'+esc(liveRoleLabel(me))+'</small></b><span>'+(zn?esc(zn)+' · ':'')+(on?'<i class="mcv-meOn">● 실시간 연결</i>':'<i class="mcv-meOff">● 연결 안 됨</i>')+(n?' · 접속 '+n+'명':'')+'</span></span>'+
+    '<span class="mcv-meBtns">'+(me.zone && !me.sup?'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-meZone">📍 내 구역</button>':'')+(pingCan()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-mePing">🚨 응급 신고</button>':'')+'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-meHelp" title="사용법">❓</button></span>';
+  const z=bar.querySelector('#mcv-meZone'); if(z) z.onclick=()=>{ navShow('live', true); setTimeout(()=>{ const el=document.querySelector('.mcv-lvZone.mcv-mine')||document.getElementById('mcv-liveCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }, 60); };
+  const pg=bar.querySelector('#mcv-mePing'); if(pg) pg.onclick=()=>pingForm(null);
+  const hb=bar.querySelector('#mcv-meHelp'); if(hb) hb.onclick=()=>guideShow(true);
+}
+/* 처음 로그인했을 때 한 번 — 역할에 맞는 3단계 안내. 「❓」로 언제든 다시 본다 */
+function guideKey(){ return 'mcv_guide_'+(LIVE.me?(LIVE.me.sup?'sup':LIVE.me.role||'lead'):'x'); }
+function guideShow(force){
+  if(!LIVE.me || !LIVECFG) return; try{ if(!force && localStorage.getItem(guideKey())) return; }catch(e){}
+  if(document.getElementById('mcv-guide')) return;
+  const me=LIVE.me, r=me.sup?'sup':(me.role||'lead'), zn=liveZoneName(me);
+  const steps={
+    lead:[['내 구역 확인','아래 「배치 현황」에서 파란 테두리 상자가 내 구역('+(zn||'')+')입니다. 내가 맡은 자리들이 번호 순으로 있습니다.'],['자리에 도착하면 「✅ 배치 완료」','그 자리 줄의 초록 단추를 누르면 총괄 화면에 바로 표시됩니다. 잘못 눌렀으면 「완료 해제」.'],['사고가 나면 「🚨 응급 신고」','위 빨간 단추를 누르고 장소를 고르면 총괄·구급차·다른 담당자 전원에게 알림이 갑니다. 지도를 길게 눌러도 됩니다.']],
+    amb:[['내 대기 지점 확인','아래 「배치 현황」의 파란 상자가 내 구급차 자리입니다. 도착하면 「✅ 배치 완료」.'],['출동 요청이 오면 「✅ 출동 확인」','보라색 띠로 "나에게 출동 요청"이 뜹니다. 확인을 누르면 총괄에게 출동 중으로 표시되고, 「🧭 길찾기」로 바로 갑니다.'],['도착해서 처리하면 「🚑 내가 처리」→「상황 종료」','응급 현황 메뉴에서 처리 내용을 적어 두면 기록에 남습니다.']],
+    cp:[['구급차 배치 현황 보기','아래에서 각 구급차가 자리에 있는지(완료/미완료)와 접속 상태를 봅니다.'],['사고가 나면 「🚨 응급 신고」 → 「가까운 구급차 출동」','신고 뒤 알림 띠에서 가장 가까운 구급차에게 출동 요청을 보낼 수 있습니다.'],['메시지로 지시','아래 「메시지」 메뉴에서 구급차 전체 또는 개별 구급차에게 보냅니다.']],
+    water:[['급수대 목록','아래 「급수대」 메뉴에 내 급수대 위치·물자가 있습니다.'],['위치 공유','로그인해 두면 총괄 화면에 내 위치가 보이고, 응급 알림도 받습니다.'],['메시지','총괄에게 보낼 말은 「메시지」 메뉴에서.']],
+    admin:[['배치 현황','모든 구역의 완료/미완료와 접속한 사람을 한눈에. 사람 이름을 누르면 지도에서 위치가 보입니다.'],['응급 신고가 오면','빨간 띠가 뜨고 소리가 납니다. 「구급차 출동」으로 가까운 구급차를 보내고, 「응급 현황」 메뉴에서 처리 상태를 봅니다.'],['메시지·접속 현황','「메시지」로 전체·역할·개인에게 보내고, 「접속 현황」에서 누가 들어와 있는지 봅니다.']],
+    sup:[['배치 현황 — 총관리자는 전부 켜고 끌 수 있음','모든 구역의 완료/미완료, 접속한 사람, 사람 위치를 한눈에.'],['응급 신고가 오면','빨간 띠 + 소리. 「구급차 출동」으로 가까운 구급차를 보내고, 「응급 현황」에서 처리 상태·기록을 봅니다. 끝난 건 「전부 지우기」.'],['메시지 · 접속 현황 · 로그','전체·역할·구역·개인에게 메시지, 누가 들어와 있는지, 누가 언제 무엇을 했는지(로그, CSV 저장).']]
+  }[r]||[];
+  const g=document.createElement('div'); g.id='mcv-guide'; g.className='mcv-guide';
+  g.innerHTML='<div class="mcv-guideBox"><h2>👋 '+esc(me.name)+'님, 이렇게 쓰시면 됩니다 <small style="font-weight:600;color:#607d8b">('+esc(liveRoleLabel(me))+')</small></h2><ol>'+steps.map((x,i)=>'<li><i>'+(i+1)+'</i><div><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></div></li>').join('')+'</ol>'+
+    '<div style="font-size:.82rem;color:#607d8b;margin-bottom:10px">💡 알림을 놓치지 않으려면 로그인 아래 노란 상자의 「✅ 예, 모두 켜기」를 눌러 두세요. 이 안내는 머리의 ❓ 단추로 다시 볼 수 있습니다.</div>'+
+    '<div class="mcv-guideBtns"><label><input type="checkbox" id="mcv-guideNo" checked> 다시 보지 않기</label><button type="button" class="mcv-lvBtn mcv-pri" id="mcv-guideOk">알겠습니다</button></div></div>';
+  document.getElementById('mcv-root').appendChild(g);
+  const close=()=>{ try{ if(g.querySelector('#mcv-guideNo').checked) localStorage.setItem(guideKey(), String(Date.now())); else localStorage.removeItem(guideKey()); }catch(e){} g.remove(); };
+  g.querySelector('#mcv-guideOk').onclick=close; g.addEventListener('click', e=>{ if(e.target===g) close(); });
+}
 function liveRender(){
-  try{ gateRender(); }catch(e){}
+  try{ gateRender(); }catch(e){} try{ meBarRender(); }catch(e){}
   const card=document.getElementById('mcv-liveCard'); if(!card || card.style.display==='none') return;
   const st=document.getElementById('mcv-lvStat'), lg=document.getElementById('mcv-lvLogin'), bd=document.getElementById('mcv-lvBoard'), nt=document.getElementById('mcv-lvNote');
   /* 상태줄 */
@@ -3581,8 +3662,8 @@ function liveRender(){
     lg.querySelector('#mcv-lvGo').onclick=go; lg.querySelector('#mcv-lvName').onkeydown=e=>{ if(e.key==='Enter') lg.querySelector('#mcv-lvPin').focus(); }; lg.querySelector('#mcv-lvPin').onkeydown=e=>{ if(e.key==='Enter') go(); };
   }
   /* 응급 핑 단추 — 관리자·구급차 */
-  { const pb=document.getElementById('mcv-pingBtn'); if(pb){ pb.style.display=pingRole()?'':'none'; pb.textContent=LIVE.me?'🚨 응급 핑':'🚨 응급 핑 (로그인 필요)'; pb.classList.toggle('mcv-ghostPing', !LIVE.me);
-      pb.onclick=()=>{ if(!LIVE.me){ liveToast('응급 핑은 로그인 뒤에 찍을 수 있습니다'); const n=document.getElementById('mcv-lvName'); if(n){ n.focus(); n.scrollIntoView({behavior:'smooth', block:'center'}); } return; } pingForm(null); }; } }
+  { const pb=document.getElementById('mcv-pingBtn'); if(pb){ pb.style.display=pingRole()?'':'none'; pb.textContent=LIVE.me?'🚨 응급 신고':'🚨 응급 신고 (로그인 필요)'; pb.classList.toggle('mcv-ghostPing', !LIVE.me);
+      pb.onclick=()=>{ if(!LIVE.me){ liveToast('응급 신고는 로그인 뒤에 할 수 있습니다'); const n=document.getElementById('mcv-lvName'); if(n){ n.focus(); n.scrollIntoView({behavior:'smooth', block:'center'}); } return; } pingForm(null); }; } }
   /* 현황판 (급수대 파일은 현황판 대신 급수대 목록을 본다) */
   if(UNIFIED && !LIVE.me){ bd.innerHTML='<div class="mcv-lvZone"><h3>🧩 운영용 통합 파일 <small>— 위에서 이름과 번호 4자리로 로그인하면 관리자·담당자·구급차·급수대에 맞는 메뉴와 기능이 열립니다.</small></h3></div>'; nt.textContent=''; return; }
   const roles=ADMIN?['lead','amb']:(ROLE==='cp'?['amb']:((ROLE==='water'||!ROLE)?[]:[ROLE]));
@@ -3606,10 +3687,10 @@ function liveRender(){
       return '<div class="mcv-lvItem'+(dn?' mcv-done':'')+'" data-lv-item="'+esc(i.id)+'">'+
         '<span class="mcv-lvNo" style="background:'+(z.color||'#607d8b')+'">'+(i.no!=null?i.no:(i.icon||'•'))+'</span>'+
         '<span class="mcv-lvT"><b>'+esc(i.name)+'</b><span>'+esc(meta.join(' · '))+'</span></span>'+
-        '<span class="mcv-lvS">'+(dn?'✅ 완료 · '+esc(c.by||'')+' '+liveFmtT(c.at):'미완료')+'</span>'+
-        '<span class="mcv-lvA">'+(can?'<button type="button" class="mcv-lvBtn mcv-sm'+(dn?'':' mcv-ok')+'" data-lv-check="'+esc(i.id)+'" data-lv-done="'+(dn?'0':'1')+'">'+(dn?'↩ 해제':'✅ 배치 완료')+'</button>':'')+
-          '<button type="button" class="mcv-lvBtn mcv-sm" data-lv-map="'+esc(i.id)+'" title="지도에서 보기">🗺</button>'+
-          '<a class="mcv-lvBtn mcv-sm" href="'+navUrl(i.name,i.lat,i.lon)+'" target="_blank" rel="noopener" title="카카오맵 길찾기">🧭</a></span></div>'; }).join('');
+        '<span class="mcv-lvS'+(dn?' mcv-lvS-ok':' mcv-lvS-no')+'">'+(dn?'✅ 완료<small>'+esc(c.by||'')+' '+liveFmtT(c.at)+'</small>':'⬜ 미완료')+'</span>'+
+        '<span class="mcv-lvA">'+(can?'<button type="button" class="mcv-lvBtn mcv-sm'+(dn?'':' mcv-ok mcv-big')+'" data-lv-check="'+esc(i.id)+'" data-lv-done="'+(dn?'0':'1')+'">'+(dn?'↩ 완료 해제':'✅ 배치 완료')+'</button>':'')+
+          '<button type="button" class="mcv-lvBtn mcv-sm" data-lv-map="'+esc(i.id)+'" title="지도에서 보기">🗺 지도</button>'+
+          '<a class="mcv-lvBtn mcv-sm" href="'+navUrl(i.name,i.lat,i.lon)+'" target="_blank" rel="noopener" title="카카오맵 길찾기">🧭 길찾기</a></span></div>'; }).join('');
     if(!rows) return '';
     return '<div class="mcv-lvZone'+(mine?' mcv-mine':'')+'" data-lv-zone="'+esc(z.id)+'"><h3><span class="mcv-dot" style="background:'+(z.color||'#607d8b')+'"></span>'+esc(z.name)+(z.lead?' <small>· '+esc(z.lead)+(z.phone?' '+esc(z.phone):'')+'</small>':'')+
       ' <small>'+d+' / '+its.length+' 완료'+(mine?' · 내 구역':'')+'</small>'+(here.length?' <small>👤 '+esc(here.join(', '))+'</small>':'')+'</h3>'+
@@ -3718,7 +3799,7 @@ function lpShow(lat, lon){
       '<div class="mcv-liveAct"><a class="mcv-lvBtn mcv-sm" href="'+navUrl(txt,lat,lon)+'" target="_blank" rel="noopener">🧭 길찾기</a>'+
       '<a class="mcv-lvBtn mcv-sm" href="'+mapUrl(txt,lat,lon)+'" target="_blank" rel="noopener">🗺 카카오맵</a>'+
       '<button type="button" class="mcv-lvBtn mcv-sm" data-lp-copy="'+esc(txt)+'">📋 주소 복사</button>'+
-      (pingCan()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" data-lp-ping="1">🚨 여기 응급 핑</button>':(pingRole()?'<button type="button" class="mcv-lvBtn mcv-sm" data-lv-login="1">🚨 로그인 후 응급 핑</button>':''))+'</div>', lat, lon);
+      (pingCan()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" data-lp-ping="1">🚨 여기서 응급 신고</button>':(pingRole()?'<button type="button" class="mcv-lvBtn mcv-sm" data-lv-login="1">🚨 로그인 후 응급 핑</button>':''))+'</div>', lat, lon);
     const cb=document.querySelector('[data-lp-copy]'); if(cb) cb.onclick=()=>{ const t=cb.dataset.lpCopy; try{ navigator.clipboard.writeText(t).then(()=>liveToast('복사했습니다: '+t)); }catch(e){ liveToast(t); } };
     const pg=document.querySelector('[data-lp-ping]'); if(pg) pg.onclick=()=>{ closeInfo(); pingForm({lat, lon, name:txt}); };
   };
@@ -3812,11 +3893,11 @@ function pingZoneOptions(){
 }
 function pingForm(at){
   const f=document.getElementById('mcv-pingForm'); if(!f) return;
-  if(!pingCan()){ liveToast('응급 핑은 로그인 뒤에 찍을 수 있습니다'); return; }
+  if(!pingCan()){ liveToast('응급 신고는 로그인 뒤에 할 수 있습니다'); return; }
   navShow('live', false);
   const groups=pingZoneOptions();
   f.style.display='flex';
-  f.innerHTML='<b style="color:#b3261e">🚨 응급 핑</b>'+
+  f.innerHTML='<b style="color:#b3261e">🚨 응급 신고</b> <small style="color:#607d8b;font-weight:400">— 보내면 총괄·구급차·담당자 전원에게 바로 알림이 갑니다</small>'+
     (at?'<span class="mcv-c mcv-c-sub">📍 지도 지점 '+esc(at.name||'')+'</span>':'<select id="mcv-pingZone"><option value="">구역 선택</option>'+groups.map(([g,zs])=>'<optgroup label="'+esc(g)+'">'+zs.map(z=>'<option value="'+esc(z.id)+'">'+esc(z.name)+'</option>').join('')+'</optgroup>').join('')+'</select>')+
     '<input type="text" id="mcv-pingMsg" placeholder="상황 (예: 주자 쓰러짐 · 구급차 요청)" maxlength="80">'+
     '<button type="button" class="mcv-lvBtn mcv-ping" id="mcv-pingSend">보내기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-pingCancel">취소</button>'+
@@ -3836,7 +3917,7 @@ function pingForm(at){
 }
 function pingSend(p){
   if(!LIVE.root){ liveToast('실시간 연결이 아직 없습니다'); return; }
-  if(!pingCan()){ liveToast('응급 핑은 로그인 뒤에 찍을 수 있습니다'); return; }
+  if(!pingCan()){ liveToast('응급 신고는 로그인 뒤에 할 수 있습니다'); return; }
   const by=LIVE.me.name;
   const doc={zone:p.zone||null, zoneName:p.zoneName||'', lat:p.lat!=null?+p.lat:null, lon:p.lon!=null?+p.lon:null, msg:p.msg||'', by, role:LIVE.me.role||(ADMIN?'admin':(ROLE||'')), at:Date.now(), active:true};
   const id='pg'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -3975,14 +4056,14 @@ function emgRender(){
   const tools=document.getElementById('mcv-emgTools');
   const sup=!!(LIVE.me && LIVE.me.sup);
   tools.innerHTML=[['open','진행 중 '+open.length],['all','전체 '+all.length]].map(([k,l])=>'<span class="mcv-logChip'+(LIVE.emgFilter===k?' mcv-on':'')+'" data-emgf="'+k+'">'+l+'</span>').join('')+
-    (pingRole()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-emgPing" style="margin-left:auto">🚨 응급 핑</button>':'')+
+    (pingRole()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-emgPing" style="margin-left:auto">🚨 응급 신고</button>':'')+
     (sup&&all.length?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-emgPurge" title="총관리자만 — 이 대회의 응급 기록을 모두 지웁니다">🗑 전부 지우기</button>':'')+
     (sup&&LIVE.emgPurgeAsk?'<div class="mcv-lvErr" style="flex-basis:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">⚠️ 응급 현황 <b>'+all.length+'건</b>을 정말 지울까요? 모든 사람의 화면에서 사라지고 되돌릴 수 없습니다. (로그에는 남습니다)<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-emgPurgeGo">네, 전부 지우기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-emgPurgeNo">취소</button></div>':'');
   { const pb=tools.querySelector('#mcv-emgPurge'); if(pb) pb.onclick=()=>{ LIVE.emgPurgeAsk=true; emgRender(); };
     const no=tools.querySelector('#mcv-emgPurgeNo'); if(no) no.onclick=()=>{ LIVE.emgPurgeAsk=false; emgRender(); };
     const go=tools.querySelector('#mcv-emgPurgeGo'); if(go) go.onclick=()=>{ LIVE.emgPurgeAsk=false; pingPurge(); }; }
   tools.querySelectorAll('[data-emgf]').forEach(b=>{ b.onclick=()=>{ LIVE.emgFilter=b.dataset.emgf; emgRender(); }; });
-  { const pb=tools.querySelector('#mcv-emgPing'); if(pb) pb.onclick=()=>{ if(!LIVE.me){ liveToast('응급 핑은 로그인 뒤에 찍을 수 있습니다'); navShow('live', true); return; } pingForm(null); }; }
+  { const pb=tools.querySelector('#mcv-emgPing'); if(pb) pb.onclick=()=>{ if(!LIVE.me){ liveToast('응급 신고는 로그인 뒤에 할 수 있습니다'); navShow('live', true); return; } pingForm(null); }; }
   if(!rows.length){ list.innerHTML='<div class="mcv-note" style="padding:14px 18px">'+(LIVE.emgFilter==='open'?'진행 중인 응급 상황이 없습니다.':'아직 올라온 응급 핑이 없습니다.')+'</div>'; return; }
   const can=pingCan();
   list.innerHTML=rows.map(p=>{ const on=p.active!==false; const st=!on?['done','종료']:(p.handledBy?['work','처리 중']:['open','진행 중']);
@@ -4189,7 +4270,7 @@ function staffInfoHtml(p){
 function cpInfoHtml(c){
   return popCard('📌','#5e35b1', esc(c.name), '', (c.km!=null?'<span class="mcv-c mcv-c-go">'+c.km.toFixed(2)+' km</span>':'')+'<span class="mcv-c mcv-c-sub">CP · 거점</span>', '')+
     '<div class="mcv-liveAct"><a class="mcv-lvBtn mcv-sm" href="'+navUrl(c.name,c.lat,c.lon)+'" target="_blank" rel="noopener">🧭 길찾기</a>'+
-    (pingCan()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" data-cp-ping="'+esc(c.id)+'">🚨 여기 응급 핑</button>':'')+'</div>';
+    (pingCan()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" data-cp-ping="'+esc(c.id)+'">🚨 여기서 응급 신고</button>':'')+'</div>';
 }
 function drawCpPins(){
   if(!CPS.length || !kReady || !kmap) return;
@@ -4426,6 +4507,7 @@ function fitAllCourses(){
   });
   if(pts.length>1) mapFit(pts);
 }
+{ const mb=document.getElementById('mcv-mapMoreBtn'), mm=document.getElementById('mcv-mapMore'); if(mb && mm) mb.addEventListener('click', ()=>{ const on=!mm.classList.contains('mcv-open'); mm.classList.toggle('mcv-open', on); mb.setAttribute('aria-expanded', on?'true':'false'); }); }
 const allBtn=document.getElementById('mcv-allBtn');
 if(allBtn) allBtn.addEventListener('click', ()=>{
   showAll=!showAll;
