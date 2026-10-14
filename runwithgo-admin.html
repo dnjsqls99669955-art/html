@@ -1123,6 +1123,7 @@ function roleApply(){
   const label=!r?'운영용 · 로그인하세요':(ADMIN?(LIVE.me.sup?'총관리자':'관리자'):ROLE==='amb'?'구급차':ROLE==='cp'?'CP 담당':ROLE==='water'?'급수대':'담당자');
   const tag=document.getElementById('mcv-hTag'); if(tag){ tag.textContent=label; tag.style.display='inline-block'; }
   if(!DATA.embed) document.title=DATA.title+' ('+label+')';
+  try{ pwaManifestApply(); }catch(e){}
   const hasStaff=!!(STAFF && (STAFF.posts||[]).length);
   const sc=document.getElementById('mcv-staffCard'), sb=document.getElementById('mcv-staffBtn');
   if(sc) sc.style.display=hasStaff?'block':'none'; if(sb) sb.style.display=hasStaff?'':'none';
@@ -1218,6 +1219,21 @@ if(DATA.hideTitle){
 document.getElementById('mcv-tblTitleEl').textContent=T.tableTitle;
 document.getElementById('mcv-tblNoteEl').textContent=T.tableNote;
 if(!DATA.embed) document.title=DATA.title+(ADMIN?' (관리자용)':'');
+/* 홈 화면 앱 매니페스트 — 파일마다 다른 주소라 정적 manifest.json 대신 이 파일 주소를 start_url 로 한 매니페스트를 그 자리에서 만든다
+   (크롬은 start_url 이 없으면 「앱으로 설치」를 띄우지 않는다). 아이콘은 같은 자리의 icon-192/512.png */
+function pwaManifestApply(){
+  try{
+    if(!/^https?:$/.test(location.protocol) || DATA.embed) return;
+    const base=location.href.split('#')[0].split('?')[0];
+    const ic=n=>new URL(n, base).href;
+    const m={id:base, name:document.title||DATA.title||'코스도', short_name:String(DATA.title||'코스도').slice(0,12), start_url:base, scope:base, display:'standalone', orientation:'portrait', background_color:'#f4f5f2', theme_color:'#263238',
+      icons:[{src:ic('icon-192.png'), sizes:'192x192', type:'image/png', purpose:'any'}, {src:ic('icon-512.png'), sizes:'512x512', type:'image/png', purpose:'any'}, {src:ic('icon-512.png'), sizes:'512x512', type:'image/png', purpose:'maskable'}]};
+    let l=document.querySelector('link[rel="manifest"]'); if(!l){ l=document.createElement('link'); l.rel='manifest'; document.head.appendChild(l); }
+    const href='data:application/manifest+json;charset=utf-8,'+encodeURIComponent(JSON.stringify(m));
+    if(l.getAttribute('href')!==href) l.setAttribute('href', href);
+  }catch(e){}
+}
+pwaManifestApply();
 (function(){
   const box=document.getElementById('mcv-limitNoteEl'); if(!box) return;
   const L=DATA.limits||[];
