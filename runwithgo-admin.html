@@ -1006,7 +1006,8 @@
   </div>
   <div class="mcv-card" id="mcv-logCard" style="display:none">
     <h2>📜 로그 <span id="mcv-logLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span>
-      <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCopy" title="표로 붙여 넣을 수 있게 복사">📋 복사</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCsv" title="CSV 파일로 저장">⬇ CSV</button></span></h2>
+      <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCopy" title="표로 붙여 넣을 수 있게 복사">📋 복사</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCsv" title="CSV 파일로 저장">⬇ CSV</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-logPurge" title="총관리자만 — 이 대회의 로그를 모두 지웁니다 (지우기 전에 CSV 로 받아 두세요)">🗑 로그 초기화</button></span></h2>
+    <div class="mcv-lvErr" id="mcv-logPurgeAsk" style="display:none;margin:0 18px 8px;gap:8px;align-items:center;flex-wrap:wrap"></div>
     <div class="mcv-lvTools" id="mcv-logTools"></div>
     <div id="mcv-logList"></div>
     <div class="mcv-note">총관리자만 봅니다. 담당자·구급차가 배치 완료를 누르거나 풀 때, 응급 핑을 찍거나 상황 종료할 때, 접속·로그아웃할 때 시각과 이름이 남습니다. 이 대회 키의 기록은 Firestore 에 그대로 남아 나중에도 볼 수 있습니다.</div>
@@ -1345,8 +1346,9 @@ function slicePathKm(c, from, to){
   out.push(latlngAtKm(to));
   return out;
 }
+function supCanSee(){ if(ROLE==='water') return true; if(!ADMIN) return false; const me=(typeof LIVE!=='undefined')?LIVE.me:null; return !me || me.sup || me.role==='admin'; }
 function supStr(p){
-  if(!ADMIN||!p.sup) return '';
+  if(!supCanSee()||!p.sup) return '';
   const arr=SUP.filter(s=>p.sup[s.id]).map(s=>{
     const b=boxesOf(s,p.sup[s.id]);
     return esc(s.label)+' '+p.sup[s.id]+esc(s.unit)+(b!=null?'('+b+'박스)':'');
@@ -1378,7 +1380,7 @@ function poiInfoHtml(p){
   if(p.ele!=null) ch+='<span class="mcv-c mcv-c-sub">고도 '+p.ele+' m</span>';
   if(ADMIN&&p.ops) ch+='<span class="mcv-c mcv-c-sub">'+esc(T.colOps||'운영 시간')+' '+esc(p.ops)+'</span>';
   if(ADMIN&&p.people) ch+='<span class="mcv-c mcv-c-sub">👥 '+p.people.toLocaleString()+'명</span>';
-  if(ADMIN&&p.sup){
+  if(supCanSee()&&p.sup){
     SUP.filter(x=>p.sup[x.id]).forEach(x=>{
       const b=boxesOf(x,p.sup[x.id]);
       ch+='<span class="mcv-c mcv-c-sup">'+esc(x.label)+' '+p.sup[x.id]+esc(x.unit)+(b!=null?' · '+b+'박스':'')+'</span>';
@@ -3018,7 +3020,7 @@ function renderTables(){
   DATA.cats.forEach(cat=>{
     const items=C.pois.filter(p=>p.cat===cat.id);
     if(!items.length) return;
-    const supIds=ADMIN?SUP.filter(s=>items.some(p=>(p.sup||{})[s.id])).map(s=>s.id):[];
+    const supIds=supCanSee()?SUP.filter(s=>items.some(p=>(p.sup||{})[s.id])).map(s=>s.id):[];
     let h='<div class="mcv-cat"><div class="mcv-cat-h">'+
       '<span class="mcv-titleicon" style="background:'+cat.color+'">'+cat.icon+'</span>'+
       '<b>'+esc(cat.label)+'</b><span class="mcv-n">'+items.length+'</span></div>';
@@ -3438,7 +3440,7 @@ function logSub(){
   LIVE.logUnsub=LIVE.root.collection('log').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.log=o; logRender(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); });
 }
 function logUnsubAll(){ if(LIVE.logUnsub){ try{ LIVE.logUnsub(); }catch(e){} LIVE.logUnsub=null; } LIVE.log={}; }
-const LOG_T={check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
+const LOG_T={check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
 function logWho(e){ let w=e.by||''; const tag=e.sup?'총관리자':(e.role==='admin'?'관리자':e.role==='amb'?('구급차'+(e.car?' '+e.car+'호차':'')):e.role==='cp'?'CP 담당':e.role==='water'?'급수대':'담당자'); w+=' ('+tag+(e.myZoneName?' · '+e.myZoneName:'')+(e.cp?' · '+e.cp:'')+')'; return w; }
 function logText(e){
   switch(e.t){
@@ -3451,6 +3453,7 @@ function logText(e){
     case 'ack': return [(e.zoneName||'')+(e.msg?' — '+e.msg:''), '출동 확인'];
     case 'purge': return [e.msg||'응급 현황 삭제', '총관리자가 전부 지움'];
     case 'purgemsg': return [e.msg||'메시지 삭제', '총관리자가 전부 지움'];
+    case 'purgelog': return [e.msg||'로그 초기화', '총관리자가 이전 기록을 전부 지움'];
     case 'note': return [(e.zoneName||''), '처리 내용: '+(e.msg||'')];
     case 'msg': return ['→ '+(e.toName||e.to||''), (e.msg||'')];
     case 'login': return ['접속', e.myZoneName||''];
@@ -3465,6 +3468,13 @@ function logRows(){
   return all.filter(e=> f==='all' || (f==='check' && (e.t==='check'||e.t==='uncheck')) || (f==='ping' && ['ping','resolve','handle','note','call','ack','purge'].includes(e.t)) || (f==='msg' && (e.t==='msg'||e.t==='purgemsg')) || (f==='login' && (e.t==='login'||e.t==='logout'||e.t==='zone')));
 }
 function logDate(t){ const d=new Date(+t); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+/* 로그 초기화 — 총관리자만. 이 대회 키의 log 문서를 전부 지우고, 지웠다는 기록 한 줄만 남긴다 */
+function logPurge(){
+  if(!LIVE.root || !LIVE.me || !LIVE.me.sup){ liveToast('총관리자만 지울 수 있습니다'); return; }
+  const ids=Object.keys(LIVE.log); const n=ids.length; if(!n){ liveToast('지울 로그가 없습니다'); return; }
+  ids.forEach(id=>{ try{ LIVE.root.collection('log').doc(id).delete().catch(()=>{}); }catch(e){} });
+  LIVE.log={}; liveLog('purgelog', {msg:'로그 '+n+'건 초기화'}); logRender(); liveToast('로그 '+n+'건을 지웠습니다');
+}
 function logRender(){
   const card=document.getElementById('mcv-logCard'), list=document.getElementById('mcv-logList'); if(!card || !list) return;
   if(!(LIVE.me && LIVE.me.sup)){ card.style.display='none'; return; }
@@ -3497,6 +3507,9 @@ function logTsv(sep){
 function logWire(){
   const c=document.getElementById('mcv-logCopy'), d=document.getElementById('mcv-logCsv'); if(!c||!d) return;
   c.onclick=()=>{ const t=logTsv('\t'); try{ navigator.clipboard.writeText(t).then(()=>liveToast('로그 '+logRows().length+'건을 복사했습니다')); }catch(e){ liveToast('복사하지 못했습니다'); } };
+  { const pb=document.getElementById('mcv-logPurge'), ask=document.getElementById('mcv-logPurgeAsk'); if(pb && ask){
+      pb.onclick=()=>{ const all=Object.keys(LIVE.log).length; if(!all){ liveToast('지울 로그가 없습니다'); return; } ask.style.display='flex'; ask.innerHTML='⚠️ 로그 <b>'+all+'건</b>을 정말 지울까요? 되돌릴 수 없습니다. 보고용으로 남기려면 먼저 「⬇ CSV」로 받아 두세요. <button type="button" class="mcv-lvBtn mcv-sm" style="background:#b3261e;color:#fff;border-color:#b3261e" id="mcv-logPurgeGo">네, 전부 지우기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logPurgeNo">취소</button>';
+        ask.querySelector('#mcv-logPurgeNo').onclick=()=>{ ask.style.display='none'; }; ask.querySelector('#mcv-logPurgeGo').onclick=()=>{ ask.style.display='none'; logPurge(); }; }; } }
   d.onclick=()=>{ const t='\ufeff'+logTsv(','); const b=new Blob([t],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=((LIVECFG&&LIVECFG.title)||'코스도')+'_배치로그_'+logDate(Date.now())+'.csv'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 }
 function liveLogout(){
@@ -3878,7 +3891,7 @@ function renderWater(){
   const items=liveItems('water');
   if(!items.length || !(ADMIN||ROLE==='water')){ return; }
   card.style.display='block';
-  const showSup=!!(DEP && DEP.waterShowSup!==false);
+  const showSup=!!(DEP && DEP.waterShowSup!==false) && supCanSee();
   document.getElementById('mcv-waterLabel').textContent='— '+items.length+'곳'+(showSup?'':' · 품목은 표시하지 않음');
   document.getElementById('mcv-waterList').innerHTML=items.map((i,idx)=>{
     const meta=[]; if(i.km!=null) meta.push(i.km.toFixed(2)+' km'); if(i.time) meta.push('⏰ '+i.time); if(i.memo) meta.push(i.memo);
