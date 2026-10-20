@@ -12,6 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>과천코스도 (운영용·통합)</title>
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;과천코스도&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evdsxw3hw52j&quot;,&quot;ver&quot;:&quot;빌드 2026-10-20 · 26.27&quot;,&quot;at&quot;:1792482687838,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evdsxw3hw52jhjsqhnk5bckpym6m&quot;}}">
 
 </head>
 <body style="margin:0;background:#f4f5f2">
@@ -563,6 +564,19 @@
 #mcv-root [data-mcv-panel].mcv-hide{display:none !important;}
 /* 응급 알림 — 끄기 전엔 안 사라진다 */
 #mcv-root .mcv-alarm{position:fixed;left:0;right:0;bottom:66px;z-index:1450;display:flex;flex-direction:column;gap:6px;padding:8px 10px;max-height:46vh;overflow:auto;}
+/* 📢 공지 띠 — 총관리자 메시지는 화면 위에 파란 띠로, 「✓ 확인」을 누를 때까지 남는다 */
+#mcv-root .mcv-noticeBar{bottom:auto;top:0;z-index:1440;max-height:40vh;padding-top:max(8px, env(safe-area-inset-top));}
+#mcv-root .mcv-noticeItem{background:#0d47a1;color:#fff;border-radius:12px;padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;box-shadow:0 8px 24px rgba(13,71,161,.35);font-size:.92rem;line-height:1.45;}
+#mcv-root .mcv-noticeItem.mcv-new{animation:mcvNoticeIn .35s ease-out;} @keyframes mcvNoticeIn{from{transform:translateY(-12px);opacity:0}to{transform:none;opacity:1}}
+#mcv-root .mcv-noticeItem b{font-size:.78rem;opacity:.9;margin-right:4px;} #mcv-root .mcv-noticeItem .mcv-noticeT{flex:1 1 200px;white-space:pre-wrap;word-break:break-word;}
+#mcv-root .mcv-noticeItem small{display:block;opacity:.8;font-size:.72rem;} #mcv-root .mcv-noticeItem .mcv-lvBtn{background:#fff;color:#0d47a1;border-color:#fff;}
+/* 📍 도착 확인 띠 */
+#mcv-root .mcv-arrive{position:fixed;left:10px;right:10px;bottom:76px;z-index:1460;background:#1b5e20;color:#fff;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;box-shadow:0 10px 30px rgba(27,94,32,.4);font-size:.95rem;line-height:1.45;animation:mcvNoticeIn .35s ease-out;}
+#mcv-root .mcv-arrive .mcv-arriveT{flex:1 1 200px;} #mcv-root .mcv-arrive small{display:block;opacity:.85;font-size:.74rem;}
+#mcv-root .mcv-arrive .mcv-lvBtn{background:#fff;color:#1b5e20;border-color:#fff;font-weight:800;} #mcv-root .mcv-arrive .mcv-lvBtn.mcv-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.6);}
+/* 💬 메시지 템플릿 칩 */
+#mcv-root .mcv-tplRow{display:flex;gap:6px;flex-wrap:wrap;flex-basis:100%;align-items:center;} #mcv-root .mcv-tpl{font-size:.78rem;padding:5px 10px;border-radius:999px;border:1px solid #90caf9;background:#e3f2fd;color:#0d47a1;cursor:pointer;font-weight:700;}
+#mcv-root .mcv-tpl:active{background:#bbdefb;} #mcv-root .mcv-tplEdit{font-size:.74rem;color:#607d8b;cursor:pointer;margin-left:auto;}
 #mcv-root .mcv-alarmItem{background:#b3261e;color:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 6px 20px rgba(179,38,30,.4);display:flex;flex-wrap:wrap;align-items:center;gap:8px;animation:mcvAlarmIn .3s ease-out;font-size:.86rem;}
 #mcv-root .mcv-alarmItem.mcv-new{animation:mcvAlarmIn .3s ease-out, mcvAlarmBlink 1s ease-in-out 3;}
 #mcv-root .mcv-alarmItem b{font-size:.95rem;}
@@ -1014,7 +1028,7 @@
   </div>
   <div class="mcv-card" id="mcv-logCard" style="display:none">
     <h2>📜 로그 <span id="mcv-logLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span>
-      <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCopy" title="표로 붙여 넣을 수 있게 복사">📋 복사</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCsv" title="CSV 파일로 저장">⬇ CSV</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-logPurge" title="총관리자만 — 이 대회의 로그를 모두 지웁니다 (지우기 전에 CSV 로 받아 두세요)">🗑 로그 초기화</button></span></h2>
+      <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCopy" title="표로 붙여 넣을 수 있게 복사">📋 복사</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCsv" title="CSV 파일로 저장">⬇ CSV</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-logPurge" title="총관리자만 — 이 대회의 로그를 모두 지웁니다 (지우기 전에 CSV 로 받아 두세요)">🗑 로그 초기화</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-resetAll" title="총관리자만 — 응급·메시지·로그·배치 완료·접속 기록을 모두 지워 처음 연 것처럼 만듭니다 (계정·템플릿은 남습니다)">♻ 전체 리셋</button></span></h2>
     <div class="mcv-lvErr" id="mcv-logPurgeAsk" style="display:none;margin:0 18px 8px;gap:8px;align-items:center;flex-wrap:wrap"></div>
     <div class="mcv-lvTools" id="mcv-logTools"></div>
     <div id="mcv-logList"></div>
@@ -1035,6 +1049,8 @@
   </div>
 </div>
 <div id="mcv-alarm" class="mcv-alarm" style="display:none" role="alert" aria-live="assertive"></div>
+<div id="mcv-notice" class="mcv-alarm mcv-noticeBar" style="display:none" role="status" aria-live="polite"></div>
+<div id="mcv-arrive" class="mcv-arrive" style="display:none" role="alert" aria-live="assertive"></div>
 <nav id="mcv-nav" class="mcv-nav" style="display:none" aria-label="메뉴"></nav>
 </div>
 <script>
@@ -2870,6 +2886,34 @@ function myMake(ll){
   return {setPosition:a=>{ const p=new kakao.maps.LatLng(a[0],a[1]); ov.setPosition(p); try{ ac.setPosition(p); }catch(e){} },
     setAcc:r=>{ try{ ac.setRadius(r); }catch(e){} }, show:()=>{ ov.setMap(kmap); ac.setMap(kmap); }, rm:()=>{ ov.setMap(null); ac.setMap(null); }, el:node};
 }
+/* ── 📍 도착 확인 — 담당자·구급차가 자기 구역의 아직 안 끝난 배치 지점 40 m(또는 GPS 오차) 안에서 15초 동안 거의 안 움직이면
+   「배치 완료를 누르시겠습니까?」 띠 + 진동·소리. 「나중에」는 그 지점을 10분 쉰다. 관리자·급수대·패트롤은 없음 ── */
+const ARR={id:null, since:0, anchor:null, snooze:{}, shown:null};
+function arriveTargets(){ const me=(typeof LIVE!=='undefined')?LIVE.me:null; if(!me || !me.zone || (me.role!=='lead' && me.role!=='amb')) return []; return liveItems(me.role).filter(i=>(i.zone||null)===me.zone && i.lat!=null && i.lon!=null && !liveDone(i.id)); }
+function arriveHide(){ const b=document.getElementById('mcv-arrive'); if(b){ b.style.display='none'; b.innerHTML=''; } ARR.shown=null; }
+function arriveShow(it){
+  const b=document.getElementById('mcv-arrive'); if(!b) return; ARR.shown=it.id;
+  b.style.display='flex';
+  b.innerHTML='<span class="mcv-arriveT">📍 <b>'+esc(it.name||'배치 지점')+'</b>에 도착했습니다<small>배치 완료를 누르시겠습니까? 총괄 화면에 바로 표시됩니다.</small></span>'+
+    '<button type="button" class="mcv-lvBtn" id="mcv-arriveOk">✅ 배치 완료</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-arriveNo">나중에</button>';
+  b.querySelector('#mcv-arriveOk').onclick=()=>{ liveSetCheck(it.id, true); arriveHide(); };
+  b.querySelector('#mcv-arriveNo').onclick=()=>{ ARR.snooze[it.id]=Date.now()+10*60000; arriveHide(); };
+  try{ if(navigator.vibrate) navigator.vibrate([150,80,150]); }catch(e){} try{ sndMsgPlay(); }catch(e){}
+  try{ if(document.visibilityState!=='visible') notifyShow('📍 '+(it.name||'배치 지점')+' 도착', {body:'배치 완료를 누르시겠습니까?', tag:'mcv-arrive-'+it.id}, ()=>{}); }catch(e){}
+  try{ liveLog('arrive', {item:it.id, itemName:it.name||''}); }catch(e){}
+}
+function arriveCheck(ll, acc){
+  const ts=arriveTargets(); if(!ts.length){ if(ARR.shown) arriveHide(); ARR.id=null; return; }
+  if(ARR.shown && !ts.some(i=>i.id===ARR.shown)) arriveHide();             /* 완료됐으면 띠 내림 */
+  const now=Date.now(), rad=Math.max(40, Math.min(80, +acc||0));
+  let best=null, bd=Infinity; ts.forEach(i=>{ const d=distKm(ll[0],ll[1],i.lat,i.lon)*1000; if(d<bd){ bd=d; best=i; } });
+  if(!best || bd>rad){ ARR.id=null; ARR.since=0; ARR.anchor=null; return; }
+  if(ARR.id!==best.id || !ARR.anchor){ ARR.id=best.id; ARR.since=now; ARR.anchor=ll; return; }
+  if(distKm(ll[0],ll[1],ARR.anchor[0],ARR.anchor[1])*1000>12){ ARR.since=now; ARR.anchor=ll; return; }   /* 움직이면 다시 센다 */
+  if(now-ARR.since<15000) return;
+  if(ARR.shown===best.id) return; if((ARR.snooze[best.id]||0)>now) return;
+  arriveShow(best);
+}
 /* 지도를 다시 그린 뒤에도 점이 남아 있게 */
 function myRefresh(){ if(MY.ov){ try{ MY.ov.show(); if(MY.last) MY.ov.setPosition(MY.last); }catch(e){} } }
 function myInView(ll){
@@ -2886,6 +2930,7 @@ function myFix(pos){
   const ll=[pos.coords.latitude, pos.coords.longitude], acc=pos.coords.accuracy||0;
   MY.last=ll; MY.err=0;
   try{ if(typeof liveLoc==='function') liveLoc(ll, acc); }catch(e){}
+  try{ arriveCheck(ll, acc); }catch(e){}
   if(!MY.ov) MY.ov=myMake(ll); else { MY.ov.show(); MY.ov.setPosition(ll); }
   MY.ov.setAcc(acc>15 ? acc : 0);
   if(MY.first){ MY.first=false; mapFocus(ll[0],ll[1]); }
@@ -2934,7 +2979,7 @@ btn.addEventListener('click',()=>{
 })();
 /* 화면이 다시 보이면 추적을 다시 건다 */
 document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && MY.watch!==null) myStart(); });
-window.MCV_MY=MY;
+window.MCV_MY=MY; window.MCV_ARR=ARR; window.MCV_arriveTargets=arriveTargets;
 /* ── 고저도 ── */
 const canvas=document.getElementById('mcv-elev'), ctx=canvas.getContext('2d'), tooltip=document.getElementById('mcv-tooltip');
 const PAD={l:46,r:14,t:14,b:26};
@@ -3498,7 +3543,7 @@ function logSub(){
   LIVE.logUnsub=LIVE.root.collection('log').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.log=o; logRender(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); });
 }
 function logUnsubAll(){ if(LIVE.logUnsub){ try{ LIVE.logUnsub(); }catch(e){} LIVE.logUnsub=null; } LIVE.log={}; }
-const LOG_T={check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
+const LOG_T={check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], arrive:['📍','배치 지점 도착'], reset:['♻','전체 리셋'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
 function logWho(e){ let w=e.by||''; const tag=e.sup?'총관리자':(e.role==='admin'?'관리자':e.role==='amb'?('구급차'+(e.car?' '+e.car+'호차':'')):e.role==='cp'?'CP 담당':e.role==='water'?'급수대':'담당자'); w+=' ('+tag+(e.myZoneName?' · '+e.myZoneName:'')+(e.cp?' · '+e.cp:'')+')'; return w; }
 function logText(e){
   switch(e.t){
@@ -3532,6 +3577,18 @@ function logPurge(){
   const ids=Object.keys(LIVE.log); const n=ids.length; if(!n){ liveToast('지울 로그가 없습니다'); return; }
   ids.forEach(id=>{ try{ LIVE.root.collection('log').doc(id).delete().catch(()=>{}); }catch(e){} });
   LIVE.log={}; liveLog('purgelog', {msg:'로그 '+n+'건 초기화'}); logRender(); liveToast('로그 '+n+'건을 지웠습니다');
+}
+/* ♻ 전체 리셋 — 총관리자. 응급·메시지·로그·배치 완료·접속 기록(people)을 모두 지워 처음 연 것처럼. 계정·템플릿·푸시 구독은 남긴다 */
+async function liveResetAll(){
+  if(!LIVE.root || !LIVE.me || !LIVE.me.sup){ liveToast('총관리자만 할 수 있습니다'); return; }
+  const cols=['pings','msgs','log','checks','people']; const cnt={};
+  for(const c of cols){ let n=0; try{ const sn=await LIVE.root.collection(c).get(); const ds=[]; sn.forEach(d=>ds.push(d.ref)); n=ds.length; await Promise.all(ds.map(r=>r.delete().catch(()=>{}))); }catch(e){} cnt[c]=n; }
+  LIVE.pings={}; LIVE.msgs={}; LIVE.log={}; LIVE.checks={}; LIVE.people={}; LIVE.acked=new Set(); try{ localStorage.removeItem(pingAckKey()); }catch(e){}
+  try{ pingUpdate(); }catch(e){} try{ msgUpdate(); }catch(e){} try{ liveSyncPins(); }catch(e){} try{ whoRender(); }catch(e){} try{ emgRender(); }catch(e){} try{ logRender(); }catch(e){} try{ liveRender(); }catch(e){} try{ liveRefreshCard(); }catch(e){}
+  try{ liveHello(); }catch(e){}                                   /* 내 접속 기록은 바로 다시 올린다 */
+  liveLog('reset', {msg:'전체 리셋 — 응급 '+cnt.pings+' · 메시지 '+cnt.msgs+' · 로그 '+cnt.log+' · 배치 완료 '+cnt.checks+' · 접속 기록 '+cnt.people});
+  liveToast('전체 리셋 완료 — 응급 '+cnt.pings+' · 메시지 '+cnt.msgs+' · 로그 '+cnt.log+' · 배치 완료 '+cnt.checks+' · 접속 '+cnt.people+'건 지움', 6000);
+  return cnt;
 }
 function logRender(){
   const card=document.getElementById('mcv-logCard'), list=document.getElementById('mcv-logList'); if(!card || !list) return;
@@ -3568,6 +3625,11 @@ function logWire(){
   { const pb=document.getElementById('mcv-logPurge'), ask=document.getElementById('mcv-logPurgeAsk'); if(pb && ask){
       pb.onclick=()=>{ const all=Object.keys(LIVE.log).length; if(!all){ liveToast('지울 로그가 없습니다'); return; } ask.style.display='flex'; ask.innerHTML='⚠️ 로그 <b>'+all+'건</b>을 정말 지울까요? 되돌릴 수 없습니다. 보고용으로 남기려면 먼저 「⬇ CSV」로 받아 두세요. <button type="button" class="mcv-lvBtn mcv-sm" style="background:#b3261e;color:#fff;border-color:#b3261e" id="mcv-logPurgeGo">네, 전부 지우기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logPurgeNo">취소</button>';
         ask.querySelector('#mcv-logPurgeNo').onclick=()=>{ ask.style.display='none'; }; ask.querySelector('#mcv-logPurgeGo').onclick=()=>{ ask.style.display='none'; logPurge(); }; }; } }
+  { const rb=document.getElementById('mcv-resetAll'), ask=document.getElementById('mcv-logPurgeAsk'); if(rb && ask){
+      rb.onclick=()=>{ const n={p:Object.keys(LIVE.pings).length, m:Object.keys(LIVE.msgs).length, l:Object.keys(LIVE.log).length, c:Object.keys(LIVE.checks).length, u:Object.keys(LIVE.people).length};
+        ask.style.display='flex'; ask.innerHTML='♻ <b>전체 리셋</b> — 응급 '+n.p+' · 메시지 '+n.m+' · 로그 '+n.l+' · 배치 완료 '+n.c+' · 접속 기록 '+n.u+'건을 모두 지우고 처음 연 것처럼 만듭니다. 모든 사람의 화면에서 사라지고 되돌릴 수 없습니다. 보고용 자료는 먼저 「📊 엑셀 받기」「⬇ CSV」로 받아 두세요. '+
+          '<button type="button" class="mcv-lvBtn mcv-sm" style="background:#b3261e;color:#fff;border-color:#b3261e" id="mcv-resetGo">네, 전부 지우고 리셋</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-resetNo">취소</button>';
+        ask.querySelector('#mcv-resetNo').onclick=()=>{ ask.style.display='none'; }; ask.querySelector('#mcv-resetGo').onclick=async ()=>{ ask.style.display='none'; rb.disabled=true; try{ await liveResetAll(); } finally{ rb.disabled=false; } }; }; } }
   d.onclick=()=>{ const t='\ufeff'+logTsv(','); const b=new Blob([t],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=((LIVECFG&&LIVECFG.title)||'코스도')+'_배치로그_'+logDate(Date.now())+'.csv'; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 }
 function liveLogout(){
@@ -4325,10 +4387,29 @@ function msgUpdate(){
     if(document.visibilityState!=='visible' || !document.hasFocus() || NAV.cur!=='msg') fresh.forEach(m=>notifyMsg(m)); }
   if(NAV.cur==='msg') msgMarkRead();
   navBadge('msg', msgUnread().length);
+  try{ noticeRender(fresh); }catch(e){}
+  try{ msgTplSub(); }catch(e){}
   msgRender();
+}
+/* ── 💬 메시지 템플릿 — 총관리자가 발행본에서 바로 고친다 (Firestore cfg/msgTpl, 모두 공유). 기본 문구는 아래 ── */
+const MSG_TPL_DEFAULT=['📢 출발 10분 전 — 각자 자리에서 준비해 주세요','📢 출발했습니다 — 선두 통과 대비','📢 선두 주자 통과 중 — 코스 밖 사람 정리','📢 후미 주자 통과 — 통과 뒤 철수 준비','📢 통제 해제 — 차량 통행 재개','📢 철수 시작 — 물자 정리 후 보고','📢 물·얼음 부족한 급수대는 메시지로 알려 주세요','📢 수고하셨습니다 — 본부로 복귀'];
+function msgTplList(){ return (Array.isArray(LIVE.msgTpl) && LIVE.msgTpl.length) ? LIVE.msgTpl : MSG_TPL_DEFAULT; }
+function msgTplSub(){ if(!LIVE.root || LIVE.tplUnsub) return; try{ LIVE.tplUnsub=LIVE.root.collection('cfg').doc('msgTpl').onSnapshot(d=>{ const v=d.exists?d.data():null; LIVE.msgTpl=(v && Array.isArray(v.list))?v.list.map(x=>String(x||'').trim()).filter(Boolean):null; msgRender(); }, ()=>{}); }catch(e){} }
+function msgTplSave(list){ if(!LIVE.root || !LIVE.me || !LIVE.me.sup) return; list=(list||[]).map(x=>String(x||'').trim()).filter(Boolean).slice(0,30); LIVE.msgTpl=list.length?list:null; LIVE.root.collection('cfg').doc('msgTpl').set({list, by:LIVE.me.name, at:Date.now()}).then(()=>liveToast('템플릿을 저장했습니다 — 모든 총관리자에게 적용')).catch(()=>liveToast('템플릿을 저장하지 못했습니다')); msgRender(); }
+/* ── 📢 공지 띠 — 나에게 온(내가 보내지 않은) 안 읽은 메시지를 화면 위에 파란 띠로. 「✓ 확인」= 읽음 ── */
+function msgMarkReadOne(id){ const me=LIVE.me, m=LIVE.msgs[id]; if(!me || !m) return; const now=Date.now(); m.read=m.read||{}; m.read[me.uid]={n:me.name, at:now}; if(LIVE.root) LIVE.root.collection('msgs').doc(id).set({read:Object.assign({}, m.read)},{merge:true}).catch(()=>{}); noticeRender(); navBadge('msg', msgUnread().length); msgRender(); }
+function noticeRender(fresh){
+  const bar=document.getElementById('mcv-notice'); if(!bar) return;
+  const rows=msgUnread().filter(m=>m.kind!=='call').sort((a,b)=>(+b.at||0)-(+a.at||0)).slice(0,5);
+  if(!rows.length){ bar.style.display='none'; bar.innerHTML=''; return; }
+  bar.style.display='flex';
+  bar.innerHTML=rows.map(m=>'<div class="mcv-noticeItem'+((fresh||[]).some(f=>f.id===m.id)?' mcv-new':'')+'"><span class="mcv-noticeT"><b>📢 '+esc(m.by||'공지')+'</b>'+esc(m.text||'')+'<small>'+liveFmtT(m.at)+(m.toName?' · '+esc(m.toName):'')+'</small></span>'+
+    '<button type="button" class="mcv-lvBtn mcv-sm" data-notice-ok="'+esc(m.id)+'">✓ 확인</button></div>').join('');
+  bar.querySelectorAll('[data-notice-ok]').forEach(b=>{ b.onclick=()=>msgMarkReadOne(b.dataset.noticeOk); });
 }
 function msgRender(){
   const card=document.getElementById('mcv-msgCard'), list=document.getElementById('mcv-msgList'), comp=document.getElementById('mcv-msgCompose'); if(!card || !list) return;
+  try{ noticeRender(); }catch(e){}
   if(!LIVECFG){ card.style.display='none'; return; }
   card.style.display='block';
   const me=LIVE.me;
@@ -4337,7 +4418,9 @@ function msgRender(){
   const tl=msgTargetsFor(me);
   const tsel=(me.sup||me.role==='cp')?'<select id="mcv-msgTo">'+tl.map(([k,l])=>'<option value="'+esc(k)+'"'+(LIVE.msgTo===k?' selected':'')+'>'+esc(l)+'</option>').join('')+'</select>':'<span class="mcv-c mcv-c-sub">받는 사람: <b>⭐ 총관리자</b></span>';
   const nAll=Object.keys(LIVE.msgs).length;
-  comp.innerHTML=tsel+'<textarea id="mcv-msgText" placeholder="'+(me.sup?'전체·담당자·구급차·구역·개인에게 보낼 내용':me.role==='cp'?'구급차 전체·구급차 개별·총관리자에게 보낼 내용':'총관리자에게 보낼 내용')+'" maxlength="500">'+esc(keepVal)+'</textarea><button type="button" class="mcv-lvBtn mcv-pri" id="mcv-msgSend">💬 보내기</button>'+
+  const tplRow=(me.sup||me.role==='cp')?'<div class="mcv-tplRow">'+msgTplList().map((t,i)=>'<span class="mcv-tpl" data-tpl="'+i+'" title="누르면 아래 칸에 들어갑니다">'+esc(t.length>26?t.slice(0,26)+'…':t)+'</span>').join('')+(me.sup?'<span class="mcv-tplEdit" id="mcv-tplEdit">✏ 템플릿 편집</span>':'')+'</div>'+
+    (me.sup&&LIVE.tplEditing?'<div style="flex-basis:100%"><textarea id="mcv-tplText" rows="8" style="width:100%;font:inherit;font-size:.86rem;line-height:1.6" placeholder="한 줄에 하나">'+esc(msgTplList().join('\n'))+'</textarea><div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="mcv-lvBtn mcv-sm mcv-pri" id="mcv-tplSave">저장 (모두 공유)</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-tplReset">기본 문구로</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-tplCancel">닫기</button></div></div>':''):'';
+  comp.innerHTML=tplRow+tsel+'<textarea id="mcv-msgText" placeholder="'+(me.sup?'전체·담당자·구급차·구역·개인에게 보낼 내용':me.role==='cp'?'구급차 전체·구급차 개별·총관리자에게 보낼 내용':'총관리자에게 보낼 내용')+'" maxlength="500">'+esc(keepVal)+'</textarea><button type="button" class="mcv-lvBtn mcv-pri" id="mcv-msgSend">💬 보내기</button>'+
     (me.sup&&nAll?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-msgPurge" title="총관리자만 — 이 대회의 메시지를 모두 지웁니다">🗑 전체 삭제</button>':'')+
     (me.sup&&LIVE.msgPurgeAsk?'<div class="mcv-lvErr" style="flex-basis:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">⚠️ 메시지 <b>'+nAll+'건</b>을 정말 지울까요? 모든 사람의 메시지함에서 사라지고 되돌릴 수 없습니다. (로그에는 남습니다)<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-msgPurgeGo">네, 전부 지우기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-msgPurgeNo">취소</button></div>':'');
   { const pb=comp.querySelector('#mcv-msgPurge'); if(pb) pb.onclick=()=>{ LIVE.msgPurgeAsk=true; msgRender(); };
@@ -4345,6 +4428,11 @@ function msgRender(){
     const go=comp.querySelector('#mcv-msgPurgeGo'); if(go) go.onclick=()=>{ LIVE.msgPurgeAsk=false; msgPurge(); }; }
   { const ts=comp.querySelector('#mcv-msgTo'); if(ts) ts.onchange=()=>{ LIVE.msgTo=ts.value; }; }
   comp.querySelector('#mcv-msgSend').onclick=()=>{ const ts=comp.querySelector('#mcv-msgTo'); const ta=comp.querySelector('#mcv-msgText'); if(msgSend(ts?ts.value:'sup', ta.value)) ta.value=''; };
+  comp.querySelectorAll('[data-tpl]').forEach(ch=>{ ch.onclick=()=>{ const ta=comp.querySelector('#mcv-msgText'); const t=msgTplList()[+ch.dataset.tpl]||''; ta.value=t; ta.focus(); try{ ta.setSelectionRange(t.length,t.length); }catch(e){} }; });
+  { const e=comp.querySelector('#mcv-tplEdit'); if(e) e.onclick=()=>{ LIVE.tplEditing=!LIVE.tplEditing; msgRender(); };
+    const sv=comp.querySelector('#mcv-tplSave'); if(sv) sv.onclick=()=>{ const ta=comp.querySelector('#mcv-tplText'); msgTplSave(String(ta.value||'').split(/\r?\n/)); LIVE.tplEditing=false; msgRender(); };
+    const rs=comp.querySelector('#mcv-tplReset'); if(rs) rs.onclick=()=>{ const ta=comp.querySelector('#mcv-tplText'); if(ta) ta.value=MSG_TPL_DEFAULT.join('\n'); };
+    const cc=comp.querySelector('#mcv-tplCancel'); if(cc) cc.onclick=()=>{ LIVE.tplEditing=false; msgRender(); }; }
   const rows=Object.values(LIVE.msgs).filter(msgForMe).sort((a,b)=>(+b.at||0)-(+a.at||0));
   const un=msgUnread().length;
   document.getElementById('mcv-msgLabel').textContent='— '+rows.length+'건'+(un?' · 안 읽음 '+un:'');
@@ -4378,9 +4466,15 @@ function whoRows(){
   const pick=(n,r)=>ppl.find(p=>p.name===n && (p.role||'')===(r||''))||null;
   const rows=[]; const used=new Set();
   (ROSTER||[]).forEach(a=>{ const p=pick(a.n,a.r); if(p) used.add(p.uid); rows.push({n:a.n, r:a.r, s:a.s, zn:a.zn, cp:a.cp, car:a.car, p, st:whoStatus(p)}); });
-  ppl.filter(p=>!used.has(p.uid)).forEach(p=>{ rows.push({n:p.name, r:p.role||'', s:!!p.sup, zn:liveZoneName(p), cp:'', car:+p.car||0, p, st:whoStatus(p), extra:p.role!=='patrol'}); });   /* 패트롤은 명단 없이 공용 번호로 들어오므로 「명단 밖」이 아니다 */
+  /* 명단 밖(이름이 바뀌었거나 지운 계정, 옛 파일로 들어온 사람)은 지금 접속 중이거나 막 끊긴 사람만 보인다 — 옛 흔적이 명단처럼 쌓여 보이던 것.
+     패트롤은 명단 없이 공용 번호로 들어오므로 「명단 밖」 표시는 않지만 같은 기준(최근 활동)으로만 보인다 */
+  ppl.filter(p=>!used.has(p.uid)).forEach(p=>{ const st=whoStatus(p); if(st[0]!=='on' && st[0]!=='away') return; rows.push({n:p.name, r:p.role||'', s:!!p.sup, zn:liveZoneName(p), cp:'', car:+p.car||0, p, st, extra:p.role!=='patrol'}); });
   return rows;
 }
+/* 명단 밖 옛 흔적(people 문서) 개수 · 정리 — 총관리자 */
+function whoStaleExtras(){ const names=new Set((ROSTER||[]).map(a=>a.n+'|'+(a.r||'')));
+  return Object.keys(LIVE.people).filter(k=>{ const p=LIVE.people[k]; if(!p||!p.name) return false; if(names.has(p.name+'|'+(p.role||''))) return false; const st=whoStatus(Object.assign({uid:k},p)); return st[0]!=='on' && st[0]!=='away'; }); }
+function whoPurgeExtras(){ if(!LIVE.root || !LIVE.me || !LIVE.me.sup) return; const ids=whoStaleExtras(); ids.forEach(k=>{ LIVE.root.collection('people').doc(k).delete().catch(()=>{}); delete LIVE.people[k]; }); liveToast('명단 밖 옛 기록 '+ids.length+'건을 지웠습니다'); whoRender(); }
 function whoRender(){
   const card=document.getElementById('mcv-whoCard'), list=document.getElementById('mcv-whoList'); if(!card || !list) return;
   if(!ADMIN || !LIVECFG){ card.style.display='none'; return; }
@@ -4390,6 +4484,7 @@ function whoRender(){
   document.getElementById('mcv-whoLabel').textContent='— 접속 '+cnt.on+' · 끊김 '+cnt.away+' · 로그아웃·나감 '+cnt.out+' · 미접속 '+cnt.never+' / 전체 '+rows.length+' · 📍 위치 켬 '+locOn;
   const tools=document.getElementById('mcv-whoTools');
   tools.innerHTML=[['all','전체 '+rows.length],['on','접속 중 '+cnt.on],['away','끊김 '+cnt.away],['out','로그아웃·나감 '+cnt.out],['never','미접속 '+cnt.never]].map(([k,l])=>'<span class="mcv-logChip'+(LIVE.whoFilter===k?' mcv-on':'')+'" data-whof="'+k+'">'+l+'</span>').join('');
+  { const n=whoStaleExtras().length; if(LIVE.me && LIVE.me.sup && n){ tools.insertAdjacentHTML('beforeend', '<button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-whoClean" title="명단에 없고 지금 접속도 아닌 옛 기록(이름을 바꾸거나 지운 계정, 옛 파일로 들어온 사람)을 지웁니다">🧹 옛 기록 '+n+'건 정리</button>'); const cb=tools.querySelector('#mcv-whoClean'); if(cb) cb.onclick=()=>{ if(confirm('명단 밖 옛 기록 '+n+'건을 지울까요? (지금 접속 중인 사람은 지우지 않습니다)')) whoPurgeExtras(); }; } }
   tools.querySelectorAll('[data-whof]').forEach(b=>{ b.onclick=()=>{ LIVE.whoFilter=b.dataset.whof; whoRender(); }; });
   const show=rows.filter(r=>LIVE.whoFilter==='all' || r.st[0]===LIVE.whoFilter);
   if(!show.length){ list.innerHTML='<div class="mcv-note" style="padding:14px 18px">'+(rows.length?'해당하는 사람이 없습니다.':'제작기 「로그인 계정」에 등록된 사람이 없습니다.')+'</div>'; return; }
@@ -4411,7 +4506,7 @@ function whoRender(){
 setInterval(()=>{ if(!LIVECFG || !LIVE.on) return; try{ whoRender(); }catch(e){} try{ liveRender(); }catch(e){} try{ drawPeoplePins(); }catch(e){} }, 20000);
 /* 메뉴 단추의 빨간 숫자 */
 function navBadge(k, n){ const b=document.querySelector('#mcv-nav [data-nav="'+k+'"] .mcv-navBadge'); if(!b) return; b.textContent=n>99?'99+':String(n||''); b.style.display=n?'':'none'; }
-window.MCV_LIVE={state:LIVE, push:PUSH, pushInit, pushSend, emg:emgRender, gate:gateRender, render:liveRender, xl:XL, emgSheets, emgXlsx, purge:pingPurge, toast:liveToast, who:whoRender, whoRows, cps:()=>CPS, call:pingCall, callAck, callTargets, msg:{send:msgSend, render:msgRender, update:msgUpdate, unread:msgUnread, targets:msgTargets, read:msgMarkRead}, snd:SND, sw:SW, notify:notifyShow, handle:pingHandle, note:pingNote, resolve:pingResolve, login:liveLogin, logout:liveLogout, setZone:liveSetZone, acc:()=>ACC, sha:sha256Hex, log:()=>LIVE.log, logRender, logTsv, check:liveSetCheck, render:liveRender, items:liveAllItems, lp:lpShow, nav:navUrl, ping:pingSend, pingForm, navShow, renderWater,
+window.MCV_LIVE={state:LIVE, push:PUSH, pushInit, pushSend, emg:emgRender, gate:gateRender, render:liveRender, xl:XL, emgSheets, emgXlsx, whoStale:whoStaleExtras, whoPurge:whoPurgeExtras, reset:liveResetAll, purge:pingPurge, toast:liveToast, who:whoRender, whoRows, cps:()=>CPS, call:pingCall, callAck, callTargets, msg:{send:msgSend, render:msgRender, update:msgUpdate, unread:msgUnread, targets:msgTargets, read:msgMarkRead}, snd:SND, sw:SW, notify:notifyShow, handle:pingHandle, note:pingNote, resolve:pingResolve, login:liveLogin, logout:liveLogout, setZone:liveSetZone, acc:()=>ACC, sha:sha256Hex, log:()=>LIVE.log, logRender, logTsv, check:liveSetCheck, render:liveRender, items:liveAllItems, lp:lpShow, nav:navUrl, ping:pingSend, pingForm, navShow, renderWater,
   flags:()=>({ADMIN, DEPLOY, ROLE, UNIFIED, hasStaff:!!STAFF, live:!!LIVECFG, acc:ACC.length, tag:(document.getElementById('mcv-hTag')||{}).textContent}), t:{showInfo, closeInfo, staffInfoHtml, poiInfoHtml, myFix:(p)=>myFix(p), posts:()=>STAFF?STAFF.posts:null, pois:()=>C.pois, my:()=>MY}};
 function staffCrew(id){ return STAFF ? (STAFF.crews||[]).find(c=>c.id===id) : null; }
 function staffCrewName(id){ const c=staffCrew(id); return c?c.name:'미지정'; }
