@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>코스도 대회 목록</title>
+<!-- mcv-hub hub-1 — 제작기 「🚀 GitHub로 올리기」가 자동으로 만들고 갱신하는 대회 목록 페이지. events.json 을 읽는다 -->
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--line:#e3e8ec;--txt:#1f2a30;--muted:#607d8b;--blue:#1565c0;--red:#b3261e;--green:#2e7d32}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 -apple-system,"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
+header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;z-index:5}
+header h1{font-size:1.05rem;margin:0}header input{flex:1 1 180px;font:inherit;padding:8px 10px;border:1px solid #cfd8dc;border-radius:8px;min-width:0}
+header small{color:var(--muted)}main{max-width:900px;margin:0 auto;padding:14px 16px 40px}
+.ev{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.ev h2{margin:0;font-size:1.05rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.ev h2 small{font-weight:500;color:var(--muted);font-size:.78rem}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 4px}.c{font-size:.76rem;padding:3px 9px;border-radius:999px;background:#eceff1;color:#455a64;font-weight:700}
+.c.on{background:#e8f5e9;color:var(--green)}.c.emg{background:#fdecea;color:var(--red)}.c.off{background:#eceff1;color:#90a4ae}
+.files{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.f{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:10px;border:1px solid #cfd8dc;background:#fff;color:var(--txt);text-decoration:none;font-weight:700;font-size:.9rem}
+.f.pri{background:var(--blue);color:#fff;border-color:var(--blue)}.f small{font-weight:500;color:inherit;opacity:.75;font-size:.72rem}
+.meta{font-size:.76rem;color:var(--muted);margin-top:6px}.hide{font-size:.74rem;color:#90a4ae;cursor:pointer;margin-left:auto}
+.empty{text-align:center;color:var(--muted);padding:40px 0}.archived .ev{opacity:.55}
+@media (prefers-color-scheme:dark){:root{--bg:#121619;--card:#1b2126;--line:#2a333a;--txt:#e6edf1;--muted:#90a4ae}header{background:#1b2126}.f{background:#232b31;border-color:#2a333a;color:#e6edf1}.c{background:#2a333a;color:#b0bec5}}
+</style></head><body>
+<header><h1>🗺 코스도 대회 목록</h1><input id="q" type="search" placeholder="대회 이름 검색"><small id="st">불러오는 중…</small><label style="font-size:.78rem;color:var(--muted)"><input type="checkbox" id="showAll"> 숨긴 대회 보기</label></header>
+<main id="list"><div class="empty">불러오는 중…</div></main>
+<script>
+const LABEL={'운영용·통합':'🧩 운영용 통합','관리자용':'⭐ 관리자용','참가자용':'🏃 참가자용'};
+const ORDER=['운영용·통합','관리자용','배치용·담당자','배치용·구급차','배치용·급수대','참가자용'];
+let DATA=null, LIVE={};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=t=>{ if(!t) return ''; const d=new Date(+t); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); };
+const hidden=()=>{ try{ return JSON.parse(localStorage.getItem('hub_hidden')||'[]'); }catch(e){ return []; } };
+const setHidden=a=>{ try{ localStorage.setItem('hub_hidden', JSON.stringify(a)); }catch(e){} };
+function fileUrl(n){ return './'+encodeURI(String(n).replace(/\.html?$/i,'')); }
+function render(){
+  const list=document.getElementById('list'); if(!DATA){ list.innerHTML='<div class="empty">목록을 불러오지 못했습니다</div>'; return; }
+  const q=(document.getElementById('q').value||'').trim().toLowerCase(), all=document.getElementById('showAll').checked, hid=hidden();
+  let evs=(DATA.events||[]).slice().sort((a,b)=>(+b.at||0)-(+a.at||0));
+  if(q) evs=evs.filter(e=>String(e.title||'').toLowerCase().includes(q));
+  const shown=evs.filter(e=>all || !hid.includes(e.id));
+  document.getElementById('st').textContent='대회 '+evs.length+'개'+(hid.length&&!all?' · 숨김 '+hid.length:'');
+  if(!shown.length){ list.innerHTML='<div class="empty">'+(evs.length?'숨긴 대회뿐입니다 — 「숨긴 대회 보기」':'아직 올린 대회가 없습니다. 제작기에서 「🚀 GitHub로 올리기」를 하면 여기에 생깁니다.')+'</div>'; return; }
+  list.innerHTML=shown.map(e=>{ const lv=LIVE[e.id]; const isHid=hid.includes(e.id);
+    const files=(e.files||[]).slice().sort((a,b)=>{ const ia=ORDER.indexOf(a.label), ib=ORDER.indexOf(b.label); return (ia<0?99:ia)-(ib<0?99:ib); });
+    let chips='';
+    if(e.live){ if(lv&&lv.err) chips+='<span class="c off">실시간 확인 안 됨</span>'; else if(lv){ chips+='<span class="c '+(lv.online?'on':'off')+'">● 접속 '+lv.online+'명</span>'; if(lv.emg) chips+='<span class="c emg">🚨 응급 '+lv.emg+'건 진행 중</span>'; } else chips+='<span class="c off">실시간 확인 중…</span>'; }
+    else chips+='<span class="c off">실시간 공유 없음</span>';
+    return '<div class="ev'+(isHid?' archived':'')+'" data-id="'+esc(e.id)+'"><h2>'+esc(e.title||'(제목 없음)')+(e.date?' <small>'+esc(e.date)+'</small>':'')+'<span class="hide" data-hide="'+esc(e.id)+'">'+(isHid?'다시 보이기':'숨기기')+'</span></h2>'+
+      '<div class="chips">'+chips+'</div>'+
+      '<div class="files">'+files.map(f=>'<a class="f'+(f.label==='운영용·통합'?' pri':'')+'" href="'+fileUrl(f.name)+'">'+esc(LABEL[f.label]||f.label||f.name)+' <small>'+esc(String(f.name).replace(/\.html?$/i,''))+'</small></a>').join('')+'</div>'+
+      '<div class="meta">마지막 올림 '+fmt(e.at)+(e.ver?' · '+esc(e.ver):'')+'</div></div>'; }).join('');
+  list.querySelectorAll('[data-hide]').forEach(b=>{ b.onclick=()=>{ const id=b.dataset.hide; let h=hidden(); if(h.includes(id)) h=h.filter(x=>x!==id); else h.push(id); setHidden(h); render(); }; });
+}
+/* 실시간: 발행본과 같은 공개 apiKey 로 people·pings 만 읽는다 (규칙: 키 20자 이상이면 읽기 허용) */
+async function liveOne(e){
+  const l=e.live; if(!l||!l.project||!l.apiKey||!l.key) return;
+  const base='https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(l.project)+'/databases/(default)/documents/liveEvents/'+encodeURIComponent(l.key)+'/';
+  const val=v=>{ if(!v) return null; if('integerValue' in v) return +v.integerValue; if('doubleValue' in v) return v.doubleValue; if('booleanValue' in v) return v.booleanValue; if('stringValue' in v) return v.stringValue; return null; };
+  try{
+    const [pr, gr]=await Promise.all([fetch(base+'people?pageSize=300&key='+encodeURIComponent(l.apiKey)), fetch(base+'pings?pageSize=300&key='+encodeURIComponent(l.apiKey))]);
+    if(!pr.ok||!gr.ok) throw new Error('http');
+    const pj=await pr.json(), gj=await gr.json(); const now=Date.now();
+    const seen=new Map(); (pj.documents||[]).forEach(d=>{ const f=d.fields||{}; const name=val(f.name), role=val(f.role)||'', at=+val(f.at)||0, gone=+val(f.gone)||0, out=+val(f.out)||0; if(!name) return; const k=name+'|'+role; const cur=seen.get(k); if(!cur||at>cur.at) seen.set(k,{at,gone,out}); });
+    let online=0; seen.forEach(p=>{ if(p.gone>p.at||p.out>=p.at) return; if(now-p.at<90000) online++; });
+    const emg=(gj.documents||[]).filter(d=>{ const f=d.fields||{}; return val(f.active)!==false; }).length;
+    LIVE[e.id]={online, emg};
+  }catch(err){ LIVE[e.id]={err:true}; }
+}
+async function load(){
+  try{ const r=await fetch('./events.json?t='+Date.now(), {cache:'no-store'}); if(!r.ok) throw new Error(r.status); DATA=await r.json(); }
+  catch(e){ DATA=null; }
+  render();
+  if(DATA){ await Promise.all((DATA.events||[]).filter(e=>e.live).map(liveOne)); render(); }
+}
+document.getElementById('q').oninput=render; document.getElementById('showAll').onchange=render;
+load(); setInterval(load, 60000);
+</script>
+</body></html>

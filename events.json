@@ -1,0 +1,23 @@
+{
+ "v": 1,
+ "events": [
+  {
+   "id": "evjbcwrrsy4e",
+   "title": "상암위드런",
+   "files": [
+    {
+     "name": "runwithgo-admin.html",
+     "label": "운영용·통합",
+     "at": 1792478150877
+    }
+   ],
+   "at": 1792478150877,
+   "ver": "빌드 2026-10-20 · 26.24",
+   "live": {
+    "project": "course-2baf5",
+    "apiKey": "AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI",
+    "key": "evjbcwrrsy4eseta88d4m39r8hpm"
+   }
+  }
+ ]
+}
