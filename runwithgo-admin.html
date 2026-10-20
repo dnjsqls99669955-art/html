@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>상암위드런 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-20 · 26.29&quot;,&quot;at&quot;:1792485230315,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-20 · 26.31&quot;,&quot;at&quot;:1792488551285,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
 
 </head>
 <body style="margin:0;background:#f4f5f2">
@@ -640,6 +640,7 @@
 @media (max-width:640px){ #mcv-root .mcv-gate{align-items:flex-start;padding-top:max(24px,8vh);backdrop-filter:none;} }   /* 키보드가 올라와도 상자가 위아래로 튀지 않게 */
 #mcv-root .mcv-gateBox{background:#fff;border-radius:16px;padding:22px 20px;width:min(92vw,380px);box-shadow:0 16px 48px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:10px;}
 #mcv-root .mcv-bannerTxt{margin-top:5px;padding:6px 9px;border-radius:7px;background:#f3e5f5;color:#4a148c;font-size:.84rem;line-height:1.45;white-space:pre-wrap;}
+#mcv-root .mcv-gpType{display:flex;gap:6px;} #mcv-root .mcv-gpType button{flex:1;font:inherit;font-size:.9rem;font-weight:700;padding:10px;border-radius:10px;border:1px solid #cfd8dc;background:#fff;color:#455a64;cursor:pointer;} #mcv-root .mcv-gpType button.mcv-on{background:#fff3e0;color:#e65100;border-color:#ffb74d;}
 #mcv-root .mcv-gateOr{display:flex;align-items:center;gap:10px;color:#90a4ae;font-size:.78rem;margin:2px 0;} #mcv-root .mcv-gateOr:before,#mcv-root .mcv-gateOr:after{content:'';flex:1;border-top:1px solid #e0e6ea;}
 #mcv-root .mcv-gateBox h2{margin:0;font-size:1.1rem;padding:0;border:0;} #mcv-root .mcv-gateBox p{margin:0;font-size:.82rem;color:#607d8b;line-height:1.5;}
 #mcv-root .mcv-gateBox input{font:inherit;font-size:1rem;padding:12px 12px;border:1px solid #cfd8dc;border-radius:10px;width:100%;box-sizing:border-box;}
@@ -1198,7 +1199,7 @@ function roleApply(){
   ADMIN=(r==='admin'); ROLE=ADMIN?null:r;
   STAFF=((ADMIN||ROLE==='lead') && DATA.staff && typeof DATA.staff==='object')?DATA.staff:null;
   staffUI.on=!!(STAFF && STAFF.show!==false);
-  const label=!r?'운영용 · 로그인하세요':(ADMIN?(LIVE.me.sup?'총관리자':'관리자'):ROLE==='amb'?'구급차':ROLE==='cp'?'CP 담당':ROLE==='water'?'급수대':ROLE==='patrol'?'레이스패트롤':'담당자');
+  const label=!r?'운영용 · 로그인하세요':(ADMIN?(LIVE.me.sup?'총관리자':'관리자'):ROLE==='amb'?'구급차':ROLE==='cp'?'CP 담당':ROLE==='water'?'급수대':ROLE==='patrol'?(LIVE.me.ptype==='pacer'?'페이스메이커':'레이스패트롤'):'담당자');
   const tag=document.getElementById('mcv-hTag'); if(tag){ tag.textContent=label; tag.style.display='inline-block'; }
   if(!DATA.embed) document.title=DATA.title+' ('+label+')';
   try{ pwaManifestApply(); }catch(e){}
@@ -3189,7 +3190,7 @@ function liveDone(id){ const c=LIVE.checks[id]; return !!(c && c.done); }
 function liveCanAct(id){ const it=liveItem(id); if(!LIVECFG || !it || !LIVE.me) return false; if(liveRoleOf(id)==='water') return false;   /* 급수대는 완료 표시가 없다 */
   if(LIVE.me.sup) return true;                                                                                   /* 총관리자는 전부 */
   return liveRoleOf(id)===LIVE.me.role && !!LIVE.me.zone && (it.zone||null)===LIVE.me.zone; }                   /* 담당자·구급차는 자기 구역만. 관리자(체크 안 함)는 보기만 */
-function liveRoleLabel(me){ return me.sup?'총관리자':(me.role==='admin'?'관리자':me.role==='amb'?('구급차'+(me.car?' '+me.car+'호차':'')):me.role==='cp'?'CP 담당':me.role==='water'?'급수대':me.role==='patrol'?('레이스패트롤'+(me.pno?' '+me.pno:'')):'담당자'); }
+function liveRoleLabel(me){ return me.sup?'총관리자':(me.role==='admin'?'관리자':me.role==='amb'?('구급차'+(me.car?' '+me.car+'호차':'')):me.role==='cp'?'CP 담당':me.role==='water'?'급수대':me.role==='patrol'?(me.ptype==='pacer'?'페이스메이커':'레이스패트롤'):'담당자'); }
 function liveZonesForMe(){ if(!LIVE.me || LIVE.me.role==='admin' || LIVE.me.role==='cp' || LIVE.me.role==='patrol') return []; return liveZones(LIVE.me.role); }
 function navUrl(name, lat, lon){ return 'https://map.kakao.com/link/to/'+encodeURIComponent(name||'목적지')+','+(+lat).toFixed(6)+','+(+lon).toFixed(6); }
 function mapUrl(name, lat, lon){ return 'https://map.kakao.com/link/map/'+encodeURIComponent(name||'지점')+','+(+lat).toFixed(6)+','+(+lon).toFixed(6); }
@@ -3266,14 +3267,14 @@ function liveLogin(name, pin){
 }
 /* 🏍 레이스패트롤 로그인 — 이름 + 패트롤 번호 + 공용 번호. 계정 명단과 무관하고, 위치 공유 켬 + 응급 신고만 한다 */
 function livePatrolCheck(pin){ pin=String(pin==null?'':pin).replace(/\D/g,''); return !!PATROL && /^\d{4}$/.test(pin) && sha256Hex(LIVECFG.key+'|patrol|'+pin)===PATROL.h; }
-function livePatrolLogin(name, pno, pin){
-  name=accNorm(name); pin=String(pin==null?'':pin).replace(/\D/g,''); pno=parseInt(pno,10)||0;
-  if(!PATROL){ loginErr('이 파일에는 패트롤 공용 번호가 없습니다 — 제작기 「로그인 계정」에서 정하고 다시 내보내 주세요'); return false; }
+function livePatrolLogin(name, pin, ptype){
+  name=accNorm(name); pin=String(pin==null?'':pin).replace(/\D/g,''); ptype=(ptype==='pacer')?'pacer':'patrol';
+  if(!PATROL){ loginErr('이 파일에는 패트롤·페이스메이커 번호가 없습니다 — 제작기 「로그인 계정」에서 정하고 다시 내보내 주세요'); return false; }
   if(!name){ loginErr('이름을 넣어 주세요'); return false; }
-  if(!/^\d{4}$/.test(pin)){ loginErr('공용 번호 4자리를 넣어 주세요'); return false; }
-  if(sha256Hex(LIVECFG.key+'|patrol|'+pin)!==PATROL.h){ loginErr('공용 번호가 다릅니다 — 운영본부에서 받은 패트롤 번호 4자리를 확인해 주세요'); return false; }
+  if(!/^\d{4}$/.test(pin)){ loginErr('번호 4자리를 넣어 주세요'); return false; }
+  if(sha256Hex(LIVECFG.key+'|patrol|'+pin)!==PATROL.h){ loginErr('번호가 다릅니다 — 운영본부에서 받은 번호 4자리를 확인해 주세요'); return false; }
   loginErr('');
-  const me=LIVE.me||{uid:liveUid()}; me.name=name; me.h=PATROL.h; me.role='patrol'; me.sup=false; me.cp=''; me.cpId=''; me.car=0; me.pno=pno; me.zone=null; me.share=true; LIVE.share=true;
+  const me=LIVE.me||{uid:liveUid()}; me.name=name; me.h=PATROL.h; me.role='patrol'; me.ptype=ptype; me.sup=false; me.cp=''; me.cpId=''; me.car=0; me.pno=0; me.zone=null; me.share=true; LIVE.share=true;
   LIVE.me=me; liveSaveMe(me); roleApply(); liveHello(); liveRender(); liveRefreshCard(); liveSyncPins();
   liveLog('login'); logSub(); navRefresh(); try{ pingUpdate(); }catch(e){} try{ msgUpdate(); }catch(e){}
   if(MY.watch===null && typeof myStart==='function'){ try{ myStart(); }catch(e){} }
@@ -3486,14 +3487,12 @@ function gateRender(){
       '<div class="mcv-lvErr" id="mcv-gErr" style="display:none"></div>'+
       '<button type="button" class="mcv-lvBtn mcv-pri" id="mcv-gGo">로그인</button>'
      :'<p style="color:#b3261e">이 파일에는 로그인 계정이 없습니다 — 제작기 「👤 로그인 계정」에서 이름과 번호 4자리를 정하고 다시 내보내 주세요.</p>')+
-    (PATROL?'<div class="mcv-gateOr"><span>또는</span></div><button type="button" class="mcv-lvBtn" id="mcv-gPatrol" style="justify-content:center;padding:12px;font-size:1rem;background:#fff3e0;color:#e65100;border:1px solid #ffcc80">🏍 레이스패트롤 로그인</button>'+
+    (PATROL?'<div class="mcv-gateOr"><span>또는</span></div><button type="button" class="mcv-lvBtn" id="mcv-gPatrol" style="justify-content:center;padding:12px;font-size:1rem;background:#fff3e0;color:#e65100;border:1px solid #ffcc80">🏍 레이스패트롤 / 🏃 페이스메이커 로그인</button>'+
       '<div id="mcv-gPatrolBox" style="display:none;flex-direction:column;gap:10px;margin-top:4px">'+
-        '<div id="mcv-gpStep1"><p>운영본부에서 받은 <b>패트롤 번호 4자리</b>를 넣고 들어온 뒤 이름을 적습니다.</p>'+
-          '<input type="password" id="mcv-gpPin" placeholder="패트롤 번호 4자리" inputmode="numeric" maxlength="4" autocomplete="off" style="text-align:center;letter-spacing:.3em;width:100%;box-sizing:border-box">'+
-          '<div class="mcv-lvErr" id="mcv-gpErr" style="display:none"></div><button type="button" class="mcv-lvBtn mcv-pri" id="mcv-gpGo" style="background:#e65100;width:100%;justify-content:center;margin-top:10px">들어가기</button></div>'+
-        '<div id="mcv-gpStep2" style="display:none;flex-direction:column;gap:10px"><p>✅ 번호 확인 — <b>이름</b>을 적어 주세요. 총괄 화면에 이 이름으로 보입니다.</p>'+
-          '<input type="text" id="mcv-gpName" placeholder="이름" maxlength="20" autocomplete="name"><input type="number" id="mcv-gpNo" placeholder="패트롤 순번 (선택, 예: 3)" min="0" max="99" inputmode="numeric">'+
-          '<div class="mcv-lvErr" id="mcv-gpErr2" style="display:none"></div><button type="button" class="mcv-lvBtn mcv-pri" id="mcv-gpStart" style="background:#e65100;justify-content:center">🏍 패트롤 시작</button></div></div>':'')+'</div>';
+        '<p>코스를 도는 분들 — <b>이름</b>과 운영본부에서 받은 <b>번호 4자리</b>를 넣으면 바로 들어갑니다. 위치 공유가 켜지고 「🚨 응급 신고」만 합니다.</p>'+
+        '<div class="mcv-gpType" id="mcv-gpType"><button type="button" data-t="patrol" class="mcv-on">🏍 레이스패트롤</button><button type="button" data-t="pacer">🏃 페이스메이커</button></div>'+
+        '<input type="text" id="mcv-gpName" placeholder="이름" maxlength="20" autocomplete="name"><input type="password" id="mcv-gpPin" placeholder="번호 4자리" inputmode="numeric" maxlength="4" autocomplete="off" style="text-align:center;letter-spacing:.3em">'+
+        '<div class="mcv-lvErr" id="mcv-gpErr" style="display:none"></div><button type="button" class="mcv-lvBtn mcv-pri" id="mcv-gpGo" style="background:#e65100;justify-content:center">들어가기</button></div>':'')+'</div>';
   const go=()=>{ const nm=g.querySelector('#mcv-gName').value.trim(), pin=g.querySelector('#mcv-gPin').value.trim(); const e=g.querySelector('#mcv-gErr');
     const show=t=>{ e.textContent=t; e.style.display=''; };
     if(!nm){ show('이름을 넣어 주세요'); g.querySelector('#mcv-gName').focus(); return; }
@@ -3501,16 +3500,13 @@ function gateRender(){
     if(!liveLogin(nm, pin)){ const le=document.getElementById('mcv-lvErr'); show(le&&le.textContent?le.textContent:'등록되지 않은 이름이거나 번호가 다릅니다'); g.querySelector('#mcv-gPin').value=''; g.querySelector('#mcv-gPin').focus(); } };
   const gb=g.querySelector('#mcv-gGo'); if(gb){ gb.onclick=go; g.querySelector('#mcv-gName').onkeydown=ev=>{ if(ev.key==='Enter') g.querySelector('#mcv-gPin').focus(); }; g.querySelector('#mcv-gPin').onkeydown=ev=>{ if(ev.key==='Enter') go(); };
   const pbtn=g.querySelector('#mcv-gPatrol'); if(pbtn){ const box=g.querySelector('#mcv-gPatrolBox');
-    pbtn.onclick=()=>{ const open=box.style.display==='none'; box.style.display=open?'flex':'none'; if(open) setTimeout(()=>{ const n=g.querySelector('#mcv-gpName'); if(n && !(('ontouchstart' in window) && navigator.maxTouchPoints>0)) n.focus(); }, 60); };
-    /* 1단계: 번호 확인 → 2단계: 이름 */
-    const step1=()=>{ const e=g.querySelector('#mcv-gpErr'); const pin=String(g.querySelector('#mcv-gpPin').value||'').replace(/\D/g,'');
-      if(!livePatrolCheck(pin)){ e.textContent=/^\d{4}$/.test(pin)?'번호가 다릅니다 — 운영본부에서 받은 패트롤 번호 4자리를 확인해 주세요':'번호 4자리를 넣어 주세요'; e.style.display=''; g.querySelector('#mcv-gpPin').value=''; return; }
-      e.style.display='none'; g.querySelector('#mcv-gpStep1').style.display='none'; g.querySelector('#mcv-gpStep2').style.display='flex'; g.dataset.gpPin=pin;
-      if(!(('ontouchstart' in window) && navigator.maxTouchPoints>0)) setTimeout(()=>{ const n=g.querySelector('#mcv-gpName'); if(n) n.focus(); }, 60); };
-    const step2=()=>{ const e=g.querySelector('#mcv-gpErr2'); const ok=livePatrolLogin(g.querySelector('#mcv-gpName').value, g.querySelector('#mcv-gpNo').value, g.dataset.gpPin||'');
-      if(!ok){ const le=document.getElementById('mcv-lvErr'); e.textContent=le&&le.textContent?le.textContent:'이름을 적어 주세요'; e.style.display=''; } };
-    g.querySelector('#mcv-gpGo').onclick=step1; g.querySelector('#mcv-gpPin').onkeydown=ev=>{ if(ev.key==='Enter') step1(); };
-    g.querySelector('#mcv-gpStart').onclick=step2; g.querySelector('#mcv-gpName').onkeydown=ev=>{ if(ev.key==='Enter') step2(); }; g.querySelector('#mcv-gpNo').onkeydown=ev=>{ if(ev.key==='Enter') step2(); }; }
+    pbtn.onclick=()=>{ const open=box.style.display==='none'; box.style.display=open?'flex':'none'; if(open && !(('ontouchstart' in window) && navigator.maxTouchPoints>0)) setTimeout(()=>{ const n=g.querySelector('#mcv-gpName'); if(n) n.focus(); }, 60); };
+    const typ=g.querySelector('#mcv-gpType'); typ.querySelectorAll('button').forEach(b=>b.onclick=()=>typ.querySelectorAll('button').forEach(x=>x.classList.toggle('mcv-on', x===b)));
+    /* 한 번에: 이름 + 번호 */
+    const pgo=()=>{ const e=g.querySelector('#mcv-gpErr'); const t=(typ.querySelector('button.mcv-on')||{}).dataset.t||'patrol';
+      const ok=livePatrolLogin(g.querySelector('#mcv-gpName').value, g.querySelector('#mcv-gpPin').value, t);
+      if(!ok){ const le=document.getElementById('mcv-lvErr'); e.textContent=le&&le.textContent?le.textContent:'이름과 번호를 확인해 주세요'; e.style.display=''; if(/번호/.test(e.textContent)) g.querySelector('#mcv-gpPin').value=''; } };
+    g.querySelector('#mcv-gpGo').onclick=pgo; g.querySelector('#mcv-gpName').onkeydown=ev=>{ if(ev.key==='Enter') g.querySelector('#mcv-gpPin').focus(); }; g.querySelector('#mcv-gpPin').onkeydown=ev=>{ if(ev.key==='Enter') pgo(); }; }
     /* 처음 한 번만, 그리고 키보드가 화면을 가리는 터치 기기에선 사용자가 칸을 누를 때까지 기다린다 */
     if(!(('ontouchstart' in window) && navigator.maxTouchPoints>0)) setTimeout(()=>{ const n=g.querySelector('#mcv-gName'); if(n && document.activeElement!==g.querySelector('#mcv-gPin')) n.focus(); }, 200); }
 }
@@ -3645,7 +3641,7 @@ function liveLogout(){
 }
 function liveHello(){
   if(!LIVE.me || !LIVE.root) return;
-  const me=LIVE.me, doc={name:me.name, zone:me.zone||null, role:me.role||ROLE||'admin', sup:!!me.sup, cp:me.cp||'', cpId:me.cpId||'', car:+me.car||0, pno:+me.pno||0, at:Date.now(), share:!!LIVE.share, gone:0, out:0};
+  const me=LIVE.me, doc={name:me.name, zone:me.zone||null, role:me.role||ROLE||'admin', sup:!!me.sup, cp:me.cp||'', cpId:me.cpId||'', car:+me.car||0, pno:+me.pno||0, ptype:me.ptype||'', at:Date.now(), share:!!LIVE.share, gone:0, out:0};
   if(LIVE.lastLL && LIVE.share){ doc.lat=LIVE.lastLL[0]; doc.lon=LIVE.lastLL[1]; }
   LIVE.root.collection('people').doc(me.uid).set(doc,{merge:true}).catch(e=>{ LIVE.err=liveErrText(e); liveRender(); });
   if(LIVE.hb) clearInterval(LIVE.hb);
@@ -3711,7 +3707,7 @@ function liveOv(ll, html, z, onClick){
   ov.setMap(kmap); return {rm:()=>ov.setMap(null), el:node};
 }
 function liveZoneColor(p){ if(p.role==='cp') return '#5e35b1'; if(p.role==='patrol') return '#ef6c00'; const z=liveZone(p.role==='amb'?'amb':p.role==='water'?'water':'lead', p.zone); return z?z.color:(p.role==='admin'?'#263238':'#607d8b'); }
-function liveZoneName(p){ let n; if(p.role==='admin') n=p.sup?'총관리자':'관리자'; else if(p.role==='patrol') n='🏍 패트롤'+(p.pno?' '+p.pno:''); else if(p.role==='cp') n='CP 담당'+(p.sup?' · 총관리자':''); else { const z=liveZone(p.role==='amb'?'amb':p.role==='water'?'water':'lead', p.zone); n=(p.role==='amb'&&p.car?p.car+'호차'+(z?' · '+z.name:''):(z?z.name:'구역 미지정'))+(p.sup?' · 총관리자':''); }
+function liveZoneName(p){ let n; if(p.role==='admin') n=p.sup?'총관리자':'관리자'; else if(p.role==='patrol') n=(p.ptype==='pacer'?'🏃 페이스메이커':'🏍 패트롤'); else if(p.role==='cp') n='CP 담당'+(p.sup?' · 총관리자':''); else { const z=liveZone(p.role==='amb'?'amb':p.role==='water'?'water':'lead', p.zone); n=(p.role==='amb'&&p.car?p.car+'호차'+(z?' · '+z.name:''):(z?z.name:'구역 미지정'))+(p.sup?' · 총관리자':''); }
   if(p.cp) n+=' · '+p.cp; return n; }
 function drawPeoplePins(){
   LIVE.pins.forEach(h=>{ try{ h.rm(); }catch(e){} }); LIVE.pins=[];
@@ -3752,7 +3748,7 @@ function guideShow(force){
     lead:[['내 구역 확인','아래 「배치 현황」에서 파란 테두리 상자가 내 구역('+(zn||'')+')입니다. 내가 맡은 자리들이 번호 순으로 있습니다.'],['자리에 도착하면 「✅ 배치 완료」','그 자리 줄의 초록 단추를 누르면 총괄 화면에 바로 표시됩니다. 잘못 눌렀으면 「완료 해제」.'],['사고가 나면 「🚨 응급 신고」','위 빨간 단추를 누르고 장소를 고르면 총괄·구급차·다른 담당자 전원에게 알림이 갑니다. 지도를 길게 눌러도 됩니다.']],
     amb:[['내 대기 지점 확인','아래 「배치 현황」의 파란 상자가 내 구급차 자리입니다. 도착하면 「✅ 배치 완료」.'],['출동 요청이 오면 「✅ 출동 확인」','보라색 띠로 "나에게 출동 요청"이 뜹니다. 확인을 누르면 총괄에게 출동 중으로 표시되고, 「🧭 길찾기」로 바로 갑니다.'],['도착해서 처리하면 「🚑 내가 처리」→「상황 종료」','응급 현황 메뉴에서 처리 내용을 적어 두면 기록에 남습니다.']],
     cp:[['구급차 배치 현황 보기','아래에서 각 구급차가 자리에 있는지(완료/미완료)와 접속 상태를 봅니다.'],['사고가 나면 「🚨 응급 신고」 → 「가까운 구급차 출동」','신고 뒤 알림 띠에서 가장 가까운 구급차에게 출동 요청을 보낼 수 있습니다.'],['메시지로 지시','아래 「메시지」 메뉴에서 구급차 전체 또는 개별 구급차에게 보냅니다.']],
-    patrol:[['위치 공유 켜 두기','로그인하면 내 위치가 총괄 화면에 🏍 로 보입니다. 홈 화면 앱 + 「🔆 화면 켜짐」을 켜 두면 달리는 동안 끊기지 않습니다.'],['사고를 보면 「🚨 응급 신고」','내 현재 위치로 바로 신고됩니다. 상황을 한 줄 적으면 총괄·구급차에게 그대로 전달됩니다.'],['응급 현황','구급차가 출동했는지, 처리됐는지 「응급 현황」에서 봅니다.']],
+    patrol:[['위치 공유 켜 두기','로그인하면 내 위치가 총괄 화면에 보입니다. 홈 화면 앱 + 「🔆 화면 켜짐」을 켜 두면 달리는 동안 끊기지 않습니다.'],['사고를 보면 「🚨 응급 신고」','내 현재 위치로 바로 신고됩니다. 상황을 한 줄 적으면 총괄·구급차에게 그대로 전달됩니다.'],['응급 현황','구급차가 출동했는지, 처리됐는지 「응급 현황」에서 봅니다.']],
     water:[['급수대 목록','아래 「급수대」 메뉴에 내 급수대 위치·물자가 있습니다.'],['위치 공유','로그인해 두면 총괄 화면에 내 위치가 보이고, 응급 알림도 받습니다.'],['메시지','총괄에게 보낼 말은 「메시지」 메뉴에서.']],
     admin:[['배치 현황','모든 구역의 완료/미완료와 접속한 사람을 한눈에. 사람 이름을 누르면 지도에서 위치가 보입니다.'],['응급 신고가 오면','빨간 띠가 뜨고 소리가 납니다. 「구급차 출동」으로 가까운 구급차를 보내고, 「응급 현황」 메뉴에서 처리 상태를 봅니다.'],['메시지·접속 현황','「메시지」로 전체·역할·개인에게 보내고, 「접속 현황」에서 누가 들어와 있는지 봅니다.']],
     sup:[['배치 현황 — 총관리자는 전부 켜고 끌 수 있음','모든 구역의 완료/미완료, 접속한 사람, 사람 위치를 한눈에.'],['응급 신고가 오면','빨간 띠 + 소리. 「구급차 출동」으로 가까운 구급차를 보내고, 「응급 현황」에서 처리 상태·기록을 봅니다. 끝난 건 「전부 지우기」.'],['메시지 · 접속 현황 · 로그','전체·역할·구역·개인에게 메시지, 누가 들어와 있는지, 누가 언제 무엇을 했는지(로그, CSV 저장).']]
@@ -3823,7 +3819,7 @@ function liveRender(){
   let h='';
   if(ROLE==='cp'){ const myCp=LIVE.me&&LIVE.me.cp?LIVE.me.cp:''; const ambs=livePeople().filter(p=>p.role==='amb'); h+='<div class="mcv-lvZone" style="border-bottom:none;padding-bottom:4px"><h3>📌 '+esc(myCp||'CP 담당')+' <small>— 구급차 배치 현황 · 접속 중인 구급차 '+ambs.filter(p=>now-(+p.at||0)<LIVE_STALE).length+'대'+(ambs.length?' ('+esc(ambs.map(p=>(p.car?p.car+'호차 ':'')+p.name).join(', '))+')':'')+' · 배치 완료는 구급차가 직접 누릅니다. 응급이 뜨면 「응급 현황」에서 가까운 구급차를 호출하세요.</small></h3></div>'; }
   if(ROLE==='patrol'){ const me=LIVE.me||{}; const shareOn=!!LIVE.share, fix=MY&&MY.last; let where=''; try{ const n=(fix&&typeof vNearKm==='function')?vNearKm(fix[0],fix[1]):null; if(n&&n.d<80) where=(C.name||'코스')+' '+n.km.toFixed(2)+' km 지점'; else if(n) where='코스에서 '+Math.round(n.d)+' m'; }catch(e){}
-    bd.innerHTML='<div class="mcv-lvZone"><h3>🏍 레이스패트롤'+(me.pno?' '+me.pno:'')+' <small>— 내 위치가 총괄 화면에 보이고, 사고를 보면 아래 「🚨 응급 신고」로 바로 알립니다.</small></h3>'+
+    bd.innerHTML='<div class="mcv-lvZone"><h3>'+(me.ptype==='pacer'?'🏃 페이스메이커':'🏍 레이스패트롤')+' <small>— 내 위치가 총괄 화면에 보이고, 사고를 보면 아래 「🚨 응급 신고」로 바로 알립니다.</small></h3>'+
       '<div class="mcv-chips" style="margin:8px 0">'+(shareOn?(fix?'<span class="mcv-c mcv-loc-on">📍 위치 켬 · '+esc(where||'위치 잡음')+'</span>':'<span class="mcv-c mcv-loc-none">📍 위치 찾는 중 — 하늘이 보이는 곳에서 잠시</span>'):'<span class="mcv-c mcv-loc-off">📍 위치 공유 꺼짐 — 위의 「내 위치 공유」를 켜 주세요</span>')+'</div>'+
       '<button type="button" class="mcv-lvBtn mcv-ping mcv-big" id="mcv-patrolPing" style="width:100%;justify-content:center;font-size:1.05rem;padding:14px">🚨 내 위치로 응급 신고</button>'+
       '<button type="button" class="mcv-lvBtn mcv-big" id="mcv-patrolPick" style="width:100%;justify-content:center;font-size:1rem;padding:12px;margin-top:8px">📍 지도에서 자리 찍어 신고</button>'+
@@ -4493,11 +4489,11 @@ function whoRender(){
   const show=rows.filter(r=>LIVE.whoFilter==='all' || r.st[0]===LIVE.whoFilter);
   if(!show.length){ list.innerHTML='<div class="mcv-note" style="padding:14px 18px">'+(rows.length?'해당하는 사람이 없습니다.':'제작기 「로그인 계정」에 등록된 사람이 없습니다.')+'</div>'; return; }
   const order={admin:0, lead:1, amb:2, cp:3, water:4, patrol:5};
-  const groups=[['admin','⭐ 관리자'],['lead','📍 담당자'],['amb','🚑 구급차'],['cp','📌 CP 담당'],['water','💧 급수대'],['patrol','🏍 레이스패트롤']];
+  const groups=[['admin','⭐ 관리자'],['lead','📍 담당자'],['amb','🚑 구급차'],['cp','📌 CP 담당'],['water','💧 급수대'],['patrol','🏍 레이스패트롤 · 🏃 페이스메이커']];
   let h='';
   groups.forEach(([r,label])=>{ const rs=show.filter(x=>x.r===r); if(!rs.length) return;
     h+='<div class="mcv-lvZone" style="padding:8px 18px 2px;border-bottom:none"><h3>'+label+' <small>'+rs.filter(x=>x.st[0]==='on').length+' / '+rs.length+' 접속</small></h3></div>';
-    rs.forEach(x=>{ const tag=x.s?'총관리자':(x.r==='amb'&&x.car?x.car+'호차':''); const sub=[x.zn||'', x.cp||''].filter(Boolean).join(' · ');
+    rs.forEach(x=>{ const tag=x.s?'총관리자':(x.r==='amb'&&x.car?x.car+'호차':(x.r==='patrol'?(x.p&&x.p.ptype==='pacer'?'페이스메이커':'패트롤'):'')); const sub=[x.zn||'', x.cp||''].filter(Boolean).join(' · ');
       h+='<div class="mcv-whoRow mcv-w-'+x.st[0]+'"'+(x.p&&x.p.lat!=null&&x.st[0]!=='out'&&x.st[0]!=='never'?' data-who-map="'+esc(x.p.uid)+'" style="cursor:pointer" title="지도에서 보기"':'')+'><span class="mcv-lvAvatar" style="background:'+(x.p?liveZoneColor(x.p):'#b0bec5')+'">'+esc(String(x.n).charAt(0))+'</span>'+
         '<span class="mcv-whoT"><b>'+esc(x.n)+'</b>'+(tag?' <span class="mcv-c mcv-c-sub">'+esc(tag)+'</span>':'')+(x.extra?' <span class="mcv-c mcv-c-sub">명단 밖</span>':'')+(sub?'<small>'+esc(sub)+'</small>':'')+'</span>'+
         '<span class="mcv-whoSt">'+esc(x.st[1])+'</span>'+(x.st[0]==='on'||x.st[0]==='away'?(l=>'<span class="mcv-c mcv-loc-'+l[0]+'">'+esc(l[1])+'</span>')(locState(x.p)):'')+'<span class="mcv-c mcv-c-sub">'+esc(x.st[2]||'')+'</span></div>'; });
