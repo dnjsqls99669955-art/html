@@ -3498,7 +3498,7 @@ function logSub(){
   LIVE.logUnsub=LIVE.root.collection('log').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.log=o; logRender(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); });
 }
 function logUnsubAll(){ if(LIVE.logUnsub){ try{ LIVE.logUnsub(); }catch(e){} LIVE.logUnsub=null; } LIVE.log={}; }
-const LOG_T={check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
+const LOG_T={check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
 function logWho(e){ let w=e.by||''; const tag=e.sup?'총관리자':(e.role==='admin'?'관리자':e.role==='amb'?('구급차'+(e.car?' '+e.car+'호차':'')):e.role==='cp'?'CP 담당':e.role==='water'?'급수대':'담당자'); w+=' ('+tag+(e.myZoneName?' · '+e.myZoneName:'')+(e.cp?' · '+e.cp:'')+')'; return w; }
 function logText(e){
   switch(e.t){
@@ -3759,9 +3759,11 @@ function liveRender(){
   if(ROLE==='patrol'){ const me=LIVE.me||{}; const shareOn=!!LIVE.share, fix=MY&&MY.last; let where=''; try{ const n=(fix&&typeof vNearKm==='function')?vNearKm(fix[0],fix[1]):null; if(n&&n.d<80) where=(C.name||'코스')+' '+n.km.toFixed(2)+' km 지점'; else if(n) where='코스에서 '+Math.round(n.d)+' m'; }catch(e){}
     bd.innerHTML='<div class="mcv-lvZone"><h3>🏍 레이스패트롤'+(me.pno?' '+me.pno:'')+' <small>— 내 위치가 총괄 화면에 보이고, 사고를 보면 아래 「🚨 응급 신고」로 바로 알립니다.</small></h3>'+
       '<div class="mcv-chips" style="margin:8px 0">'+(shareOn?(fix?'<span class="mcv-c mcv-loc-on">📍 위치 켬 · '+esc(where||'위치 잡음')+'</span>':'<span class="mcv-c mcv-loc-none">📍 위치 찾는 중 — 하늘이 보이는 곳에서 잠시</span>'):'<span class="mcv-c mcv-loc-off">📍 위치 공유 꺼짐 — 위의 「내 위치 공유」를 켜 주세요</span>')+'</div>'+
-      '<button type="button" class="mcv-lvBtn mcv-ping mcv-big" id="mcv-patrolPing" style="width:100%;justify-content:center;font-size:1.05rem;padding:14px">🚨 응급 신고 (내 위치로)</button>'+
-      '<div class="mcv-note" style="padding:8px 0 0">신고하면 총괄·구급차·담당자 전원에게 알림이 가고, 구급차가 출동하면 「응급 현황」에서 진행을 볼 수 있습니다. 홈 화면 앱 + 화면 켜짐을 켜 두면 위치가 끊기지 않습니다.</div></div>';
+      '<button type="button" class="mcv-lvBtn mcv-ping mcv-big" id="mcv-patrolPing" style="width:100%;justify-content:center;font-size:1.05rem;padding:14px">🚨 내 위치로 응급 신고</button>'+
+      '<button type="button" class="mcv-lvBtn mcv-big" id="mcv-patrolPick" style="width:100%;justify-content:center;font-size:1rem;padding:12px;margin-top:8px">📍 지도에서 자리 찍어 신고</button>'+
+      '<div class="mcv-note" style="padding:8px 0 0">내가 있는 자리면 빨간 단추, 떨어진 곳이면 지도를 <b>1초 길게 눌러</b> 그 자리에서 「여기서 응급 신고」. 신고는 총괄·구급차·담당자 전원에게 바로 갑니다. 홈 화면 앱 + 화면 켜짐을 켜 두면 위치가 끊기지 않습니다.</div></div>';
     const pb=bd.querySelector('#mcv-patrolPing'); if(pb) pb.onclick=()=>pingForm(null);
+    const pk=bd.querySelector('#mcv-patrolPick'); if(pk) pk.onclick=()=>{ const m=document.getElementById('mcv-map'); if(m) m.scrollIntoView({behavior:'smooth', block:'center'}); try{ myTip('👆 지도를 1초 길게 누르면 그 자리에서 신고할 수 있습니다', 4000); }catch(e){} };
     nt.textContent=''; return; }
   if(ROLE==='water'){ bd.innerHTML='<div class="mcv-lvZone"><h3>💧 급수대 기사님 <small>— 로그인하면 내 위치가 총괄에게 보이고, 응급 알림을 받습니다. 급수대 목록은 아래 메뉴 「급수대」에 있습니다.</small></h3></div>'; nt.textContent=LIVECFG?'':'이 파일은 실시간 공유 없이 내보냈습니다.'; return; }
   const allItems=roles.reduce((a,r)=>a.concat(liveItems(r)),[]);
@@ -4003,7 +4005,9 @@ function pingForm(at){
   const groups=pingZoneOptions();
   f.style.display='flex';
   f.innerHTML='<b style="color:#b3261e">🚨 응급 신고</b> <small style="color:#607d8b;font-weight:400">— 보내면 총괄·구급차·담당자 전원에게 바로 알림이 갑니다</small>'+
-    (at?'<span class="mcv-c mcv-c-sub">📍 지도 지점 '+esc(at.name||'')+'</span>':'<select id="mcv-pingZone">'+(MY&&MY.last?'<option value="__me"'+(ROLE==='patrol'?' selected':'')+'>📍 내 현재 위치'+(ROLE==='patrol'?'':' (GPS)')+'</option>':'')+'<option value=""'+(MY&&MY.last&&ROLE==='patrol'?'':' selected')+'>구역 선택</option>'+groups.map(([g,zs])=>'<optgroup label="'+esc(g)+'">'+zs.map(z=>'<option value="'+esc(z.id)+'">'+esc(z.name)+'</option>').join('')+'</optgroup>').join('')+'</select>')+
+    (at?'<span class="mcv-c mcv-c-sub">📍 지도 지점 '+esc(at.name||'')+'</span>'
+     :ROLE==='patrol'?('<span class="mcv-c '+(MY&&MY.last?'mcv-loc-on':'mcv-loc-none')+'" id="mcv-pingMe">'+(MY&&MY.last?'📍 내 현재 위치로 신고':'📍 위치 찾는 중 — 잠시 뒤 다시')+'</span>')
+     :'<select id="mcv-pingZone">'+(MY&&MY.last?'<option value="__me">📍 내 현재 위치 (GPS)</option>':'')+'<option value="" selected>구역 선택</option>'+groups.map(([g,zs])=>'<optgroup label="'+esc(g)+'">'+zs.map(z=>'<option value="'+esc(z.id)+'">'+esc(z.name)+'</option>').join('')+'</optgroup>').join('')+'</select>')+
     '<input type="text" id="mcv-pingMsg" placeholder="상황 (예: 주자 쓰러짐 · 구급차 요청)" maxlength="80">'+
     '<button type="button" class="mcv-lvBtn mcv-ping" id="mcv-pingSend">보내기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-pingCancel">취소</button>'+
     '<span class="mcv-pingHint">보내면 관리자·구급차·담당자·급수대 모든 파일에 빨간 알림이 뜨고, 각자 「확인」을 누르기 전엔 사라지지 않습니다.</span>';
@@ -4013,7 +4017,7 @@ function pingForm(at){
     const msg=f.querySelector('#mcv-pingMsg').value.trim();
     let zone=null, zoneName='', lat=null, lon=null;
     if(at){ zoneName=at.name||'지도 지점'; lat=at.lat; lon=at.lon; }
-    else { const sel=f.querySelector('#mcv-pingZone'); const id=sel.value; if(!id){ liveToast('구역을 골라 주세요'); sel.focus(); return; }
+    else { const sel=f.querySelector('#mcv-pingZone'); const id=sel?sel.value:(ROLE==='patrol'?'__me':''); if(!id){ liveToast('구역을 골라 주세요'); if(sel) sel.focus(); return; }
       if(id==='__me'){ if(!(MY&&MY.last)){ liveToast('아직 내 위치를 못 잡았습니다 — 잠시 뒤 다시'); return; } lat=MY.last[0]; lon=MY.last[1]; let where=''; try{ const n=(typeof vNearKm==='function')?vNearKm(lat,lon):null; if(n&&n.d<80) where=' · '+n.km.toFixed(2)+' km'; }catch(e){} zoneName='📍 '+liveRoleLabel(LIVE.me)+' '+LIVE.me.name+' 현재 위치'+where; pingSend({zone:null, zoneName, lat, lon, msg}); f.style.display='none'; f.innerHTML=''; return; }
       let z=null; groups.forEach(([g,zs])=>{ const x=zs.find(q=>q.id===id); if(x) z=x; }); zone=id; zoneName=z?z.name:id; lat=z?z.lat:null; lon=z?z.lon:null; }
     pingSend({zone, zoneName, lat, lon, msg});
@@ -4150,7 +4154,64 @@ function pingPins(){
     LIVE.pingPins.push(liveOv([p.lat,p.lon], '<div class="mcv-kping" title="'+esc(p.zoneName||'')+'">🚨</div>', 340, ()=>pingCard(p))); });
 }
 /* ═════════ 응급 현황 — 올라온 핑 전부: 누가 언제 올렸고, 누가 처리에 나섰고, 누가 언제 종료했는지 ═════════ */
-function emgRoleTag(r){ return r==='admin'?'관리자':r==='amb'?'구급차':r==='cp'?'CP 담당':r==='water'?'급수대':r==='lead'?'담당자':''; }
+function emgRoleTag(r){ return r==='admin'?'관리자':r==='amb'?'구급차':r==='cp'?'CP 담당':r==='water'?'급수대':r==='lead'?'담당자':r==='patrol'?'레이스패트롤':''; }
+/* ═════════ 엑셀(.xlsx) 만들기 — 바깥 라이브러리 없이. zip(저장 방식) + 최소 OOXML. 글자는 inlineStr, 숫자는 숫자 ═════════ */
+const XL=(()=>{
+  const CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; } return t; })();
+  const crc32=b=>{ let c=0xFFFFFFFF; for(let i=0;i<b.length;i++) c=CRC[(c^b[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; };
+  const enc=new TextEncoder();
+  const u16=(v)=>[v&255,(v>>>8)&255], u32=(v)=>[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255];
+  const dosTime=d=>{ const t=((d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1))&0xFFFF, dt=(((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate())&0xFFFF; return [t,dt]; };
+  function zip(files){ const now=new Date(), [tm,dt]=dosTime(now); const parts=[], cd=[]; let off=0;
+    files.forEach(([name,text])=>{ const nb=enc.encode(name), data=enc.encode(text), crc=crc32(data);
+      const loc=new Uint8Array([0x50,0x4b,3,4, ...u16(20), ...u16(0x0800), ...u16(0), ...u16(tm), ...u16(dt), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nb.length), ...u16(0)]);
+      parts.push(loc, nb, data);
+      cd.push(new Uint8Array([0x50,0x4b,1,2, ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(tm), ...u16(dt), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nb.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), nb);
+      off+=loc.length+nb.length+data.length; });
+    const cdLen=cd.reduce((a,b)=>a+b.length,0);
+    const end=new Uint8Array([0x50,0x4b,5,6, ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cdLen), ...u32(off), ...u16(0)]);
+    return new Blob([...parts, ...cd, end], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}); }
+  const xe=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,'');
+  const col=n=>{ let s=''; n++; while(n>0){ const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; };
+  function sheet(rows, widths){ let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+    if(widths&&widths.length) x+='<cols>'+widths.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('')+'</cols>';
+    x+='<sheetData>'+rows.map((r,ri)=>'<row r="'+(ri+1)+'">'+r.map((v,ci)=>{ const ref=col(ci)+(ri+1); if(v==null||v==='') return ''; if(typeof v==='number'&&isFinite(v)) return '<c r="'+ref+'"'+(ri===0?' s="1"':'')+'><v>'+v+'</v></c>'; return '<c r="'+ref+'" t="inlineStr"'+(ri===0?' s="1"':'')+'><is><t xml:space="preserve">'+xe(v)+'</t></is></c>'; }).join('')+'</row>').join('')+'</sheetData>';
+    if(rows.length>1) x+='<autoFilter ref="A1:'+col(Math.max(0,(rows[0]||[]).length-1))+rows.length+'"/>';
+    return x+'</worksheet>'; }
+  /* sheets: [{name, rows:[[...]], widths:[...]}] */
+  function build(sheets){ const files=[];
+    files.push(['[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+sheets.map((_,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')+'</Types>']);
+    files.push(['_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>']);
+    files.push(['xl/workbook.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+sheets.map((sh,i)=>'<sheet name="'+xe(String(sh.name||('Sheet'+(i+1))).replace(/[\\\/\?\*\[\]:]/g,' ').slice(0,31))+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join('')+'</sheets></workbook>']);
+    files.push(['xl/_rels/workbook.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+sheets.map((_,i)=>'<Relationship Id="rId'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+'<Relationship Id="rId'+(sheets.length+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>']);
+    files.push(['xl/styles.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="10"/><name val="Malgun Gothic"/></font><font><b/><sz val="10"/><name val="Malgun Gothic"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8EEF4"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" applyFont="1" applyFill="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>']);
+    sheets.forEach((sh,i)=>files.push(['xl/worksheets/sheet'+(i+1)+'.xml', sheet(sh.rows||[], sh.widths)]));
+    return zip(files); }
+  function save(name, sheets){ const b=build(sheets); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 800); return b; }
+  return {build, save, zip};
+})();
+/* 응급 신고·처리 내역 → 엑셀 (응급 신고 / 호출 내역 / 로그 세 장) */
+function emgKm(p){ try{ if(p.lat==null||p.lon==null||typeof vNearKm!=='function') return ''; const n=vNearKm(p.lat,p.lon); return (n&&n.d<120)?+n.km.toFixed(2):''; }catch(e){ return ''; } }
+function emgSheets(){
+  const all=Object.values(LIVE.pings).sort((a,b)=>(+a.at||0)-(+b.at||0));
+  const dt=t=>t?logDate(t)+' '+liveFmtS(t):'', mins=(a,b)=>(a&&b)?Math.max(0,Math.round((b-a)/60000)):'';
+  const head=['번호','상태','신고 일시','지점·구역','코스 km','상황','신고자','신고자 역할','처리자','처리 일시','신고→처리(분)','호출 구급차','출동 확인','종료자','종료 일시','신고→종료(분)','처리 내용','기록자','기록 일시','위도','경도','지도 링크'];
+  const rows=[head];
+  all.forEach((p,i)=>{ const on=p.active!==false; const st=!on?'종료':(p.handledBy?'처리 중':'진행 중'); const cs=Object.values(p.calls||{}).sort((a,b)=>(+a.at||0)-(+b.at||0));
+    rows.push([i+1, st, dt(p.at), p.zoneName||'', emgKm(p), p.msg||'', p.by||'', emgRoleTag(p.role)||(p.role==='patrol'?'레이스패트롤':''), p.handledBy||'', dt(p.handledAt), mins(p.at,p.handledAt),
+      cs.map(c=>(c.car?c.car+'호차 ':'')+(c.name||'')+' '+liveFmtT(c.at)+(c.by?' ('+c.by+')':'')).join(' / '), cs.map(c=>c.ack?'확인 '+liveFmtT(c.ack):'미확인').join(' / '),
+      p.resolvedBy||'', dt(p.resolvedAt), mins(p.at,p.resolvedAt), p.note||'', p.noteBy||'', dt(p.noteAt), p.lat!=null?+p.lat:'', p.lon!=null?+p.lon:'', p.lat!=null?'https://map.kakao.com/link/map/'+encodeURIComponent(p.zoneName||'응급')+','+p.lat+','+p.lon:'']); });
+  const calls=[['신고 번호','지점·구역','신고 일시','호출 구급차','호차','호출자','호출 일시','출동 확인 일시','신고→호출(분)','호출→확인(분)']];
+  all.forEach((p,i)=>{ Object.values(p.calls||{}).sort((a,b)=>(+a.at||0)-(+b.at||0)).forEach(c=>{ calls.push([i+1, p.zoneName||'', dt(p.at), c.name||'', c.car||'', c.by||'', dt(c.at), dt(c.ack), mins(p.at,c.at), mins(c.at,c.ack)]); }); });
+  const sheets=[{name:'응급 신고', rows, widths:[6,8,18,24,8,30,10,10,10,18,10,30,16,10,18,10,36,10,18,10,10,40]}, {name:'호출 내역', rows:calls, widths:[8,24,18,12,6,10,18,18,10,10]}];
+  try{ if(typeof logRows==='function' && LIVE.me && LIVE.me.sup){ const lr=logTsv('\t').split('\n').map(l=>l.split('\t')); if(lr.length>1) sheets.push({name:'로그', rows:lr, widths:[11,9,10,10,12,16,40,40]}); } }catch(e){}
+  return sheets;
+}
+function emgXlsx(){
+  const n=Object.keys(LIVE.pings).length; if(!n){ liveToast('아직 올라온 응급 신고가 없습니다'); return; }
+  const name=((LIVECFG&&LIVECFG.title)||DATA.title||'코스도')+'_응급신고_'+logDate(Date.now())+'.xlsx';
+  try{ XL.save(name, emgSheets()); liveToast('엑셀로 내려받았습니다 — '+n+'건'); liveLog('emgxlsx'); }catch(e){ liveToast('엑셀을 만들지 못했습니다 — '+(e&&e.message||e)); }
+}
 function emgRender(){
   const card=document.getElementById('mcv-emgCard'), list=document.getElementById('mcv-emgList'); if(!card || !list) return;
   if(!(ADMIN || ROLE==='lead' || ROLE==='amb' || ROLE==='cp') || !LIVECFG){ card.style.display='none'; return; }
@@ -4163,6 +4224,7 @@ function emgRender(){
   const sup=!!(LIVE.me && LIVE.me.sup);
   tools.innerHTML=[['open','진행 중 '+open.length],['all','전체 '+all.length]].map(([k,l])=>'<span class="mcv-logChip'+(LIVE.emgFilter===k?' mcv-on':'')+'" data-emgf="'+k+'">'+l+'</span>').join('')+
     (pingRole()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-emgPing" style="margin-left:auto">🚨 응급 신고</button>':'')+
+    ((ADMIN||ROLE==='cp')&&all.length?'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-emgXlsx" title="신고·처리·호출·종료 내역을 엑셀 파일로">📊 엑셀 받기</button>':'')+
     (sup&&all.length?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-emgPurge" title="총관리자만 — 이 대회의 응급 기록을 모두 지웁니다">🗑 전부 지우기</button>':'')+
     (sup&&LIVE.emgPurgeAsk?'<div class="mcv-lvErr" style="flex-basis:100%;display:flex;gap:8px;align-items:center;flex-wrap:wrap">⚠️ 응급 현황 <b>'+all.length+'건</b>을 정말 지울까요? 모든 사람의 화면에서 사라지고 되돌릴 수 없습니다. (로그에는 남습니다)<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-emgPurgeGo">네, 전부 지우기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-emgPurgeNo">취소</button></div>':'');
   { const pb=tools.querySelector('#mcv-emgPurge'); if(pb) pb.onclick=()=>{ LIVE.emgPurgeAsk=true; emgRender(); };
@@ -4170,6 +4232,7 @@ function emgRender(){
     const go=tools.querySelector('#mcv-emgPurgeGo'); if(go) go.onclick=()=>{ LIVE.emgPurgeAsk=false; pingPurge(); }; }
   tools.querySelectorAll('[data-emgf]').forEach(b=>{ b.onclick=()=>{ LIVE.emgFilter=b.dataset.emgf; emgRender(); }; });
   { const pb=tools.querySelector('#mcv-emgPing'); if(pb) pb.onclick=()=>{ if(!LIVE.me){ liveToast('응급 신고는 로그인 뒤에 할 수 있습니다'); navShow('live', true); return; } pingForm(null); }; }
+  { const xb=tools.querySelector('#mcv-emgXlsx'); if(xb) xb.onclick=emgXlsx; }
   if(!rows.length){ list.innerHTML='<div class="mcv-note" style="padding:14px 18px">'+(LIVE.emgFilter==='open'?'진행 중인 응급 상황이 없습니다.':'아직 올라온 응급 핑이 없습니다.')+'</div>'; return; }
   const can=pingCan();
   list.innerHTML=rows.map(p=>{ const on=p.active!==false; const st=!on?['done','종료']:(p.handledBy?['work','처리 중']:['open','진행 중']);
@@ -4348,7 +4411,7 @@ function whoRender(){
 setInterval(()=>{ if(!LIVECFG || !LIVE.on) return; try{ whoRender(); }catch(e){} try{ liveRender(); }catch(e){} try{ drawPeoplePins(); }catch(e){} }, 20000);
 /* 메뉴 단추의 빨간 숫자 */
 function navBadge(k, n){ const b=document.querySelector('#mcv-nav [data-nav="'+k+'"] .mcv-navBadge'); if(!b) return; b.textContent=n>99?'99+':String(n||''); b.style.display=n?'':'none'; }
-window.MCV_LIVE={state:LIVE, push:PUSH, pushInit, pushSend, emg:emgRender, gate:gateRender, render:liveRender, purge:pingPurge, toast:liveToast, who:whoRender, whoRows, cps:()=>CPS, call:pingCall, callAck, callTargets, msg:{send:msgSend, render:msgRender, update:msgUpdate, unread:msgUnread, targets:msgTargets, read:msgMarkRead}, snd:SND, sw:SW, notify:notifyShow, handle:pingHandle, note:pingNote, resolve:pingResolve, login:liveLogin, logout:liveLogout, setZone:liveSetZone, acc:()=>ACC, sha:sha256Hex, log:()=>LIVE.log, logRender, logTsv, check:liveSetCheck, render:liveRender, items:liveAllItems, lp:lpShow, nav:navUrl, ping:pingSend, pingForm, navShow, renderWater,
+window.MCV_LIVE={state:LIVE, push:PUSH, pushInit, pushSend, emg:emgRender, gate:gateRender, render:liveRender, xl:XL, emgSheets, emgXlsx, purge:pingPurge, toast:liveToast, who:whoRender, whoRows, cps:()=>CPS, call:pingCall, callAck, callTargets, msg:{send:msgSend, render:msgRender, update:msgUpdate, unread:msgUnread, targets:msgTargets, read:msgMarkRead}, snd:SND, sw:SW, notify:notifyShow, handle:pingHandle, note:pingNote, resolve:pingResolve, login:liveLogin, logout:liveLogout, setZone:liveSetZone, acc:()=>ACC, sha:sha256Hex, log:()=>LIVE.log, logRender, logTsv, check:liveSetCheck, render:liveRender, items:liveAllItems, lp:lpShow, nav:navUrl, ping:pingSend, pingForm, navShow, renderWater,
   flags:()=>({ADMIN, DEPLOY, ROLE, UNIFIED, hasStaff:!!STAFF, live:!!LIVECFG, acc:ACC.length, tag:(document.getElementById('mcv-hTag')||{}).textContent}), t:{showInfo, closeInfo, staffInfoHtml, poiInfoHtml, myFix:(p)=>myFix(p), posts:()=>STAFF?STAFF.posts:null, pois:()=>C.pois, my:()=>MY}};
 function staffCrew(id){ return STAFF ? (STAFF.crews||[]).find(c=>c.id===id) : null; }
 function staffCrewName(id){ const c=staffCrew(id); return c?c.name:'미지정'; }
