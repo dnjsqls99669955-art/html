@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>과천코스도 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;과천코스도&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evdsxw3hw52j&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.38&quot;,&quot;at&quot;:1792562056164,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evdsxw3hw52jhjsqhnk5bckpym6m&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;과천코스도&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evdsxw3hw52j&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.40&quot;,&quot;at&quot;:1792563913353,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evdsxw3hw52jhjsqhnk5bckpym6m&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -44,7 +44,7 @@
   function nat() { var C = cap(); try { return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } }
   function platf() { var C = cap(); try { return nat() ? C.getPlatform() : 'web'; } catch (e) { return 'web'; } }
   var bound = false;
-  function ensure() { if (bound || !nat()) return; bound = true; bindPushEvents(); bindAppState();
+  function ensure() { if (bound || !nat()) return; bound = true; try { bindPushEvents(); } catch (e) { LOG('bindPush', e); } try { bindAppState(); } catch (e) { LOG('bindApp', e); }
     try { document.documentElement.classList.add('mcv-app', 'mcv-app-' + platf()); } catch (e) {} }
 
   function plugin(name) {
@@ -55,6 +55,10 @@
     } catch (e) { return null; }
   }
 
+  /* 원격으로 연 페이지(server.url)에는 Capacitor 코어 JS 가 없어 플러그인이 옛 방식으로 붙는다:
+     addListener → {remove} (Promise 아님), 콜백 메서드(addWatcher) → 콜백 id 문자열. 그래서 늘 Promise 로 감싼다 */
+  function listen(P, ev, cb) { try { return Promise.resolve(P.addListener(ev, cb)); } catch (e) { return Promise.resolve(null); } }
+  function call(fn) { try { return Promise.resolve(fn()); } catch (e) { return Promise.reject(e); } }
   var LOG = function () { try { console.log.apply(console, ['[MCV_NATIVE]'].concat([].slice.call(arguments))); } catch (e) {} };
 
   var state = {
@@ -71,7 +75,7 @@
   function privacy(on) {
     var P = plugin('PrivacyScreen');
     if (!P) return Promise.resolve(false);
-    return (on ? P.enable() : P.disable()).then(function () { return true; }).catch(function (e) { LOG('privacy', e); return false; });
+    return call(function () { return on ? P.enable() : P.disable(); }).then(function () { return true; }).catch(function (e) { LOG('privacy', e); return false; });
   }
 
   /* ---------- 백그라운드 GPS ---------- */
@@ -89,7 +93,7 @@
       stale: false,
       distanceFilter: 15
     };
-    return BG.addWatcher(opts, function (loc, err) {
+    return call(function () { return BG.addWatcher(opts, function (loc, err) {
       if (err) {
         if (err.code === 'NOT_AUTHORIZED') {
           // 권한 거부 → 설정으로 유도 (발행본이 안내 띠를 띄우도록 이벤트도 쏜다)
@@ -114,7 +118,7 @@
           spd: loc.speed
         });
       } catch (e) { LOG('onFix', e); }
-    }).then(function (id) {
+    }); }).then(function (id) {
       state.watcherId = id;
       LOG('loc watcher', id);
       return true;
@@ -126,7 +130,7 @@
     if (!BG || !state.watcherId) return Promise.resolve();
     var id = state.watcherId;
     state.watcherId = null;
-    return BG.removeWatcher({ id: id }).catch(function () {});
+    return call(function () { return BG.removeWatcher({ id: id }); }).catch(function () {});
   }
 
   /* ---------- 푸시 (FCM, 안드로이드·iOS 공통) ---------- */
@@ -139,25 +143,25 @@
     var chain = Promise.resolve();
     if (platf() === 'android') {
       // 응급 채널: 소리·진동·잠금화면 표시. 서버가 android.notification.channel_id = 'emg' 로 보냄
-      chain = FM.createChannel({
+      chain = call(function () { return FM.createChannel({
         id: 'emg', name: '응급·출동', description: '응급 신고 및 출동 요청',
         importance: 5, visibility: 1, vibration: true, lights: true, lightColor: '#E53935'
-      }).catch(function () {}).then(function () {
-        return FM.createChannel({ id: 'msg', name: '공지·메시지', description: '관리자 공지', importance: 4, vibration: true }).catch(function () {});
+      }); }).catch(function () {}).then(function () {
+        return call(function () { return FM.createChannel({ id: 'msg', name: '공지·메시지', description: '관리자 공지', importance: 4, vibration: true }); }).catch(function () {});
       });
     }
-    state.pushReg = chain.then(function () { return FM.requestPermissions(); })
+    state.pushReg = chain.then(function () { return call(function () { return FM.requestPermissions(); }); })
       .then(function (p) {
         if (p && p.receive === 'denied') { LOG('push denied'); return null; }
-        return FM.getToken();
+        return call(function () { return FM.getToken(); });
       })
       .then(function (r) {
         var t = r && r.token;
         if (t) onToken({ fcm: t, platform: platf() });
         // 토큰 갱신
-        return FM.addListener('tokenReceived', function (ev) {
+        return listen(FM, 'tokenReceived', function (ev) {
           if (ev && ev.token) onToken({ fcm: ev.token, platform: platf() });
-        }).then(function (h) { state.pushListeners.push(h); return t || null; });
+        }).then(function (h) { if (h) state.pushListeners.push(h); return t || null; });
       })
       .catch(function (e) { LOG('push', e); return null; })
       .then(function (t) { if (!t) state.pushReg = null; return t; });   /* 실패·거부면 다음 로그인 때 다시 */
@@ -167,25 +171,25 @@
   function bindPushEvents() {
     var FM = plugin('FirebaseMessaging');
     if (!FM) return;
-    FM.addListener('notificationReceived', function (ev) {
+    listen(FM, 'notificationReceived', function (ev) {
       var n = (ev && ev.notification) || {};
       if (state.pushCb) state.pushCb({ title: n.title, body: n.body, data: n.data || {} });
-    }).then(function (h) { state.pushListeners.push(h); });
-    FM.addListener('notificationActionPerformed', function (ev) {
+    }).then(function (h) { if (h) state.pushListeners.push(h); });
+    listen(FM, 'notificationActionPerformed', function (ev) {
       var n = (ev && ev.notification) || {};
       if (state.pushTapCb) state.pushTapCb({ title: n.title, body: n.body, data: n.data || {} });
-    }).then(function (h) { state.pushListeners.push(h); });
+    }).then(function (h) { if (h) state.pushListeners.push(h); });
   }
 
   /* ---------- 앱 상태 ---------- */
   function bindAppState() {
     var A = plugin('App');
     if (!A) return;
-    A.addListener('appStateChange', function (s) {
+    listen(A, 'appStateChange', function (s) {
       if (state.appStateCb) state.appStateCb(!!(s && s.isActive));
     });
     // 안드로이드 뒤로가기: 로그인 문·모달이 열려 있으면 발행본이 처리, 아니면 백그라운드로
-    A.addListener('backButton', function (ev) {
+    listen(A, 'backButton', function (ev) {
       var handled = false;
       try { handled = w.dispatchEvent(new CustomEvent('mcv-native-back', { cancelable: true })) === false; } catch (e) {}
       if (!handled && !(ev && ev.canGoBack)) A.minimizeApp();
@@ -217,9 +221,9 @@
     }
   };
 
-  ensure();
-  try { document.addEventListener('DOMContentLoaded', ensure); w.addEventListener('load', ensure); } catch (e) {}
   w.MCV_NATIVE = API;
+  try { ensure(); } catch (e) {}
+  try { document.addEventListener('DOMContentLoaded', ensure); w.addEventListener('load', ensure); } catch (e) {}
   try { w.dispatchEvent(new CustomEvent('mcv-native-ready', { detail: { app: nat(), platform: platf() } })); } catch (e) {}
 })(window);
 </script>
@@ -3166,11 +3170,13 @@ function myErr(err){
   MY.err++;
   myTip(MY.last ? '위치 신호가 약합니다 — 마지막 위치를 보여 줍니다' : '위치를 찾는 중입니다… 하늘이 보이는 곳에서 잠시 기다려 주세요', 4000);
 }
+/* 📱 앱 상태를 접속 기록에 남긴다 (appLoc: 백그라운드 GPS, appPush: 앱 푸시 등록) — 원격으로 점검할 때 본다 */
+function appDiag(o){ try{ if(LIVE.me && LIVE.root) LIVE.root.collection('people').doc(LIVE.me.uid).set(Object.assign({app:MCV_NATIVE.platform(), appAt:Date.now()}, o),{merge:true}).catch(()=>{}); }catch(e){} }
 function myNative(){ try{ return !!(window.MCV_NATIVE && MCV_NATIVE.isApp()); }catch(e){ return false; } }
 function myStart(){
   if(myNative()){   /* 📱 앱 — 화면이 꺼지거나 다른 앱을 써도 위치를 계속 보낸다 (알림창에 "위치 공유 중") */
     MY.follow=true; MY.denied=false;
-    if(MY.watch===null){ MY.watch='native'; MCV_NATIVE.startLocation(f=>{ try{ myFix({coords:{latitude:f.lat, longitude:f.lon, accuracy:f.acc||0}, timestamp:f.at||Date.now()}); }catch(e){} }).then(ok=>{ if(!ok && MY.watch==='native'){ MY.watch=null; myBtnSync(); } }); }
+    if(MY.watch===null){ MY.watch='native'; MCV_NATIVE.startLocation(f=>{ try{ myFix({coords:{latitude:f.lat, longitude:f.lon, accuracy:f.acc||0}, timestamp:f.at||Date.now()}); }catch(e){} }).then(ok=>{ appDiag({appLoc:ok?1:0}); if(!ok && MY.watch==='native'){ MY.watch=null; myBtnSync(); } }); }
     myBtnSync(); if(!MY.last) myTip('내 위치를 찾는 중…', 6000); return;
   }
   if(!navigator.geolocation){ alert('이 기기에서는 위치 서비스를 사용할 수 없습니다.'); return; }
@@ -3548,7 +3554,9 @@ function pushKeyB64(buf){ const u=new Uint8Array(buf||0); let t=''; for(let i=0;
 function pushAppUrl(){ const c=LIVECFG && LIVECFG.push; if(c && c.fcm) return String(c.fcm).replace(/\/+$/,''); if(c && c.url && /\/\/push\./.test(c.url)) return String(c.url).replace(/\/\/push\./,'//fcm.').replace(/\/+$/,''); return 'https://fcm.dnjsqls9695.workers.dev'; }
 async function pushInitApp(){
   if(!LIVE.me || !LIVE.root || PUSH.appBusy) return; PUSH.appBusy=true;
-  try{ await MCV_NATIVE.registerPush(t=>{ PUSH.fcm=t.fcm; PUSH.plat=t.platform; PUSH.ok=true; PUSH.err=''; pushSync().catch(()=>{}); try{ liveRender(); }catch(e){} }); }catch(e){ PUSH.err=String((e&&e.message)||e); }
+  let got=false;
+  try{ await MCV_NATIVE.registerPush(t=>{ got=true; PUSH.fcm=t.fcm; PUSH.plat=t.platform; PUSH.ok=true; PUSH.err=''; pushSync().catch(()=>{}); try{ liveRender(); }catch(e){} }); }catch(e){ PUSH.err=String((e&&e.message)||e); }
+  appDiag({appPush:got?1:0, appPushErr:got?'':String(PUSH.err||'토큰 없음 (알림 권한 또는 Firebase 설정)').slice(0,120)});
   PUSH.appBusy=false;
 }
 async function pushInit(){
