@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>제3회 자유민주 마라톤 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.45 개발판&quot;,&quot;at&quot;:1792571088518,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.47 개발판&quot;,&quot;at&quot;:1792573494475,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -3509,11 +3509,11 @@ async function liveBoot(){
   setInterval(()=>{ drawPeoplePins(); }, 60000);
 }
 /* 🗂 직원용 대회 목록에서 넘어올 때 — 목록이 sessionStorage 에 이름 + 이 파일의 로그인 해시를 두고 온다(번호는 넘기지 않는다). 2분 안·이 대회 키만, 한 번 쓰고 지운다 */
-/* 🏁 행사 종료 — 총관리자가 「행사 종료」를 누르거나(cfg/state.ended), 대회일 다음 날 06:00 이 지나면 종료.
+/* 🏁 행사 종료 — 총관리자가 대회 목록에서 「지금 종료」(cfg/state.ended) 또는 「종료 일시」(cfg/state.endAt)를 정하거나, 아무것도 없으면 대회일 다음 날 06:00 에 종료.
    종료되면 관리자(admin·총관리자)만 들어온다. 접속해 있던 다른 스탭은 바로 로그아웃. 총관리자가 「다시 열기」를 누르면 자동 종료보다 우선한다 */
 const EV_END={state:null, unsub:null, timer:null};
 function evEndAuto(){ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String((DATA&&DATA.event&&DATA.event.date)||'')); if(!m) return false; return Date.now()>=new Date(+m[1], +m[2]-1, +m[3]+1, 6, 0, 0).getTime(); }
-function evEnded(){ const s=EV_END.state; if(s && typeof s.ended==='boolean') return s.ended; return evEndAuto(); }
+function evEnded(){ const s=EV_END.state||{}; if(s.ended===true) return true; if(+s.endAt>0) return Date.now()>=+s.endAt; if(s.ended===false) return false; return evEndAuto(); }
 function evAllowed(me){ return !!me && (!!me.sup || me.role==='admin'); }
 function evEndSub(){ if(!LIVE.root || EV_END.unsub) return;
   EV_END.unsub=LIVE.root.collection('cfg').doc('state').onSnapshot(d=>{ EV_END.state=d.exists?(d.data()||null):null; evEndApply(); }, ()=>{});
@@ -3521,7 +3521,7 @@ function evEndSub(){ if(!LIVE.root || EV_END.unsub) return;
 function evEndApply(){
   const ended=evEnded();
   let bn=document.getElementById('mcv-evEndBand'); const root=document.getElementById('mcv-root');
-  if(ended && LIVE.me && evAllowed(LIVE.me)){ if(!bn && root){ bn=document.createElement('div'); bn.id='mcv-evEndBand'; bn.style.cssText='margin:10px 16px 0;padding:10px 14px;border-radius:10px;background:#eceff1;color:#37474f;font-weight:700;font-size:.88rem'; root.insertBefore(bn, root.firstChild); } if(bn) bn.textContent='🏁 종료된 행사입니다 — 관리자만 볼 수 있습니다'+((EV_END.state&&EV_END.state.by)?' (종료: '+EV_END.state.by+')':' (대회일이 지나 자동 종료)')+' · 다시 열기는 대회 목록에서'; }
+  if(ended && LIVE.me && evAllowed(LIVE.me)){ if(!bn && root){ bn=document.createElement('div'); bn.id='mcv-evEndBand'; bn.style.cssText='margin:10px 16px 0;padding:10px 14px;border-radius:10px;background:#eceff1;color:#37474f;font-weight:700;font-size:.88rem'; root.insertBefore(bn, root.firstChild); } if(bn) bn.textContent='🏁 종료된 행사입니다 — 관리자만 볼 수 있습니다'+((EV_END.state&&EV_END.state.ended===true&&EV_END.state.by)?' (종료: '+EV_END.state.by+')':((EV_END.state&&+EV_END.state.endAt>0)?' (예약 종료 '+liveFmtT(+EV_END.state.endAt)+')':' (대회일이 지나 자동 종료)'))+' · 다시 열기는 대회 목록에서'; }
   else if(bn) bn.remove();
   if(ended && LIVE.me && !evAllowed(LIVE.me)){ try{ liveLogout(); }catch(e){} loginErr('🏁 종료된 행사입니다 — 관리자만 접속할 수 있습니다'); }
 }
@@ -3887,7 +3887,7 @@ function logSub(){
   LIVE.logUnsub=LIVE.root.collection('log').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.log=o; logRender(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); });
 }
 function logUnsubAll(){ if(LIVE.logUnsub){ try{ LIVE.logUnsub(); }catch(e){} LIVE.logUnsub=null; } LIVE.log={}; }
-const LOG_T={evend:['🏁','행사 종료'], evopen:['↺','행사 다시 열기'], check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], arrive:['📍','배치 지점 도착'], reset:['♻','전체 리셋'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
+const LOG_T={evend:['🏁','행사 종료'], evopen:['↺','행사 다시 열기'], evsched:['🕑','종료 예약'], evunsched:['🕑','종료 예약 취소'], check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], arrive:['📍','배치 지점 도착'], reset:['♻','전체 리셋'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
 function logWho(e){ let w=e.by||''; const tag=e.sup?'총관리자':(e.role==='admin'?'관리자':e.role==='amb'?('구급차'+(e.car?' '+e.car+'호차':'')):e.role==='cp'?'CP 담당':e.role==='water'?'급수대':'담당자'); w+=' ('+tag+(e.myZoneName?' · '+e.myZoneName:'')+(e.cp?' · '+e.cp:'')+')'; return w; }
 function logText(e){
   switch(e.t){
