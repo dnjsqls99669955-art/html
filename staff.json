@@ -142,6 +142,112 @@
    ],
    "pl": "6849a510e2cc8b50e256b97ab8b37a847a76a7aaa1dfa79be42d26813c1a753e",
    "pt": "672df7b091ee29cbde26885343a18aab52e5763fd5e151ce7b079640d2fd74f5"
+  },
+  {
+   "id": "evww2539vy68",
+   "title": "청송코스도",
+   "files": [
+    {
+     "name": "csrun-admin.html",
+     "label": "운영용·통합",
+     "at": 1792561559684
+    }
+   ],
+   "at": 1792561559683,
+   "ver": "빌드 2026-10-21 · 26.37",
+   "live": {
+    "project": "course-2baf5",
+    "apiKey": "AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI",
+    "key": "evww2539vy68m7jtqvyhrjpqvcrw"
+   },
+   "acc": [
+    {
+     "l": "da74da3c0182ec40cf4d37d163e08fafc3e2640ab07b6b86c62095cf624b8b71",
+     "h": "008d604498d4877a83bbcc4e802f94c691e39f0e3cfe92368cafeba86c1452b3",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "e89b2b004a8df263f8b8b21959bf1865c4f43e036c5373caad16dc0e3d2b5d0c",
+     "h": "230b72097de66d8a1a7ea319f96c73623d475bcd0ee8fb172afb6d2003395947",
+     "r": "lead",
+     "s": 0
+    },
+    {
+     "l": "0ce989d4b9077e3225338f4b7bc69185d835d4f05ce73dc073e0a96ba0b8bf55",
+     "h": "fd0edbaa1fd7f2d0f9ad9910399aafdcac367216284443a46f235c23e1920cbb",
+     "r": "lead",
+     "s": 1
+    },
+    {
+     "l": "5c5e70a468d5f9f2ed9ecadb0ac4542412910b007e8171567bf545172782e5fe",
+     "h": "4abed8207bb8fab5d05dd98a6df6d5756d3f4efba0e65d112adfb0e6f24be98b",
+     "r": "cp",
+     "s": 0
+    },
+    {
+     "l": "a9149f49dbc43cc5170be0a26ac94d71310a072eb703aa2f0201f906b29a0abf",
+     "h": "322f5f443e5d5947a840057072534168904aedb7dd9994abe8108b11c71affca",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "7d8828b7d51e17ef99c443f01db5c2a25fee4b399af544f75a304f815887a222",
+     "h": "9fa7b7b699882da5395304d1bcc35193d4e39d35aeecadff8f4e457bb9f009bf",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "2c8f115dc64c9814a32806d4e394710934787e9b5b87a8099e0b03ae5dada15e",
+     "h": "1b53b9af0281efabcfd8d6a73f4f796182a146eb991561fb9e4b003780e7ea2e",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "13084294359131fb9baed21cb0a6823ef5e4b42d646a65c3b40ea86fa122fb55",
+     "h": "4e32b485812f5c0176949a86639c20563dbdb3a035e8b62fb2a1d89210ac9978",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "c3109a44578ce0e86e16a2191f4786e239fd6179b741d382704138120f675898",
+     "h": "2cda5fe3165df622a59d80e18b230d280071149f68f2f71ad4bbcab9476c30bc",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "9773e655fbdff2fac413a44b69164c1b34b8dadf57707e22c33ea61a40f6b611",
+     "h": "42eaa2c1d4c0eb958a30742db7d5a776b5e489fd30e3c2c6108562e77d36a882",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8",
+     "h": "90cc61ebb782a3d73700eaa0eda9a0ce913d82479b33a937fb5fb641913e02ba",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "647dad06694c750df0a9078893bc0e3b61d07b43a7b44f92b7587d5511d4b7bb",
+     "h": "a4c78defe20c5a978177716fa607099f269be51c69bab14ab72aeef8ff0c6b4c",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "efbec52f354546bc2e691245780282db2de2f23cbca8750ff2c8ef0fa97027af",
+     "h": "c165493b56205ddde9637f1ffa9845d1c3373d8ce07b19e82c377a040262acda",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "7f9eb4a7b8247594be2a995ad9ebaa1ceb188cda69059afc2826b69e6b936366",
+     "h": "d73b89b0a68f24326c5f76783e6bfcf4ef88d1a6ef660e473cca32b8cfa8d622",
+     "r": "admin",
+     "s": 1
+    }
+   ],
+   "pl": "10e11055acf132b5819562292ce95b98033ae204287ed35d635445bbeb58941e",
+   "pt": "36470ba00d76fa1d8cc453e8dd0e4fb5ec69fdf5c4fafcbdcec38e3ba1e12dea"
   }
  ]
 }
