@@ -354,6 +354,88 @@
    ],
    "pl": "10e11055acf132b5819562292ce95b98033ae204287ed35d635445bbeb58941e",
    "pt": "bc2a43d8080fc4842dbe946886412c2ae0a9c27bd5d1b0db25a2fd5a200f91b1"
+  },
+  {
+   "id": "evdsxw3hw52j",
+   "title": "과천코스도",
+   "files": [
+    {
+     "name": "gcrun-admin.html",
+     "label": "운영용·통합",
+     "at": 1792561594394
+    }
+   ],
+   "at": 1792561594394,
+   "ver": "빌드 2026-10-21 · 26.37",
+   "live": {
+    "project": "course-2baf5",
+    "apiKey": "AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI",
+    "key": "evdsxw3hw52jhjsqhnk5bckpym6m"
+   },
+   "acc": [
+    {
+     "l": "1bfb1dbf0b6d685024dfdad8d062901409489c04db8ea691c3395bcfb7c6f2db",
+     "h": "b7ae93af6c3c174e89a951e339045269a2443bf02bf1ad9a67a45d29c66e072b",
+     "r": "lead",
+     "s": 0
+    },
+    {
+     "l": "8929bac0afa29627e241a643c20f8126263c06d15643f060ab3ee78e0dc91ffe",
+     "h": "5e2f62981f2cf3495cbf37fa755fae5c13e38791e34de68d80528eeab59f5250",
+     "r": "lead",
+     "s": 0
+    },
+    {
+     "l": "da74da3c0182ec40cf4d37d163e08fafc3e2640ab07b6b86c62095cf624b8b71",
+     "h": "2d9a3451656c14a49c1b5f0fda466273aec7ad9ee5c9a0f4af4e1fa550817afd",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "c3109a44578ce0e86e16a2191f4786e239fd6179b741d382704138120f675898",
+     "h": "16e1c8691022084947f62c44de534fede0bd0367c3135f4f634f7ac4ac30ca63",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "0ce989d4b9077e3225338f4b7bc69185d835d4f05ce73dc073e0a96ba0b8bf55",
+     "h": "97124461a72d21b470a689da0f2e58dc513d96f962718495377418b208dbb7c9",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "7f9eb4a7b8247594be2a995ad9ebaa1ceb188cda69059afc2826b69e6b936366",
+     "h": "af5a0966828112217d0acd71528cc2d77bc426b414a0279045fc383bc6cee2e5",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8",
+     "h": "4f4702ef8e7204506fa4396fcdb255b7c5bb4158b7a9d26f24e624288e479c1f",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "9773e655fbdff2fac413a44b69164c1b34b8dadf57707e22c33ea61a40f6b611",
+     "h": "305a9ee3fba1710652588fa5fcff37049736449ced90286c4ad17785c08c5a9a",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "efbec52f354546bc2e691245780282db2de2f23cbca8750ff2c8ef0fa97027af",
+     "h": "02bc6ddb142c030e7a4d7f1d0fd1630f49eebb65702ef4694b8c53962864d6ab",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "647dad06694c750df0a9078893bc0e3b61d07b43a7b44f92b7587d5511d4b7bb",
+     "h": "505b2356af7bc416321a17e62693f3e311a08902bbbf0e2b75cd6a92f81834fc",
+     "r": "admin",
+     "s": 1
+    }
+   ],
+   "pl": "10e11055acf132b5819562292ce95b98033ae204287ed35d635445bbeb58941e",
+   "pt": "5b46b1d4db8fd562599b5c9da0df485749ec24cc58a87ece8cff250ae0cf2810"
   }
  ]
 }
