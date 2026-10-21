@@ -12,8 +12,217 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>상암위드런 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.37&quot;,&quot;at&quot;:1792561573685,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.38&quot;,&quot;at&quot;:1792562038082,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
 
+<script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
+/* =====================================================================
+ * mcv-native.js — 발행본(viewer) ↔ Capacitor 네이티브 브리지
+ * ---------------------------------------------------------------------
+ * 발행본 HTML(viewerTpl)에 그대로 인라인하거나 <script src> 로 넣는다.
+ * 브라우저(PWA)에서는 아무 일도 하지 않고 isApp()=false 만 돌려주므로
+ * 웹·앱이 한 코드로 유지된다.
+ *
+ * 발행본에서 호출할 진입점 (window.MCV_NATIVE):
+ *   isApp()                              앱 안인지
+ *   platform()                           'android' | 'ios' | 'web'
+ *   afterLogin(me)                       로그인 성공 직후 1회. me = {uid,name,role,sup,zone,car,cp,key,project,apiKey}
+ *   startLocation(onFix)                 백그라운드 GPS 시작. onFix({lat,lon,acc,at})
+ *   stopLocation()
+ *   registerPush(onToken)                FCM 토큰 요청. onToken({fcm, platform})
+ *   onPush(cb)                           앱이 켜진 채로 푸시 받았을 때 cb({title,body,data})
+ *   onPushTap(cb)                        알림을 눌러 앱이 열렸을 때 cb({title,body,data})
+ *   privacy(on)                          캡처 차단·앱 전환 가리기 켜기/끄기
+ *   onLogout()                           위치 중지 + 캡처 차단 다시 켬
+ *   onAppState(cb)                       cb(isActive) — 기존 bg/visibilitychange 보조
+ *
+ * 발행본 쪽 연결 지점은 bridge/통합-가이드.md 참고.
+ * ===================================================================== */
+(function (w) {
+  'use strict';
+  /* 앱 껍데기가 window.Capacitor 를 페이지 시작보다 조금 늦게 붙일 수 있어 매번 확인한다 */
+  function cap() { return w.Capacitor; }
+  function nat() { var C = cap(); try { return !!(C && C.isNativePlatform && C.isNativePlatform()); } catch (e) { return false; } }
+  function platf() { var C = cap(); try { return nat() ? C.getPlatform() : 'web'; } catch (e) { return 'web'; } }
+  var bound = false;
+  function ensure() { if (bound || !nat()) return; bound = true; bindPushEvents(); bindAppState();
+    try { document.documentElement.classList.add('mcv-app', 'mcv-app-' + platf()); } catch (e) {} }
+
+  function plugin(name) {
+    if (!nat()) return null; var C = cap();
+    try {
+      if (C.Plugins && C.Plugins[name]) return C.Plugins[name];
+      return C.registerPlugin(name);
+    } catch (e) { return null; }
+  }
+
+  var LOG = function () { try { console.log.apply(console, ['[MCV_NATIVE]'].concat([].slice.call(arguments))); } catch (e) {} };
+
+  var state = {
+    me: null,
+    watcherId: null,
+    pushListeners: [],
+    pushCb: null,
+    pushTapCb: null,
+    appStateCb: null,
+    lastFixAt: 0
+  };
+
+  /* ---------- 캡처 차단 ---------- */
+  function privacy(on) {
+    var P = plugin('PrivacyScreen');
+    if (!P) return Promise.resolve(false);
+    return (on ? P.enable() : P.disable()).then(function () { return true; }).catch(function (e) { LOG('privacy', e); return false; });
+  }
+
+  /* ---------- 백그라운드 GPS ---------- */
+  // 웹 MY 모듈과 같은 간격 정책: 8초 또는 20m. 플러그인은 distanceFilter 만 주므로
+  // 여기서 8초 하한을 보조로 건다(연속 콜백 과다 방지).
+  function startLocation(onFix) {
+    var BG = plugin('BackgroundGeolocation');
+    if (!BG) return Promise.resolve(false);
+    if (state.watcherId) return Promise.resolve(true);
+    var roleLabel = (state.me && state.me.role) || '';
+    var opts = {
+      backgroundTitle: '파란상상 운영 — 위치 공유 중',
+      backgroundMessage: (roleLabel === 'amb' ? '구급차' : roleLabel === 'lead' ? '담당자' : '스탭') + ' 위치를 관리자에게 공유하고 있습니다.',
+      requestPermissions: true,
+      stale: false,
+      distanceFilter: 15
+    };
+    return BG.addWatcher(opts, function (loc, err) {
+      if (err) {
+        if (err.code === 'NOT_AUTHORIZED') {
+          // 권한 거부 → 설정으로 유도 (발행본이 안내 띠를 띄우도록 이벤트도 쏜다)
+          w.dispatchEvent(new CustomEvent('mcv-native-loc-denied'));
+          if (w.confirm('위치 권한이 꺼져 있어 위치 공유를 할 수 없습니다.\n설정에서 "항상 허용"으로 바꾸시겠습니까?')) {
+            BG.openSettings();
+          }
+        }
+        LOG('loc err', err);
+        return;
+      }
+      if (!loc) return;
+      var now = Date.now();
+      if (now - state.lastFixAt < 2000 && state.lastFixAt) return; // 2초 하한 (Firestore 기록 간격은 발행본 liveLoc 이 8초/20m 로 정한다)
+      state.lastFixAt = now;
+      try {
+        onFix({
+          lat: loc.latitude,
+          lon: loc.longitude,
+          acc: loc.accuracy == null ? null : Math.round(loc.accuracy),
+          at: loc.time || now,
+          spd: loc.speed
+        });
+      } catch (e) { LOG('onFix', e); }
+    }).then(function (id) {
+      state.watcherId = id;
+      LOG('loc watcher', id);
+      return true;
+    }).catch(function (e) { LOG('addWatcher', e); return false; });
+  }
+
+  function stopLocation() {
+    var BG = plugin('BackgroundGeolocation');
+    if (!BG || !state.watcherId) return Promise.resolve();
+    var id = state.watcherId;
+    state.watcherId = null;
+    return BG.removeWatcher({ id: id }).catch(function () {});
+  }
+
+  /* ---------- 푸시 (FCM, 안드로이드·iOS 공통) ---------- */
+  function registerPush(onToken) {
+    var FM = plugin('FirebaseMessaging');
+    if (!FM) return Promise.resolve(null);
+    state.onToken = onToken;
+    if (state.pushReg) return state.pushReg.then(function (t) { if (t) onToken({ fcm: t, platform: platf() }); return t; });
+    onToken = function (x) { if (state.onToken) state.onToken(x); };
+    var chain = Promise.resolve();
+    if (platf() === 'android') {
+      // 응급 채널: 소리·진동·잠금화면 표시. 서버가 android.notification.channel_id = 'emg' 로 보냄
+      chain = FM.createChannel({
+        id: 'emg', name: '응급·출동', description: '응급 신고 및 출동 요청',
+        importance: 5, visibility: 1, vibration: true, lights: true, lightColor: '#E53935'
+      }).catch(function () {}).then(function () {
+        return FM.createChannel({ id: 'msg', name: '공지·메시지', description: '관리자 공지', importance: 4, vibration: true }).catch(function () {});
+      });
+    }
+    state.pushReg = chain.then(function () { return FM.requestPermissions(); })
+      .then(function (p) {
+        if (p && p.receive === 'denied') { LOG('push denied'); return null; }
+        return FM.getToken();
+      })
+      .then(function (r) {
+        var t = r && r.token;
+        if (t) onToken({ fcm: t, platform: platf() });
+        // 토큰 갱신
+        return FM.addListener('tokenReceived', function (ev) {
+          if (ev && ev.token) onToken({ fcm: ev.token, platform: platf() });
+        }).then(function (h) { state.pushListeners.push(h); return t || null; });
+      })
+      .catch(function (e) { LOG('push', e); return null; })
+      .then(function (t) { if (!t) state.pushReg = null; return t; });   /* 실패·거부면 다음 로그인 때 다시 */
+    return state.pushReg;
+  }
+
+  function bindPushEvents() {
+    var FM = plugin('FirebaseMessaging');
+    if (!FM) return;
+    FM.addListener('notificationReceived', function (ev) {
+      var n = (ev && ev.notification) || {};
+      if (state.pushCb) state.pushCb({ title: n.title, body: n.body, data: n.data || {} });
+    }).then(function (h) { state.pushListeners.push(h); });
+    FM.addListener('notificationActionPerformed', function (ev) {
+      var n = (ev && ev.notification) || {};
+      if (state.pushTapCb) state.pushTapCb({ title: n.title, body: n.body, data: n.data || {} });
+    }).then(function (h) { state.pushListeners.push(h); });
+  }
+
+  /* ---------- 앱 상태 ---------- */
+  function bindAppState() {
+    var A = plugin('App');
+    if (!A) return;
+    A.addListener('appStateChange', function (s) {
+      if (state.appStateCb) state.appStateCb(!!(s && s.isActive));
+    });
+    // 안드로이드 뒤로가기: 로그인 문·모달이 열려 있으면 발행본이 처리, 아니면 백그라운드로
+    A.addListener('backButton', function (ev) {
+      var handled = false;
+      try { handled = w.dispatchEvent(new CustomEvent('mcv-native-back', { cancelable: true })) === false; } catch (e) {}
+      if (!handled && !(ev && ev.canGoBack)) A.minimizeApp();
+      else if (!handled && ev && ev.canGoBack) w.history.back();
+    });
+  }
+
+  /* ---------- 공개 API ---------- */
+  var API = {
+    isApp: function () { ensure(); return nat(); },
+    platform: function () { return platf(); },
+    afterLogin: function (me) {
+      state.me = me || null;
+      if (!nat()) return;
+      // 총관리자는 캡처 허용, 나머지는 차단 (앱 시작 시엔 config 로 기본 차단)
+      privacy(!(me && me.sup));
+    },
+    startLocation: startLocation,
+    stopLocation: stopLocation,
+    registerPush: registerPush,
+    onPush: function (cb) { state.pushCb = cb; },
+    onPushTap: function (cb) { state.pushTapCb = cb; },
+    privacy: privacy,
+    onAppState: function (cb) { state.appStateCb = cb; },
+    onLogout: function () {
+      state.me = null;
+      if (!nat()) return Promise.resolve();
+      return stopLocation().then(function () { return privacy(true); });
+    }
+  };
+
+  ensure();
+  try { document.addEventListener('DOMContentLoaded', ensure); w.addEventListener('load', ensure); } catch (e) {}
+  w.MCV_NATIVE = API;
+  try { w.dispatchEvent(new CustomEvent('mcv-native-ready', { detail: { app: nat(), platform: platf() } })); } catch (e) {}
+})(window);
+</script>
 </head>
 <body style="margin:0;background:#f4f5f2">
 <!--MCV_FRAGMENT_START-->
@@ -2957,7 +3166,13 @@ function myErr(err){
   MY.err++;
   myTip(MY.last ? '위치 신호가 약합니다 — 마지막 위치를 보여 줍니다' : '위치를 찾는 중입니다… 하늘이 보이는 곳에서 잠시 기다려 주세요', 4000);
 }
+function myNative(){ try{ return !!(window.MCV_NATIVE && MCV_NATIVE.isApp()); }catch(e){ return false; } }
 function myStart(){
+  if(myNative()){   /* 📱 앱 — 화면이 꺼지거나 다른 앱을 써도 위치를 계속 보낸다 (알림창에 "위치 공유 중") */
+    MY.follow=true; MY.denied=false;
+    if(MY.watch===null){ MY.watch='native'; MCV_NATIVE.startLocation(f=>{ try{ myFix({coords:{latitude:f.lat, longitude:f.lon, accuracy:f.acc||0}, timestamp:f.at||Date.now()}); }catch(e){} }).then(ok=>{ if(!ok && MY.watch==='native'){ MY.watch=null; myBtnSync(); } }); }
+    myBtnSync(); if(!MY.last) myTip('내 위치를 찾는 중…', 6000); return;
+  }
   if(!navigator.geolocation){ alert('이 기기에서는 위치 서비스를 사용할 수 없습니다.'); return; }
   if(MY.watch!==null){ try{ navigator.geolocation.clearWatch(MY.watch); }catch(e){} }
   MY.follow=true;
@@ -2966,7 +3181,8 @@ function myStart(){
   if(!MY.last) myTip('내 위치를 찾는 중…', 6000);
 }
 function myStop(){
-  if(MY.watch!==null){ try{ navigator.geolocation.clearWatch(MY.watch); }catch(e){} }
+  if(MY.watch==='native'){ try{ MCV_NATIVE.stopLocation(); }catch(e){} }
+  else if(MY.watch!==null){ try{ navigator.geolocation.clearWatch(MY.watch); }catch(e){} }
   MY.watch=null; MY.first=true; MY.follow=false;
   if(MY.ov){ MY.ov.rm(); MY.ov=null; }
   MY.last=null; myTip(''); myBtnSync();
@@ -2987,7 +3203,7 @@ btn.addEventListener('click',()=>{
   if(kmap) hook(); else { const t=setInterval(()=>{ if(kmap){ clearInterval(t); hook(); } }, 300); setTimeout(()=>clearInterval(t), 20000); }
 })();
 /* 화면이 다시 보이면 추적을 다시 건다 */
-document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && MY.watch!==null) myStart(); });
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible' && MY.watch!==null && MY.watch!=='native') myStart(); });
 window.MCV_MY=MY; window.MCV_ARR=ARR; window.MCV_arriveTargets=arriveTargets;
 /* ── 고저도 ── */
 const canvas=document.getElementById('mcv-elev'), ctx=canvas.getContext('2d'), tooltip=document.getElementById('mcv-tooltip');
@@ -3243,11 +3459,15 @@ async function liveBoot(){
     if(LIVE.me){ liveHello(); logSub(); if(WAKE.want) wakeOn(); permRefresh(); }
     logWire();
     try{ liveHandoff(); }catch(e){}
+    /* 📱 앱으로 다시 열었고 이미 로그인돼 있으면 — 위치 공유·앱 푸시를 바로 다시 건다 (웹은 「예, 모두 켜기」를 눌러야 한다) */
+    try{ if(LIVE.me && myNative()){ if(LIVE.share && MY.watch===null) myStart(); pushInit(); } }catch(e){}
   }catch(e){ LIVE.err=liveErrText(e); liveRender(); }
   window.addEventListener('online', liveRender); window.addEventListener('offline', liveRender);
   setInterval(()=>{ drawPeoplePins(); }, 60000);
 }
 /* 🗂 직원용 대회 목록에서 넘어올 때 — 목록이 sessionStorage 에 이름 + 이 파일의 로그인 해시를 두고 온다(번호는 넘기지 않는다). 2분 안·이 대회 키만, 한 번 쓰고 지운다 */
+var APP_PRIV=null;
+function appPrivacySync(){ if(!myNative()) return; const want=!(LIVE.me && LIVE.me.sup); if(APP_PRIV===want) return; APP_PRIV=want; try{ MCV_NATIVE.privacy(want); }catch(e){} }
 function liveHandoff(){
   let v=null; try{ v=JSON.parse(sessionStorage.getItem('mcv-handoff')||'null'); sessionStorage.removeItem('mcv-handoff'); }catch(e){ v=null; }
   if(!v || !LIVECFG || v.k!==LIVECFG.key || !v.n || !v.h || !(Date.now()-(+v.at||0)<120000)) return false;
@@ -3325,7 +3545,14 @@ const PUSH={sub:null, ok:false, err:'', busy:false};
 function pushCfg(){ const c=LIVECFG && LIVECFG.push; return (c && c.url && c.pub)?c:null; }
 function pushKeyBytes(s){ s=String(s).replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; const b=atob(s); const u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
 function pushKeyB64(buf){ const u=new Uint8Array(buf||0); let t=''; for(let i=0;i<u.length;i++) t+=String.fromCharCode(u[i]); return btoa(t).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function pushAppUrl(){ const c=LIVECFG && LIVECFG.push; if(c && c.fcm) return String(c.fcm).replace(/\/+$/,''); if(c && c.url && /\/\/push\./.test(c.url)) return String(c.url).replace(/\/\/push\./,'//fcm.').replace(/\/+$/,''); return 'https://fcm.dnjsqls9695.workers.dev'; }
+async function pushInitApp(){
+  if(!LIVE.me || !LIVE.root || PUSH.appBusy) return; PUSH.appBusy=true;
+  try{ await MCV_NATIVE.registerPush(t=>{ PUSH.fcm=t.fcm; PUSH.plat=t.platform; PUSH.ok=true; PUSH.err=''; pushSync().catch(()=>{}); try{ liveRender(); }catch(e){} }); }catch(e){ PUSH.err=String((e&&e.message)||e); }
+  PUSH.appBusy=false;
+}
 async function pushInit(){
+  if(myNative()) return pushInitApp();
   const c=pushCfg(); if(!c || !LIVE.me || !LIVE.root || PUSH.busy) return;
   if(!SW.reg || !SW.reg.pushManager || !notifyOk()) return;
   PUSH.busy=true;
@@ -3339,16 +3566,20 @@ async function pushInit(){
 }
 /* 구독 문서 — 이름·역할·구역이 바뀌면(구역 선택 등) 다시 적는다 */
 async function pushSync(){
+  if(PUSH.fcm && LIVE.me && LIVE.root){ const me=LIVE.me; await LIVE.root.collection('fcm').doc(me.uid).set({uid:me.uid, name:me.name, role:me.role||'', sup:!!me.sup, zone:me.zone||'', car:+me.car||0, cp:me.cp||'', token:PUSH.fcm, plat:PUSH.plat||'', at:Date.now()}); }
   if(!PUSH.sub || !LIVE.me || !LIVE.root) return;
   const j=PUSH.sub.toJSON(); if(!j || !j.endpoint || !j.keys) return;
   const me=LIVE.me;
   await LIVE.root.collection('subs').doc(me.uid).set({uid:me.uid, name:me.name, role:me.role||'', sup:!!me.sup, zone:me.zone||'', car:+me.car||0, cp:me.cp||'', endpoint:j.endpoint, p256dh:j.keys.p256dh, auth:j.keys.auth, at:Date.now(), ua:String(navigator.userAgent||'').slice(0,80)});
 }
-function pushDrop(){ try{ if(LIVE.me && LIVE.root) LIVE.root.collection('subs').doc(LIVE.me.uid).delete().catch(()=>{}); }catch(e){} PUSH.ok=false; }
+function pushDrop(){ try{ if(LIVE.me && LIVE.root){ LIVE.root.collection('subs').doc(LIVE.me.uid).delete().catch(()=>{}); if(PUSH.fcm) LIVE.root.collection('fcm').doc(LIVE.me.uid).delete().catch(()=>{}); } }catch(e){} PUSH.ok=false; }
 /* 보내기 — 실패해도 조용히 (Firestore 쪽 알림은 따로 간다) */
 function pushSend(o){
-  const c=pushCfg(); if(!c || !LIVECFG || !LIVE.me) return;
+  if(!LIVECFG || !LIVE.me) return; const c=pushCfg();
   const body={key:LIVECFG.key, project:LIVECFG.cfg.projectId, apiKey:LIVECFG.cfg.apiKey, title:o.title||'', body:o.body||'', tag:o.tag||'', url:location.href, to:o.to||['all'], exclude:(o.exclude===undefined?LIVE.me.uid:o.exclude)};
+  /* 📱 앱 사용자에게도 — 앱 전용 푸시 서버(FCM). 앱이 없거나 서버가 아직 없으면 조용히 실패 */
+  try{ fetch(pushAppUrl()+'/send', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body), keepalive:true}).then(r=>r.json()).then(j=>{ PUSH.lastApp=j; }).catch(()=>{}); }catch(e){}
+  if(!c) return;
   try{ fetch(c.url.replace(/\/+$/,'')+'/send', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body), keepalive:true}).then(r=>r.json()).then(j=>{ PUSH.last=j; }).catch(()=>{}); }catch(e){}
 }
 function notifyShow(title, opt, onClick){
@@ -3659,6 +3890,7 @@ function logWire(){
 }
 function liveLogout(){
   liveLog('logout'); logUnsubAll(); pushDrop();
+  try{ if(typeof MY!=='undefined' && MY.watch==='native') myStop(); }catch(e){}
   if(LIVE.me && LIVE.root){ try{ const t=Date.now(); LIVE.root.collection('people').doc(LIVE.me.uid).set({out:t, gone:t, share:false, lat:null, lon:null},{merge:true}).catch(()=>{}); }catch(e){} }
   if(LIVE.hb){ clearInterval(LIVE.hb); LIVE.hb=null; }
   wakeOff(); sndStop();
@@ -3787,6 +4019,7 @@ function guideShow(force){
   g.querySelector('#mcv-guideOk').onclick=close; g.addEventListener('click', e=>{ if(e.target===g) close(); });
 }
 function liveRender(){
+  try{ appPrivacySync(); }catch(e){}
   try{ gateRender(); }catch(e){} try{ meBarRender(); }catch(e){}
   const card=document.getElementById('mcv-liveCard'); if(!card || card.style.display==='none') return;
   const st=document.getElementById('mcv-lvStat'), lg=document.getElementById('mcv-lvLogin'), bd=document.getElementById('mcv-lvBoard'), nt=document.getElementById('mcv-lvNote');
