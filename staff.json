@@ -1,0 +1,147 @@
+{
+ "v": 1,
+ "events": [
+  {
+   "id": "eva6apnb8v8m",
+   "title": "제3회 자유민주 마라톤",
+   "files": [
+    {
+     "name": "610run.html",
+     "label": "운영용·통합",
+     "at": 1792559356641
+    }
+   ],
+   "at": 1792559356641,
+   "ver": "빌드 2026-10-21 · 26.34",
+   "live": {
+    "project": "course-2baf5",
+    "apiKey": "AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI",
+    "key": "eva6apnb8v8mynujf5t3bcvj8542"
+   },
+   "acc": [
+    {
+     "l": "da74da3c0182ec40cf4d37d163e08fafc3e2640ab07b6b86c62095cf624b8b71",
+     "h": "a4ee0c801ebdaa766435844477cdfc9637484f3dc7c6a6d2afb20509ec0f90d5",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "65b0a08b41da800f27a94baae3a342eef1d4043dbb7d8d68f6830193e00580ff",
+     "h": "8fa5bd8b10ea61ee4c8d368bc3ed6cd6443be38514a58ac0a6cb780ec1f71d00",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "a35a0c53b999d5509c2a66ddcdde8f50960f37d5634c1a997fb7c65db5017bf8",
+     "h": "cb059966fce9e861efac355ffa350782ae6911fbe12cccf482e17e934495b0c9",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "12c2f036f00244eb29bd0249f38871154f1e8d864a78519b5215fb768dde618b",
+     "h": "e49bb4e12cada6187b6b9e4e736a18641739c70ccfc370acc9b3561535e26b33",
+     "r": "lead",
+     "s": 0
+    },
+    {
+     "l": "0ee35794d2592ea5462e690eb09fc4eeea62f949a9d89e0b7481bd21ca767e4a",
+     "h": "3baa3f62419d53fc3ef5c92c2c3faf8acd8b3de40478fa275eaef7a1240da314",
+     "r": "lead",
+     "s": 0
+    },
+    {
+     "l": "2cad863dc712ca7e8c78df1b5ebd51e632781b88d617538d7c1de846db6c0eb1",
+     "h": "e06e7df010487420c0bcdba350dfba53bfaab0bc6efe599c07803601e49bc44d",
+     "r": "lead",
+     "s": 0
+    },
+    {
+     "l": "942977ef1f3cc379cc77af0e992af642212c5fba007fe0e0c9d93a87b84c684d",
+     "h": "4ea1bacbf84eccd9efa569780a6e3d9a8124e466828ff74c144e61b859bcae26",
+     "r": "cp",
+     "s": 0
+    },
+    {
+     "l": "17a651c0c63e5766ed331d6c441f6c143dea4117dc9af7aa999a1b9ef90dfc8d",
+     "h": "721e258e87fc2cef62c024106f3a1d25874b55c380b5e4368077ca3f80bf4cca",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "7f7a1b1c4f088629d8b9a1e0fecf753994073b370a60aba393a3ea85a2e178dd",
+     "h": "9c3058ae8ceb2fc78a0bb444c98c3651286247f8e6fe6daa485ea514895b2cca",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "9d154008f596e1339eedbd441a525e3633e1b31d9f96ddb5ed0528ca687da2af",
+     "h": "5582e240e2d699c371ef57667cd85e0e402815da5b8bd569b7994d5a833cb846",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "fdf6c5d96d2c751e815bc4aa12237b8ad892844fb2ee0a92ebd118f03be39b4e",
+     "h": "92e54d3c10ae717da75096a94f1bdd1519aaaeddf8707f0c8722460248e86a45",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "ce9c323f455ffc5aa22f837d31584a1c0275428c181a1073d97756ba61c0e0e1",
+     "h": "cab03b32e32ce35ef457fd5bc92ba3ae6e9ff9ac0b557fc1653c66d717927d05",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "8d5438c00db78b38814d766b71e370d66ca0e1d95d0d610cfa8752953acc25e0",
+     "h": "6e5439218111be85a1b07288522970975334f0f85df70bd3f349eb9b677566ef",
+     "r": "admin",
+     "s": 0
+    },
+    {
+     "l": "a115ff48edae0d07e6a29d5fd8c29f5c8b7b4087b77fba5189f325f450ee0ce1",
+     "h": "0bc07da2eec46e1fec9d03c03c2983767117c84b82b82e338a1111435772a32f",
+     "r": "admin",
+     "s": 0
+    },
+    {
+     "l": "9773e655fbdff2fac413a44b69164c1b34b8dadf57707e22c33ea61a40f6b611",
+     "h": "a24e31e4c52c09efe7d9b8789301c777e51135918c4e5a8548c447bbd0872d80",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "647dad06694c750df0a9078893bc0e3b61d07b43a7b44f92b7587d5511d4b7bb",
+     "h": "68cd402eb24a1c915c1a78e84fcb632a35b5c88936c3afec42e911cadf86f6cc",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8",
+     "h": "718fd2bd56736459f6aa15f98eddcb3875ca65489bfbcdc60091396f722476d3",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "efbec52f354546bc2e691245780282db2de2f23cbca8750ff2c8ef0fa97027af",
+     "h": "fa7adc0f5e07434abf22715ce29cca5b505821f44a41b8c24d1bd8de5ad47359",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "7f9eb4a7b8247594be2a995ad9ebaa1ceb188cda69059afc2826b69e6b936366",
+     "h": "c7d727361b981ba9b542b244c537705a6005d8c98604e80a73969d6f18a808f5",
+     "r": "admin",
+     "s": 1
+    },
+    {
+     "l": "0ce989d4b9077e3225338f4b7bc69185d835d4f05ce73dc073e0a96ba0b8bf55",
+     "h": "10f097a1d9b2606328c8ae13e765c655066e821e048c85b4773bf323b3431c93",
+     "r": "admin",
+     "s": 1
+    }
+   ],
+   "pl": "6849a510e2cc8b50e256b97ab8b37a847a76a7aaa1dfa79be42d26813c1a753e",
+   "pt": "672df7b091ee29cbde26885343a18aab52e5763fd5e151ce7b079640d2fd74f5"
+  }
+ ]
+}
