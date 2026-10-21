@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>상암위드런 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.44 개발판&quot;,&quot;at&quot;:1792570837579,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.45 개발판&quot;,&quot;at&quot;:1792571128010,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -1286,7 +1286,7 @@
   </div>
   <div class="mcv-card" id="mcv-logCard" style="display:none">
     <h2>📜 로그 <span id="mcv-logLabel" style="font-size:.78rem;color:#455a64;font-weight:700"></span>
-      <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCopy" title="표로 붙여 넣을 수 있게 복사">📋 복사</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCsv" title="CSV 파일로 저장">⬇ CSV</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-logPurge" title="총관리자만 — 이 대회의 로그를 모두 지웁니다 (지우기 전에 CSV 로 받아 두세요)">🗑 로그 초기화</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-resetAll" title="총관리자만 — 응급·메시지·로그·배치 완료·접속 기록을 모두 지워 처음 연 것처럼 만듭니다 (계정·템플릿은 남습니다)">♻ 전체 리셋</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-evEnd" title="총관리자만 — 행사를 종료하면 관리자 외 스탭은 접속할 수 없습니다">🏁 행사 종료</button></span></h2>
+      <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCopy" title="표로 붙여 넣을 수 있게 복사">📋 복사</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logCsv" title="CSV 파일로 저장">⬇ CSV</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-logPurge" title="총관리자만 — 이 대회의 로그를 모두 지웁니다 (지우기 전에 CSV 로 받아 두세요)">🗑 로그 초기화</button><button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-resetAll" title="총관리자만 — 응급·메시지·로그·배치 완료·접속 기록을 모두 지워 처음 연 것처럼 만듭니다 (계정·템플릿은 남습니다)">♻ 전체 리셋</button></span></h2>
     <div class="mcv-lvErr" id="mcv-logPurgeAsk" style="display:none;margin:0 18px 8px;gap:8px;align-items:center;flex-wrap:wrap"></div>
     <div class="mcv-lvTools" id="mcv-logTools"></div>
     <div id="mcv-logList"></div>
@@ -3520,9 +3520,8 @@ function evEndSub(){ if(!LIVE.root || EV_END.unsub) return;
   if(!EV_END.timer) EV_END.timer=setInterval(evEndApply, 60000); }
 function evEndApply(){
   const ended=evEnded();
-  const b=document.getElementById('mcv-evEnd'); if(b){ b.textContent=ended?'↺ 행사 다시 열기':'🏁 행사 종료'; b.style.display=(LIVE.me && LIVE.me.sup)?'':'none'; }
   let bn=document.getElementById('mcv-evEndBand'); const root=document.getElementById('mcv-root');
-  if(ended && LIVE.me && evAllowed(LIVE.me)){ if(!bn && root){ bn=document.createElement('div'); bn.id='mcv-evEndBand'; bn.style.cssText='margin:10px 16px 0;padding:10px 14px;border-radius:10px;background:#eceff1;color:#37474f;font-weight:700;font-size:.88rem'; root.insertBefore(bn, root.firstChild); } if(bn) bn.textContent='🏁 종료된 행사입니다 — 관리자만 볼 수 있습니다'+((EV_END.state&&EV_END.state.by)?' (종료: '+EV_END.state.by+')':' (대회일이 지나 자동 종료)'); }
+  if(ended && LIVE.me && evAllowed(LIVE.me)){ if(!bn && root){ bn=document.createElement('div'); bn.id='mcv-evEndBand'; bn.style.cssText='margin:10px 16px 0;padding:10px 14px;border-radius:10px;background:#eceff1;color:#37474f;font-weight:700;font-size:.88rem'; root.insertBefore(bn, root.firstChild); } if(bn) bn.textContent='🏁 종료된 행사입니다 — 관리자만 볼 수 있습니다'+((EV_END.state&&EV_END.state.by)?' (종료: '+EV_END.state.by+')':' (대회일이 지나 자동 종료)')+' · 다시 열기는 대회 목록에서'; }
   else if(bn) bn.remove();
   if(ended && LIVE.me && !evAllowed(LIVE.me)){ try{ liveLogout(); }catch(e){} loginErr('🏁 종료된 행사입니다 — 관리자만 접속할 수 있습니다'); }
 }
@@ -3970,11 +3969,6 @@ function logWire(){
   { const pb=document.getElementById('mcv-logPurge'), ask=document.getElementById('mcv-logPurgeAsk'); if(pb && ask){
       pb.onclick=()=>{ const all=Object.keys(LIVE.log).length; if(!all){ liveToast('지울 로그가 없습니다'); return; } ask.style.display='flex'; ask.innerHTML='⚠️ 로그 <b>'+all+'건</b>을 정말 지울까요? 되돌릴 수 없습니다. 보고용으로 남기려면 먼저 「⬇ CSV」로 받아 두세요. <button type="button" class="mcv-lvBtn mcv-sm" style="background:#b3261e;color:#fff;border-color:#b3261e" id="mcv-logPurgeGo">네, 전부 지우기</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-logPurgeNo">취소</button>';
         ask.querySelector('#mcv-logPurgeNo').onclick=()=>{ ask.style.display='none'; }; ask.querySelector('#mcv-logPurgeGo').onclick=()=>{ ask.style.display='none'; logPurge(); }; }; } }
-  { const eb=document.getElementById('mcv-evEnd'), ask=document.getElementById('mcv-logPurgeAsk'); if(eb && ask){
-      eb.onclick=()=>{ const to=!evEnded(); ask.style.display='flex';
-        ask.innerHTML=to?'🏁 <b>행사 종료</b> — 관리자(총관리자 포함)를 뺀 모든 스탭이 바로 로그아웃되고, 다시 들어올 수 없습니다. 기록은 그대로 남습니다. ':'↺ <b>행사 다시 열기</b> — 모든 스탭이 다시 들어올 수 있습니다. ';
-        ask.innerHTML+='<button type="button" class="mcv-lvBtn mcv-sm mcv-pri" id="mcv-evGo">'+(to?'네, 종료':'네, 다시 열기')+'</button><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-evNo">취소</button>';
-        ask.querySelector('#mcv-evNo').onclick=()=>{ ask.style.display='none'; }; ask.querySelector('#mcv-evGo').onclick=async ()=>{ ask.style.display='none'; eb.disabled=true; try{ await evEndToggle(); } finally{ eb.disabled=false; } }; }; } }
   { const rb=document.getElementById('mcv-resetAll'), ask=document.getElementById('mcv-logPurgeAsk'); if(rb && ask){
       rb.onclick=()=>{ const n={p:Object.keys(LIVE.pings).length, m:Object.keys(LIVE.msgs).length, l:Object.keys(LIVE.log).length, c:Object.keys(LIVE.checks).length, u:Object.keys(LIVE.people).length};
         ask.style.display='flex'; ask.innerHTML='♻ <b>전체 리셋</b> — 응급 '+n.p+' · 메시지 '+n.m+' · 로그 '+n.l+' · 배치 완료 '+n.c+' · 접속 기록 '+n.u+'건을 모두 지우고 처음 연 것처럼 만듭니다. 모든 사람의 화면에서 사라지고 되돌릴 수 없습니다. 보고용 자료는 먼저 「📊 엑셀 받기」「⬇ CSV」로 받아 두세요. '+
@@ -4114,7 +4108,6 @@ function guideShow(force){
 }
 function liveRender(){
   try{ appPrivacySync(); }catch(e){}
-  try{ const b=document.getElementById('mcv-evEnd'); if(b) b.style.display=(LIVE.me && LIVE.me.sup)?'':'none'; }catch(e){}
   try{ gateRender(); }catch(e){} try{ meBarRender(); }catch(e){}
   const card=document.getElementById('mcv-liveCard'); if(!card || card.style.display==='none') return;
   const st=document.getElementById('mcv-lvStat'), lg=document.getElementById('mcv-lvLogin'), bd=document.getElementById('mcv-lvBoard'), nt=document.getElementById('mcv-lvNote');
