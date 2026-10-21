@@ -150,11 +150,11 @@
     {
      "name": "runwithgo-admin.html",
      "label": "운영용·통합",
-     "at": 1792569219971
+     "at": 1792570347849
     }
    ],
-   "at": 1792569219971,
-   "ver": "빌드 2026-10-21 · 26.42 개발판",
+   "at": 1792570347849,
+   "ver": "빌드 2026-10-21 · 26.44 개발판",
    "live": {
     "project": "course-2baf5",
     "apiKey": "AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI",
