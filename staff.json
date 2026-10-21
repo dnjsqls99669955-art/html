@@ -256,11 +256,11 @@
     {
      "name": "gcrun-admin.html",
      "label": "운영용·통합",
-     "at": 1792563918652
+     "at": 1792567081832
     }
    ],
-   "at": 1792563918651,
-   "ver": "빌드 2026-10-21 · 26.40",
+   "at": 1792567081831,
+   "ver": "빌드 2026-10-21 · 26.41",
    "live": {
     "project": "course-2baf5",
     "apiKey": "AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI",
