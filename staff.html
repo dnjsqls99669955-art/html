@@ -316,6 +316,12 @@ main{max-width:720px;margin:0 auto;padding:22px 18px calc(40px + env(safe-area-i
 .ev.ended{background:#f7f9fb}.ev.ended h3{color:var(--sub)}
 .c.end{background:#eceff3;color:#55606e}
 .endnote{margin-top:12px;font-size:.86rem;color:var(--sub)}
+.evtool{border:1px solid var(--line);background:#fff;color:var(--sub);border-radius:999px;padding:4px 10px;font-size:.74rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.evtool.end{color:var(--red);border-color:rgba(214,39,61,.3)}.evtool.open{color:var(--blue);border-color:rgba(46,122,184,.35)}
+.ask{margin-top:12px;padding:12px;border-radius:10px;background:#fff6f6;border:1px solid rgba(214,39,61,.25);font-size:.86rem;color:#7a1f2b}
+.ask.open{background:#f2f8fd;border-color:rgba(46,122,184,.3);color:var(--navy)}
+.ask .row{display:flex;gap:8px;margin-top:10px}.ask button{flex:1;border:0;border-radius:8px;padding:10px;font-weight:700;cursor:pointer}
+.ask .yes{background:var(--red);color:#fff}.ask.open .yes{background:var(--blue)}.ask .no{background:#fff;border:1px solid var(--line);color:var(--sub)}
 .ev .top{display:flex;align-items:flex-start;gap:10px}
 .ev h3{margin:0;font-size:1.12rem;font-weight:700;letter-spacing:-.01em;line-height:1.4;flex:1;color:var(--ink)}
 .ev .date{color:var(--sub);font-size:.84rem;margin-top:3px}
@@ -410,14 +416,14 @@ main{max-width:720px;margin:0 auto;padding:22px 18px calc(40px + env(safe-area-i
 </div></div>
 
 <script>
-const ACC=[{"n":"김원빈","h":"da74da3c0182ec40cf4d37d163e08fafc3e2640ab07b6b86c62095cf624b8b71"},{"n":"조환석","h":"c3109a44578ce0e86e16a2191f4786e239fd6179b741d382704138120f675898"},{"n":"송진영","h":"0ce989d4b9077e3225338f4b7bc69185d835d4f05ce73dc073e0a96ba0b8bf55"},{"n":"송재환","h":"7f9eb4a7b8247594be2a995ad9ebaa1ceb188cda69059afc2826b69e6b936366"},{"n":"이송이","h":"3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8"},{"n":"최규호","h":"9773e655fbdff2fac413a44b69164c1b34b8dadf57707e22c33ea61a40f6b611"},{"n":"이민이","h":"efbec52f354546bc2e691245780282db2de2f23cbca8750ff2c8ef0fa97027af"},{"n":"이양이","h":"647dad06694c750df0a9078893bc0e3b61d07b43a7b44f92b7587d5511d4b7bb"}], SALT='mcv-list|staff', JSON_URL='./staff.json';
+const ACC=[{"n":"김원빈","h":"da74da3c0182ec40cf4d37d163e08fafc3e2640ab07b6b86c62095cf624b8b71"},{"n":"조환석","h":"65b0a08b41da800f27a94baae3a342eef1d4043dbb7d8d68f6830193e00580ff"},{"n":"송진영","h":"0ce989d4b9077e3225338f4b7bc69185d835d4f05ce73dc073e0a96ba0b8bf55"},{"n":"송재환","h":"7f9eb4a7b8247594be2a995ad9ebaa1ceb188cda69059afc2826b69e6b936366"},{"n":"이송이","h":"3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8"},{"n":"최규호","h":"9773e655fbdff2fac413a44b69164c1b34b8dadf57707e22c33ea61a40f6b611"},{"n":"이민이","h":"efbec52f354546bc2e691245780282db2de2f23cbca8750ff2c8ef0fa97027af"},{"n":"이양이","h":"647dad06694c750df0a9078893bc0e3b61d07b43a7b44f92b7587d5511d4b7bb"},{"n":"조양래","h":"a35a0c53b999d5509c2a66ddcdde8f50960f37d5634c1a997fb7c65db5017bf8"}], SALT='mcv-list|staff', JSON_URL='./staff.json';
 const LABEL={'운영용·통합':'운영 화면','관리자용':'관리자용','참가자용':'참가자용 코스도','배치용·담당자':'담당자 배치','배치용·구급차':'구급차 배치','배치용·급수대':'급수대 배치'};
 const ICON={'운영용·통합':'🧩','관리자용':'⭐','참가자용':'🏃','배치용·담당자':'📍','배치용·구급차':'🚑','배치용·급수대':'💧'};
 const ORDER=['운영용·통합','관리자용','배치용·담당자','배치용·구급차','배치용·급수대','참가자용'];
 const ROLE_LABEL={admin:'관리자',lead:'담당자',amb:'구급차',cp:'CP 담당',water:'급수대',patrol:'패트롤·페이스메이커'};
 /* 역할별로 열 수 있는 파일 — 발행본 쪽 로그인 명단(accForFile)과 같은 규칙 */
 const ALLOW={admin:['운영용·통합','관리자용','참가자용'],lead:['운영용·통합','배치용·담당자','참가자용'],amb:['운영용·통합','배치용·구급차','참가자용'],cp:['운영용·통합','배치용·구급차','참가자용'],water:['운영용·통합','배치용·급수대','참가자용'],patrol:['운영용·통합','참가자용']};
-let DATA=null, LIVE={}, ME=null, TIMER=null, LOADING=null, ENDST={};
+let DATA=null, LIVE={}, ME=null, TIMER=null, LOADING=null, ENDST={}, ASK=null;
 function sha256Hex(str){
   const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
   const b=new TextEncoder().encode(String(str)); const L=b.length, n=((L+9+63)>>6)<<6; const m=new Uint8Array(n); m.set(b); m[L]=0x80;
@@ -457,6 +463,18 @@ async function stateOne(e){ const l=e.live; if(!l||!l.project||!l.apiKey||!l.key
   try{ const r=await fetch('https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(l.project)+'/databases/(default)/documents/liveEvents/'+encodeURIComponent(l.key)+'/cfg/state?key='+encodeURIComponent(l.apiKey), {cache:'no-store'});
     if(r.status===404){ ENDST[e.id]=null; return; } if(!r.ok) return; const j=await r.json(); const f=(j&&j.fields)||{};
     ENDST[e.id]={ended:('ended' in f)?!!f.ended.booleanValue:undefined, by:(f.by&&f.by.stringValue)||''}; }catch(err){} }
+function canEndToggle(x){ return isDef(ME) || !!(x.m && x.m.s); }   /* 총관리자만 */
+async function setEnded(x, to){
+  const l=x.e.live; if(!l||!l.project||!l.apiKey||!l.key) throw new Error('실시간 설정이 없는 대회입니다');
+  const base='https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(l.project)+'/databases/(default)/documents/liveEvents/'+encodeURIComponent(l.key)+'/';
+  const now=Date.now();
+  const r=await fetch(base+'cfg/state?updateMask.fieldPaths=ended&updateMask.fieldPaths=at&updateMask.fieldPaths=by&key='+encodeURIComponent(l.apiKey), {method:'PATCH', headers:{'content-type':'application/json'},
+    body:JSON.stringify({fields:{ended:{booleanValue:!!to}, at:{integerValue:String(now)}, by:{stringValue:ME.n}}})});
+  if(!r.ok) throw new Error('저장하지 못했습니다 ('+r.status+')');
+  try{ await fetch(base+'log?key='+encodeURIComponent(l.apiKey), {method:'POST', headers:{'content-type':'application/json'},
+    body:JSON.stringify({fields:{t:{stringValue:to?'evend':'evopen'}, by:{stringValue:ME.n}, role:{stringValue:'admin'}, sup:{booleanValue:true}, at:{integerValue:String(now)}, msg:{stringValue:'대회 목록에서'}}})}); }catch(e){}
+  ENDST[x.e.id]={ended:!!to, by:ME.n};
+}
 function myEvents(me){ const def=isDef(me); return ((DATA&&DATA.events)||[]).map(e=>{ const m=memberOf(e, me); if(!m && !def) return null; return {e, m, full:def || !!(m&&m.s)}; }).filter(Boolean); }
 function loadMe(){ try{ const v=JSON.parse(localStorage.getItem('mcvlist_me')||'null'); if(v && v.h0 && v.n && v.exp>Date.now()) return v; }catch(e){} return null; }
 function setMe(v){ try{ if(v) localStorage.setItem('mcvlist_me', JSON.stringify(v)); else localStorage.removeItem('mcvlist_me'); }catch(e){} }
@@ -518,13 +536,21 @@ function render(){
     } else go='<div class="go"><a class="btn main" href="'+fileUrl(main.name)+'" data-ev="'+esc(e.id)+'"><span>'+esc(LABEL[main.label]||main.label||'입장')+' 열기</span></a></div>';
     if(rest.length && !locked) go+='<div class="more">'+rest.map(f=>'<a href="'+fileUrl(f.name)+'" data-ev="'+esc(e.id)+'">'+(ICON[f.label]||'')+' '+esc(LABEL[f.label]||f.label||String(f.name).replace(/\.html?$/i,''))+'</a>').join('')+'</div>';
     return '<div class="ev'+(isHid?' archived':'')+(ended?' ended':'')+'" style="animation-delay:'+Math.min(i*60,360)+'ms"><div class="top"><div style="flex:1"><h3>'+esc(e.title||'(제목 없음)')+'</h3>'+(e.date?'<div class="date">'+fmtDate(e.date)+'</div>':'')+'</div>'+
-      (def?'<button class="hide" data-hide="'+esc(e.id)+'">'+(isHid?'다시 보이기':'숨기기')+'</button>':'')+'</div>'+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+(canEndToggle(x)&&e.live?'<button class="evtool '+(ended?'open':'end')+'" data-end="'+esc(e.id)+'">'+(ended?'↺ 다시 열기':'🏁 행사 종료')+'</button>':'')+
+      (def?'<button class="hide" data-hide="'+esc(e.id)+'">'+(isHid?'다시 보이기':'숨기기')+'</button>':'')+'</div></div>'+
+      (ASK===e.id?(ended?'<div class="ask open">↺ <b>행사를 다시 엽니다.</b> 모든 스탭이 다시 들어올 수 있습니다.<div class="row"><button class="yes" data-endgo="'+esc(e.id)+'">다시 열기</button><button class="no" data-endno="1">취소</button></div></div>'
+        :'<div class="ask">🏁 <b>행사를 종료합니다.</b> 관리자 외 스탭은 바로 로그아웃되고 다시 들어올 수 없습니다. 기록은 그대로 남습니다.<div class="row"><button class="yes" data-endgo="'+esc(e.id)+'">종료하기</button><button class="no" data-endno="1">취소</button></div></div>'):'')+
       (chips?'<div class="chips">'+chips+'</div>':'')+go+
       (x.full?'<div class="meta">마지막 올림 '+fmt(e.at)+(e.ver?' · '+esc(e.ver):'')+'</div>':'')+'</div>'; }).join('');
   list.querySelectorAll('[data-hide]').forEach(b=>{ b.onclick=()=>{ const id=b.dataset.hide; let h=hidden(); if(h.includes(id)) h=h.filter(v=>v!==id); else h.push(id); setHidden(h); render(); }; });
   list.querySelectorAll('a[data-ev]').forEach(a=>{ a.onclick=()=>handoff(a.dataset.ev, a.dataset.pt||''); });
+  list.querySelectorAll('[data-end]').forEach(b=>{ b.onclick=()=>{ ASK=(ASK===b.dataset.end)?null:b.dataset.end; render(); }; });
+  list.querySelectorAll('[data-endno]').forEach(b=>{ b.onclick=()=>{ ASK=null; render(); }; });
+  list.querySelectorAll('[data-endgo]').forEach(b=>{ b.onclick=async ()=>{ const x=myEvents(ME).find(v=>v.e.id===b.dataset.endgo); if(!x) return; const to=!isEnded(x.e); b.disabled=true; b.textContent='저장 중…';
+    try{ await setEnded(x, to); ASK=null; render(); }catch(err){ b.disabled=false; b.textContent='다시 시도'; alertBar(err.message); } }; });
 }
 /* 대회로 넘어갈 때 — 그 발행본의 로그인 해시를 같은 탭의 sessionStorage 에 둔다. 발행본이 한 번 읽고 지운다 */
+function alertBar(t){ const el=$('permBar'); if(!el) return; $('permBarT').textContent=t; el.classList.add('on'); setTimeout(()=>{ try{ stPaint(); }catch(e){ el.classList.remove('on'); } }, 5000); }
 function handoff(id, pt){
   const x=myEvents(ME).find(v=>v.e.id===id); if(!x || !x.m || !x.e.live) return; if(isEnded(x.e) && !canEnter(x)) return;
   try{ sessionStorage.setItem('mcv-handoff', JSON.stringify({k:x.e.live.key, n:ME.n, h:x.m.h, pt:(x.m.r==='patrol'?(pt||'patrol'):''), at:Date.now()})); }catch(e){}
