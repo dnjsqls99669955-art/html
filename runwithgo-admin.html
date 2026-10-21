@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>상암위드런 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.32&quot;,&quot;at&quot;:1792542066865,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;상암위드런&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evjbcwrrsy4e&quot;,&quot;ver&quot;:&quot;빌드 2026-10-21 · 26.34&quot;,&quot;at&quot;:1792559864417,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evjbcwrrsy4eseta88d4m39r8hpm&quot;}}">
 
 </head>
 <body style="margin:0;background:#f4f5f2">
@@ -169,6 +169,10 @@
   gap:14px;padding:16px;align-items:start;}
 #mcv-root .mcv-tables>div{min-width:0;max-width:100%;overflow-x:auto;}
 #mcv-root .mcv-tables table{min-width:max-content;}
+/* 물자 집계·스탭 표처럼 표가 하나뿐인 칸은 격자 칸 하나에 갇혀 잘리던 것 → 한 줄 전체 폭 */
+#mcv-root #mcv-supTable,#mcv-root #mcv-staffTable{grid-template-columns:1fr !important;}
+#mcv-root #mcv-supTable>div,#mcv-root #mcv-staffTable>div{width:100%;}
+#mcv-root #mcv-supTable table{min-width:100%;width:100%;} #mcv-root #mcv-supTable th{white-space:normal;line-height:1.3;word-break:keep-all;min-width:64px;} #mcv-root #mcv-supTable th span{white-space:normal;display:block;font-size:.68rem;} #mcv-root #mcv-supTable td.mcv-qty{white-space:nowrap;}
 #mcv-root #mcv-map{height:clamp(300px,46vh,540px);}
 #mcv-root #mcv-elev{height:clamp(170px,24vh,240px);}
 @container (max-width:560px){
@@ -3238,9 +3242,21 @@ async function liveBoot(){
     if(LIVE.me) swInit();
     if(LIVE.me){ liveHello(); logSub(); if(WAKE.want) wakeOn(); permRefresh(); }
     logWire();
+    try{ liveHandoff(); }catch(e){}
   }catch(e){ LIVE.err=liveErrText(e); liveRender(); }
   window.addEventListener('online', liveRender); window.addEventListener('offline', liveRender);
   setInterval(()=>{ drawPeoplePins(); }, 60000);
+}
+/* 🗂 직원용 대회 목록에서 넘어올 때 — 목록이 sessionStorage 에 이름 + 이 파일의 로그인 해시를 두고 온다(번호는 넘기지 않는다). 2분 안·이 대회 키만, 한 번 쓰고 지운다 */
+function liveHandoff(){
+  let v=null; try{ v=JSON.parse(sessionStorage.getItem('mcv-handoff')||'null'); sessionStorage.removeItem('mcv-handoff'); }catch(e){ v=null; }
+  if(!v || !LIVECFG || v.k!==LIVECFG.key || !v.n || !v.h || !(Date.now()-(+v.at||0)<120000)) return false;
+  const name=accNorm(v.n);
+  if(LIVE.me && LIVE.me.h===v.h && LIVE.me.name===name) return true;   /* 이미 그 사람으로 들어와 있다 */
+  if(v.pt){ if(!PATROL || v.h!==PATROL.h) return false; if(LIVE.me) liveLogout(); return livePatrolEnter(name, v.pt==='pacer'?'pacer':'patrol'); }
+  const acc=ACC.find(a=>a.n===name && a.h===v.h); if(!acc) return false;
+  if(LIVE.me) liveLogout();
+  return liveLoginAcc(acc);
 }
 function liveErrText(e){ const m=(e&&e.message)||String(e); if(/permission|insufficient/i.test(m)) return 'Firestore 규칙이 아직 없습니다 — 제작기의 「Firestore 규칙 보기」대로 넣어 주세요'; return m; }
 function liveOnline(){ return LIVE.on && navigator.onLine!==false; }
@@ -3253,6 +3269,9 @@ function liveLogin(name, pin){
   const h=sha256Hex(LIVECFG.key+'|'+name+'|'+pin);
   const acc=ACC.find(a=>a.n===name && a.h===h);
   if(!acc){ loginErr(ACC.some(a=>a.n===name)?'번호가 다릅니다 — 「'+name+'」의 번호 4자리를 다시 확인해 주세요':'등록되지 않은 이름입니다 — 제작기 명단과 같은 이름(띄어쓰기 포함)을 넣어 주세요'); return false; }
+  return liveLoginAcc(acc);
+}
+function liveLoginAcc(acc){
   loginErr('');
   const me=LIVE.me||{uid:liveUid()}; me.name=acc.n; me.h=acc.h; me.role=acc.r||'lead'; me.sup=!!acc.s; me.cp=acc.cp||''; me.cpId=acc.cpId||''; me.car=+acc.car||0; me.zone=acc.z||null; me.share=LIVE.share;
   /* 구급차 N호차인데 시설을 안 묶었으면, 이름에 같은 번호가 든 구급차 시설을 찾아 묶는다 */
@@ -3273,6 +3292,9 @@ function livePatrolLogin(name, pin, ptype){
   if(!name){ loginErr('이름을 넣어 주세요'); return false; }
   if(!/^\d{4}$/.test(pin)){ loginErr('번호 4자리를 넣어 주세요'); return false; }
   if(sha256Hex(LIVECFG.key+'|patrol|'+pin)!==PATROL.h){ loginErr('번호가 다릅니다 — 운영본부에서 받은 번호 4자리를 확인해 주세요'); return false; }
+  return livePatrolEnter(name, ptype);
+}
+function livePatrolEnter(name, ptype){
   loginErr('');
   const me=LIVE.me||{uid:liveUid()}; me.name=name; me.h=PATROL.h; me.role='patrol'; me.ptype=ptype; me.sup=false; me.cp=''; me.cpId=''; me.car=0; me.pno=0; me.zone=null; me.share=true; LIVE.share=true;
   LIVE.me=me; liveSaveMe(me); roleApply(); liveHello(); liveRender(); liveRefreshCard(); liveSyncPins();
