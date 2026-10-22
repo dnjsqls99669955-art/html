@@ -150,10 +150,10 @@
     {
      "name": "runwithgo-admin.html",
      "label": "운영용·통합",
-     "at": 1792642304480
+     "at": 1792646727976
     }
    ],
-   "at": 1792642304480,
+   "at": 1792646727976,
    "ver": "빌드 2026-10-22 · 26.49 개발판",
    "live": {
     "project": "course-2baf5",
@@ -198,8 +198,8 @@
      "s": 0
     },
     {
-     "l": "a53d94838de0d9bf8e04c3842404042b0edb668a4fec32bf86a275078265a2fd",
-     "h": "b03c59fd949f87570432e4b548237f19b2608f8f6ebfeaa094d7de46b1281173",
+     "l": "1180cc246fffae216e49533fb09048446e62ce6603c92d54291685988ed58b56",
+     "h": "657f6a85994dc562e02dfc3a52e65b1d1738b53b772322e57d8f9686d60cfeec",
      "r": "amb",
      "s": 0
     },
@@ -213,37 +213,37 @@
      "l": "65b0a08b41da800f27a94baae3a342eef1d4043dbb7d8d68f6830193e00580ff",
      "h": "242f8cf1f3dcf217f299de947dc0250716113ac38780b439b204165d3e1c4946",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "647dad06694c750df0a9078893bc0e3b61d07b43a7b44f92b7587d5511d4b7bb",
      "h": "59e4f9a4b834e19e4a9ab35fe2cdfa3d2aefffbfcddef61c604ac9dff64b694c",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "efbec52f354546bc2e691245780282db2de2f23cbca8750ff2c8ef0fa97027af",
      "h": "94c3b3d2f5f7f6b254ef630ec712b4d805ae21b1fd25c280c1d443457baac00e",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "7f9eb4a7b8247594be2a995ad9ebaa1ceb188cda69059afc2826b69e6b936366",
      "h": "51f8eaa9ef5c468bb98226942040a6c79391eeaa03d756818ee89329727a26c8",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "0ce989d4b9077e3225338f4b7bc69185d835d4f05ce73dc073e0a96ba0b8bf55",
      "h": "1136313ec792c7c20421a765ee5c4bc5b0d2a013f282169693d62d0f5718f7b5",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8",
      "h": "ab6b8af877b03976c0bc0cb691ac7ee58a79788fa88da84e204b4541d7e69b38",
      "r": "admin",
-     "s": 1
+     "s": 0
     }
    ],
    "pl": "10e11055acf132b5819562292ce95b98033ae204287ed35d635445bbeb58941e",
