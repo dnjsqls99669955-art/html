@@ -150,10 +150,10 @@
     {
      "name": "runwithgo-admin.html",
      "label": "운영용·통합",
-     "at": 1792728227987
+     "at": 1792728586950
     }
    ],
-   "at": 1792728227984,
+   "at": 1792728586946,
    "ver": "빌드 2026-10-22 · 26.49 개발판",
    "live": {
     "project": "course-2baf5",
@@ -172,12 +172,6 @@
      "h": "c52e8dfa2c9d4e5c619b90bec423b876d9f387456d339ec4a9d1899724b2f0ce",
      "r": "admin",
      "s": 1
-    },
-    {
-     "l": "f91785b9fc52d5ddb26ce2a4f17785bd45ee3036be15c5ef3b9a2aeab4dff480",
-     "h": "1f61e8d9dc08e0b188281c205c63c0bf839bbeadec740fa8a6fd47c220fa4b8c",
-     "r": "lead",
-     "s": 0
     },
     {
      "l": "c255ce03439ea770cf183b7acb954aee08851365ca451f0660d8c7049bbccad5",
@@ -243,6 +237,12 @@
      "l": "3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8",
      "h": "ab6b8af877b03976c0bc0cb691ac7ee58a79788fa88da84e204b4541d7e69b38",
      "r": "admin",
+     "s": 0
+    },
+    {
+     "l": "2ee76c93ae7e03a290d3470c38d8a67bd13ddc10103316649811673131b4d145",
+     "h": "84ba4a2407b7247eecb019f0a6bbfc74dd8c815a22a69d7e9b233a08c445b899",
+     "r": "lead",
      "s": 0
     }
    ],
