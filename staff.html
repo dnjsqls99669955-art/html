@@ -80,7 +80,7 @@
       backgroundMessage: (roleLabel === 'amb' ? '구급차' : roleLabel === 'lead' ? '담당자' : '스탭') + ' 위치를 관리자에게 공유하고 있습니다.',
       requestPermissions: true,
       stale: false,
-      distanceFilter: 3
+      distanceFilter: 5
     };
     return call(function () { return BG.addWatcher(opts, function (loc, err) {
       if (err) {
