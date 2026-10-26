@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>제3회 자유민주 마라톤 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-10-26 · 26.54 개발판&quot;,&quot;at&quot;:1792985057897,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-10-26 · 26.56 개발판&quot;,&quot;at&quot;:1792988964713,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -91,7 +91,7 @@
       backgroundMessage: (roleLabel === 'amb' ? '구급차' : roleLabel === 'lead' ? '담당자' : '스탭') + ' 위치를 관리자에게 공유하고 있습니다.',
       requestPermissions: true,
       stale: false,
-      distanceFilter: 3
+      distanceFilter: 5
     };
     return call(function () { return BG.addWatcher(opts, function (loc, err) {
       if (err) {
@@ -727,6 +727,7 @@
 #mcv-root #mcv-map .mcv-kperson{position:relative;width:22px;height:22px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 #mcv-root #mcv-map .mcv-kperson i{position:absolute;left:50%;top:100%;transform:translate(-50%,3px);background:rgba(20,22,26,.86);color:#fff;font-style:normal;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap;line-height:1.3;}
 #mcv-root #mcv-map .mcv-kperson.mcv-stale{opacity:.45;}
+#mcv-root #mcv-map .mcv-kperson.mcv-old{opacity:.6;border-style:dashed;} #mcv-root #mcv-map .mcv-kperson i b.mcv-age{font-weight:600;color:#ffd54f;margin-left:3px;}
 #mcv-root #mcv-map .mcv-lpMark{width:14px;height:14px;border-radius:50%;background:#ff6a13;border:2.5px solid #fff;box-shadow:0 0 0 4px rgba(255,106,19,.3);}
 /* 배치 현황 카드 */
 #mcv-root .mcv-lvStat{font-size:.74rem;font-weight:700;color:#607d8b;margin-left:4px;}
@@ -3205,27 +3206,66 @@ function myInView(ll){
 function myPan(ll){ try{ if(OSM) kmap.panTo(ll); else kmap.panTo(new kakao.maps.LatLng(ll[0],ll[1])); }catch(e){} }
 /* 🧈 부드럽게 옮기기 — 새 좌표로 순간이동하지 않고 dur(ms) 동안 미끄러지듯 간다. o={cur:[lat,lon], set(fn), raf}
    lin=true 면 일정한 속도(다른 사람 핀: 다음 신호가 올 때쯤 도착), 아니면 끝에서 천천히(내 파란 점) */
-function mvTween(o, to, dur, lin){
+function mvTween(o, to, dur, lin, done){
   if(o.raf){ cancelAnimationFrame(o.raf); o.raf=0; }
   const from=o.cur; let far=Infinity; try{ if(from) far=distKm(from[0],from[1],to[0],to[1])*1000; }catch(e){}
-  if(!from || !dur || far<0.3 || far>3000 || document.visibilityState==='hidden'){ o.cur=to; o.set(to); return; }
+  if(!from || !dur || far<0.3 || far>3000 || document.visibilityState==='hidden'){ o.cur=to; o.set(to); if(done) done(); return; }
   const t0=performance.now(); let last=0;
   const step=now=>{ const k=Math.min(1,(now-t0)/dur); if(k<1 && now-last<33){ o.raf=requestAnimationFrame(step); return; } last=now;
     const e=lin?k:1-Math.pow(1-k,3); const q=[from[0]+(to[0]-from[0])*e, from[1]+(to[1]-from[1])*e]; o.cur=q; try{ o.set(q); }catch(_){}
-    o.raf=(k<1)?requestAnimationFrame(step):0; };
+    if(k<1) o.raf=requestAnimationFrame(step); else { o.raf=0; if(done) done(); } };
   o.raf=requestAnimationFrame(step);
+}
+/* 🧭 내비처럼 — 다음 신호가 오기 전 잠깐(최대 2.5초) 마지막 속도·방향으로 계속 간다. 새 신호가 오면 그 자리로 부드럽게 맞춘다 */
+function mvDrift(o, spd, hdg, maxMs){ if(!(spd>2) || hdg==null || !o.cur || document.visibilityState==='hidden') return;
+  const t0=performance.now(), from=o.cur.slice(), r=hdg*Math.PI/180, cl=Math.cos(from[0]*Math.PI/180), v=Math.min(spd, 40)*0.9; let last=0;
+  const step=now=>{ const el=now-t0; if(el>maxMs){ o.raf=0; return; } if(now-last<33){ o.raf=requestAnimationFrame(step); return; } last=now;
+    const d=v*el/1000, q=[from[0]+d*Math.cos(r)/111320, from[1]+d*Math.sin(r)/(111320*cl)]; o.cur=q; try{ o.set(q); }catch(_){} o.raf=requestAnimationFrame(step); };
+  o.raf=requestAnimationFrame(step); }
+/* 🏃 코스 역할(패트롤·페이스메이커·선두유도)은 코스선 25 m 안이면 화면에서 코스 위에 올린다 — 저장되는 위치는 실제 그대로 */
+function snapToCourse(ll, hintKm){ try{ if(typeof vNearKm!=='function' || typeof latlngAtKm!=='function') return null; const n=vNearKm(ll[0], ll[1], hintKm); if(!n || n.d>25) return null; const q=latlngAtKm(n.km); return (q && isFinite(q[0]))?{ll:[q[0],q[1]], km:n.km}:null; }catch(e){ return null; } }
+/* 🛰 GPS 정리 — 휴대폰 GPS 는 가만히 있어도 수~수십 m 씩 흔들리고, 가끔 기지국·와이파이 위치(오차 100 m+)가 섞인다.
+   ① 오차 큰 점 버리기 ② 말이 안 되는 속도로 튄 점 버리기(3번 연속이면 진짜 이동으로 인정) ③ 칼만 필터로 오차만큼 덜 믿고 섞기
+   ④ 서 있을 때 흔들림은 무시(3 m 안). 화면의 파란 점과 서버로 보내는 위치 모두 정리된 값을 쓴다 */
+const KF={lat:0, lng:0, v:-1, t:0, bad:0};
+function kfReset(){ KF.v=-1; KF.bad=0; KF.h=[]; KF.pl=null; KF.vs=null; KF.hd=null; }
+function gpsClean(raw, acc, t, spd){
+  acc=Math.max(3, +acc||0);
+  if(KF.v<0){ KF.lat=raw[0]; KF.lng=raw[1]; KF.v=acc*acc; KF.t=t; KF.bad=0; return [raw[0], raw[1]]; }
+  const dt=Math.max(0.2, (t-KF.t)/1000), d=distKm(raw[0],raw[1],KF.lat,KF.lng)*1000, kAcc=Math.sqrt(KF.v);
+  /* ① 방금(30초 안) 정확한 위치가 있었는데 오차 100 m 넘는 점 → 버림 */
+  if(acc>100 && MY.goodAt && t-MY.goodAt<30000) return null;
+  /* ② 순간 속도 45 m/s(162 km/h) 넘게 튄 점 → 버림. 3번 연속이면 정말 옮긴 것(차로 이동·실내에서 나옴)으로 보고 새로 시작 */
+  if(d>acc+kAcc+30 && d/dt>45){ KF.bad++; if(KF.bad<3) return null; KF.lat=raw[0]; KF.lng=raw[1]; KF.v=acc*acc; KF.t=t; KF.bad=0; return [raw[0], raw[1]]; }
+  KF.bad=0;
+  /* ③ 칼만 — 걸을 땐 3 m/s, 차(속도값 있음)는 그 속도만큼 빨리 따라간다 */
+  /* 속도값이 없으면(웹·일부 기기) 최근 5초 남짓의 원래 점으로 대략 잰다 — 차는 빨리, 서 있으면 천천히 따라가게 */
+  KF.h=(KF.h||[]).filter(x=>t-x[2]<12000); KF.h.push([raw[0],raw[1],t]);
+  let sp=(spd!=null && isFinite(+spd) && +spd>=0)?+spd:null;
+  if(sp==null){ const o=KF.h.find(x=>t-x[2]>=4000); if(o) sp=distKm(raw[0],raw[1],o[0],o[1])*1000/((t-o[2])/1000); }
+  const q=Math.max(3, Math.min(35, sp||0)); KF.v+=dt*q*q; KF.t=t;
+  const K=KF.v/(KF.v+acc*acc); KF.lat+=K*(raw[0]-KF.lat); KF.lng+=K*(raw[1]-KF.lng); KF.v=(1-K)*KF.v;
+  /* 속도·방향 — 정리된 점끼리로 잰다(보낼 때 함께 보내 관리자 화면에서 끊김 없이 이어 그린다) */
+  if(KF.pl){ const dd=distKm(KF.pl[0],KF.pl[1],KF.lat,KF.lng)*1000, dts=Math.max(0.2,(t-KF.pl[2])/1000), inst=dd/dts; KF.vs=(KF.vs==null)?inst:KF.vs*0.6+inst*0.4;
+    if(inst>1.2 && dd>1.5){ const y=(KF.lng-KF.pl[1])*Math.cos(KF.lat*Math.PI/180), x=KF.lat-KF.pl[0]; KF.hd=((Math.atan2(y,x)*180/Math.PI)+360)%360; } }
+  KF.pl=[KF.lat, KF.lng, t]; MY.spd=KF.vs||0; MY.hdg=(KF.vs>1)?KF.hd:null;
+  return [KF.lat, KF.lng];
 }
 function myFix(pos){
   if(!kReady) return;
-  const ll=[pos.coords.latitude, pos.coords.longitude], acc=pos.coords.accuracy||0, nowT=Date.now();
-  /* 튀는 점 거르기 — 방금(15초 안) 정확한 위치가 있었는데 오차 큰 점이 그 오차 안에서 오면 화면은 그대로 둔다 */
-  if(MY.last && MY.goodAt && nowT-MY.goodAt<15000 && acc>60 && acc>(MY.lastAcc||0)*2){ try{ if(distKm(ll[0],ll[1],MY.last[0],MY.last[1])*1000<acc){ MY.err=0; return; } }catch(e){} }
+  const raw=[pos.coords.latitude, pos.coords.longitude], acc=pos.coords.accuracy||0, nowT=Date.now(), t=+pos.timestamp||nowT;
+  const cl=gpsClean(raw, acc, t, pos.coords.speed);
+  if(!cl){ MY.err=0; return; }
   if(acc && acc<=30) MY.goodAt=nowT; MY.lastAcc=acc;
+  /* ④ 서 있을 때 흔들림 — 화면 점과 3 m 안이면 그대로 둔다(보내는 값은 liveLoc 이 8초·20 m 로 따로 거른다) */
+  const shown=(MY.tw&&MY.tw.cur)||MY.last; let still=false; try{ still=!!shown && distKm(cl[0],cl[1],shown[0],shown[1])*1000<3; }catch(e){}
+  let ll=cl;
+  if(typeof LIVE!=='undefined' && LIVE.me && LIVE.me.role==='patrol'){ const sn=snapToCourse(cl, MY.snapKm); if(sn){ ll=sn.ll; MY.snapKm=sn.km; } else MY.snapKm=null; }
   const gap=MY.fixAt?Math.max(300, Math.min(1500, nowT-MY.fixAt)):0; MY.fixAt=nowT;
-  MY.last=ll; MY.err=0;
-  try{ if(typeof liveLoc==='function') liveLoc(ll, acc); }catch(e){}
-  try{ arriveCheck(ll, acc); }catch(e){}
-  if(!MY.ov){ MY.ov=myMake(ll); MY.tw={cur:ll, set:a=>{ if(MY.ov) MY.ov.setPosition(a); }, raf:0}; } else { MY.ov.show(); if(!MY.tw) MY.tw={cur:ll, set:a=>{ if(MY.ov) MY.ov.setPosition(a); }, raf:0}; mvTween(MY.tw, ll, gap*0.85, false); }
+  MY.last=ll; MY.real=cl; MY.err=0;
+  try{ if(typeof liveLoc==='function') liveLoc(cl, acc); }catch(e){}   /* 보내는 건 실제(정리된) 위치 */
+  try{ arriveCheck(cl, acc); }catch(e){}
+  if(!MY.ov){ MY.ov=myMake(ll); MY.tw={cur:ll, set:a=>{ if(MY.ov) MY.ov.setPosition(a); }, raf:0}; } else { MY.ov.show(); if(!MY.tw) MY.tw={cur:ll, set:a=>{ if(MY.ov) MY.ov.setPosition(a); }, raf:0}; if(!still) mvTween(MY.tw, ll, gap*0.85, false); }
   MY.ov.setAcc(acc>15 ? acc : 0);
   if(MY.first){ MY.first=false; mapFocus(ll[0],ll[1]); }
   else if(MY.follow && !myInView(ll)) myPan(ll);
@@ -3248,7 +3288,7 @@ function myNative(){ try{ return !!(window.MCV_NATIVE && MCV_NATIVE.isApp()); }c
 function myStart(){
   if(myNative()){   /* 📱 앱 — 화면이 꺼지거나 다른 앱을 써도 위치를 계속 보낸다 (알림창에 "위치 공유 중") */
     MY.follow=true; MY.denied=false;
-    if(MY.watch===null){ MY.watch='native'; MCV_NATIVE.startLocation(f=>{ try{ myFix({coords:{latitude:f.lat, longitude:f.lon, accuracy:f.acc||0}, timestamp:f.at||Date.now()}); }catch(e){} }).then(ok=>{ appDiag({appLoc:ok?1:0}); if(!ok && MY.watch==='native'){ MY.watch=null; myBtnSync(); } }); }
+    if(MY.watch===null){ MY.watch='native'; MCV_NATIVE.startLocation(f=>{ try{ myFix({coords:{latitude:f.lat, longitude:f.lon, accuracy:f.acc||0, speed:(f.spd==null?null:f.spd)}, timestamp:f.at||Date.now()}); }catch(e){} }).then(ok=>{ appDiag({appLoc:ok?1:0}); if(!ok && MY.watch==='native'){ MY.watch=null; myBtnSync(); } }); }
     myBtnSync(); if(!MY.last) myTip('내 위치를 찾는 중…', 6000); return;
   }
   if(!navigator.geolocation){ alert('이 기기에서는 위치 서비스를 사용할 수 없습니다.'); return; }
@@ -3262,7 +3302,7 @@ function myStop(){
   if(MY.watch==='native'){ try{ MCV_NATIVE.stopLocation(); }catch(e){} }
   else if(MY.watch!==null){ try{ navigator.geolocation.clearWatch(MY.watch); }catch(e){} }
   MY.watch=null; MY.first=true; MY.follow=false;
-  if(MY.tw&&MY.tw.raf){ cancelAnimationFrame(MY.tw.raf); } MY.tw=null; MY.fixAt=0; MY.goodAt=0;
+  if(MY.tw&&MY.tw.raf){ cancelAnimationFrame(MY.tw.raf); } MY.tw=null; MY.fixAt=0; MY.goodAt=0; kfReset();
   if(MY.ov){ MY.ov.rm(); MY.ov=null; }
   MY.last=null; myTip(''); myBtnSync();
 }
@@ -4046,9 +4086,11 @@ function liveLoc(ll, acc){
   if(!LIVE.me || !LIVE.root || !LIVE.share) return;
   const now=Date.now(); let moved=Infinity;
   if(LIVE.lastLL) moved=Math.hypot((ll[0]-LIVE.lastLL[0])*111320, (ll[1]-LIVE.lastLL[1])*111320*Math.cos(ll[0]*Math.PI/180));
-  if(now-LIVE.lastSent<8000 && moved<20) return;
+  /* 보내는 간격 — 차로 움직이면 2.5초, 걸으면 5초, 서 있으면 20초(또는 그만큼 움직이면 바로) */
+  const v=(typeof MY!=='undefined' && +MY.spd)||0, iv=v>4?2500:(v>1?5000:20000), md=v>4?25:(v>1?12:10);
+  if(now-LIVE.lastSent<1500) return; if(now-LIVE.lastSent<iv && moved<md) return;
   LIVE.lastSent=now; LIVE.lastLL=ll;
-  LIVE.root.collection('people').doc(LIVE.me.uid).set({lat:+ll[0].toFixed(6), lon:+ll[1].toFixed(6), acc:Math.round(acc||0), at:now, locAt:now},{merge:true}).catch(()=>{});
+  LIVE.root.collection('people').doc(LIVE.me.uid).set({lat:+ll[0].toFixed(6), lon:+ll[1].toFixed(6), acc:Math.round(acc||0), at:now, locAt:now, spd:+v.toFixed(1), hdg:(v>1 && MY.hdg!=null)?Math.round(MY.hdg):null},{merge:true}).catch(()=>{});
 }
 /* 위치 켬/끔/못 잡음 — 사람 목록·접속 현황에 같은 말로 */
 function locState(p){
@@ -4091,7 +4133,7 @@ function liveRefreshCard(){ const lay=document.getElementById('mcv-infoLayer'); 
   if(d){ if(!tag){ tag=document.createElement('span'); tag.className='mcv-c mcv-c-sub'; b.after(tag); } tag.textContent='완료 · '+(c.by||'')+' '+liveFmtT(c.at); } else if(tag) tag.remove(); }
 /* 사람 핀 */
 function liveOv(ll, html, z, onClick){
-  if(OSM){ const mk=L.marker(ll,{icon:L.divIcon({html, className:'mcv-lfIcon', iconSize:[0,0]}), zIndexOffset:z||0, interactive:true}).addTo(kmap); if(onClick) mk.on('click', ev=>{ L.DomEvent.stopPropagation(ev); onClick(); }); return {rm:()=>kmap.removeLayer(mk), setPos:a=>mk.setLatLng(a)}; }
+  if(OSM){ const mk=L.marker(ll,{icon:L.divIcon({html, className:'mcv-lfIcon', iconSize:[0,0]}), zIndexOffset:z||0, interactive:true}).addTo(kmap); if(onClick) mk.on('click', ev=>{ L.DomEvent.stopPropagation(ev); onClick(); }); return {rm:()=>kmap.removeLayer(mk), setPos:a=>mk.setLatLng(a), getEl:()=>mk.getElement&&mk.getElement()}; }
   const box=document.createElement('div'); box.innerHTML=html; const node=box.firstElementChild||box;
   const ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ll[0],ll[1]), content:node, xAnchor:.5, yAnchor:.5, zIndex:z||1, clickable:true});
   if(onClick) node.addEventListener('click', ev=>{ ev.stopPropagation(); onClick(); });
@@ -4109,19 +4151,28 @@ function drawPeoplePins(){
     if(LIVE.me && uid===LIVE.me.uid) return;                       /* 나는 파란 점으로 이미 보인다 */
     if(isLeader()) return;                                         /* 🚩 선두유도는 다른 사람 위치를 보지 않는다 */
     const stale=(now-(+p.at||0))>LIVE_STALE, col=liveZoneColor(p), ll=[+p.lat,+p.lon];
-    const html='<div class="mcv-kperson'+(stale?' mcv-stale':'')+'" style="background:'+col+'" title="'+esc(p.name||'')+'">'+esc(String(p.name||'?').charAt(0))+'<i>'+esc(p.name||'')+'</i></div>';
+    const html='<div class="mcv-kperson'+(stale?' mcv-stale':'')+'" style="background:'+col+'" title="'+esc(p.name||'')+'">'+esc(String(p.name||'?').charAt(0))+'<i>'+esc(p.name||'')+'<b class="mcv-age"></b></i></div>';
     let e=M[uid];
     if(!e || e.key!==html){ const start=e?(e.tw.cur||ll):ll; if(e){ if(e.tw.raf) cancelAnimationFrame(e.tw.raf); try{ e.h.rm(); }catch(_){} }
       const h=liveOv(start, html, 300, ()=>pinClick(uid)); const ne={h, key:html, tw:{cur:start, set:a=>h.setPos(a), raf:0}, tgt:e?e.tgt:null, locAt:e?e.locAt:0}; e=M[uid]=ne;
       if(e.tgt && e.tw.cur && (e.tgt[0]!==start[0]||e.tgt[1]!==start[1])) mvTween(e.tw, e.tgt, 600, true); }
     seen.add(uid);
-    if(!e.tgt || e.tgt[0]!==ll[0] || e.tgt[1]!==ll[1]){ const t=+p.locAt||+p.at||now; const gap=e.locAt?Math.max(600, Math.min(9000, t-e.locAt)):0; e.tgt=ll; e.locAt=t; mvTween(e.tw, ll, gap*0.9, true); }
+    if(!e.raw || e.raw[0]!==ll[0] || e.raw[1]!==ll[1]){ const t=+p.locAt||+p.at||now; const gap=e.locAt?Math.max(600, Math.min(4000, t-e.locAt)):0; e.raw=ll; e.locAt=t;
+      let tg=ll, snapped=false; if(p.role==='patrol'){ const sn=snapToCourse(ll, e.snapKm); if(sn){ tg=sn.ll; e.snapKm=sn.km; snapped=true; } else e.snapKm=null; }
+      e.tgt=tg; const spd=+p.spd||0, hdg=(p.hdg==null)?null:+p.hdg;
+      if(!snapped && spd>2 && hdg!=null && gap) mvTween(e.tw, tg, 700, false, ()=>mvDrift(e.tw, spd, hdg, 2500));
+      else mvTween(e.tw, tg, snapped?gap*0.9:Math.min(gap*0.9, 1200), snapped); }
   });
   Object.keys(M).forEach(uid=>{ if(seen.has(uid)) return; const e=M[uid]; if(e.tw.raf) cancelAnimationFrame(e.tw.raf); try{ e.h.rm(); }catch(_){} delete M[uid]; });
   LIVE.pins=Object.values(M).map(e=>e.h);
+  pinAges();
 }
+/* ⏱ 핀 이름표에 위치를 받은 지 얼마나 됐는지 — 20초 넘으면 「· 35초」, 1분 넘으면 점선·흐리게(믿지 말 것) */
+function pinAges(){ const M=LIVE.pinMap||{}, now=Date.now(); Object.values(M).forEach(e=>{ const el=e.h.el||(e.h.getEl&&e.h.getEl()); if(!el) return; const a=now-(+e.locAt||now); const b=el.querySelector&&el.querySelector('b.mcv-age');
+  if(b) b.textContent=a<20000?'':(' · '+(a<60000?Math.round(a/1000)+'초':(a<3600000?Math.round(a/60000)+'분':'1시간+'))); if(el.classList) el.classList.toggle('mcv-old', a>=60000); }); }
+setInterval(()=>{ try{ pinAges(); }catch(e){} }, 5000);
 function pinClick(uid){ const p=LIVE.people[uid]; if(!p) return; const e=(LIVE.pinMap||{})[uid]; const at=(e&&e.tw.cur)||[p.lat,p.lon]; const now=Date.now(), stale=(now-(+p.at||0))>LIVE_STALE, col=liveZoneColor(p);
-  showInfo(popCard('👤', col, esc(p.name||''), esc(liveZoneName(p)), '<span class="mcv-c mcv-c-sub">'+(stale?'마지막 신호 ':'')+liveFmtS(p.at)+'</span>'+(p.acc?'<span class="mcv-c mcv-c-sub">오차 ±'+p.acc+' m</span>':''), '')+
+  showInfo(popCard('👤', col, esc(p.name||''), esc(liveZoneName(p)), '<span class="mcv-c mcv-c-sub">'+(stale?'마지막 신호 ':'')+liveFmtS(p.at)+'</span>'+(p.locAt?'<span class="mcv-c mcv-c-sub">📍 '+(n=>n<60?n+'초':Math.round(n/60)+'분')(Math.max(0,Math.round((now-p.locAt)/1000)))+' 전 위치</span>':'')+(p.acc?'<span class="mcv-c mcv-c-sub">오차 ±'+p.acc+' m</span>':'')+(p.spd>1?'<span class="mcv-c mcv-c-sub">'+Math.round(p.spd*3.6)+' km/h</span>':''), '')+
     '<div class="mcv-liveAct"><a class="mcv-lvBtn mcv-sm" href="'+navUrl(p.name,p.lat,p.lon)+'" target="_blank" rel="noopener">🧭 길찾기</a></div>', at[0], at[1]); }
 
 /* 현황판 */
