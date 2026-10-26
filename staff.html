@@ -80,7 +80,7 @@
       backgroundMessage: (roleLabel === 'amb' ? '구급차' : roleLabel === 'lead' ? '담당자' : '스탭') + ' 위치를 관리자에게 공유하고 있습니다.',
       requestPermissions: true,
       stale: false,
-      distanceFilter: 15
+      distanceFilter: 3
     };
     return call(function () { return BG.addWatcher(opts, function (loc, err) {
       if (err) {
@@ -96,7 +96,7 @@
       }
       if (!loc) return;
       var now = Date.now();
-      if (now - state.lastFixAt < 2000 && state.lastFixAt) return; // 2초 하한 (Firestore 기록 간격은 발행본 liveLoc 이 8초/20m 로 정한다)
+      if (now - state.lastFixAt < 1000 && state.lastFixAt) return; // 1초 하한 (Firestore 기록 간격은 발행본 liveLoc 이 8초/20m 로 정한다)
       state.lastFixAt = now;
       try {
         onFix({
@@ -461,7 +461,7 @@ const ACC=[{"n":"김원빈","h":"da74da3c0182ec40cf4d37d163e08fafc3e2640ab07b6b8
 const LABEL={'운영용·통합':'운영 화면','관리자용':'관리자용','참가자용':'참가자용 코스도','배치용·담당자':'담당자 배치','배치용·구급차':'구급차 배치','배치용·급수대':'급수대 배치'};
 const ICON={'운영용·통합':'🧩','관리자용':'⭐','참가자용':'🏃','배치용·담당자':'📍','배치용·구급차':'🚑','배치용·급수대':'💧'};
 const ORDER=['운영용·통합','관리자용','배치용·담당자','배치용·구급차','배치용·급수대','참가자용'];
-const ROLE_LABEL={admin:'관리자',lead:'담당자',amb:'구급차',cp:'CP 담당',water:'급수대',patrol:'패트롤·페이스메이커'};
+const ROLE_LABEL={admin:'관리자',lead:'담당자',amb:'구급차',cp:'CP 담당',water:'급수대',leader:'선두유도',patrol:'패트롤·페이스메이커'};
 /* 역할별로 열 수 있는 파일 — 발행본 쪽 로그인 명단(accForFile)과 같은 규칙 */
 const ALLOW={admin:['운영용·통합','관리자용','참가자용'],lead:['운영용·통합','배치용·담당자','참가자용'],amb:['운영용·통합','배치용·구급차','참가자용'],cp:['운영용·통합','배치용·구급차','참가자용'],water:['운영용·통합','배치용·급수대','참가자용'],patrol:['운영용·통합','참가자용']};
 let DATA=null, LIVE={}, ME=null, TIMER=null, LOADING=null, ENDST={}, ASK=null;
@@ -498,9 +498,9 @@ function memberOf(e, me){
 }
 /* 🏁 종료 — 발행본과 같은 규칙: cfg/state.ended 가 있으면 그것, 없으면 대회일 다음 날 06:00 이 지나면 종료 */
 function endAuto(e){ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(e.date||'')); if(!m) return false; return Date.now()>=new Date(+m[1], +m[2]-1, +m[3]+1, 6, 0, 0).getTime(); }
-function isEnded(e){ const st=ENDST[e.id]||{}; if(st.ended===true) return true; if(+st.endAt>0) return Date.now()>=+st.endAt; if(st.ended===false) return false; return endAuto(e); }
+function isEnded(e){ if(e.closed) return true; const st=ENDST[e.id]||{}; if(st.ended===true) return true; if(+st.endAt>0) return Date.now()>=+st.endAt; if(st.ended===false) return false; return endAuto(e); }
 function endAtOf(e){ const st=ENDST[e.id]||{}; return (st.ended!==true && +st.endAt>0)?+st.endAt:0; }
-function canEnter(x){ return x.full || (x.m && x.m.r==='admin'); }
+function canEnter(x){ return !x.e.closed && (x.full || (x.m && x.m.r==='admin')); }
 async function stateOne(e){ const l=e.live; if(!l||!l.project||!l.apiKey||!l.key) return;
   try{ const r=await fetch('https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(l.project)+'/databases/(default)/documents/liveEvents/'+encodeURIComponent(l.key)+'/cfg/state?key='+encodeURIComponent(l.apiKey), {cache:'no-store'});
     if(r.status===404){ ENDST[e.id]=null; return; } if(!r.ok) return; const j=await r.json(); const f=(j&&j.fields)||{};
@@ -580,19 +580,19 @@ function render(){
   const shown=evs.filter(x=>!def || showAll || !hid.includes(x.e.id));
   if(!shown.length){ list.innerHTML='<div class="empty"><div class="big">'+(evs.length?'표시할 대회가 없습니다':(def?'아직 올린 대회가 없습니다':'배정된 대회가 없습니다'))+'</div>'+(evs.length?(q?'검색어를 바꿔 보세요.':'숨긴 대회뿐입니다 — 「숨긴 대회」를 켜 보세요.'):(def?'제작기에서 「🚀 GitHub로 올리기」를 하면 여기에 생깁니다.':'운영본부에 문의해 주세요.'))+'</div>'; return; }
   list.innerHTML=shown.map((x,i)=>{ const e=x.e, lv=LIVE[e.id], isHid=hid.includes(e.id), files=filesFor(x), ended=isEnded(e), locked=ended && !canEnter(x);
-    const eat=endAtOf(e); let chips=ended?'<span class="c end">🏁 종료</span>':(eat?'<span class="c sch">🕑 '+fmt(eat)+' 종료 예정</span>':'');
+    const eat=endAtOf(e); let chips=e.closed?'<span class="c end">🔒 대회 마감</span>':ended?'<span class="c end">🏁 종료</span>':(eat?'<span class="c sch">🕑 '+fmt(eat)+' 종료 예정</span>':'');
     if(x.m) chips+='<span class="c me">'+esc(x.m.s?'총관리자':(ROLE_LABEL[x.m.r]||x.m.r))+'</span>';
     if(x.full && e.live){ if(lv&&lv.err) chips+='<span class="c">실시간 확인 안 됨</span>'; else if(lv){ chips+='<span class="c '+(lv.online?'on':'')+'">● 접속 '+lv.online+'명</span>'; if(lv.emg) chips+='<span class="c emg">🚨 응급 '+lv.emg+'건</span>'; } }
     const main=files.find(f=>f.label!=='참가자용')||files[0], rest=files.filter(f=>f!==main);
     let go='';
-    if(locked) go='<div class="endnote">종료된 행사입니다. 관리자만 들어갈 수 있습니다.</div>';
+    if(locked) go='<div class="endnote">'+(e.closed?'🏁 마감된 대회입니다. 발행 파일은 「행사가 종료되었습니다」 화면으로 바뀌었습니다. (다시 열기는 코스도 제작기에서)':'종료된 행사입니다. 관리자만 들어갈 수 있습니다.')+'</div>';
     else if(!main) go='<div class="none">아직 입장할 파일이 올라오지 않았습니다.</div>';
     else if(x.m && x.m.r==='patrol' && !x.full){
       go='<div class="go"><a class="btn" href="'+fileUrl(main.name)+'" data-ev="'+esc(e.id)+'" data-pt="patrol"><span>레이스패트롤</span></a><a class="btn" href="'+fileUrl(main.name)+'" data-ev="'+esc(e.id)+'" data-pt="pacer"><span>페이스메이커</span></a></div>';
     } else go='<div class="go"><a class="btn main" href="'+fileUrl(main.name)+'" data-ev="'+esc(e.id)+'"><span>'+esc(LABEL[main.label]||main.label||'입장')+' 열기</span></a></div>';
     if(rest.length && !locked) go+='<div class="more">'+rest.map(f=>'<a href="'+fileUrl(f.name)+'" data-ev="'+esc(e.id)+'">'+(ICON[f.label]||'')+' '+esc(LABEL[f.label]||f.label||String(f.name).replace(/\.html?$/i,''))+'</a>').join('')+'</div>';
     return '<div class="ev'+(isHid?' archived':'')+(ended?' ended':'')+'" style="animation-delay:'+Math.min(i*60,360)+'ms"><div class="top"><div style="flex:1"><h3>'+esc(e.title||'(제목 없음)')+'</h3>'+(e.date?'<div class="date">'+fmtDate(e.date)+'</div>':'')+'</div>'+
-      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+(canEndToggle(x)&&e.live?'<button class="evtool" data-end="'+esc(e.id)+'">⚙ 행사 설정</button>':'')+
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'+(canEndToggle(x)&&e.live&&!e.closed?'<button class="evtool" data-end="'+esc(e.id)+'">⚙ 행사 설정</button>':'')+
       (def?'<button class="hide" data-hide="'+esc(e.id)+'">'+(isHid?'다시 보이기':'숨기기')+'</button>':'')+'</div></div>'+
       (ASK===e.id?cfgPanel(x, ended):'')+
       (chips?'<div class="chips">'+chips+'</div>':'')+go+
