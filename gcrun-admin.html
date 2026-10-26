@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>과천코스도 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;과천코스도&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evdsxw3hw52j&quot;,&quot;ver&quot;:&quot;빌드 2026-10-22 · 26.49 개발판&quot;,&quot;at&quot;:1792629156770,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evdsxw3hw52jhjsqhnk5bckpym6m&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;과천코스도&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evdsxw3hw52j&quot;,&quot;ver&quot;:&quot;빌드 2026-10-26 · 26.54 개발판&quot;,&quot;at&quot;:1792985078582,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evdsxw3hw52jhjsqhnk5bckpym6m&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -91,7 +91,7 @@
       backgroundMessage: (roleLabel === 'amb' ? '구급차' : roleLabel === 'lead' ? '담당자' : '스탭') + ' 위치를 관리자에게 공유하고 있습니다.',
       requestPermissions: true,
       stale: false,
-      distanceFilter: 15
+      distanceFilter: 3
     };
     return call(function () { return BG.addWatcher(opts, function (loc, err) {
       if (err) {
@@ -107,7 +107,7 @@
       }
       if (!loc) return;
       var now = Date.now();
-      if (now - state.lastFixAt < 2000 && state.lastFixAt) return; // 2초 하한 (Firestore 기록 간격은 발행본 liveLoc 이 8초/20m 로 정한다)
+      if (now - state.lastFixAt < 1000 && state.lastFixAt) return; // 1초 하한 (Firestore 기록 간격은 발행본 liveLoc 이 8초/20m 로 정한다)
       state.lastFixAt = now;
       try {
         onFix({
@@ -786,6 +786,25 @@
   #mcv-root .mcv-moreBtn[aria-expanded="true"]{background:var(--ink);color:#fff;border-color:var(--ink);}
 }
 /* 처음 쓰는 사람 안내 */
+#mcv-root .mcv-rec{position:fixed;inset:0;z-index:1655;background:rgba(38,50,56,.72);display:flex;align-items:flex-start;justify-content:center;padding:12px;overflow:auto;-webkit-overflow-scrolling:touch;}
+#mcv-root .mcv-recBox{background:#fff;border-radius:16px;max-width:520px;width:100%;padding:16px 16px 14px;box-shadow:0 16px 48px rgba(0,0,0,.35);font-size:.92rem;line-height:1.5;margin:auto 0;box-sizing:border-box;}
+#mcv-root .mcv-recBox h2{margin:0 0 2px;font-size:1.08rem;} #mcv-root .mcv-recBox .mcv-recSub{color:#607d8b;font-size:.82rem;}
+#mcv-root .mcv-recBox .mcv-recL{display:block;font-weight:800;margin:14px 0 6px;font-size:.86rem;color:#37474f;}
+#mcv-root .mcv-recBox input[type=text],#mcv-root .mcv-recBox input[type=time],#mcv-root .mcv-recBox select{width:100%;font:inherit;font-size:.95rem;padding:9px 10px;border:1px solid #cfd8dc;border-radius:9px;box-sizing:border-box;background:#fff;}
+#mcv-root .mcv-recChips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+#mcv-root .mcv-recChips button{border:1px solid #cfd8dc;background:#fff;color:#263238;border-radius:999px;padding:7px 12px;font:inherit;font-size:.84rem;cursor:pointer;}
+#mcv-root .mcv-recChips button.mcv-on{background:#1565c0;border-color:#1565c0;color:#fff;font-weight:700;}
+#mcv-root .mcv-recRow{display:flex;gap:8px;} #mcv-root .mcv-recRow>*{flex:1 1 0;min-width:0;}
+#mcv-root .mcv-recPh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;} #mcv-root .mcv-recPh img{max-width:100%;max-height:200px;border-radius:10px;display:block;flex-basis:100%;object-fit:contain;background:#eceff1;}
+#mcv-root .mcv-recPh label{display:inline-flex;align-items:center;gap:4px;border:1px solid #cfd8dc;border-radius:9px;padding:8px 12px;font-weight:700;font-size:.86rem;cursor:pointer;background:#f5f7f8;} #mcv-root .mcv-recPh input[type=file]{display:none;}
+#mcv-root .mcv-recBtns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap;}
+#mcv-root .mcv-recSum{margin-top:6px;padding:8px 10px;background:#f1f8e9;border:1px solid #dcedc8;border-radius:10px;font-size:.84rem;line-height:1.55;overflow:hidden;}
+#mcv-root .mcv-recSum img{width:72px;height:72px;object-fit:cover;border-radius:8px;float:right;margin:0 0 4px 8px;cursor:zoom-in;}
+#mcv-root .mcv-recZoom{position:fixed;inset:0;z-index:1660;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:10px;} #mcv-root .mcv-recZoom img{max-width:100%;max-height:100%;border-radius:8px;}
+#mcv-root .mcv-c-trans{background:#fde7ef!important;color:#ad1457!important;font-weight:800;}
+#mcv-root .mcv-ambRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 2px;font-size:.88rem;border-top:1px dashed #e0e6ea;}
+#mcv-root .mcv-ambRow:first-of-type{border-top:none;} #mcv-root .mcv-ambRow .mcv-lvBtn{margin-left:auto;}
+#mcv-root .mcv-ambRow.mcv-transOn{background:#fff5f8;border-radius:8px;padding:6px 8px;}
 #mcv-root .mcv-guide{position:fixed;inset:0;z-index:1650;background:rgba(38,50,56,.72);display:flex;align-items:center;justify-content:center;padding:18px;}
 #mcv-root .mcv-guideBox{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:18px 18px 14px;box-shadow:0 16px 48px rgba(0,0,0,.35);font-size:.95rem;line-height:1.55;}
 #mcv-root .mcv-guideBox h2{font-size:1.15rem;margin:0 0 10px;padding:0;border:0;display:block;}
@@ -1453,7 +1472,7 @@ function roleApply(){
   ADMIN=(r==='admin'); ROLE=ADMIN?null:r;
   STAFF=((ADMIN||ROLE==='lead') && DATA.staff && typeof DATA.staff==='object')?DATA.staff:null;
   staffUI.on=!!(STAFF && STAFF.show!==false);
-  const label=!r?'운영용 · 로그인하세요':(ADMIN?(LIVE.me.sup?'총관리자':'관리자'):ROLE==='amb'?'구급차':ROLE==='cp'?'CP 담당':ROLE==='water'?'급수대':ROLE==='patrol'?(LIVE.me.ptype==='pacer'?'페이스메이커':'레이스패트롤'):'담당자');
+  const label=!r?'운영용 · 로그인하세요':(ADMIN?(LIVE.me.sup?'총관리자':'관리자'):ROLE==='amb'?'구급차':ROLE==='cp'?'CP 담당':ROLE==='water'?'급수대':ROLE==='patrol'?ptLabel(LIVE.me.ptype):'담당자');
   const tag=document.getElementById('mcv-hTag'); if(tag){ tag.textContent=label; tag.style.display='inline-block'; }
   if(!DATA.embed) document.title=DATA.title+' ('+label+')';
   try{ pwaManifestApply(); }catch(e){}
@@ -3174,7 +3193,7 @@ function arriveCheck(ll, acc){
   arriveShow(best);
 }
 /* 지도를 다시 그린 뒤에도 점이 남아 있게 */
-function myRefresh(){ if(MY.ov){ try{ MY.ov.show(); if(MY.last) MY.ov.setPosition(MY.last); }catch(e){} } }
+function myRefresh(){ if(MY.ov){ try{ MY.ov.show(); const c=(MY.tw&&MY.tw.cur)||MY.last; if(c) MY.ov.setPosition(c); }catch(e){} } }
 function myInView(ll){
   try{
     if(OSM) return kmap.getBounds().pad(-0.15).contains(ll);
@@ -3184,13 +3203,29 @@ function myInView(ll){
   }catch(e){ return true; }
 }
 function myPan(ll){ try{ if(OSM) kmap.panTo(ll); else kmap.panTo(new kakao.maps.LatLng(ll[0],ll[1])); }catch(e){} }
+/* 🧈 부드럽게 옮기기 — 새 좌표로 순간이동하지 않고 dur(ms) 동안 미끄러지듯 간다. o={cur:[lat,lon], set(fn), raf}
+   lin=true 면 일정한 속도(다른 사람 핀: 다음 신호가 올 때쯤 도착), 아니면 끝에서 천천히(내 파란 점) */
+function mvTween(o, to, dur, lin){
+  if(o.raf){ cancelAnimationFrame(o.raf); o.raf=0; }
+  const from=o.cur; let far=Infinity; try{ if(from) far=distKm(from[0],from[1],to[0],to[1])*1000; }catch(e){}
+  if(!from || !dur || far<0.3 || far>3000 || document.visibilityState==='hidden'){ o.cur=to; o.set(to); return; }
+  const t0=performance.now(); let last=0;
+  const step=now=>{ const k=Math.min(1,(now-t0)/dur); if(k<1 && now-last<33){ o.raf=requestAnimationFrame(step); return; } last=now;
+    const e=lin?k:1-Math.pow(1-k,3); const q=[from[0]+(to[0]-from[0])*e, from[1]+(to[1]-from[1])*e]; o.cur=q; try{ o.set(q); }catch(_){}
+    o.raf=(k<1)?requestAnimationFrame(step):0; };
+  o.raf=requestAnimationFrame(step);
+}
 function myFix(pos){
   if(!kReady) return;
-  const ll=[pos.coords.latitude, pos.coords.longitude], acc=pos.coords.accuracy||0;
+  const ll=[pos.coords.latitude, pos.coords.longitude], acc=pos.coords.accuracy||0, nowT=Date.now();
+  /* 튀는 점 거르기 — 방금(15초 안) 정확한 위치가 있었는데 오차 큰 점이 그 오차 안에서 오면 화면은 그대로 둔다 */
+  if(MY.last && MY.goodAt && nowT-MY.goodAt<15000 && acc>60 && acc>(MY.lastAcc||0)*2){ try{ if(distKm(ll[0],ll[1],MY.last[0],MY.last[1])*1000<acc){ MY.err=0; return; } }catch(e){} }
+  if(acc && acc<=30) MY.goodAt=nowT; MY.lastAcc=acc;
+  const gap=MY.fixAt?Math.max(300, Math.min(1500, nowT-MY.fixAt)):0; MY.fixAt=nowT;
   MY.last=ll; MY.err=0;
   try{ if(typeof liveLoc==='function') liveLoc(ll, acc); }catch(e){}
   try{ arriveCheck(ll, acc); }catch(e){}
-  if(!MY.ov) MY.ov=myMake(ll); else { MY.ov.show(); MY.ov.setPosition(ll); }
+  if(!MY.ov){ MY.ov=myMake(ll); MY.tw={cur:ll, set:a=>{ if(MY.ov) MY.ov.setPosition(a); }, raf:0}; } else { MY.ov.show(); if(!MY.tw) MY.tw={cur:ll, set:a=>{ if(MY.ov) MY.ov.setPosition(a); }, raf:0}; mvTween(MY.tw, ll, gap*0.85, false); }
   MY.ov.setAcc(acc>15 ? acc : 0);
   if(MY.first){ MY.first=false; mapFocus(ll[0],ll[1]); }
   else if(MY.follow && !myInView(ll)) myPan(ll);
@@ -3227,6 +3262,7 @@ function myStop(){
   if(MY.watch==='native'){ try{ MCV_NATIVE.stopLocation(); }catch(e){} }
   else if(MY.watch!==null){ try{ navigator.geolocation.clearWatch(MY.watch); }catch(e){} }
   MY.watch=null; MY.first=true; MY.follow=false;
+  if(MY.tw&&MY.tw.raf){ cancelAnimationFrame(MY.tw.raf); } MY.tw=null; MY.fixAt=0; MY.goodAt=0;
   if(MY.ov){ MY.ov.rm(); MY.ov=null; }
   MY.last=null; myTip(''); myBtnSync();
 }
@@ -3453,7 +3489,10 @@ function liveDone(id){ const c=LIVE.checks[id]; return !!(c && c.done); }
 function liveCanAct(id){ const it=liveItem(id); if(!LIVECFG || !it || !LIVE.me) return false; if(liveRoleOf(id)==='water') return false;   /* 급수대는 완료 표시가 없다 */
   if(LIVE.me.sup) return true;                                                                                   /* 총관리자는 전부 */
   return liveRoleOf(id)===LIVE.me.role && !!LIVE.me.zone && (it.zone||null)===LIVE.me.zone; }                   /* 담당자·구급차는 자기 구역만. 관리자(체크 안 함)는 보기만 */
-function liveRoleLabel(me){ return me.sup?'총관리자':(me.role==='admin'?'관리자':me.role==='amb'?('구급차'+(me.car?' '+me.car+'호차':'')):me.role==='cp'?'CP 담당':me.role==='water'?'급수대':me.role==='patrol'?(me.ptype==='pacer'?'페이스메이커':'레이스패트롤'):'담당자'); }
+function liveRoleLabel(me){ return me.sup?'총관리자':(me.role==='admin'?'관리자':me.role==='amb'?('구급차'+(me.car?' '+me.car+'호차':'')):me.role==='cp'?'CP 담당':me.role==='water'?'급수대':me.role==='patrol'?ptLabel(me.ptype):'담당자'); }
+function ptLabel(t){ return t==='pacer'?'페이스메이커':t==='leader'?'선두유도':'레이스패트롤'; }
+function ptIcon(t){ return t==='pacer'?'🏃':t==='leader'?'🚩':'🏍'; }
+function isLeader(){ return ROLE==='patrol' && !!LIVE.me && LIVE.me.ptype==='leader'; }   /* 🚩 선두유도: 코스·시설과 내 위치만 */
 function liveZonesForMe(){ if(!LIVE.me || LIVE.me.role==='admin' || LIVE.me.role==='cp' || LIVE.me.role==='patrol') return []; return liveZones(LIVE.me.role); }
 function navUrl(name, lat, lon){ return 'https://map.kakao.com/link/to/'+encodeURIComponent(name||'목적지')+','+(+lat).toFixed(6)+','+(+lon).toFixed(6); }
 function mapUrl(name, lat, lon){ return 'https://map.kakao.com/link/map/'+encodeURIComponent(name||'지점')+','+(+lat).toFixed(6)+','+(+lon).toFixed(6); }
@@ -3516,10 +3555,12 @@ const EV_END={state:null, unsub:null, timer:null};
 function evEndAuto(){ const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String((DATA&&DATA.event&&DATA.event.date)||'')); if(!m) return false; return Date.now()>=new Date(+m[1], +m[2]-1, +m[3]+1, 6, 0, 0).getTime(); }
 function evEnded(){ const s=EV_END.state||{}; if(s.ended===true) return true; if(+s.endAt>0) return Date.now()>=+s.endAt; if(s.ended===false) return false; return evEndAuto(); }
 function evAllowed(me){ return !!me && (!!me.sup || me.role==='admin'); }
+function evClosed(){ return !!(EV_END.state && EV_END.state.closed===true); }   /* 🏁 제작기에서 대회 마감 — 누구도 못 본다 */
 function evEndSub(){ if(!LIVE.root || EV_END.unsub) return;
   EV_END.unsub=LIVE.root.collection('cfg').doc('state').onSnapshot(d=>{ EV_END.state=d.exists?(d.data()||null):null; evEndApply(); }, ()=>{});
   if(!EV_END.timer) EV_END.timer=setInterval(evEndApply, 60000); }
 function evEndApply(){
+  { let cv=document.getElementById('mcv-closedAll'); if(evClosed()){ if(!cv){ cv=document.createElement('div'); cv.id='mcv-closedAll'; cv.style.cssText='position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:inherit;color:#263238'; cv.innerHTML='<img src="data:image/png;base64,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" alt="파란상상" style="width:150px;max-width:50vw;margin-bottom:26px"><h2 style="margin:0 0 12px;color:#0d47a1;font-size:1.4rem">🏁 행사가 종료되었습니다</h2><p style="margin:0 0 4px;font-weight:700">'+esc((DATA&&DATA.title)||'')+'</p><p style="margin:10px 0 0;color:#546e7a;font-size:.92rem;line-height:1.7">참여해 주셔서 감사합니다.<br>이 페이지는 더 이상 볼 수 없습니다.</p>'; document.body.appendChild(cv); } if(LIVE.me){ try{ liveLogout(); }catch(e){} } return; } else if(cv) cv.remove(); }
   const ended=evEnded();
   let bn=document.getElementById('mcv-evEndBand'); const root=document.getElementById('mcv-root');
   if(ended && LIVE.me && evAllowed(LIVE.me)){ if(!bn && root){ bn=document.createElement('div'); bn.id='mcv-evEndBand'; bn.style.cssText='margin:10px 16px 0;padding:10px 14px;border-radius:10px;background:#eceff1;color:#37474f;font-weight:700;font-size:.88rem'; root.insertBefore(bn, root.firstChild); } if(bn) bn.textContent='🏁 종료된 행사입니다 — 관리자만 볼 수 있습니다'+((EV_END.state&&EV_END.state.ended===true&&EV_END.state.by)?' (종료: '+EV_END.state.by+')':((EV_END.state&&+EV_END.state.endAt>0)?' (예약 종료 '+liveFmtT(+EV_END.state.endAt)+')':' (대회일이 지나 자동 종료)'))+' · 다시 열기는 대회 목록에서'; }
@@ -3558,9 +3599,10 @@ function liveLogin(name, pin){
   return liveLoginAcc(acc);
 }
 function liveLoginAcc(acc){
+  if(evClosed()){ loginErr('🏁 행사가 종료되었습니다'); return false; }
   if(evEnded() && !(acc.s || acc.r==='admin')){ loginErr('🏁 종료된 행사입니다 — 관리자만 접속할 수 있습니다'); return false; }
   loginErr('');
-  const me=LIVE.me||{uid:liveUid()}; me.name=acc.n; me.h=acc.h; me.role=acc.r||'lead'; me.sup=!!acc.s; me.cp=acc.cp||''; me.cpId=acc.cpId||''; me.car=+acc.car||0; me.zone=acc.z||null; me.share=LIVE.share;
+  const me=LIVE.me||{uid:liveUid()}; me.name=acc.n; me.h=acc.h; me.role=acc.r||'lead'; me.ptype=''; if(me.role==='leader'){ me.role='patrol'; me.ptype='leader'; LIVE.share=true; } me.sup=!!acc.s; me.cp=acc.cp||''; me.cpId=acc.cpId||''; me.car=+acc.car||0; me.zone=acc.z||null; me.share=LIVE.share;
   /* 구급차 N호차인데 시설을 안 묶었으면, 이름에 같은 번호가 든 구급차 시설을 찾아 묶는다 */
   if(!me.zone && me.role==='amb' && me.car){ const re=new RegExp('(^|[^0-9])'+me.car+'\\s*호'); const z=liveZones('amb').find(z=>re.test(z.name||'')); if(z) me.zone=z.id; }
   LIVE.me=me; liveSaveMe(me); roleApply(); liveHello(); liveRender(); liveRefreshCard(); liveSyncPins();
@@ -3888,7 +3930,7 @@ function logSub(){
   LIVE.logUnsub=LIVE.root.collection('log').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.log=o; logRender(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); });
 }
 function logUnsubAll(){ if(LIVE.logUnsub){ try{ LIVE.logUnsub(); }catch(e){} LIVE.logUnsub=null; } LIVE.log={}; }
-const LOG_T={evend:['🏁','행사 종료'], evopen:['↺','행사 다시 열기'], evsched:['🕑','종료 예약'], evunsched:['🕑','종료 예약 취소'], check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], arrive:['📍','배치 지점 도착'], reset:['♻','전체 리셋'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
+const LOG_T={evend:['🏁','행사 종료'], evopen:['↺','행사 다시 열기'], evsched:['🕑','종료 예약'], evunsched:['🕑','종료 예약 취소'], check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], evclose:['🏁','대회 마감 (제작기)'], evreopen:['↺','대회 마감 해제 (제작기)'], rec:['📋','처치 기록'], trans:['🏥','후송 출발'], back:['↩','후송 복귀'], arrive:['📍','배치 지점 도착'], reset:['♻','전체 리셋'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
 function logWho(e){ let w=e.by||''; const tag=e.sup?'총관리자':(e.role==='admin'?'관리자':e.role==='amb'?('구급차'+(e.car?' '+e.car+'호차':'')):e.role==='cp'?'CP 담당':e.role==='water'?'급수대':'담당자'); w+=' ('+tag+(e.myZoneName?' · '+e.myZoneName:'')+(e.cp?' · '+e.cp:'')+')'; return w; }
 function logText(e){
   switch(e.t){
@@ -3903,6 +3945,9 @@ function logText(e){
     case 'purgemsg': return [e.msg||'메시지 삭제', '총관리자가 전부 지움'];
     case 'purgelog': return [e.msg||'로그 초기화', '총관리자가 이전 기록을 전부 지움'];
     case 'note': return [(e.zoneName||''), '처리 내용: '+(e.msg||'')];
+    case 'rec': return [(e.zoneName||''), '처치 기록: '+(e.msg||'')];
+    case 'trans': return [e.msg||'', '🏥 후송 출발 (후송 중)'];
+    case 'back': return [e.msg||'', '↩ 후송 복귀'];
     case 'msg': return ['→ '+(e.toName||e.to||''), (e.msg||'')];
     case 'login': return ['접속', e.myZoneName||''];
     case 'logout': return ['로그아웃', ''];
@@ -4046,28 +4091,39 @@ function liveRefreshCard(){ const lay=document.getElementById('mcv-infoLayer'); 
   if(d){ if(!tag){ tag=document.createElement('span'); tag.className='mcv-c mcv-c-sub'; b.after(tag); } tag.textContent='완료 · '+(c.by||'')+' '+liveFmtT(c.at); } else if(tag) tag.remove(); }
 /* 사람 핀 */
 function liveOv(ll, html, z, onClick){
-  if(OSM){ const mk=L.marker(ll,{icon:L.divIcon({html, className:'mcv-lfIcon', iconSize:[0,0]}), zIndexOffset:z||0, interactive:true}).addTo(kmap); if(onClick) mk.on('click', ev=>{ L.DomEvent.stopPropagation(ev); onClick(); }); return {rm:()=>kmap.removeLayer(mk)}; }
+  if(OSM){ const mk=L.marker(ll,{icon:L.divIcon({html, className:'mcv-lfIcon', iconSize:[0,0]}), zIndexOffset:z||0, interactive:true}).addTo(kmap); if(onClick) mk.on('click', ev=>{ L.DomEvent.stopPropagation(ev); onClick(); }); return {rm:()=>kmap.removeLayer(mk), setPos:a=>mk.setLatLng(a)}; }
   const box=document.createElement('div'); box.innerHTML=html; const node=box.firstElementChild||box;
   const ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ll[0],ll[1]), content:node, xAnchor:.5, yAnchor:.5, zIndex:z||1, clickable:true});
   if(onClick) node.addEventListener('click', ev=>{ ev.stopPropagation(); onClick(); });
-  ov.setMap(kmap); return {rm:()=>ov.setMap(null), el:node};
+  ov.setMap(kmap); return {rm:()=>ov.setMap(null), el:node, setPos:a=>ov.setPosition(new kakao.maps.LatLng(a[0],a[1]))};
 }
-function liveZoneColor(p){ if(p.role==='cp') return '#5e35b1'; if(p.role==='patrol') return '#ef6c00'; const z=liveZone(p.role==='amb'?'amb':p.role==='water'?'water':'lead', p.zone); return z?z.color:(p.role==='admin'?'#263238':'#607d8b'); }
-function liveZoneName(p){ let n; if(p.role==='admin') n=p.sup?'총관리자':'관리자'; else if(p.role==='patrol') n=(p.ptype==='pacer'?'🏃 페이스메이커':'🏍 패트롤'); else if(p.role==='cp') n='CP 담당'+(p.sup?' · 총관리자':''); else { const z=liveZone(p.role==='amb'?'amb':p.role==='water'?'water':'lead', p.zone); n=(p.role==='amb'&&p.car?p.car+'호차'+(z?' · '+z.name:''):(z?z.name:'구역 미지정'))+(p.sup?' · 총관리자':''); }
+function liveZoneColor(p){ if(p.role==='cp') return '#5e35b1'; if(p.role==='patrol') return p.ptype==='leader'?'#d81b60':'#ef6c00'; const z=liveZone(p.role==='amb'?'amb':p.role==='water'?'water':'lead', p.zone); return z?z.color:(p.role==='admin'?'#263238':'#607d8b'); }
+function liveZoneName(p){ let n; if(p.role==='admin') n=p.sup?'총관리자':'관리자'; else if(p.role==='patrol') n=(p.ptype==='pacer'?'🏃 페이스메이커':p.ptype==='leader'?'🚩 선두유도':'🏍 패트롤'); else if(p.role==='cp') n='CP 담당'+(p.sup?' · 총관리자':''); else { const z=liveZone(p.role==='amb'?'amb':p.role==='water'?'water':'lead', p.zone); n=(p.role==='amb'&&p.car?p.car+'호차'+(z?' · '+z.name:''):(z?z.name:'구역 미지정'))+(p.sup?' · 총관리자':''); }
   if(p.cp) n+=' · '+p.cp; return n; }
 function drawPeoplePins(){
-  LIVE.pins.forEach(h=>{ try{ h.rm(); }catch(e){} }); LIVE.pins=[];
-  if(!kReady || !kmap) return;
-  const now=Date.now();
+  /* 사람 핀은 지우고 다시 만들지 않는다 — 같은 사람은 그 핀을 새 좌표로 미끄러지게 옮긴다(뚝뚝 끊김·깜빡임 없앰) */
+  const M=(LIVE.pinMap=LIVE.pinMap||{});
+  if(!kReady || !kmap){ return; }
+  const now=Date.now(), seen=new Set();
   livePeople().forEach(p=>{ const uid=p.uid; if(p.lat==null || p.lon==null || p.share===false) return;
     if(LIVE.me && uid===LIVE.me.uid) return;                       /* 나는 파란 점으로 이미 보인다 */
-    const stale=(now-(+p.at||0))>LIVE_STALE, col=liveZoneColor(p);
-    const h=liveOv([p.lat,p.lon], '<div class="mcv-kperson'+(stale?' mcv-stale':'')+'" style="background:'+col+'" title="'+esc(p.name||'')+'">'+esc(String(p.name||'?').charAt(0))+'<i>'+esc(p.name||'')+'</i></div>', 300,
-      ()=>{ showInfo(popCard('👤', col, esc(p.name||''), esc(liveZoneName(p)), '<span class="mcv-c mcv-c-sub">'+(stale?'마지막 신호 ':'')+liveFmtS(p.at)+'</span>'+(p.acc?'<span class="mcv-c mcv-c-sub">오차 ±'+p.acc+' m</span>':''), '')+
-        '<div class="mcv-liveAct"><a class="mcv-lvBtn mcv-sm" href="'+navUrl(p.name,p.lat,p.lon)+'" target="_blank" rel="noopener">🧭 길찾기</a></div>', p.lat, p.lon); });
-    LIVE.pins.push(h);
+    if(isLeader()) return;                                         /* 🚩 선두유도는 다른 사람 위치를 보지 않는다 */
+    const stale=(now-(+p.at||0))>LIVE_STALE, col=liveZoneColor(p), ll=[+p.lat,+p.lon];
+    const html='<div class="mcv-kperson'+(stale?' mcv-stale':'')+'" style="background:'+col+'" title="'+esc(p.name||'')+'">'+esc(String(p.name||'?').charAt(0))+'<i>'+esc(p.name||'')+'</i></div>';
+    let e=M[uid];
+    if(!e || e.key!==html){ const start=e?(e.tw.cur||ll):ll; if(e){ if(e.tw.raf) cancelAnimationFrame(e.tw.raf); try{ e.h.rm(); }catch(_){} }
+      const h=liveOv(start, html, 300, ()=>pinClick(uid)); const ne={h, key:html, tw:{cur:start, set:a=>h.setPos(a), raf:0}, tgt:e?e.tgt:null, locAt:e?e.locAt:0}; e=M[uid]=ne;
+      if(e.tgt && e.tw.cur && (e.tgt[0]!==start[0]||e.tgt[1]!==start[1])) mvTween(e.tw, e.tgt, 600, true); }
+    seen.add(uid);
+    if(!e.tgt || e.tgt[0]!==ll[0] || e.tgt[1]!==ll[1]){ const t=+p.locAt||+p.at||now; const gap=e.locAt?Math.max(600, Math.min(9000, t-e.locAt)):0; e.tgt=ll; e.locAt=t; mvTween(e.tw, ll, gap*0.9, true); }
   });
+  Object.keys(M).forEach(uid=>{ if(seen.has(uid)) return; const e=M[uid]; if(e.tw.raf) cancelAnimationFrame(e.tw.raf); try{ e.h.rm(); }catch(_){} delete M[uid]; });
+  LIVE.pins=Object.values(M).map(e=>e.h);
 }
+function pinClick(uid){ const p=LIVE.people[uid]; if(!p) return; const e=(LIVE.pinMap||{})[uid]; const at=(e&&e.tw.cur)||[p.lat,p.lon]; const now=Date.now(), stale=(now-(+p.at||0))>LIVE_STALE, col=liveZoneColor(p);
+  showInfo(popCard('👤', col, esc(p.name||''), esc(liveZoneName(p)), '<span class="mcv-c mcv-c-sub">'+(stale?'마지막 신호 ':'')+liveFmtS(p.at)+'</span>'+(p.acc?'<span class="mcv-c mcv-c-sub">오차 ±'+p.acc+' m</span>':''), '')+
+    '<div class="mcv-liveAct"><a class="mcv-lvBtn mcv-sm" href="'+navUrl(p.name,p.lat,p.lon)+'" target="_blank" rel="noopener">🧭 길찾기</a></div>', at[0], at[1]); }
+
 /* 현황판 */
 /* ── 내 정보 띠 — 로그인하면 머리에 「누구 · 역할 · 구역 · 연결 상태」와 자주 쓰는 단추를 보여 준다. 처음 보는 사람이 "내가 뭘 하면 되는지"를 바로 알게 ── */
 function meBarRender(){
@@ -4089,12 +4145,13 @@ function guideKey(){ return 'mcv_guide_'+(LIVE.me?(LIVE.me.sup?'sup':LIVE.me.rol
 function guideShow(force){
   if(!LIVE.me || !LIVECFG) return; try{ if(!force && localStorage.getItem(guideKey())) return; }catch(e){}
   if(document.getElementById('mcv-guide')) return;
-  const me=LIVE.me, r=me.sup?'sup':(me.role||'lead'), zn=liveZoneName(me);
+  const me=LIVE.me, r=me.sup?'sup':(me.role==='patrol'&&me.ptype==='leader'?'leader':(me.role||'lead')), zn=liveZoneName(me);
   const steps={
     lead:[['내 구역 확인','아래 「배치 현황」에서 파란 테두리 상자가 내 구역('+(zn||'')+')입니다. 내가 맡은 자리들이 번호 순으로 있습니다.'],['자리에 도착하면 「✅ 배치 완료」','그 자리 줄의 초록 단추를 누르면 총괄 화면에 바로 표시됩니다. 잘못 눌렀으면 「완료 해제」.'],['사고가 나면 「🚨 응급 신고」','위 빨간 단추를 누르고 장소를 고르면 총괄·구급차·다른 담당자 전원에게 알림이 갑니다. 지도를 길게 눌러도 됩니다.']],
     amb:[['내 대기 지점 확인','아래 「배치 현황」의 파란 상자가 내 구급차 자리입니다. 도착하면 「✅ 배치 완료」.'],['출동 요청이 오면 「✅ 출동 확인」','보라색 띠로 "나에게 출동 요청"이 뜹니다. 확인을 누르면 총괄에게 출동 중으로 표시되고, 「🧭 길찾기」로 바로 갑니다.'],['도착해서 처리하면 「🚑 내가 처리」→「상황 종료」','응급 현황 메뉴에서 처리 내용을 적어 두면 기록에 남습니다.']],
     cp:[['구급차 배치 현황 보기','아래에서 각 구급차가 자리에 있는지(완료/미완료)와 접속 상태를 봅니다.'],['사고가 나면 「🚨 응급 신고」 → 「가까운 구급차 출동」','신고 뒤 알림 띠에서 가장 가까운 구급차에게 출동 요청을 보낼 수 있습니다.'],['메시지로 지시','아래 「메시지」 메뉴에서 구급차 전체 또는 개별 구급차에게 보냅니다.']],
     patrol:[['위치 공유 켜 두기','로그인하면 내 위치가 총괄 화면에 보입니다. 홈 화면 앱 + 「🔆 화면 켜짐」을 켜 두면 달리는 동안 끊기지 않습니다.'],['사고를 보면 「🚨 응급 신고」','내 현재 위치로 바로 신고됩니다. 상황을 한 줄 적으면 총괄·구급차에게 그대로 전달됩니다.'],['응급 현황','구급차가 출동했는지, 처리됐는지 「응급 현황」에서 봅니다.']],
+    leader:[['위치 공유 켜 두기','로그인하면 내 위치가 총괄 화면에 보입니다. 앱(또는 홈 화면 앱 + 「🔆 화면 켜짐」)이면 달리는 동안 끊기지 않습니다.'],['지도는 코스·시설·내 위치만','다른 사람 위치는 보이지 않습니다. 파란 점이 나, 코스선을 따라 선두를 유도하세요. 아래 「📋 시설」에서 급수대·화장실 등을 봅니다.'],['사고를 보면 「🚨 응급 신고」','내 현재 위치로 바로 신고되어 총괄·구급차에게 전달됩니다.']],
     water:[['급수대 목록','아래 「급수대」 메뉴에 내 급수대 위치·물자가 있습니다.'],['위치 공유','로그인해 두면 총괄 화면에 내 위치가 보이고, 응급 알림도 받습니다.'],['메시지','총괄에게 보낼 말은 「메시지」 메뉴에서.']],
     admin:[['배치 현황','모든 구역의 완료/미완료와 접속한 사람을 한눈에. 사람 이름을 누르면 지도에서 위치가 보입니다.'],['응급 신고가 오면','빨간 띠가 뜨고 소리가 납니다. 「구급차 출동」으로 가까운 구급차를 보내고, 「응급 현황」 메뉴에서 처리 상태를 봅니다.'],['메시지·접속 현황','「메시지」로 전체·역할·개인에게 보내고, 「접속 현황」에서 누가 들어와 있는지 봅니다.']],
     sup:[['배치 현황 — 총관리자는 전부 켜고 끌 수 있음','모든 구역의 완료/미완료, 접속한 사람, 사람 위치를 한눈에.'],['응급 신고가 오면','빨간 띠 + 소리. 「구급차 출동」으로 가까운 구급차를 보내고, 「응급 현황」에서 처리 상태·기록을 봅니다. 끝난 건 「전부 지우기」.'],['메시지 · 접속 현황 · 로그','전체·역할·구역·개인에게 메시지, 누가 들어와 있는지, 누가 언제 무엇을 했는지(로그, CSV 저장).']]
@@ -4166,7 +4223,7 @@ function liveRender(){
   let h='';
   if(ROLE==='cp'){ const myCp=LIVE.me&&LIVE.me.cp?LIVE.me.cp:''; const ambs=livePeople().filter(p=>p.role==='amb'); h+='<div class="mcv-lvZone" style="border-bottom:none;padding-bottom:4px"><h3>📌 '+esc(myCp||'CP 담당')+' <small>— 구급차 배치 현황 · 접속 중인 구급차 '+ambs.filter(p=>now-(+p.at||0)<LIVE_STALE).length+'대'+(ambs.length?' ('+esc(ambs.map(p=>(p.car?p.car+'호차 ':'')+p.name).join(', '))+')':'')+' · 배치 완료는 구급차가 직접 누릅니다. 응급이 뜨면 「응급 현황」에서 가까운 구급차를 호출하세요.</small></h3></div>'; }
   if(ROLE==='patrol'){ const me=LIVE.me||{}; const shareOn=!!LIVE.share, fix=MY&&MY.last; let where=''; try{ const n=(fix&&typeof vNearKm==='function')?vNearKm(fix[0],fix[1]):null; if(n&&n.d<80) where=(C.name||'코스')+' '+n.km.toFixed(2)+' km 지점'; else if(n) where='코스에서 '+Math.round(n.d)+' m'; }catch(e){}
-    bd.innerHTML='<div class="mcv-lvZone"><h3>'+(me.ptype==='pacer'?'🏃 페이스메이커':'🏍 레이스패트롤')+' <small>— 내 위치가 총괄 화면에 보이고, 사고를 보면 아래 「🚨 응급 신고」로 바로 알립니다.</small></h3>'+
+    bd.innerHTML='<div class="mcv-lvZone"><h3>'+ptIcon(me.ptype)+' '+ptLabel(me.ptype)+' <small>— '+(me.ptype==='leader'?'지도에는 코스와 시설, 내 위치만 보입니다. 내 위치는 총괄 화면에 공유되고, 사고를 보면 아래 「🚨 응급 신고」로 알립니다.':'내 위치가 총괄 화면에 보이고, 사고를 보면 아래 「🚨 응급 신고」로 바로 알립니다.')+'</small></h3>'+
       '<div class="mcv-chips" style="margin:8px 0">'+(shareOn?(fix?'<span class="mcv-c mcv-loc-on">📍 위치 켬 · '+esc(where||'위치 잡음')+'</span>':'<span class="mcv-c mcv-loc-none">📍 위치 찾는 중 — 하늘이 보이는 곳에서 잠시</span>'):'<span class="mcv-c mcv-loc-off">📍 위치 공유 꺼짐 — 위의 「내 위치 공유」를 켜 주세요</span>')+'</div>'+
       '<button type="button" class="mcv-lvBtn mcv-ping mcv-big" id="mcv-patrolPing" style="width:100%;justify-content:center;font-size:1.05rem;padding:14px">🚨 내 위치로 응급 신고</button>'+
       '<button type="button" class="mcv-lvBtn mcv-big" id="mcv-patrolPick" style="width:100%;justify-content:center;font-size:1rem;padding:12px;margin-top:8px">📍 지도에서 자리 찍어 신고</button>'+
@@ -4182,6 +4239,7 @@ function liveRender(){
   h+='</div>';
   if(ADMIN){ h+='<div class="mcv-lvTools"><label><input type="checkbox" id="mcv-lvPending"'+(LIVE.pendingOnly?' checked':'')+'> 미완료만 보기</label><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-lvGoMap">🗺 사람 위치 보기</button></div>'; }
   const myZone=(LIVE.me && !LIVE.me.sup && LIVE.me.zone)?LIVE.me.zone:null;
+  const AMB_SHOWN=new Set();
   const zoneHtml=(r,z,mine)=>{
     const its=liveItems(r).filter(i=>(i.zone||null)===(z.id||null)); if(!its.length) return '';
     const d=its.filter(i=>liveDone(i.id)).length, pct=Math.round(d/its.length*100);
@@ -4196,9 +4254,10 @@ function liveRender(){
           '<button type="button" class="mcv-lvBtn mcv-sm" data-lv-map="'+esc(i.id)+'" title="지도에서 보기">🗺 지도</button>'+
           '<a class="mcv-lvBtn mcv-sm" href="'+navUrl(i.name,i.lat,i.lon)+'" target="_blank" rel="noopener" title="카카오맵 길찾기">🧭 길찾기</a></span></div>'; }).join('');
     if(!rows) return '';
+    let ambH=''; if(r==='amb'){ const ap=livePeople().filter(p=>p.role==='amb' && (p.zone||null)===(z.id||null)); ap.forEach(p=>AMB_SHOWN.add(p.uid)); ambH=ap.map(ambRowHtml).join(''); }
     return '<div class="mcv-lvZone'+(mine?' mcv-mine':'')+'" data-lv-zone="'+esc(z.id)+'"><h3><span class="mcv-dot" style="background:'+(z.color||'#607d8b')+'"></span>'+esc(z.name)+(z.lead?' <small>· '+esc(z.lead)+(z.phone?' '+esc(z.phone):'')+'</small>':'')+
       ' <small>'+d+' / '+its.length+' 완료'+(mine?' · 내 구역':'')+'</small>'+(here.length?' <small>👤 '+esc(here.join(', '))+'</small>':'')+'</h3>'+
-      '<div class="mcv-lvBar'+(d===its.length?' mcv-full':'')+'"><i style="width:'+pct+'%"></i></div>'+rows+'</div>';
+      '<div class="mcv-lvBar'+(d===its.length?' mcv-full':'')+'"><i style="width:'+pct+'%"></i></div>'+(ambH?'<div style="margin:4px 0 6px">'+ambH+'</div>':'')+rows+'</div>';
   };
   roles.forEach(r=>{
     const zones=liveZones(r).slice(); const noZone=liveItems(r).some(i=>!i.zone); if(noZone) zones.push({id:null, name:'구역 미지정', color:'#6e6e73'});
@@ -4209,9 +4268,10 @@ function liveRender(){
     if(myZone && others.length){ h+='<div class="mcv-lvFold" data-lv-fold="1">'+(LIVE.fold?'▸ 다른 구역 '+others.length+'개 보기':'▾ 다른 구역 접기')+'</div>'; if(!LIVE.fold) others.forEach(z=>{ h+=zoneHtml(r,z,false); }); }
     else others.forEach(z=>{ h+=zoneHtml(r,z,false); });
   });
+  if(roles.includes('amb')){ const rest=livePeople().filter(p=>p.role==='amb' && !AMB_SHOWN.has(p.uid) && (ADMIN||ROLE==='cp'||(LIVE.me&&p.uid===LIVE.me.uid))); if(rest.length) h+='<div class="mcv-lvZone"><h3>🚑 구급차 상태 <small>— 배치 칸에 안 잡힌 구급차 (시설 미지정·다른 구역 접힘)</small></h3>'+rest.map(ambRowHtml).join('')+'</div>'; }
   /* 접속한 사람 */
   const ppl=livePeople().sort((a,b)=>(+b.at||0)-(+a.at||0));
-  if(ppl.length){ h+='<div class="mcv-lvPeople">'+ppl.map(p=>{ const stale=now-(+p.at||0)>LIVE_STALE; return '<span class="mcv-lvPerson'+(stale?' mcv-stale':'')+'" data-lv-person="'+esc(p.uid)+'" title="'+(p.lat!=null?'지도에서 보기':'위치 없음')+'"><span class="mcv-lvAvatar" style="background:'+liveZoneColor(p)+'">'+esc(String(p.name).charAt(0))+'</span>'+esc(p.name)+' <small>'+esc(liveZoneName(p))+' · '+(stale?'끊김 · 마지막 ':'')+liveFmtT(p.at)+'</small>'+(l=>'<span class="mcv-c mcv-loc-'+l[0]+'">'+esc(l[1])+'</span>')(locState(p))+'</span>'; }).join('')+'</div>'; }
+  if(ppl.length){ h+='<div class="mcv-lvPeople">'+ppl.map(p=>{ const stale=now-(+p.at||0)>LIVE_STALE; return '<span class="mcv-lvPerson'+(stale?' mcv-stale':'')+'" data-lv-person="'+esc(p.uid)+'" title="'+(p.lat!=null?'지도에서 보기':'위치 없음')+'"><span class="mcv-lvAvatar" style="background:'+liveZoneColor(p)+'">'+esc(String(p.name).charAt(0))+'</span>'+esc(p.name)+' <small>'+esc(liveZoneName(p))+(transOn(p)?' · 🏥 후송 중':'')+' · '+(stale?'끊김 · 마지막 ':'')+liveFmtT(p.at)+'</small>'+(l=>'<span class="mcv-c mcv-loc-'+l[0]+'">'+esc(l[1])+'</span>')(locState(p))+'</span>'; }).join('')+'</div>'; }
   bd.innerHTML=h;
   nt.textContent = LIVECFG ? ((ADMIN?'배치용 파일을 받은 담당자가 「배치 완료」를 누르면 여기에 바로 나타납니다. 총관리자로 로그인하면 모든 구역을 직접 켜고 끌 수 있습니다. 위치 공유를 켠 사람은 지도에 이름표로 보입니다.':'내 구역의 항목을 배치한 뒤 「배치 완료」를 누르세요. 총괄 관리자가 바로 확인합니다. 「🧭」은 카카오맵 길찾기입니다.')
                           +' 응급 알림을 놓치지 않으려면 「🔆 화면 켜짐」을 켜 두고 이 화면을 띄워 두세요. 다른 앱에 가 있어도 「🔔 알림 허용」을 했으면 알림이 오고, 돌아오면 밀린 알림이 울립니다 (아이폰은 「홈 화면에 추가」로 연 경우에만 뒤에서 알림이 옵니다).')
@@ -4221,6 +4281,7 @@ function liveRender(){
   const pend=bd.querySelector('#mcv-lvPending'); if(pend) pend.onchange=()=>{ LIVE.pendingOnly=pend.checked; liveRender(); };
   const gm=bd.querySelector('#mcv-lvGoMap'); if(gm) gm.onclick=()=>{ document.getElementById('mcv-map').scrollIntoView({behavior:'smooth', block:'center'}); const ps=Object.values(LIVE.people).filter(p=>p.lat!=null); if(ps.length) mapFit(ps.map(p=>[p.lat,p.lon]).concat(ps.length<2?[[ps[0].lat+0.002,ps[0].lon+0.002]]:[])); };
   const fold=bd.querySelector('[data-lv-fold]'); if(fold) fold.onclick=()=>{ LIVE.fold=!LIVE.fold; liveRender(); };
+  bd.querySelectorAll('[data-trans]').forEach(b=>{ b.onclick=()=>{ const uid=b.dataset.trans; if(b.dataset.on==='1') transSet(uid, true, transHosp(uid)); else transSet(uid, false); }; });
 }
 function liveShowItem(i){
   document.getElementById('mcv-map').scrollIntoView({behavior:'smooth', block:'center'});
@@ -4336,6 +4397,7 @@ function navItems(){
   const it=[];
   if(UNIFIED && !LIVE.me){ it.push(['live','👤','로그인']); it.push(['pois','📋','시설']); it.push(['elev','⛰','고저도']); return it; }
   if(ROLE==='water'){ it.push(['water','💧','급수대']); it.push(['pois','📋','시설']); it.push(['live','📡','현황']); if(LIVECFG) it.push(['msg','💬','메시지']); it.push(['elev','⛰','고저도']); return it; }
+  if(isLeader()){ it.push(['live','🚩','선두유도']); it.push(['pois','📋','시설']); return it; }
   if(ROLE==='patrol'){ it.push(['live','🏍','패트롤']); it.push(['emg','🚨','응급 현황']); it.push(['pois','📋','시설']); return it; }
   if(ROLE==='cp'){ it.push(['live','🚑','구급차 현황']); it.push(['emg','🚨','응급 현황']); it.push(['msg','💬','메시지']); it.push(['pois','📋','시설']); it.push(['elev','⛰','고저도']); return it; }
   it.push(['live','📡','배치 현황']);
@@ -4455,9 +4517,9 @@ function distKm(a,b,c,d){ const R=6371, dLat=(c-a)*Math.PI/180, dLon=(d-b)*Math.
 function callTargets(ping){ const now=Date.now();
   const at=(ping && ping.lat!=null && ping.lon!=null)?[ping.lat, ping.lon]:null;
   return livePeople().filter(p=>p.role==='amb' && (!LIVE.me || p.uid!==LIVE.me.uid)).map(p=>{ const pos=ambPos(p); const km=(at&&pos)?distKm(at[0],at[1],pos[0],pos[1]):null;
-      return {uid:p.uid, name:p.name, car:+p.car||0, cp:p.cp||'', zone:liveZoneName(p), away:now-(+p.at||0)>LIVE_STALE, km, how:pos?pos[2]:null}; })
-    .sort((a,b)=>(a.away-b.away) || ((a.km==null?1e9:a.km)-(b.km==null?1e9:b.km)) ); }
-function callLabel(t){ return (t.km!=null?(t.km<10?t.km.toFixed(1):Math.round(t.km))+' km · ':'')+(t.car?'구급차 '+t.car+'호차 ':'🚑 ')+t.name+(t.cp?' · '+t.cp:'')+(t.how==='zone'?' (대기 지점 기준)':'')+(t.away?' · 끊김':''); }
+      return {uid:p.uid, name:p.name, car:+p.car||0, cp:p.cp||'', zone:liveZoneName(p), away:now-(+p.at||0)>LIVE_STALE, trans:transOn(p), km, how:pos?pos[2]:null}; })
+    .sort((a,b)=>(a.away-b.away) || (a.trans-b.trans) || ((a.km==null?1e9:a.km)-(b.km==null?1e9:b.km)) ); }
+function callLabel(t){ return (t.km!=null?(t.km<10?t.km.toFixed(1):Math.round(t.km))+' km · ':'')+(t.car?'구급차 '+t.car+'호차 ':'🚑 ')+t.name+(t.cp?' · '+t.cp:'')+(t.how==='zone'?' (대기 지점 기준)':'')+(t.trans?' · 🏥 후송 중':'')+(t.away?' · 끊김':''); }
 function pingCall(id, uid){
   if(!LIVE.root || !pingCan()) return false; const p=LIVE.pings[id]; if(!p) return false;
   const t=callTargets(p).find(x=>x.uid===uid); if(!t){ liveToast('그 구급차가 접속해 있지 않습니다'); return false; }
@@ -4490,7 +4552,7 @@ function callsHtml(p){ const cs=Object.values(p.calls||{}).sort((a,b)=>(+a.at||0
 function pingPurge(){
   if(!LIVE.root || !LIVE.me || !LIVE.me.sup){ liveToast('총관리자만 지울 수 있습니다'); return; }
   const ids=Object.keys(LIVE.pings); const n=ids.length; if(!n) return;
-  ids.forEach(id=>{ LIVE.root.collection('pings').doc(id).delete().catch(()=>{}); });
+  ids.forEach(id=>{ LIVE.root.collection('pings').doc(id).delete().catch(()=>{}); if(LIVE.pings[id]&&LIVE.pings[id].rec&&LIVE.pings[id].rec.photo) LIVE.root.collection('photos').doc(id).delete().catch(()=>{}); }); LIVE.photos={};
   Object.values(LIVE.msgs).filter(m=>m.kind==='call').forEach(m=>{ LIVE.root.collection('msgs').doc(m.id).delete().catch(()=>{}); delete LIVE.msgs[m.id]; });
   LIVE.pings={}; LIVE.acked.clear(); try{ localStorage.removeItem(pingAckKey()); }catch(e){}
   liveLog('purge', {msg:'응급 현황 '+n+'건 삭제'});
@@ -4504,6 +4566,107 @@ function pingNote(id, text){ if(!LIVE.root || !pingCan()) return; const p=LIVE.p
   LIVE.root.collection('pings').doc(id).set({note:text, noteBy:LIVE.me.name, noteAt:p.noteAt},{merge:true}).then(()=>liveToast('처리 내용을 적었습니다')).catch(()=>{});
   liveLog('note', {ping:id, zone:p.zone||null, zoneName:p.zoneName||'', msg:text}); }
 function pingResolve(id){ if(!LIVE.root) return; const p=LIVE.pings[id]; if(p) p.active=false; pingUpdate(); if(p) liveLog('resolve', {ping:id, zone:p.zone||null, zoneName:p.zoneName||'', msg:p.msg||'', lat:p.lat!=null?p.lat:null, lon:p.lon!=null?p.lon:null}); LIVE.root.collection('pings').doc(id).set({active:false, resolvedBy:LIVE.me?LIVE.me.name:'관리자', resolvedUid:LIVE.me?LIVE.me.uid:'', resolvedRole:LIVE.me?(LIVE.me.role||''):'', resolvedAt:Date.now()},{merge:true}).catch(()=>{}); }
+/* ═════════ 📋 처치 기록 — 배번호 · 상태 · 처치 · 결과(복귀/포기/병원 후송) · 배번호 사진 ═════════
+   기록은 pings/{id}.rec, 사진은 photos/{id}(줄인 JPEG) 에 따로 둔다 — 응급 목록을 가볍게. 병원 후송이면 그 구급차를 「🏥 후송 중」으로 */
+const REC_COND=['의식 명료','경상','중등도','중상','의식 저하','심정지'];
+const REC_TREAT=['상처 소독·드레싱','냉찜질·아이싱','근육 경련 처치','테이핑·고정','스프레이·파스','수분·당 보충','보온','체온 낮추기','산소 투여','CPR','AED'];
+const REC_OUT=[['back','현장 처치 후 레이스 복귀'],['quit','레이스 포기 (귀가)'],['hosp','🏥 병원 후송']];
+function recOutLabel(k){ const o=REC_OUT.find(x=>x[0]===k); return o?o[1].replace('🏥 ',''):''; }
+function recLine(r){ if(!r) return ''; return [r.bib?'배번 '+r.bib:'', [r.cond,r.condTxt].filter(Boolean).join(' '), (r.treat||[]).concat(r.treatTxt?[r.treatTxt]:[]).join('·'), r.out?(recOutLabel(r.out)+(r.out==='hosp'?'('+[r.hosp,r.hospT,r.ambName].filter(Boolean).join(' ')+')':'')):'', r.done?'처리 완료':''].filter(Boolean).join(' · '); }
+function recPhotoLoad(id){ const P=(LIVE.photos=LIVE.photos||{}); if(P[id]!==undefined || !LIVE.root) return; P[id]='';
+  LIVE.root.collection('photos').doc(id).get().then(d=>{ P[id]=(d.exists&&d.data()&&d.data().data)||false; emgRender(); }).catch(()=>{ P[id]=false; emgRender(); }); }
+function recZoom(src){ if(!src) return; const z=document.createElement('div'); z.className='mcv-recZoom'; z.innerHTML='<img alt="배번호 사진">'; z.querySelector('img').src=src; z.onclick=()=>z.remove(); document.getElementById('mcv-root').appendChild(z); }
+function recHtml(p){ const r=p.rec; if(!r) return '';
+  let ph=null; if(r.photo){ recPhotoLoad(p.id); ph=(LIVE.photos||{})[p.id]; }
+  const tr=(r.treat||[]).concat(r.treatTxt?[r.treatTxt]:[]);
+  return '<div class="mcv-recSum">'+(ph?'<img src="'+ph+'" data-rec-ph="'+esc(p.id)+'" alt="배번호 사진" title="눌러서 크게">':(r.photo&&ph===''?'<span class="mcv-c mcv-c-sub" style="float:right">📷 사진 불러오는 중</span>':''))+
+    '<b>📋 처치 기록</b> '+(r.done?'<span class="mcv-emgSt mcv-st-done">처리 완료</span>':'<span class="mcv-emgSt mcv-st-work">처리 중</span>')+'<br>'+
+    (r.bib?'🎽 배번호 <b>'+esc(r.bib)+'</b><br>':'')+
+    ((r.cond||r.condTxt)?'🩺 상태: '+esc([r.cond,r.condTxt].filter(Boolean).join(' — '))+'<br>':'')+
+    (tr.length?'💊 처치: '+esc(tr.join(', '))+'<br>':'')+
+    (r.out?'➡ <b>'+esc(recOutLabel(r.out))+'</b>'+(r.out==='hosp'?' — 🏥 '+esc(r.hosp||'병원 미정')+(r.hospT?' · '+esc(r.hospT)+' 출발':'')+(r.ambName?' · 🚑 '+esc(r.ambName):''):'')+'<br>':'')+
+    '<small style="color:#607d8b">기록 '+esc(r.by||'')+' '+liveFmtT(r.at)+(r.done&&r.doneBy?' · 완료 '+esc(r.doneBy)+' '+liveFmtT(r.doneAt):'')+'</small></div>'; }
+function recShrink(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onerror=()=>rej(new Error('사진을 읽지 못했습니다')); fr.onload=()=>{ const im=new Image(); im.onerror=()=>rej(new Error('이 형식의 사진은 읽지 못했습니다')); im.onload=()=>{
+    let w=im.naturalWidth||im.width, h=im.naturalHeight||im.height; const k=Math.min(1, 1280/Math.max(w,h,1)); w=Math.max(1,Math.round(w*k)); h=Math.max(1,Math.round(h*k));
+    const c=document.createElement('canvas'); c.width=w; c.height=h; const g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,w,h); g.drawImage(im,0,0,w,h);
+    let q=.72, d=c.toDataURL('image/jpeg',q); while(d.length>650000 && q>.3){ q-=.1; d=c.toDataURL('image/jpeg',q); } res(d); }; im.src=fr.result; }; fr.readAsDataURL(file); }); }
+function recOpen(id){
+  const p=LIVE.pings[id]; if(!p || !pingCan()) return;
+  const base={bib:'',cond:'',condTxt:'',treat:[],treatTxt:'',out:'',hosp:'',hospT:'',ambUid:'',ambName:'',done:false,photo:false};
+  const D={r:Object.assign(base, JSON.parse(JSON.stringify(p.rec||{}))), photo:null, photoDel:false, busy:false};
+  if(!Array.isArray(D.r.treat)) D.r.treat=[];
+  const old=document.getElementById('mcv-rec'); if(old) old.remove();
+  const ov=document.createElement('div'); ov.id='mcv-rec'; ov.className='mcv-rec'; document.getElementById('mcv-root').appendChild(ov);
+  const close=()=>ov.remove();
+  const sync=()=>{ const v=k=>{ const e=ov.querySelector('[data-rf="'+k+'"]'); return e?e.value:undefined; };
+    ['bib','condTxt','treatTxt','hosp','hospT','ambUid'].forEach(k=>{ const x=v(k); if(x!==undefined) D.r[k]=x; }); };
+  const draw=()=>{ const r=D.r, ambs=livePeople().filter(x=>x.role==='amb').sort((a,b)=>(+a.car||99)-(+b.car||99));
+    const curPh=D.photoDel?null:(D.photo||(r.photo?(LIVE.photos||{})[id]:null));
+    ov.innerHTML='<div class="mcv-recBox"><h2>📋 처치 기록</h2><div class="mcv-recSub">🚨 '+esc(p.zoneName||'지도 지점')+(p.msg?' — '+esc(p.msg):'')+' · '+liveFmtT(p.at)+' 신고</div>'+
+      '<span class="mcv-recL">🎽 배번호</span><input type="text" data-rf="bib" inputmode="numeric" maxlength="20" placeholder="예: 10234 (모르면 비워 두기)" value="'+esc(r.bib)+'">'+
+      '<span class="mcv-recL">📷 배번호 사진</span><div class="mcv-recPh">'+(curPh?'<img src="'+curPh+'" alt="배번호 사진">':'')+
+        '<label>📷 촬영<input type="file" accept="image/*" capture="environment" data-rph="1"></label><label>🖼 앨범에서<input type="file" accept="image/*" data-rph="1"></label>'+
+        (curPh?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" data-rph-del="1">사진 빼기</button>':'')+'</div>'+
+      '<span class="mcv-recL">🩺 환자 상태</span><div class="mcv-recChips">'+REC_COND.map(c=>'<button type="button" data-rcond="'+esc(c)+'" class="'+(r.cond===c?'mcv-on':'')+'">'+esc(c)+'</button>').join('')+'</div>'+
+        '<input type="text" data-rf="condTxt" maxlength="200" placeholder="상세 (예: 우측 종아리 경련, 호흡 정상)" value="'+esc(r.condTxt)+'">'+
+      '<span class="mcv-recL">💊 처치 내용 <small style="font-weight:600;color:#78909c">(여러 개 고르기)</small></span><div class="mcv-recChips">'+REC_TREAT.map(c=>'<button type="button" data-rtreat="'+esc(c)+'" class="'+(r.treat.includes(c)?'mcv-on':'')+'">'+esc(c)+'</button>').join('')+'</div>'+
+        '<input type="text" data-rf="treatTxt" maxlength="200" placeholder="기타 처치 (직접 적기)" value="'+esc(r.treatTxt)+'">'+
+      '<span class="mcv-recL">➡ 결과</span><div class="mcv-recChips">'+REC_OUT.map(([k,l])=>'<button type="button" data-rout="'+k+'" class="'+(r.out===k?'mcv-on':'')+'">'+esc(l)+'</button>').join('')+'</div>'+
+      (r.out==='hosp'?'<div class="mcv-recRow"><div><span class="mcv-recL">🏥 후송 병원</span><input type="text" data-rf="hosp" maxlength="60" placeholder="예: 구미차병원" value="'+esc(r.hosp)+'"></div>'+
+          '<div style="flex:0 0 120px"><span class="mcv-recL">🕑 후송 시각</span><input type="time" data-rf="hospT" value="'+esc(r.hospT)+'"></div></div>'+
+        '<span class="mcv-recL">🚑 후송 구급차</span><select data-rf="ambUid"><option value="">'+(ambs.length?'고르기 (접속 중인 구급차)':'접속 중인 구급차 없음')+'</option>'+ambs.map(a=>'<option value="'+esc(a.uid)+'"'+(r.ambUid===a.uid?' selected':'')+'>'+esc((a.car?a.car+'호차 ':'')+(a.name||''))+(transOn(a)?' · 후송 중':'')+'</option>').join('')+
+          (r.ambUid&&!ambs.some(a=>a.uid===r.ambUid)&&r.ambName?'<option value="'+esc(r.ambUid)+'" selected>'+esc(r.ambName)+'</option>':'')+'</select>'+
+        '<div class="mcv-note" style="padding:4px 0 0;font-size:.78rem">저장하면 고른 구급차가 배치 현황 호차 칸에 「🏥 후송 중」으로 표시됩니다. 돌아오면 그 칸의 「↩ 복귀」.</div>':'')+
+      '<div class="mcv-recBtns"><button type="button" class="mcv-lvBtn" data-rx="1">닫기</button><button type="button" class="mcv-lvBtn" data-rsave="0">💾 저장</button><button type="button" class="mcv-lvBtn mcv-ok" data-rsave="1">✅ 처리 완료로 저장</button></div>'+
+      '<div class="mcv-note" style="padding:6px 0 0;font-size:.78rem">「처리 완료로 저장」은 이 응급 상황을 종료(알림 내림)까지 합니다. 기록은 나중에도 고칠 수 있습니다.</div></div>';
+    ov.querySelector('[data-rx]').onclick=close;
+    ov.querySelectorAll('[data-rcond]').forEach(b=>{ b.onclick=()=>{ sync(); D.r.cond=(D.r.cond===b.dataset.rcond)?'':b.dataset.rcond; draw(); }; });
+    ov.querySelectorAll('[data-rtreat]').forEach(b=>{ b.onclick=()=>{ sync(); const t=b.dataset.rtreat, a=D.r.treat; const i=a.indexOf(t); if(i>=0) a.splice(i,1); else a.push(t); draw(); }; });
+    ov.querySelectorAll('[data-rout]').forEach(b=>{ b.onclick=()=>{ sync(); const k=b.dataset.rout; D.r.out=(D.r.out===k)?'':k;
+      if(D.r.out==='hosp'){ if(!D.r.hospT) D.r.hospT=liveFmtT(Date.now()); if(!D.r.ambUid && LIVE.me && LIVE.me.role==='amb') D.r.ambUid=LIVE.me.uid; } draw(); }; });
+    ov.querySelectorAll('[data-rph]').forEach(inp=>{ inp.onchange=async ()=>{ const f=inp.files&&inp.files[0]; if(!f) return; sync(); try{ liveToast('사진 줄이는 중…'); D.photo=await recShrink(f); D.photoDel=false; draw(); }catch(e){ liveToast((e&&e.message)||'사진을 넣지 못했습니다'); } }; });
+    { const pd=ov.querySelector('[data-rph-del]'); if(pd) pd.onclick=()=>{ sync(); D.photo=null; D.photoDel=true; draw(); }; }
+    ov.querySelectorAll('[data-rsave]').forEach(b=>{ b.onclick=async ()=>{ if(D.busy) return; sync(); D.busy=true; b.disabled=true; b.textContent='저장 중…';
+      try{ await recSave(id, D, b.dataset.rsave==='1'); close(); }catch(e){ D.busy=false; b.disabled=false; b.textContent=b.dataset.rsave==='1'?'✅ 처리 완료로 저장':'💾 저장'; liveToast('저장하지 못했습니다 — '+((e&&e.message)||e)); } }; });
+  };
+  ov.addEventListener('click', e=>{ if(e.target===ov) close(); });
+  if(D.r.photo) recPhotoLoad(id);
+  draw();
+  if(D.r.photo && (LIVE.photos||{})[id]==='') { const t=setInterval(()=>{ const v=(LIVE.photos||{})[id]; if(v!==''){ clearInterval(t); if(document.getElementById('mcv-rec')===ov){ sync(); draw(); } } }, 400); setTimeout(()=>clearInterval(t), 15000); }
+}
+async function recSave(id, D, finish){
+  const p=LIVE.pings[id]; if(!p || !LIVE.root || !LIVE.me) throw new Error('로그인 상태를 확인해 주세요');
+  const prev=p.rec||{}, r=D.r, now=Date.now();
+  r.bib=String(r.bib||'').trim().slice(0,20); r.condTxt=String(r.condTxt||'').trim().slice(0,200); r.treatTxt=String(r.treatTxt||'').trim().slice(0,200); r.hosp=String(r.hosp||'').trim().slice(0,60);
+  if(r.out!=='hosp'){ r.hosp=''; r.hospT=''; r.ambUid=''; r.ambName=''; }
+  else { const a=r.ambUid?LIVE.people[r.ambUid]:null; if(a) r.ambName=(a.car?a.car+'호차 ':'')+(a.name||''); else if(!r.ambUid) r.ambName=''; }
+  if(D.photo) r.photo=true; else if(D.photoDel) r.photo=false;
+  if(finish){ r.done=true; r.doneAt=now; r.doneBy=LIVE.me.name; }
+  r.by=LIVE.me.name; r.byRole=LIVE.me.role||''; r.at=now;
+  if(D.photo) await LIVE.root.collection('photos').doc(id).set({data:D.photo, at:now, by:LIVE.me.name});
+  else if(D.photoDel) await LIVE.root.collection('photos').doc(id).delete().catch(()=>{});
+  await LIVE.root.collection('pings').doc(id).set({rec:r},{merge:true});
+  const P=(LIVE.photos=LIVE.photos||{}); if(D.photo) P[id]=D.photo; else if(D.photoDel) P[id]=false;
+  p.rec=r;
+  if(r.out==='hosp' && r.ambUid && LIVE.people[r.ambUid] && !(prev.out==='hosp' && prev.ambUid===r.ambUid && transOn(LIVE.people[r.ambUid])))
+    transSet(r.ambUid, true, {hosp:r.hosp, ping:id, t:r.hospT}, true);
+  liveLog('rec', {ping:id, zone:p.zone||null, zoneName:p.zoneName||'', msg:recLine(r)});
+  if(finish && p.active!==false) pingResolve(id);
+  emgRender(); liveToast(finish?'✅ 처치 기록 저장 · 상황 종료':'📋 처치 기록을 저장했습니다');
+}
+/* 🏥 구급차 후송 중 — people/{uid}.trans. 구급차 본인·관리자·CP 가 켜고 끈다 */
+function transOn(p){ return !!(p && p.trans && p.trans.on); }
+function transCan(uid){ return !!(LIVE.me && LIVE.root) && (ADMIN || ROLE==='cp' || uid===LIVE.me.uid); }
+function transSet(uid, on, o, quiet){ const p=LIVE.people[uid]; if(!LIVE.root || !p) return; o=o||{}; const old=p.trans||{}, now=Date.now();
+  const t={on:!!on, at:now, by:LIVE.me?LIVE.me.name:'', hosp:on?(o.hosp||''):(old.hosp||''), ping:on?(o.ping||''):(old.ping||''), t:on?(o.t||liveFmtT(now)):(old.t||''), backAt:on?0:now};
+  p.trans=t; liveRender();
+  LIVE.root.collection('people').doc(uid).set({trans:t},{merge:true}).then(()=>{ if(!quiet) liveToast(on?'🏥 후송 중으로 표시했습니다':'↩ 복귀로 표시했습니다'); }).catch(()=>{});
+  liveLog(on?'trans':'back', {msg:(p.car?p.car+'호차 ':'')+(p.name||'')+(t.hosp?' → '+t.hosp:'')+(on&&t.t?' '+t.t:'')}); }
+function transHosp(uid){ const ps=Object.values(LIVE.pings).filter(x=>x.rec && x.rec.out==='hosp' && x.rec.ambUid===uid).sort((a,b)=>(+b.rec.at||0)-(+a.rec.at||0)); return ps[0]?{hosp:ps[0].rec.hosp||'', ping:ps[0].id}:{}; }
+function ambRowHtml(p){ const tr=transOn(p), now=Date.now(), stale=now-(+p.at||0)>LIVE_STALE;
+  return '<div class="mcv-ambRow'+(tr?' mcv-transOn':'')+'"><span class="mcv-lvAvatar" style="background:'+liveZoneColor(p)+'">'+esc(String(p.name||'?').charAt(0))+'</span><b>'+esc((p.car?p.car+'호차 ':'')+(p.name||''))+'</b>'+
+    (tr?'<span class="mcv-c mcv-c-trans">🏥 후송 중'+(p.trans.hosp?' · '+esc(p.trans.hosp):'')+' · '+esc(p.trans.t||liveFmtT(p.trans.at))+' 출발</span>':'<span class="mcv-c mcv-c-sub">'+(stale?'끊김':'대기')+'</span>')+
+    (transCan(p.uid)?(tr?'<button type="button" class="mcv-lvBtn mcv-sm" data-trans="'+esc(p.uid)+'" data-on="0">↩ 복귀</button>':'<button type="button" class="mcv-lvBtn mcv-sm" data-trans="'+esc(p.uid)+'" data-on="1">🏥 후송 중</button>'):'')+'</div>'; }
 function pingAckKey(){ return 'mcv-live-ack-'+(LIVECFG?LIVECFG.key:''); }
 function pingLoadAck(){ try{ (JSON.parse(localStorage.getItem(pingAckKey())||'[]')||[]).forEach(id=>LIVE.acked.add(id)); }catch(e){} }
 function pingAck(id){ LIVE.acked.add(id); try{ localStorage.setItem(pingAckKey(), JSON.stringify([...LIVE.acked].slice(-200))); }catch(e){} pingUpdate(); }
@@ -4516,7 +4679,7 @@ function pingAlert(){
 }
 function pingUpdate(){
   if(!LIVE.pingSeeded){ pingLoadAck(); }
-  const act=pingActive();
+  const act=isLeader()?[]:pingActive();
   /* 새로 온 핑 → 진동·소리 (처음 받은 목록은 조용히) */
   let fresh=[];
   act.forEach(p=>{ if(!LIVE.seenPings.has(p.id)){ LIVE.seenPings.add(p.id); if(LIVE.pingSeeded && !LIVE.acked.has(p.id)) fresh.push(p.id); } });
@@ -4560,7 +4723,7 @@ function pingCard(p){
 }
 function pingPins(){
   LIVE.pingPins.forEach(h=>{ try{ h.rm(); }catch(e){} }); LIVE.pingPins=[];
-  if(!kReady || !kmap) return;
+  if(!kReady || !kmap || isLeader()) return;
   pingActive().forEach(p=>{ if(p.lat==null||p.lon==null) return;
     LIVE.pingPins.push(liveOv([p.lat,p.lon], '<div class="mcv-kping" title="'+esc(p.zoneName||'')+'">🚨</div>', 340, ()=>pingCard(p))); });
 }
@@ -4606,15 +4769,16 @@ function emgKm(p){ try{ if(p.lat==null||p.lon==null||typeof vNearKm!=='function'
 function emgSheets(){
   const all=Object.values(LIVE.pings).sort((a,b)=>(+a.at||0)-(+b.at||0));
   const dt=t=>t?logDate(t)+' '+liveFmtS(t):'', mins=(a,b)=>(a&&b)?Math.max(0,Math.round((b-a)/60000)):'';
-  const head=['번호','상태','신고 일시','지점·구역','코스 km','상황','신고자','신고자 역할','처리자','처리 일시','신고→처리(분)','호출 구급차','출동 확인','종료자','종료 일시','신고→종료(분)','처리 내용','기록자','기록 일시','위도','경도','지도 링크'];
+  const head=['번호','상태','신고 일시','지점·구역','코스 km','상황','신고자','신고자 역할','처리자','처리 일시','신고→처리(분)','호출 구급차','출동 확인','종료자','종료 일시','신고→종료(분)','처리 내용','기록자','기록 일시','위도','경도','지도 링크','배번호','환자 상태','처치 내용','결과','후송 병원','후송 시각','후송 구급차','처리 완료','처치 기록자','처치 기록 일시','배번호 사진'];
   const rows=[head];
   all.forEach((p,i)=>{ const on=p.active!==false; const st=!on?'종료':(p.handledBy?'처리 중':'진행 중'); const cs=Object.values(p.calls||{}).sort((a,b)=>(+a.at||0)-(+b.at||0));
     rows.push([i+1, st, dt(p.at), p.zoneName||'', emgKm(p), p.msg||'', p.by||'', emgRoleTag(p.role)||(p.role==='patrol'?'레이스패트롤':''), p.handledBy||'', dt(p.handledAt), mins(p.at,p.handledAt),
       cs.map(c=>(c.car?c.car+'호차 ':'')+(c.name||'')+' '+liveFmtT(c.at)+(c.by?' ('+c.by+')':'')).join(' / '), cs.map(c=>c.ack?'확인 '+liveFmtT(c.ack):'미확인').join(' / '),
-      p.resolvedBy||'', dt(p.resolvedAt), mins(p.at,p.resolvedAt), p.note||'', p.noteBy||'', dt(p.noteAt), p.lat!=null?+p.lat:'', p.lon!=null?+p.lon:'', p.lat!=null?'https://map.kakao.com/link/map/'+encodeURIComponent(p.zoneName||'응급')+','+p.lat+','+p.lon:'']); });
+      p.resolvedBy||'', dt(p.resolvedAt), mins(p.at,p.resolvedAt), p.note||'', p.noteBy||'', dt(p.noteAt), p.lat!=null?+p.lat:'', p.lon!=null?+p.lon:'', p.lat!=null?'https://map.kakao.com/link/map/'+encodeURIComponent(p.zoneName||'응급')+','+p.lat+','+p.lon:'']
+      .concat((r=>[r.bib||'', [r.cond,r.condTxt].filter(Boolean).join(' — '), (r.treat||[]).concat(r.treatTxt?[r.treatTxt]:[]).join(', '), recOutLabel(r.out), r.hosp||'', r.hospT||'', r.ambName||'', r.done?'완료 '+dt(r.doneAt)+(r.doneBy?' ('+r.doneBy+')':''):(p.rec?'처리 중':''), r.by||'', dt(r.at), r.photo?'있음 (운영 화면에서 보기)':''])(p.rec||{}))); });
   const calls=[['신고 번호','지점·구역','신고 일시','호출 구급차','호차','호출자','호출 일시','출동 확인 일시','신고→호출(분)','호출→확인(분)']];
   all.forEach((p,i)=>{ Object.values(p.calls||{}).sort((a,b)=>(+a.at||0)-(+b.at||0)).forEach(c=>{ calls.push([i+1, p.zoneName||'', dt(p.at), c.name||'', c.car||'', c.by||'', dt(c.at), dt(c.ack), mins(p.at,c.at), mins(c.at,c.ack)]); }); });
-  const sheets=[{name:'응급 신고', rows, widths:[6,8,18,24,8,30,10,10,10,18,10,30,16,10,18,10,36,10,18,10,10,40]}, {name:'호출 내역', rows:calls, widths:[8,24,18,12,6,10,18,18,10,10]}];
+  const sheets=[{name:'응급 신고', rows, widths:[6,8,18,24,8,30,10,10,10,18,10,30,16,10,18,10,36,10,18,10,10,40,10,24,32,18,18,10,14,18,10,18,14]}, {name:'호출 내역', rows:calls, widths:[8,24,18,12,6,10,18,18,10,10]}];
   try{ if(typeof logRows==='function' && LIVE.me && LIVE.me.sup){ const lr=logTsv('\t').split('\n').map(l=>l.split('\t')); if(lr.length>1) sheets.push({name:'로그', rows:lr, widths:[11,9,10,10,12,16,40,40]}); } }catch(e){}
   return sheets;
 }
@@ -4656,16 +4820,20 @@ function emgRender(){
                       :'<div class="mcv-emgLine"><i>🚑</i><span style="color:#8d6e63">처리 버튼을 누른 사람 없음 — 바로 종료됨</span></div>'))+
       (!on?'<div class="mcv-emgLine"><i>✅</i><span>종료 <b>'+esc(p.resolvedBy||'')+'</b>'+(p.resolvedRole?' ('+emgRoleTag(p.resolvedRole)+')':'')+' · '+logDate(p.resolvedAt)+' '+liveFmtS(p.resolvedAt)+(dur!=null?' <small>(올린 지 '+dur+'분)</small>':'')+'</span></div>':'')+
       callsHtml(p)+
+      recHtml(p)+
       (p.note?'<div class="mcv-emgLine"><i>📝</i><span>'+esc(p.note)+' <small>— '+esc(p.noteBy||'')+' '+liveFmtT(p.noteAt)+'</small></span></div>':'')+
-      (can&&on&&LIVE.emgCallOpen===p.id?(()=>{ const ts=callTargets(p); const near=ts.find(t=>!t.away && t.km!=null); return '<div class="mcv-emgCall">📞 '+(ts.length?(near?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" data-emg-callnear="'+esc(p.id)+'" data-uid="'+esc(near.uid)+'" style="flex-basis:100%">🚑 가장 가까운 구급차에 출동 명령 — '+esc(callLabel(near))+'</button>':'')+
+      (can&&on&&LIVE.emgCallOpen===p.id?(()=>{ const ts=callTargets(p); const near=ts.find(t=>!t.away && !t.trans && t.km!=null); return '<div class="mcv-emgCall">📞 '+(ts.length?(near?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" data-emg-callnear="'+esc(p.id)+'" data-uid="'+esc(near.uid)+'" style="flex-basis:100%">🚑 가장 가까운 구급차에 출동 명령 — '+esc(callLabel(near))+'</button>':'')+
         '<select data-emg-callsel="'+esc(p.id)+'">'+ts.map(t=>'<option value="'+esc(t.uid)+'">'+esc(callLabel(t))+'</option>').join('')+'</select><button type="button" class="mcv-lvBtn mcv-sm mcv-ping" data-emg-callgo="'+esc(p.id)+'">출동 요청 보내기</button>':'<span class="mcv-c mcv-c-sub">접속해 있는 구급차가 없습니다</span>')+'<button type="button" class="mcv-lvBtn mcv-sm" data-emg-callx="1">닫기</button>'+
         (ts.length?'<small style="flex-basis:100%;color:#4527a0">거리는 구급차의 위치 공유 좌표, 없으면 대기 지점(담당 시설) 기준입니다. 사고 지점 좌표가 없는 핑은 거리 없이 접속 순입니다.</small>':'')+'</div>'; })():'')+
       (can?'<div class="mcv-emgNote"><input type="text" data-emg-note="'+esc(p.id)+'" placeholder="처리 내용 (예: 구급차 이송 · 경상, 자력 복귀)" maxlength="200" value="'+esc(p.note||'')+'"><button type="button" class="mcv-lvBtn mcv-sm" data-emg-notesave="'+esc(p.id)+'">📝 저장</button></div>':'')+
       '<div class="mcv-emgAct">'+(p.lat!=null?'<button type="button" class="mcv-lvBtn mcv-sm" data-emg-map="'+esc(p.id)+'">🗺 지도</button><a class="mcv-lvBtn mcv-sm" href="'+navUrl(p.zoneName||'응급',p.lat,p.lon)+'" target="_blank" rel="noopener">🧭 길찾기</a>':'')+
+        (can?'<button type="button" class="mcv-lvBtn mcv-sm'+(p.rec?'':' mcv-ok')+'" data-emg-rec="'+esc(p.id)+'">📋 처치 기록'+(p.rec?' 고치기':'')+'</button>':'')+
         (can&&on?'<button type="button" class="mcv-lvBtn mcv-sm" data-emg-call="'+esc(p.id)+'" title="접속해 있는 구급차를 골라 출동 요청을 보냅니다">📞 구급차 호출</button>':'')+
         (can&&on&&!p.handledBy?'<button type="button" class="mcv-lvBtn mcv-sm" data-emg-handle="'+esc(p.id)+'">🚑 내가 처리</button>':'')+
         (can&&on?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" data-emg-resolve="'+esc(p.id)+'">상황 종료</button>':'')+'</div></div>'; }).join('');
   list.querySelectorAll('[data-emg-handle]').forEach(b=>{ b.onclick=()=>pingHandle(b.dataset.emgHandle); });
+  list.querySelectorAll('[data-emg-rec]').forEach(b=>{ b.onclick=()=>recOpen(b.dataset.emgRec); });
+  list.querySelectorAll('[data-rec-ph]').forEach(im=>{ im.onclick=()=>recZoom(im.src); });
   list.querySelectorAll('[data-emg-call]').forEach(b=>{ b.onclick=()=>{ LIVE.emgCallOpen=(LIVE.emgCallOpen===b.dataset.emgCall)?null:b.dataset.emgCall; emgRender(); }; });
   list.querySelectorAll('[data-emg-callx]').forEach(b=>{ b.onclick=()=>{ LIVE.emgCallOpen=null; emgRender(); }; });
   list.querySelectorAll('[data-emg-callgo]').forEach(b=>{ b.onclick=()=>{ const sel=list.querySelector('[data-emg-callsel="'+b.dataset.emgCallgo+'"]'); if(sel && sel.value) pingCall(b.dataset.emgCallgo, sel.value); }; });
@@ -4842,7 +5010,7 @@ function whoRender(){
   let h='';
   groups.forEach(([r,label])=>{ const rs=show.filter(x=>x.r===r); if(!rs.length) return;
     h+='<div class="mcv-lvZone" style="padding:8px 18px 2px;border-bottom:none"><h3>'+label+' <small>'+rs.filter(x=>x.st[0]==='on').length+' / '+rs.length+' 접속</small></h3></div>';
-    rs.forEach(x=>{ const tag=x.s?'총관리자':(x.r==='amb'&&x.car?x.car+'호차':(x.r==='patrol'?(x.p&&x.p.ptype==='pacer'?'페이스메이커':'패트롤'):'')); const sub=[x.zn||'', x.cp||''].filter(Boolean).join(' · ');
+    rs.forEach(x=>{ const tag=x.s?'총관리자':(x.r==='amb'&&x.car?x.car+'호차':(x.r==='patrol'?(x.p&&x.p.ptype==='pacer'?'페이스메이커':x.p&&x.p.ptype==='leader'?'선두유도':'패트롤'):'')); const sub=[x.zn||'', x.cp||''].filter(Boolean).join(' · ');
       h+='<div class="mcv-whoRow mcv-w-'+x.st[0]+'"'+(x.p&&x.p.lat!=null&&x.st[0]!=='out'&&x.st[0]!=='never'?' data-who-map="'+esc(x.p.uid)+'" style="cursor:pointer" title="지도에서 보기"':'')+'><span class="mcv-lvAvatar" style="background:'+(x.p?liveZoneColor(x.p):'#b0bec5')+'">'+esc(String(x.n).charAt(0))+'</span>'+
         '<span class="mcv-whoT"><b>'+esc(x.n)+'</b>'+(tag?' <span class="mcv-c mcv-c-sub">'+esc(tag)+'</span>':'')+(x.extra?' <span class="mcv-c mcv-c-sub">명단 밖</span>':'')+(sub?'<small>'+esc(sub)+'</small>':'')+'</span>'+
         '<span class="mcv-whoSt">'+esc(x.st[1])+'</span>'+(x.st[0]==='on'||x.st[0]==='away'?(l=>'<span class="mcv-c mcv-loc-'+l[0]+'">'+esc(l[1])+'</span>')(locState(x.p)):'')+'<span class="mcv-c mcv-c-sub">'+esc(x.st[2]||'')+'</span></div>'; });
