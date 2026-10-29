@@ -8,10 +8,10 @@
     {
      "name": "610run.html",
      "label": "운영용·통합",
-     "at": 1793058896312
+     "at": 1793247251432
     }
    ],
-   "at": 1793058896311,
+   "at": 1793247251431,
    "ver": "빌드 2026-10-26 · 26.56 개발판",
    "live": {
     "project": "course-2baf5",
@@ -50,8 +50,8 @@
      "s": 0
     },
     {
-     "l": "2cad863dc712ca7e8c78df1b5ebd51e632781b88d617538d7c1de846db6c0eb1",
-     "h": "e06e7df010487420c0bcdba350dfba53bfaab0bc6efe599c07803601e49bc44d",
+     "l": "9ed5e8e1d48611429b0d23803b8f3e7f9b06c1bf823fabfff8a5c4e08011409d",
+     "h": "513a63cf8a1ba5b70a98d646b9e8023a94d828023045f5228dfe5fe1c4fdb14f",
      "r": "lead",
      "s": 0
     },
