@@ -8,11 +8,11 @@
     {
      "name": "610run.html",
      "label": "운영용·통합",
-     "at": 1793247251432
+     "at": 1793687486004
     }
    ],
-   "at": 1793247251431,
-   "ver": "빌드 2026-10-26 · 26.56 개발판",
+   "at": 1793687486003,
+   "ver": "빌드 2026-10-30 · 26.59 개발판",
    "live": {
     "project": "course-2baf5",
     "apiKey": "AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI",
@@ -50,8 +50,8 @@
      "s": 0
     },
     {
-     "l": "9ed5e8e1d48611429b0d23803b8f3e7f9b06c1bf823fabfff8a5c4e08011409d",
-     "h": "513a63cf8a1ba5b70a98d646b9e8023a94d828023045f5228dfe5fe1c4fdb14f",
+     "l": "bba02f59f9b8431b3fc751d1d83cf1dd74dc6dad97aa810a3606ff211020cd57",
+     "h": "1ad9f5353aabe174d40857861bc7434ad4a530de0257005c273818cad83a03c1",
      "r": "lead",
      "s": 0
     },
@@ -62,32 +62,32 @@
      "s": 0
     },
     {
-     "l": "17a651c0c63e5766ed331d6c441f6c143dea4117dc9af7aa999a1b9ef90dfc8d",
-     "h": "721e258e87fc2cef62c024106f3a1d25874b55c380b5e4368077ca3f80bf4cca",
+     "l": "977700fcacc9eb91a136eb67d23ccadb12619cc6733a04a7d26477ef0d4bca6d",
+     "h": "6226575576f372c0f809cb9cc7128893970d029aa55cd4c61ea8519ffac7d521",
      "r": "amb",
      "s": 0
     },
     {
-     "l": "7f7a1b1c4f088629d8b9a1e0fecf753994073b370a60aba393a3ea85a2e178dd",
-     "h": "9c3058ae8ceb2fc78a0bb444c98c3651286247f8e6fe6daa485ea514895b2cca",
+     "l": "1180cc246fffae216e49533fb09048446e62ce6603c92d54291685988ed58b56",
+     "h": "f165cb079e1c34173e1083ccdda83bd81e7475a37dc92f43ae9f9214947d0b1d",
      "r": "amb",
      "s": 0
     },
     {
-     "l": "9d154008f596e1339eedbd441a525e3633e1b31d9f96ddb5ed0528ca687da2af",
-     "h": "5582e240e2d699c371ef57667cd85e0e402815da5b8bd569b7994d5a833cb846",
+     "l": "06771000c19022b52e0268b6080239a1a9c4cb26c5fd4353ca10241a79b50de6",
+     "h": "9c5667f5b8a2f2f47d84eba369438dea8d5598c4c75c9055474069717436a134",
      "r": "amb",
      "s": 0
     },
     {
-     "l": "fdf6c5d96d2c751e815bc4aa12237b8ad892844fb2ee0a92ebd118f03be39b4e",
-     "h": "92e54d3c10ae717da75096a94f1bdd1519aaaeddf8707f0c8722460248e86a45",
+     "l": "928e0553f52a659edd45a6abeb3a6542be171cc710d29a2c5229addbb2091408",
+     "h": "5ae5dd19f28ad6f73335a6cd5e74a6dec0f2a5cf41250b8eed5196a5cbdd50ed",
      "r": "amb",
      "s": 0
     },
     {
-     "l": "ce9c323f455ffc5aa22f837d31584a1c0275428c181a1073d97756ba61c0e0e1",
-     "h": "cab03b32e32ce35ef457fd5bc92ba3ae6e9ff9ac0b557fc1653c66d717927d05",
+     "l": "9824716ac04978258a8c5f12e12ed32b87b6a33d8d3f72eff6cfb53e24b9f59c",
+     "h": "199428af5ff100f922f168c2cca4c69e79eaed9662ce22bcc33a390fb065c8b6",
      "r": "amb",
      "s": 0
     },
@@ -107,25 +107,25 @@
      "l": "9773e655fbdff2fac413a44b69164c1b34b8dadf57707e22c33ea61a40f6b611",
      "h": "a24e31e4c52c09efe7d9b8789301c777e51135918c4e5a8548c447bbd0872d80",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "647dad06694c750df0a9078893bc0e3b61d07b43a7b44f92b7587d5511d4b7bb",
      "h": "68cd402eb24a1c915c1a78e84fcb632a35b5c88936c3afec42e911cadf86f6cc",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "3d4995492e38c9e198fca7ee779b0b12b40cdbd86d0c2e19dbe5ed3fb6fdddc8",
      "h": "718fd2bd56736459f6aa15f98eddcb3875ca65489bfbcdc60091396f722476d3",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "efbec52f354546bc2e691245780282db2de2f23cbca8750ff2c8ef0fa97027af",
      "h": "fa7adc0f5e07434abf22715ce29cca5b505821f44a41b8c24d1bd8de5ad47359",
      "r": "admin",
-     "s": 1
+     "s": 0
     },
     {
      "l": "7f9eb4a7b8247594be2a995ad9ebaa1ceb188cda69059afc2826b69e6b936366",
@@ -137,7 +137,19 @@
      "l": "0ce989d4b9077e3225338f4b7bc69185d835d4f05ce73dc073e0a96ba0b8bf55",
      "h": "10f097a1d9b2606328c8ae13e765c655066e821e048c85b4773bf323b3431c93",
      "r": "admin",
-     "s": 1
+     "s": 0
+    },
+    {
+     "l": "43fcdd68e4ce8a037ce493b728a3e4b5e63b3ea48c19c730dcfaaf3e590f887a",
+     "h": "90f39cd6dc76527005cb9f51bc5063519d8d0fa9e1be850fa2e8990facff2768",
+     "r": "leader",
+     "s": 0
+    },
+    {
+     "l": "a360aa1a9535139711bc9b7c0e1fefbed2aa490b2633369bc28af485fa6638d4",
+     "h": "47e1af10a67138257f63723f764649e83a227df164612a8b9c18ec800956b522",
+     "r": "leader",
+     "s": 0
     }
    ],
    "pl": "6849a510e2cc8b50e256b97ab8b37a847a76a7aaa1dfa79be42d26813c1a753e",
