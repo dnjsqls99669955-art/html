@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>제3회 자유민주 마라톤 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-11-03 · 26.60 개발판&quot;,&quot;at&quot;:1793690491437,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-11-03 · 26.61 개발판&quot;,&quot;at&quot;:1793691628582,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -3499,7 +3499,7 @@ var LIVE_SKEW=0; function liveNow(){ return Date.now()+LIVE_SKEW; }
 function liveSkewSync(){ try{ if(!/^https?:$/.test(location.protocol)) return; const t0=Date.now(); fetch(location.href.split('#')[0], {method:'HEAD', cache:'no-store'}).then(r=>{ const d=Date.parse(r.headers.get('date')||''); if(!isFinite(d)) return; const t1=Date.now(); const sk=d+500-(t0+t1)/2; LIVE_SKEW=(Math.abs(sk)>4000)?Math.round(sk):0; }).catch(()=>{}); }catch(e){} }
 liveSkewSync(); setInterval(liveSkewSync, 10*60*1000);
 const LIVE={on:false, err:null, db:null, root:null, unsub:[], checks:{}, people:{}, me:null, share:true, hb:null, lastSent:0, lastLL:null, pins:[], pendingOnly:false, fold:true, lastAt:0,
-  pings:{}, pingPins:[], acked:new Set(), seenPings:new Set(), pingSeeded:false, log:{}, logUnsub:null, logFilter:'all', msgs:{}, seenMsgs:new Set(), msgSeeded:false, emgFilter:'open', msgTo:'all', emgCallOpen:null, whoFilter:'all'};
+  pings:{}, pingPins:[], acked:new Set(), seenPings:new Set(), pingSeeded:false, log:{}, logUnsub:null, logFilter:'all', msgs:{}, seenMsgs:new Set(), msgSeeded:false, emgFilter:'all', msgTo:'all', emgCallOpen:null, whoFilter:'all'};
 const ACC=(LIVECFG && Array.isArray(LIVECFG.acc))?LIVECFG.acc:[];   /* 이 파일로 로그인할 수 있는 사람 {n,h,r,z,cp,s} */
 const PATROL=(LIVECFG && LIVECFG.patrol && LIVECFG.patrol.h)?LIVECFG.patrol:null;   /* 🏍 레이스패트롤 공용 번호(해시) — 있으면 패트롤 로그인 단추 */
 const ROSTER=(LIVECFG && Array.isArray(LIVECFG.roster))?LIVECFG.roster:null;   /* 관리자용: 등록된 사람 전부(접속 현황) */
@@ -4833,7 +4833,7 @@ function pingUpdate(){
       bar.querySelectorAll('[data-ping-ack2]').forEach(b=>{ b.onclick=()=>callAck(b.dataset.pingAck2); });
       bar.querySelectorAll('[data-ping-ack]').forEach(b=>{ b.onclick=()=>pingAck(b.dataset.pingAck); });
       bar.querySelectorAll('[data-ping-handle]').forEach(b=>{ b.onclick=()=>pingHandle(b.dataset.pingHandle); });
-      bar.querySelectorAll('[data-ping-call]').forEach(b=>{ b.onclick=()=>{ LIVE.emgCallOpen=b.dataset.pingCall; LIVE.emgFilter='open'; navShow('emg', true); emgRender(); }; });
+      bar.querySelectorAll('[data-ping-call]').forEach(b=>{ b.onclick=()=>{ LIVE.emgCallOpen=b.dataset.pingCall; navShow('emg', true); emgRender(); }; });
       bar.querySelectorAll('[data-ping-resolve]').forEach(b=>{ b.onclick=()=>{ if(confirm('상황 종료로 표시할까요? 모든 사람의 알림이 내려갑니다.')) pingResolve(b.dataset.pingResolve); }; });
       bar.querySelectorAll('[data-ping-map]').forEach(b=>{ b.onclick=()=>{ const p=LIVE.pings[b.dataset.pingMap]; if(!p||p.lat==null) return; document.getElementById('mcv-map').scrollIntoView({behavior:'smooth', block:'center'}); mapFocus(p.lat,p.lon); pingCard(p); }; });
     }
@@ -5072,11 +5072,11 @@ function emgRender(){
   card.style.display='block';
   const all=Object.values(LIVE.pings).sort((a,b)=>(+b.at||0)-(+a.at||0));
   const open=all.filter(p=>p.active!==false), done=all.filter(p=>p.active===false);
-  const rows=LIVE.emgFilter==='open'?open:all;
+  const rows=LIVE.emgFilter==='open'?open:open.concat(done);   /* 전체 — 진행 중인 건을 위로, 그다음 종료된 건 (각각 최신 순) */
   document.getElementById('mcv-emgLabel').textContent='— 진행 중 '+open.length+' · 종료 '+done.length;
   const tools=document.getElementById('mcv-emgTools');
   const sup=!!(LIVE.me && LIVE.me.sup);
-  tools.innerHTML=[['open','진행 중 '+open.length],['all','전체 '+all.length]].map(([k,l])=>'<span class="mcv-logChip'+(LIVE.emgFilter===k?' mcv-on':'')+'" data-emgf="'+k+'">'+l+'</span>').join('')+
+  tools.innerHTML=[['all','전체 '+all.length],['open','진행 중만 '+open.length]].map(([k,l])=>'<span class="mcv-logChip'+(LIVE.emgFilter===k?' mcv-on':'')+'" data-emgf="'+k+'">'+l+'</span>').join('')+
     (pingRole()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-emgPing" style="margin-left:auto">🚨 응급 신고</button>':'')+
     ((ADMIN||ROLE==='cp')&&all.length?'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-emgXlsx" title="신고·처리·호출·종료 내역을 엑셀 파일로">📊 엑셀 받기</button>':'')+
     (sup&&all.length?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ghost" id="mcv-emgPurge" title="총관리자만 — 이 대회의 응급 기록을 모두 지웁니다">🗑 전부 지우기</button>':'')+
