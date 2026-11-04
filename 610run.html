@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>제3회 자유민주 마라톤 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-11-03 · 26.61 개발판&quot;,&quot;at&quot;:1793691628582,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;제3회 자유민주 마라톤&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;eva6apnb8v8m&quot;,&quot;ver&quot;:&quot;빌드 2026-11-04 · 26.62 개발판&quot;,&quot;at&quot;:1793769409975,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;eva6apnb8v8mynujf5t3bcvj8542&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -520,6 +520,17 @@
   background:#1d6f42;border:2px solid #fff;box-shadow:0 0 0 1.5px currentColor;flex:none;}
 #mcv-root #mcv-map .mcv-kstart{color:#1d6f42;} #mcv-root #mcv-map .mcv-kstart.fin{color:#c62828;} #mcv-root #mcv-map .mcv-kstart.fin::before{background:#c62828;}
 #mcv-root #mcv-map .mcv-kturn{color:#c2600a;} #mcv-root #mcv-map .mcv-kturn::before{background:#c2600a;}
+/* 🏁 출발·도착·반환점 표지 — 지점 위로 깃발처럼 띄우고(가는 막대 + 점이 실제 지점), 반투명 배경 · 시설 아이콘보다 뒤에 둔다.
+   예전엔 카드가 지점 한가운데를 덮어 같은 자리의 시설(급수대·화장실 등)이 가려졌다 */
+#mcv-root #mcv-map .mcv-kflag{display:flex;flex-direction:column;align-items:center;pointer-events:none;}
+#mcv-root #mcv-map .mcv-kflag>div{pointer-events:auto;background:rgba(255,255,255,.72)!important;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  box-shadow:0 1px 5px rgba(0,0,0,.18)!important;padding:2px 8px 2px 7px!important;font-size:11px!important;}
+#mcv-root #mcv-map .mcv-kflag>div::before{width:8px!important;height:8px!important;}
+#mcv-root #mcv-map .mcv-kflag>i{display:block;width:2px;height:14px;background:currentColor;opacity:.75;position:relative;}
+#mcv-root #mcv-map .mcv-kflag>i::after{content:'';position:absolute;left:50%;bottom:-3px;width:6px;height:6px;border-radius:50%;transform:translateX(-50%);background:currentColor;border:1.5px solid #fff;}
+#mcv-root #mcv-map .mcv-kflag:has(.mcv-kstart){color:#1d6f42;} #mcv-root #mcv-map .mcv-kflag:has(.fin){color:#c62828;} #mcv-root #mcv-map .mcv-kflag:has(.mcv-kturn){color:#c2600a;}
+#mcv-root .mcv-lfIcon>.mcv-kflag{transform:translate(-50%,-100%);}
+
 
 /* (반투명·블러 강제 규칙은 아래 '시설 정보 카드' 절에서 정리했다) */
 #mcv-root .leaflet-popup-content-wrapper{background:rgba(255,255,255,.75) !important;
@@ -3089,10 +3100,10 @@ function rebuildMap(fit){
     const tp=latlngAtKm(t);
     const nm=(C.turnNames&&C.turnNames[i])?String(C.turnNames[i]):((TT.length>1?(i+1)+'차 ':'')+'반환점');
     const lbl=nm+' '+t.toFixed(2)+'km';
-    kOv(tp,'<div class="mcv-kturn">'+esc(lbl)+'</div>',320,
+    kOv(tp,'<div class="mcv-kflag"><div class="mcv-kturn">'+esc(lbl)+'</div><i></i></div>',160,
       ()=>showInfo(popCard('↩','#f57c00',esc(nm),'',
         '<span class="mcv-c mcv-c-go">'+t.toFixed(2)+' km</span>'+
-        '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km</span>',''),tp[0],tp[1]));
+        '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km</span>',''),tp[0],tp[1]), 1);
   });
   const st=C.track[0], fin=C.track[C.track.length-1];
   const dSF=(function(){const R=6371008.8,RD=Math.PI/180,a=st,b=fin;
@@ -3100,13 +3111,13 @@ function rebuildMap(fit){
     const h=Math.sin(dla/2)**2+Math.cos(a[0]*RD)*Math.cos(b[0]*RD)*Math.sin(dlo/2)**2;
     return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));})();
   const sameSF=dSF<120;
-  kOv(st,'<div class="mcv-kstart">'+(sameSF?'출발 · 도착':'출발')+'</div>',300,
+  kOv(st,'<div class="mcv-kflag"><div class="mcv-kstart">'+(sameSF?'출발 · 도착':'출발')+'</div><i></i></div>',150,
     ()=>showInfo(popCard('🏁','#2e7d32',(sameSF?'출발 / 도착':'출발'),'',
       '<span class="mcv-c mcv-c-go">0.00 km</span>'+
-      '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km'+(C.shapeText?' · '+esc(C.shapeText):'')+'</span>',''),st[0],st[1]));
-  if(!sameSF) kOv(fin,'<div class="mcv-kstart fin">도착</div>',300,
+      '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km'+(C.shapeText?' · '+esc(C.shapeText):'')+'</span>',''),st[0],st[1]), 1);
+  if(!sameSF) kOv(fin,'<div class="mcv-kflag"><div class="mcv-kstart fin">도착</div><i></i></div>',150,
     ()=>showInfo(popCard('🏁','#c62828','도착','',
-      '<span class="mcv-c mcv-c-go">'+C.total_km.toFixed(2)+' km</span>',''),fin[0],fin[1]));
+      '<span class="mcv-c mcv-c-go">'+C.total_km.toFixed(2)+' km</span>',''),fin[0],fin[1]), 1);
   for(let k=1;k<C.total_km;k++){
     const ll=nudged(k), kdir=kmDir(ll);
     ((kk,l,dd)=>kOv(l,kmHtml(kk,(TT.length>0&&dirAtKm(C,kk)==='back'),dd),40,
