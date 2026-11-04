@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <title>과천코스도 (운영용·통합)</title>
-<meta name="mcv-event" content="{&quot;title&quot;:&quot;과천코스도&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evdsxw3hw52j&quot;,&quot;ver&quot;:&quot;빌드 2026-11-03 · 26.61 개발판&quot;,&quot;at&quot;:1793754344692,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evdsxw3hw52jhjsqhnk5bckpym6m&quot;}}">
+<meta name="mcv-event" content="{&quot;title&quot;:&quot;과천코스도&quot;,&quot;label&quot;:&quot;운영용·통합&quot;,&quot;id&quot;:&quot;evdsxw3hw52j&quot;,&quot;ver&quot;:&quot;빌드 2026-11-04 · 26.65 개발판&quot;,&quot;at&quot;:1793770794631,&quot;live&quot;:{&quot;project&quot;:&quot;course-2baf5&quot;,&quot;apiKey&quot;:&quot;AIzaSyB83J1Irqfr4ejJXaE00zMso19P4N-TBvI&quot;,&quot;key&quot;:&quot;evdsxw3hw52jhjsqhnk5bckpym6m&quot;}}">
 
 <script>/* 📱 스탭용 앱(Capacitor) 브리지 — 앱 안에서만 백그라운드 위치·앱 푸시·캡처 차단을 켠다 */
 /* =====================================================================
@@ -520,6 +520,17 @@
   background:#1d6f42;border:2px solid #fff;box-shadow:0 0 0 1.5px currentColor;flex:none;}
 #mcv-root #mcv-map .mcv-kstart{color:#1d6f42;} #mcv-root #mcv-map .mcv-kstart.fin{color:#c62828;} #mcv-root #mcv-map .mcv-kstart.fin::before{background:#c62828;}
 #mcv-root #mcv-map .mcv-kturn{color:#c2600a;} #mcv-root #mcv-map .mcv-kturn::before{background:#c2600a;}
+/* 🏁 출발·도착·반환점 표지 — 지점 위로 깃발처럼 띄우고(가는 막대 + 점이 실제 지점), 반투명 배경 · 시설 아이콘보다 뒤에 둔다.
+   예전엔 카드가 지점 한가운데를 덮어 같은 자리의 시설(급수대·화장실 등)이 가려졌다 */
+#mcv-root #mcv-map .mcv-kflag{display:flex;flex-direction:column;align-items:center;pointer-events:none;}
+#mcv-root #mcv-map .mcv-kflag>div{pointer-events:auto;background:rgba(255,255,255,.72)!important;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  box-shadow:0 1px 5px rgba(0,0,0,.18)!important;padding:2px 8px 2px 7px!important;font-size:11px!important;}
+#mcv-root #mcv-map .mcv-kflag>div::before{width:8px!important;height:8px!important;}
+#mcv-root #mcv-map .mcv-kflag>i{display:block;width:2px;height:14px;background:currentColor;opacity:.75;position:relative;}
+#mcv-root #mcv-map .mcv-kflag>i::after{content:'';position:absolute;left:50%;bottom:-3px;width:6px;height:6px;border-radius:50%;transform:translateX(-50%);background:currentColor;border:1.5px solid #fff;}
+#mcv-root #mcv-map .mcv-kflag:has(.mcv-kstart){color:#1d6f42;} #mcv-root #mcv-map .mcv-kflag:has(.fin){color:#c62828;} #mcv-root #mcv-map .mcv-kflag:has(.mcv-kturn){color:#c2600a;}
+#mcv-root .mcv-lfIcon>.mcv-kflag{transform:translate(-50%,-100%);}
+
 
 /* (반투명·블러 강제 규칙은 아래 '시설 정보 카드' 절에서 정리했다) */
 #mcv-root .leaflet-popup-content-wrapper{background:rgba(255,255,255,.75) !important;
@@ -770,6 +781,8 @@
 #mcv-root .mcv-lvItem .mcv-lvS small{display:block;font-size:.68rem;font-weight:500;opacity:.85;}
 #mcv-root .mcv-lvItem .mcv-lvS-no{background:#fdecea;color:#b3261e;}
 #mcv-root .mcv-lvItem .mcv-lvS-ok{background:#e6f4ea;color:#1e7e34;}
+#mcv-root .mcv-lvItem .mcv-lvS-pull{background:#eceff1;color:#455a64;} #mcv-root .mcv-lvBtn.mcv-pullBtn{background:#546e7a;color:#fff;border-color:#546e7a;}
+#mcv-root #mcv-map .mcv-pulled{filter:grayscale(1);opacity:.5;}
 #mcv-root .mcv-lvItem .mcv-lvBtn.mcv-big{min-height:42px;font-size:.95rem;padding:8px 16px;font-weight:800;}
 #mcv-root .mcv-lvZone.mcv-mine{background:#f3f8ff;border-left:4px solid var(--blue);border-radius:10px;}
 #mcv-root .mcv-lvZone.mcv-mine h3{font-size:1.05rem;}
@@ -814,6 +827,8 @@
 #mcv-root .mcv-ambRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 2px;font-size:.88rem;border-top:1px dashed #e0e6ea;}
 #mcv-root .mcv-ambRow:first-of-type{border-top:none;} #mcv-root .mcv-ambRow .mcv-lvBtn{margin-left:auto;}
 #mcv-root .mcv-ambRow.mcv-transOn{background:#fff5f8;border-radius:8px;padding:6px 8px;}
+#mcv-root .mcv-appDl{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:14px;padding:11px 14px;border:1.5px solid #1565c0;border-radius:10px;color:#1565c0;background:#fff;text-decoration:none;text-align:center;font-size:.95rem;}
+#mcv-root .mcv-appDl small{color:#78909c;font-size:.78rem;font-weight:500;} #mcv-root .mcv-appDl.mcv-ios{border-color:#cfd8dc;color:#455a64;font-size:.86rem;}
 #mcv-root .mcv-guide{position:fixed;inset:0;z-index:1650;background:rgba(38,50,56,.72);display:flex;align-items:center;justify-content:center;padding:18px;}
 #mcv-root .mcv-guideBox{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:18px 18px 14px;box-shadow:0 16px 48px rgba(0,0,0,.35);font-size:.95rem;line-height:1.55;}
 #mcv-root .mcv-guideBox h2{font-size:1.15rem;margin:0 0 10px;padding:0;border:0;display:block;}
@@ -3089,10 +3104,10 @@ function rebuildMap(fit){
     const tp=latlngAtKm(t);
     const nm=(C.turnNames&&C.turnNames[i])?String(C.turnNames[i]):((TT.length>1?(i+1)+'차 ':'')+'반환점');
     const lbl=nm+' '+t.toFixed(2)+'km';
-    kOv(tp,'<div class="mcv-kturn">'+esc(lbl)+'</div>',320,
+    kOv(tp,'<div class="mcv-kflag"><div class="mcv-kturn">'+esc(lbl)+'</div><i></i></div>',160,
       ()=>showInfo(popCard('↩','#f57c00',esc(nm),'',
         '<span class="mcv-c mcv-c-go">'+t.toFixed(2)+' km</span>'+
-        '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km</span>',''),tp[0],tp[1]));
+        '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km</span>',''),tp[0],tp[1]), 1);
   });
   const st=C.track[0], fin=C.track[C.track.length-1];
   const dSF=(function(){const R=6371008.8,RD=Math.PI/180,a=st,b=fin;
@@ -3100,13 +3115,13 @@ function rebuildMap(fit){
     const h=Math.sin(dla/2)**2+Math.cos(a[0]*RD)*Math.cos(b[0]*RD)*Math.sin(dlo/2)**2;
     return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));})();
   const sameSF=dSF<120;
-  kOv(st,'<div class="mcv-kstart">'+(sameSF?'출발 · 도착':'출발')+'</div>',300,
+  kOv(st,'<div class="mcv-kflag"><div class="mcv-kstart">'+(sameSF?'출발 · 도착':'출발')+'</div><i></i></div>',150,
     ()=>showInfo(popCard('🏁','#2e7d32',(sameSF?'출발 / 도착':'출발'),'',
       '<span class="mcv-c mcv-c-go">0.00 km</span>'+
-      '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km'+(C.shapeText?' · '+esc(C.shapeText):'')+'</span>',''),st[0],st[1]));
-  if(!sameSF) kOv(fin,'<div class="mcv-kstart fin">도착</div>',300,
+      '<span class="mcv-c mcv-c-sub">총 '+C.total_km.toFixed(2)+' km'+(C.shapeText?' · '+esc(C.shapeText):'')+'</span>',''),st[0],st[1]), 1);
+  if(!sameSF) kOv(fin,'<div class="mcv-kflag"><div class="mcv-kstart fin">도착</div><i></i></div>',150,
     ()=>showInfo(popCard('🏁','#c62828','도착','',
-      '<span class="mcv-c mcv-c-go">'+C.total_km.toFixed(2)+' km</span>',''),fin[0],fin[1]));
+      '<span class="mcv-c mcv-c-go">'+C.total_km.toFixed(2)+' km</span>',''),fin[0],fin[1]), 1);
   for(let k=1;k<C.total_km;k++){
     const ll=nudged(k), kdir=kmDir(ll);
     ((kk,l,dd)=>kOv(l,kmHtml(kk,(TT.length>0&&dirAtKm(C,kk)==='back'),dd),40,
@@ -3545,6 +3560,7 @@ function liveItem(id){ return liveAllItems().find(i=>i.id===id)||null; }
 function liveRoleOf(id){ if(String(id||'').indexOf('sp:')===0) return 'lead'; return liveItems('water').some(i=>i.id===id) && !liveItems('amb').some(i=>i.id===id) ? 'water' : 'amb'; }
 function liveZone(role,id){ return liveZones(role).find(z=>z.id===id)||null; }
 function liveDone(id){ const c=LIVE.checks[id]; return !!(c && c.done); }
+function livePulled(id){ const c=LIVE.checks[id]; return !!(c && c.pull); }   /* 🚚 철수 완료 — 대회 끝나고 그 자리 물품·인원 철수 */
 function liveCanAct(id){ const it=liveItem(id); if(!LIVECFG || !it || !LIVE.me) return false; if(liveRoleOf(id)==='water') return false;   /* 급수대는 완료 표시가 없다 */
   if(LIVE.me.sup) return true;                                                                                   /* 총관리자는 전부 */
   return liveRoleOf(id)===LIVE.me.role && !!LIVE.me.zone && (it.zone||null)===LIVE.me.zone; }                   /* 담당자·구급차는 자기 구역만. 관리자(체크 안 함)는 보기만 */
@@ -3562,9 +3578,11 @@ function liveActionsHtml(id, lat, lon, name){
   let h='<div class="mcv-liveAct">';
   if(id && liveCanAct(id)){ const d=liveDone(id); const c=LIVE.checks[id]||{};
     h+='<button type="button" class="mcv-lvBtn mcv-sm'+(d?'':' mcv-ok')+'" data-lv-check="'+esc(id)+'" data-lv-done="'+(d?'0':'1')+'">'+(d?'↩ 배치 해제':'✅ 배치 완료')+'</button>'+
-       (d?'<span class="mcv-c mcv-c-sub">완료 · '+esc(c.by||'')+' '+liveFmtT(c.at)+'</span>':''); }
+       (d?'<span class="mcv-c mcv-c-sub">완료 · '+esc(c.by||'')+' '+liveFmtT(c.at)+'</span>':'')+
+       '<button type="button" class="mcv-lvBtn mcv-sm'+(c.pull?'':' mcv-pullBtn')+'" data-lv-pull="'+esc(id)+'" data-lv-on="'+(c.pull?'0':'1')+'">'+(c.pull?'↩ 철수 해제':'🚚 철수 완료')+'</button>'+
+       (c.pull?'<span class="mcv-c mcv-c-sub">철수 · '+esc(c.pullBy||'')+' '+liveFmtT(c.pullAt)+'</span>':''); }
   else if(id && liveItem(id) && LIVECFG && !LIVE.me && liveRoleOf(id)!=='water' && (ADMIN || liveRoleOf(id)===ROLE)){ h+='<button type="button" class="mcv-lvBtn mcv-sm" data-lv-login="1">👤 로그인하고 배치 완료</button>'; }
-  else if(id && liveItem(id) && liveDone(id)){ const c=LIVE.checks[id]||{}; h+='<span class="mcv-c mcv-c-sub">✅ 배치 완료 · '+esc(c.by||'')+' '+liveFmtT(c.at)+'</span>'; }
+  else if(id && liveItem(id) && liveDone(id)){ const c=LIVE.checks[id]||{}; h+='<span class="mcv-c mcv-c-sub">✅ 배치 완료 · '+esc(c.by||'')+' '+liveFmtT(c.at)+'</span>'+(c.pull?'<span class="mcv-c mcv-c-sub">🚚 철수 · '+esc(c.pullBy||'')+' '+liveFmtT(c.pullAt)+'</span>':''); }
   h+='<a class="mcv-lvBtn mcv-sm" href="'+navUrl(name,lat,lon)+'" target="_blank" rel="noopener" title="카카오맵 길찾기 (내 위치에서)">🧭 길찾기</a>';
   return h+'</div>';
 }
@@ -3920,6 +3938,11 @@ function liveSetupHtml(){
     (needs?'<small>「예」를 누르면 휴대폰이 허용 여부를 묻습니다(이미 허용했거나 거부한 것은 다시 묻지 않습니다 — 그때는 위 안내대로 설정에서 켜 주세요).</small>':'')+'</div>';
 }
 /* ── 로그인 문 — 운영용 파일은 로그인하기 전엔 아무것도 못 쓴다 ── */
+/* 📱 스탭용 안드로이드 앱 내려받기 — 운영 파일에서만, 앱 안에서는 숨김, 아이폰은 「홈 화면에 추가」 안내 */
+const APP_DL='https://blueimg-app.dnjsqls9695.workers.dev';
+function appIos(){ try{ return /iPhone|iPad|iPod/i.test(navigator.userAgent); }catch(e){ return false; } }
+function appDlHtml(){ if(myNative()) return ''; if(appIos()) return '<div class="mcv-appDl mcv-ios">🍎 아이폰은 사파리 <b>공유 → 홈 화면에 추가</b>로 앱처럼 쓰세요</div>';
+  return '<a class="mcv-appDl" href="'+APP_DL+'" target="_blank" rel="noopener"><b>📱 안드로이드 앱 내려받기</b><small>앱으로 쓰면 위치 공유·알림이 끊기지 않아요</small></a>'; }
 function gateRender(){
   if(!LIVECFG) return;
   let g=document.getElementById('mcv-gate');
@@ -3942,7 +3965,7 @@ function gateRender(){
         '<div class="mcv-gpType" id="mcv-gpType"><button type="button" data-t="patrol" class="mcv-on">🏍 레이스패트롤</button><button type="button" data-t="pacer">🏃 페이스메이커</button></div>'+
         '<input type="text" id="mcv-gpName" placeholder="이름" maxlength="20" autocomplete="name"><input type="password" id="mcv-gpPin" placeholder="번호 4자리" inputmode="numeric" maxlength="4" autocomplete="off" style="text-align:center;letter-spacing:.3em">'+
         '<div class="mcv-lvErr" id="mcv-gpErr" style="display:none"></div><button type="button" class="mcv-lvBtn mcv-pri" id="mcv-gpGo" style="background:#e65100;justify-content:center">들어가기</button>'+
-        '<div class="mcv-gateOr"><span>또는</span></div><button type="button" class="mcv-lvBtn" id="mcv-gBack" style="justify-content:center">👤 관리자·스탭 로그인으로</button></div>':'')+'</div>';
+        '<div class="mcv-gateOr"><span>또는</span></div><button type="button" class="mcv-lvBtn" id="mcv-gBack" style="justify-content:center">👤 관리자·스탭 로그인으로</button></div>':'')+appDlHtml()+'</div>';
   const go=()=>{ const nm=g.querySelector('#mcv-gName').value.trim(), pin=g.querySelector('#mcv-gPin').value.trim(); const e=g.querySelector('#mcv-gErr');
     const show=t=>{ e.textContent=t; e.style.display=''; };
     if(!nm){ show('이름을 넣어 주세요'); g.querySelector('#mcv-gName').focus(); return; }
@@ -3995,12 +4018,14 @@ function logSub(){
   LIVE.logUnsub=LIVE.root.collection('log').onSnapshot(sn=>{ const o={}; sn.forEach(d=>{ o[d.id]=Object.assign({id:d.id}, d.data()||{}); }); LIVE.log=o; logRender(); }, e=>{ LIVE.err=liveErrText(e); liveRender(); });
 }
 function logUnsubAll(){ if(LIVE.logUnsub){ try{ LIVE.logUnsub(); }catch(e){} LIVE.logUnsub=null; } LIVE.log={}; }
-const LOG_T={evend:['🏁','행사 종료'], evopen:['↺','행사 다시 열기'], evsched:['🕑','종료 예약'], evunsched:['🕑','종료 예약 취소'], check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], evclose:['🏁','대회 마감 (제작기)'], evreopen:['↺','대회 마감 해제 (제작기)'], rec:['📋','처치 기록'], trans:['🏥','후송 출발'], back:['↩','후송 복귀'], arrive:['📍','배치 지점 도착'], reset:['♻','전체 리셋'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
+const LOG_T={evend:['🏁','행사 종료'], evopen:['↺','행사 다시 열기'], evsched:['🕑','종료 예약'], evunsched:['🕑','종료 예약 취소'], check:['✅','배치 완료'], uncheck:['↩','배치 해제'], ping:['🚨','응급 핑'], handle:['🚑','처리 시작'], note:['📝','처리 내용'], call:['📞','구급차 호출'], ack:['🚑','출동 확인'], resolve:['🟦','상황 종료'], purge:['🗑','응급 현황 삭제'], purgemsg:['🗑','메시지 삭제'], purgelog:['🗑','로그 초기화'], emgxlsx:['📊','응급 내역 엑셀 받기'], pull:['🚚','철수 완료'], unpull:['↩','철수 해제'], evclose:['🏁','대회 마감 (제작기)'], evreopen:['↺','대회 마감 해제 (제작기)'], rec:['📋','처치 기록'], trans:['🏥','후송 출발'], back:['↩','후송 복귀'], arrive:['📍','배치 지점 도착'], reset:['♻','전체 리셋'], msg:['💬','메시지'], login:['👤','접속'], logout:['🚪','로그아웃'], zone:['📍','구역 선택']};
 function logWho(e){ let w=e.by||''; const tag=e.sup?'총관리자':(e.role==='admin'?'관리자':e.role==='amb'?('구급차'+(e.car?' '+e.car+'호차':'')):e.role==='cp'?'CP 담당':e.role==='water'?'급수대':'담당자'); w+=' ('+tag+(e.myZoneName?' · '+e.myZoneName:'')+(e.cp?' · '+e.cp:'')+')'; return w; }
 function logText(e){
   switch(e.t){
     case 'check': return [e.itemName||e.item||'', (e.zoneName?e.zoneName+' · ':'')+'배치 완료'];
     case 'uncheck': return [e.itemName||e.item||'', (e.zoneName?e.zoneName+' · ':'')+'배치 해제'];
+    case 'pull': return [e.itemName||e.item||'', (e.zoneName?e.zoneName+' · ':'')+'🚚 철수 완료'];
+    case 'unpull': return [e.itemName||e.item||'', (e.zoneName?e.zoneName+' · ':'')+'철수 해제'];
     case 'ping': return ['🚨 '+(e.zoneName||'지도 지점')+(e.msg?' — '+e.msg:''), '응급 핑'];
     case 'resolve': return [(e.zoneName||'')+(e.msg?' — '+e.msg:''), '상황 종료'];
     case 'handle': return [(e.zoneName||'')+(e.msg?' — '+e.msg:''), '처리 시작 (현장으로)'];
@@ -4131,6 +4156,16 @@ function liveSetShare(on){ LIVE.share=!!on; if(LIVE.me){ LIVE.me.share=LIVE.shar
   else if(LIVE.me && LIVE.root){ LIVE.root.collection('people').doc(LIVE.me.uid).set({share:false, lat:null, lon:null},{merge:true}).catch(()=>{}); }
   liveRender(); }
 /* 배치 완료 · 해제 */
+function liveSetPull(id, on){
+  if(!LIVE.root){ liveToast('실시간 연결이 아직 없습니다'); return; }
+  if(!liveCanAct(id)){ liveToast(!LIVE.me?'먼저 로그인해 주세요':'내 구역의 항목만 철수 표시를 할 수 있습니다'); return; }
+  if(navigator.onLine===false){ liveToast('오프라인입니다 — 연결되면 다시 눌러 주세요'); return; }
+  const c=Object.assign({}, LIVE.checks[id]||{}), t=liveNow(); const upd=on?{pull:true, pullBy:LIVE.me.name, pullUid:LIVE.me.uid, pullAt:t}:{pull:false, pullBy:LIVE.me.name, pullUid:LIVE.me.uid, pullAt:t};
+  if(on && !c.done){ Object.assign(upd, {done:true, by:c.by||LIVE.me.name, uid:c.uid||LIVE.me.uid, at:c.at||t}); }   /* 배치 완료를 안 누르고 철수만 눌러도 배치는 된 것으로 */
+  LIVE.checks[id]=Object.assign(c, upd); liveSyncPins(); liveRender(); liveRefreshCard();
+  LIVE.root.collection('checks').doc(id).set(upd,{merge:true}).then(()=>{ liveToast(on?'🚚 철수 완료로 표시했습니다':'철수 표시를 해제했습니다'); }).catch(e=>{ LIVE.err=liveErrText(e); liveRender(); liveToast('저장하지 못했습니다 — '+LIVE.err); });
+  { const it=liveItem(id)||{}; const z=liveZone(liveRoleOf(id), it.zone||null); liveLog(on?'pull':'unpull', {item:id, itemName:it.name||'', zone:it.zone||null, zoneName:z?z.name:''}); }
+}
 function liveSetCheck(id, done){
   if(!LIVE.root){ liveToast('실시간 연결이 아직 없습니다'); return; }
   if(!liveCanAct(id)){ liveToast(!LIVE.me?'먼저 로그인해 주세요':(LIVE.me.role==='admin'?'총관리자로 체크된 계정만 배치 완료를 바꿀 수 있습니다':(LIVE.me.zone?'내 구역의 항목만 표시할 수 있습니다':'먼저 담당 구역을 골라 주세요'))); return; }
@@ -4150,9 +4185,12 @@ function liveToast(t, ms){
 /* 로그인 칸 안에 빨간 줄로도 보여 준다 (휴대폰에서 토스트를 놓쳐도 보이게) */
 function loginErr(t){ const e=document.getElementById('mcv-lvErr'); if(e){ e.textContent=t||''; e.style.display=t?'':'none'; } if(t) liveToast(t); }
 /* 핀 위 완료 표시 갱신 — 지도를 다시 그리지 않고 클래스만 */
-function liveSyncPins(){ kObjs.forEach(h=>{ if(!h.liveId || !h.el) return; h.el.classList.toggle('mcv-done', liveDone(h.liveId)); }); }
+function liveSyncPins(){ kObjs.forEach(h=>{ if(!h.liveId || !h.el) return; h.el.classList.toggle('mcv-done', liveDone(h.liveId)); h.el.classList.toggle('mcv-pulled', livePulled(h.liveId)); }); }
 /* 열려 있는 카드가 있으면 단추 상태를 바꾼다 */
-function liveRefreshCard(){ const lay=document.getElementById('mcv-infoLayer'); if(!lay) return; const b=lay.querySelector('[data-lv-check]'); if(!b) return;
+function liveRefreshCard(){ const lay=document.getElementById('mcv-infoLayer'); if(!lay) return;
+  { const pb=lay.querySelector('[data-lv-pull]'); if(pb){ const id=pb.dataset.lvPull, c=LIVE.checks[id]||{}; pb.dataset.lvOn=c.pull?'0':'1'; pb.textContent=c.pull?'↩ 철수 해제':'🚚 철수 완료'; pb.classList.toggle('mcv-pullBtn', !c.pull);
+    let tg=pb.nextElementSibling; if(tg && !tg.classList.contains('mcv-c')) tg=null; if(c.pull){ if(!tg){ tg=document.createElement('span'); tg.className='mcv-c mcv-c-sub'; pb.after(tg); } tg.textContent='철수 · '+(c.pullBy||'')+' '+liveFmtT(c.pullAt); } else if(tg) tg.remove(); } }
+  const b=lay.querySelector('[data-lv-check]'); if(!b) return;
   const id=b.dataset.lvCheck, d=liveDone(id), c=LIVE.checks[id]||{}; b.dataset.lvDone=d?'0':'1'; b.textContent=d?'↩ 배치 해제':'✅ 배치 완료'; b.classList.toggle('mcv-ok', !d);
   let tag=b.nextElementSibling; if(tag && !tag.classList.contains('mcv-c')) tag=null;
   if(d){ if(!tag){ tag=document.createElement('span'); tag.className='mcv-c mcv-c-sub'; b.after(tag); } tag.textContent='완료 · '+(c.by||'')+' '+liveFmtT(c.at); } else if(tag) tag.remove(); }
@@ -4211,7 +4249,7 @@ function meBarRender(){
   bar.style.display='flex';
   bar.innerHTML='<span class="mcv-meAv" style="background:'+liveZoneColor(me)+'">'+esc(String(me.name||'?').charAt(0))+'</span>'+
     '<span class="mcv-meT"><b>'+esc(me.name)+' <small style="font-weight:600;opacity:.9">'+esc(liveRoleLabel(me))+'</small></b><span>'+(zn?esc(zn)+' · ':'')+(on?'<i class="mcv-meOn">● 실시간 연결</i>':'<i class="mcv-meOff">● 연결 안 됨</i>')+(n?' · 접속 '+n+'명':'')+'</span></span>'+
-    '<span class="mcv-meBtns">'+(me.zone && !me.sup?'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-meZone">📍 내 구역</button>':'')+(pingCan()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-mePing">🚨 응급 신고</button>':'')+'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-meHelp" title="사용법">❓</button></span>';
+    '<span class="mcv-meBtns">'+(me.zone && !me.sup?'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-meZone">📍 내 구역</button>':'')+(pingCan()?'<button type="button" class="mcv-lvBtn mcv-sm mcv-ping" id="mcv-mePing">🚨 응급 신고</button>':'')+((!myNative()&&!appIos())?'<a class="mcv-lvBtn mcv-sm" href="'+APP_DL+'" target="_blank" rel="noopener" title="안드로이드 앱 내려받기">📱 앱</a>':'')+'<button type="button" class="mcv-lvBtn mcv-sm" id="mcv-meHelp" title="사용법">❓</button></span>';
   const z=bar.querySelector('#mcv-meZone'); if(z) z.onclick=()=>{ navShow('live', true); setTimeout(()=>{ const el=document.querySelector('.mcv-lvZone.mcv-mine')||document.getElementById('mcv-liveCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }, 60); };
   const pg=bar.querySelector('#mcv-mePing'); if(pg) pg.onclick=()=>pingForm(null);
   const hb=bar.querySelector('#mcv-meHelp'); if(hb) hb.onclick=()=>guideShow(true);
@@ -4311,6 +4349,7 @@ function liveRender(){
   const allItems=roles.reduce((a,r)=>a.concat(liveItems(r)),[]);
   const doneN=allItems.filter(i=>liveDone(i.id)).length;
   h+='<div class="mcv-lvSum"><div class="mcv-sumchip">전체<b>'+doneN+' / '+allItems.length+' 완료</b></div>';
+  { const pn=allItems.filter(i=>livePulled(i.id)).length; if(pn) h+='<div class="mcv-sumchip" style="background:#eceff1">🚚 철수<b>'+pn+' / '+allItems.length+'</b></div>'; }
   roles.forEach(r=>{ const its=liveItems(r); if(!its.length) return; const d=its.filter(i=>liveDone(i.id)).length; h+='<div class="mcv-sumchip">'+(r==='amb'?'🚑 구급차':'📍 담당자')+'<b>'+d+' / '+its.length+'</b></div>'; });
   h+='</div>';
   if(ADMIN){ h+='<div class="mcv-lvTools"><label><input type="checkbox" id="mcv-lvPending"'+(LIVE.pendingOnly?' checked':'')+'> 미완료만 보기</label><button type="button" class="mcv-lvBtn mcv-sm" id="mcv-lvGoMap">🗺 사람 위치 보기</button></div>'; }
@@ -4318,21 +4357,22 @@ function liveRender(){
   const AMB_SHOWN=new Set();
   const zoneHtml=(r,z,mine)=>{
     const its=liveItems(r).filter(i=>(i.zone||null)===(z.id||null)); if(!its.length) return '';
-    const d=its.filter(i=>liveDone(i.id)).length, pct=Math.round(d/its.length*100);
+    const d=its.filter(i=>liveDone(i.id)).length, pct=Math.round(d/its.length*100), pl=its.filter(i=>livePulled(i.id)).length;
     const here=livePeople().filter(p=>p.zone===z.id && now-(+p.at||0)<LIVE_STALE).map(p=>p.name+((p.car||p.cp)?'('+[p.car?p.car+'호차':'', p.cp||''].filter(Boolean).join(' · ')+')':''));
     const rows=its.filter(i=>!(ADMIN&&LIVE.pendingOnly&&liveDone(i.id))).map(i=>{ const dn=liveDone(i.id), c=LIVE.checks[i.id]||{}; const can=liveCanAct(i.id);
       const meta=[]; if(i.kmText) meta.push(i.kmText); else if(i.km!=null) meta.push(i.km.toFixed(2)+' km'); if(i.n) meta.push('👥 '+i.n+'명'); if(i.time) meta.push('⏰ '+i.time); if(i.catLabel) meta.push(i.catLabel); if(i.memo) meta.push(i.memo);
       return '<div class="mcv-lvItem'+(dn?' mcv-done':'')+'" data-lv-item="'+esc(i.id)+'">'+
         '<span class="mcv-lvNo" style="background:'+(z.color||'#607d8b')+'">'+(i.no!=null?i.no:(i.icon||'•'))+'</span>'+
         '<span class="mcv-lvT"><b>'+esc(i.name)+'</b><span>'+esc(meta.join(' · '))+'</span></span>'+
-        '<span class="mcv-lvS'+(dn?' mcv-lvS-ok':' mcv-lvS-no')+'">'+(dn?'✅ 완료<small>'+esc(c.by||'')+' '+liveFmtT(c.at)+'</small>':'⬜ 미완료')+'</span>'+
-        '<span class="mcv-lvA">'+(can?'<button type="button" class="mcv-lvBtn mcv-sm'+(dn?'':' mcv-ok mcv-big')+'" data-lv-check="'+esc(i.id)+'" data-lv-done="'+(dn?'0':'1')+'">'+(dn?'↩ 완료 해제':'✅ 배치 완료')+'</button>':'')+
+        (c.pull?'<span class="mcv-lvS mcv-lvS-pull">🚚 철수<small>'+esc(c.pullBy||'')+' '+liveFmtT(c.pullAt)+'</small></span>':'<span class="mcv-lvS'+(dn?' mcv-lvS-ok':' mcv-lvS-no')+'">'+(dn?'✅ 완료<small>'+esc(c.by||'')+' '+liveFmtT(c.at)+'</small>':'⬜ 미완료')+'</span>')+
+        '<span class="mcv-lvA">'+(can&&!c.pull?'<button type="button" class="mcv-lvBtn mcv-sm'+(dn?'':' mcv-ok mcv-big')+'" data-lv-check="'+esc(i.id)+'" data-lv-done="'+(dn?'0':'1')+'">'+(dn?'↩ 완료 해제':'✅ 배치 완료')+'</button>':'')+
+          (can&&(dn||c.pull)?'<button type="button" class="mcv-lvBtn mcv-sm'+(c.pull?'':' mcv-pullBtn')+'" data-lv-pull="'+esc(i.id)+'" data-lv-on="'+(c.pull?'0':'1')+'">'+(c.pull?'↩ 철수 해제':'🚚 철수 완료')+'</button>':'')+
           '<button type="button" class="mcv-lvBtn mcv-sm" data-lv-map="'+esc(i.id)+'" title="지도에서 보기">🗺 지도</button>'+
           '<a class="mcv-lvBtn mcv-sm" href="'+navUrl(i.name,i.lat,i.lon)+'" target="_blank" rel="noopener" title="카카오맵 길찾기">🧭 길찾기</a></span></div>'; }).join('');
     if(!rows) return '';
     let ambH=''; if(r==='amb'){ const ap=livePeople().filter(p=>p.role==='amb' && (p.zone||null)===(z.id||null)); ap.forEach(p=>AMB_SHOWN.add(p.uid)); ambH=ap.map(ambRowHtml).join(''); }
     return '<div class="mcv-lvZone'+(mine?' mcv-mine':'')+'" data-lv-zone="'+esc(z.id)+'"><h3><span class="mcv-dot" style="background:'+(z.color||'#607d8b')+'"></span>'+esc(z.name)+(z.lead?' <small>· '+esc(z.lead)+(z.phone?' '+esc(z.phone):'')+'</small>':'')+
-      ' <small>'+d+' / '+its.length+' 완료'+(mine?' · 내 구역':'')+'</small>'+(here.length?' <small>👤 '+esc(here.join(', '))+'</small>':'')+'</h3>'+
+      ' <small>'+d+' / '+its.length+' 완료'+(pl?' · 🚚 철수 '+pl:'')+(mine?' · 내 구역':'')+'</small>'+(here.length?' <small>👤 '+esc(here.join(', '))+'</small>':'')+'</h3>'+
       '<div class="mcv-lvBar'+(d===its.length?' mcv-full':'')+'"><i style="width:'+pct+'%"></i></div>'+(ambH?'<div style="margin:4px 0 6px">'+ambH+'</div>':'')+rows+'</div>';
   };
   roles.forEach(r=>{
@@ -4370,6 +4410,7 @@ function liveShowItem(i){
 function liveActClick(e){
   if(e.__mcvAct) return; e.__mcvAct=true;
   const c=e.target.closest('[data-lv-check]'); if(c){ e.preventDefault(); liveSetCheck(c.dataset.lvCheck, c.dataset.lvDone==='1'); return; }
+  const pu=e.target.closest('[data-lv-pull]'); if(pu){ e.preventDefault(); liveSetPull(pu.dataset.lvPull, pu.dataset.lvOn==='1'); return; }
   const l=e.target.closest('[data-lv-login]'); if(l){ e.preventDefault(); closeInfo(); const card=document.getElementById('mcv-liveCard'); if(card){ card.scrollIntoView({behavior:'smooth', block:'start'}); const n=document.getElementById('mcv-lvName'); if(n) setTimeout(()=>n.focus(), 300); } }
 }
 document.addEventListener('click', liveActClick);
