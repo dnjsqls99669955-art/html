@@ -274,10 +274,10 @@
     {
      "name": "gcrun-admin.html",
      "label": "운영용·통합",
-     "at": 1793691660555
+     "at": 1793754349779
     }
    ],
-   "at": 1793691660555,
+   "at": 1793754349778,
    "ver": "빌드 2026-11-03 · 26.61 개발판",
    "live": {
     "project": "course-2baf5",
@@ -344,6 +344,42 @@
      "h": "505b2356af7bc416321a17e62693f3e311a08902bbbf0e2b75cd6a92f81834fc",
      "r": "admin",
      "s": 1
+    },
+    {
+     "l": "9519dc9cc2c0af0eabad459095e6286039ca82652a474243858365fc201576b9",
+     "h": "b6673903cfa51075fbfc22561a18f7b5299199ed1f1742b25d5ed73b03f9aad0",
+     "r": "cp",
+     "s": 0
+    },
+    {
+     "l": "2b3c39d000765901cf4d6a20ac35695dffd6151f69d16c026a697d2fc6ff9805",
+     "h": "bd70769b5d84fdfaebbb5a1b54f3ef314c731504c8302db45841617d596991b4",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "c60734eb5401044c97f4832d50aa02b507ee9187812fc69837c4503c7fd63253",
+     "h": "28560e59a838edafe74e0817c50912d39aa5fd3fb17b85edf7eb7d56f8d86306",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "852123d6d4f9f0db6a120f8a40b5f95348076d0c85af5ef5ac8a8be8e128a193",
+     "h": "9655c85b6468064ea367efe35c0b4cc7635e8a572d49e6ee18ca401e7a08519f",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "8e4d54c9d64acb18f6f4d76ef6aba010116da8131e1c3c0cf9d63c2893aa4bbe",
+     "h": "8daf83f99b40c0d61aebd2d4c2aca21c9a49201e543de7fa425284bf94d7f40a",
+     "r": "amb",
+     "s": 0
+    },
+    {
+     "l": "923cdb9b8f9db1d195c10fb9790b5b8f6596c0baefa277dd733b8832fad1d17e",
+     "h": "b4be0394d4e06234deba5f88c43b2d38b838183164a0092f5e5617a93dc14925",
+     "r": "amb",
+     "s": 0
     }
    ],
    "pl": "10e11055acf132b5819562292ce95b98033ae204287ed35d635445bbeb58941e",
